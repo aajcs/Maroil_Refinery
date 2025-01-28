@@ -57,8 +57,8 @@ const LoginForm: Page = () => {
       >
         <h1 className="font-bold text-2xl mt-0 mb-2">MAROIL REFENERY</h1>
         <p className="text-color-secondary mb-4">
-          Bienvenido a la <strong>Maroil Refenery</strong>, donde ocurre la
-          magia, inicie sesión para continuar.
+          Bienvenido a la <strong>Maroil Refenery</strong>, inicie sesión para
+          continuar.
         </p>
 
         <form onSubmit={handleSubmit(onSubmit)}>
