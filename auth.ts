@@ -1,7 +1,12 @@
-import NextAuth from "next-auth";
+import NextAuth, { User } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { loginUser } from "./app/api/userService";
 // Your own logic for dealing with plaintext password strings; be careful!
+
+interface ExtendedUser extends User {
+  usuario: string;
+  token: string;
+}
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
@@ -28,16 +33,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
           return user;
         } catch (error) {
-          console.log("errordeauth", error.response.data);
+          // console.log("errordeauth", error.response.data);
           return null;
         }
         // return user object with their profile data
       },
     }),
   ],
-  session: {
-    jwt: true,
-  },
+  session: { strategy: "jwt" },
   // callbacks: {
   //   async jwt(token, user, account, profile, isNewUser) {
   //     // Add the user id to the token
@@ -60,8 +63,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       console.log("userUSERAQUIIII", user);
 
       if (user) {
-        token.user = user.usuario;
-        token.token = user.token;
+        token.user = (user as ExtendedUser).usuario;
+        token.token = (user as ExtendedUser).token;
       }
       return token;
     },
@@ -69,8 +72,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     // lo que hace que esté disponible en el cliente.
     session({ session, token }) {
       if (session.user) {
-        session.user.usuario = token.user;
-        session.user.token = token.token;
+        (session.user as unknown as ExtendedUser).usuario =
+          token.user as string;
+        (session.user as unknown as ExtendedUser).token = token.token as string;
       }
       return session;
     },
