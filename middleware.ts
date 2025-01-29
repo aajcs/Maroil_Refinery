@@ -12,6 +12,9 @@ const protectedRoutes = [
 ];
 
 export async function middleware(req: NextRequest) {
+  if (!process.env.AUTH_SECRET) {
+    throw new Error("AUTH_SECRET environment variable is not defined");
+  }
   const token = await getToken({ req, secret: process.env.AUTH_SECRET });
   console.log("token", token);
   console.log("req", req);
