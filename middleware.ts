@@ -24,7 +24,11 @@ export async function middleware(req: NextRequest) {
   const cookies = req.headers.get("cookie");
   console.log("Cookies:", cookies);
 
-  const token = await getToken({ req, secret: process.env.AUTH_SECRET });
+  const token = await getToken({
+    req,
+    secret: process.env.AUTH_SECRET,
+    cookieName: "_vercel_jwt",
+  });
 
   // Más registros de depuración
   console.log("Token:", token);
