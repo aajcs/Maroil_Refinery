@@ -15,9 +15,19 @@ export async function middleware(req: NextRequest) {
   if (!process.env.AUTH_SECRET) {
     throw new Error("AUTH_SECRET environment variable is not defined");
   }
+
+  // Agregar registros de depuración
+  console.log("AUTH_SECRET:", process.env.AUTH_SECRET);
+  console.log("Request Headers:", req.headers);
+
   const token = await getToken({ req, secret: process.env.AUTH_SECRET });
   console.log("token", token);
   console.log("req", req);
+
+  // Más registros de depuración
+  console.log("Token:", token);
+  console.log("Request:", req);
+
   const { nextUrl } = req;
   const isLoggedIn = !!token;
 
