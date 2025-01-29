@@ -27,7 +27,7 @@ export async function middleware(req: NextRequest) {
   const token = await getToken({
     req,
     secret: process.env.AUTH_SECRET,
-    cookieName: "_vercel_jwt",
+    cookieName: "__Host-authjs.csrf-token",
   });
 
   // Más registros de depuración
