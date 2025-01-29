@@ -60,8 +60,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     // jwt() se ejecuta cada vez que se crea o actualiza un token JWT.
     // Aquí es donde puedes agregar información adicional al token.
     jwt({ token, user }) {
-      console.log("userUSERAQUIIII", user);
-
       if (user) {
         token.user = (user as ExtendedUser).usuario;
         token.token = (user as ExtendedUser).token;
