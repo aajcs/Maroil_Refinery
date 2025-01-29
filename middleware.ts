@@ -20,13 +20,15 @@ export async function middleware(req: NextRequest) {
   console.log("AUTH_SECRET:", process.env.AUTH_SECRET);
   console.log("Request Headers:", req.headers);
 
+  // Verificar la cookie de sesión
+  const cookies = req.headers.get("cookie");
+  console.log("Cookies:", cookies);
+
   const token = await getToken({ req, secret: process.env.AUTH_SECRET });
-  console.log("token", token);
-  console.log("req", req);
 
   // Más registros de depuración
   console.log("Token:", token);
-  console.log("Request:", req);
+  // console.log("Request:", req);
 
   const { nextUrl } = req;
   const isLoggedIn = !!token;
