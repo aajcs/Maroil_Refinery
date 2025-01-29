@@ -57,6 +57,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   // },
 
   callbacks: {
+    // authorized: async ({ request, auth }) => {
+    //   // Aquí puedes implementar tu lógica de autorización
+    //   if (!auth) return false;
+
+    //   const url = request.nextUrl;
+    //   // Implementa aquí tu lógica de rutas protegidas y roles
+    //   return true;
+    // },
+
     // jwt() se ejecuta cada vez que se crea o actualiza un token JWT.
     // Aquí es donde puedes agregar información adicional al token.
     jwt({ token, user }) {
