@@ -18,7 +18,7 @@ export default function RootLayout({
       <head>
         <link
           id="theme-link"
-          href={`/theme/theme-light/indigo/theme.css`}
+          href={`/theme/theme-light/blue/theme.css`}
           rel="stylesheet"
         ></link>
       </head>

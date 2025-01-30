@@ -1,15 +1,15 @@
-import { Metadata } from 'next';
-import React from 'react';
+import { Metadata } from "next";
+import React from "react";
 
 interface LandingLayoutProps {
-    children: React.ReactNode;
+  children: React.ReactNode;
 }
 
 export const metadata: Metadata = {
-    title: 'PrimeReact Verona',
-    description: 'The ultimate collection of design-agnostic, flexible and accessible React UI Components.'
+  title: "Maroil Trading",
+  description: "Maroil Trading Refenery.",
 };
 
 export default function LandingLayout({ children }: LandingLayoutProps) {
-    return <React.Fragment>{children}</React.Fragment>;
+  return <React.Fragment>{children}</React.Fragment>;
 }

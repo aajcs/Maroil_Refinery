@@ -1,4 +1,3 @@
-import { InputText } from "primereact/inputtext";
 import {
   forwardRef,
   useContext,
@@ -9,15 +8,24 @@ import {
 } from "react";
 import { LayoutContext } from "./context/layoutcontext";
 import type { AppTopbarRef } from "@/types";
-import { Button } from "primereact/button";
 import { Ripple } from "primereact/ripple";
 import Link from "next/link";
 import { StyleClass } from "primereact/styleclass";
 import { usePathname, useRouter } from "next/navigation";
 import { classNames } from "primereact/utils";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
+import { User } from "next-auth";
+interface ExtendedUser extends User {
+  usuario: {
+    nombre: string;
+    rol: string;
+  };
+  token: string;
+}
 
 const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
+  const { data: session } = useSession();
+
   const handleSignOut = async () => {
     await signOut();
   };
@@ -44,23 +52,23 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
       (element as HTMLElement)?.focus();
     }, 100);
   };
-  const deactivateSearch = () => {
-    setSearchActive(false);
-  };
 
   useImperativeHandle(ref, () => ({
     menubutton: menubuttonRef.current,
   }));
   const logo = () => {
-    const path = "/layout/images/logo-";
+    const path = "/layout/images/";
     let logo;
     if (
       layoutConfig.layoutTheme === "primaryColor" &&
       layoutConfig.theme !== "yellow"
     ) {
-      logo = "light.png";
+      logo = "maroilIcono.ico";
     } else {
-      logo = layoutConfig.colorScheme === "light" ? "dark.png" : "light.png";
+      logo =
+        layoutConfig.colorScheme === "light"
+          ? "maroilIcono.ico"
+          : "maroilIcono.ico";
     }
     return path + logo;
   };
@@ -82,7 +90,7 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
     <div className="layout-topbar">
       <Link href={"/"} className="app-logo">
         <img alt="app logo" src={logo()} />
-        <span className="app-name">Verona</span>
+        <span className="app-name">Maroil</span>
       </Link>
 
       <button
@@ -109,30 +117,8 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
           );
         })}
         {!tabs ||
-          (tabs.length === 0 && <li className="topbar-menu-empty">Zarcol</li>)}
+          (tabs.length === 0 && <li className="topbar-menu-empty">Maroil</li>)}
       </ul>
-
-      <div
-        className={classNames("topbar-search", {
-          "topbar-search-active": searchActive,
-        })}
-      >
-        <button className="topbar-searchbutton p-link" onClick={activateSearch}>
-          <i className="pi pi-search"></i>
-        </button>
-
-        <div className="search-input-wrapper">
-          <span className="p-input-icon-right">
-            <InputText
-              className="searchInput"
-              type="text"
-              placeholder="Search"
-              onBlur={deactivateSearch}
-            />
-            <i className="pi pi-search"></i>
-          </span>
-        </div>
-      </div>
 
       <div className="topbar-profile">
         <StyleClass
@@ -151,8 +137,12 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
           >
             <img alt="avatar" src="/layout/images/avatar.png" />
             <span className="profile-details">
-              <span className="profile-name">Gene Russell</span>
-              <span className="profile-job">Developer</span>
+              <span className="profile-name">
+                {(session?.user as ExtendedUser)?.usuario?.nombre}
+              </span>
+              <span className="profile-job">
+                {(session?.user as ExtendedUser)?.usuario.rol.toLowerCase()}
+              </span>
             </span>
             <i className="pi pi-angle-down"></i>
           </button>
@@ -161,17 +151,13 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
           <li>
             <a className="p-ripple flex p-2 border-round align-items-center hover:surface-hover transition-colors transition-duration-150 cursor-pointer">
               <i className="pi pi-user mr-3"></i>
-              <span>Profile</span>
+              <span>Perfil</span>
               <Ripple />
             </a>
-            <a className="p-ripple flex p-2 border-round align-items-center hover:surface-hover transition-colors transition-duration-150 cursor-pointer">
-              <i className="pi pi-inbox mr-3"></i>
-              <span>Inbox</span>
-              <Ripple />
-            </a>
+
             <a className="p-ripple flex p-2 border-round align-items-center hover:surface-hover transition-colors transition-duration-150 cursor-pointer">
               <i className="pi pi-cog mr-3"></i>
-              <span>Settings</span>
+              <span>Configuración</span>
               <Ripple />
             </a>
             <a
@@ -179,7 +165,7 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
               onClick={handleSignOut}
             >
               <i className="pi pi-power-off mr-3"></i>
-              <span>Sign Out</span>
+              <span>Cerrar sesión</span>
               <Ripple />
             </a>
           </li>
