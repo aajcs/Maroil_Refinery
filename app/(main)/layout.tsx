@@ -9,6 +9,7 @@ export const metadata: Metadata = {
   title: "Maroil Trading",
   description: "Maroil Trading Refenery.",
   robots: { index: false, follow: false },
+  viewport: { initialScale: 1, width: "device-width" },
   openGraph: {
     type: "website",
     title: "Maroil Trading",
@@ -22,10 +23,10 @@ export const metadata: Metadata = {
   },
 };
 
-export const viewport = {
-  width: "device-width",
-  initialScale: 1,
-};
+// export const viewport = {
+//   width: "device-width",
+//   initialScale: 1,
+// };
 
 export default function MainLayout({ children }: MainLayoutProps) {
   return <Layout>{children}</Layout>;
