@@ -11,8 +11,6 @@ import { useContext } from "react";
 import { loginSchema } from "@/libs/zod";
 import { LayoutContext } from "@/layout/context/layoutcontext";
 import { Page } from "@/types";
-import { loginUser } from "@/app/api/userService";
-import { AxiosError } from "axios";
 import { signIn } from "next-auth/react";
 
 type FormData = z.infer<typeof loginSchema>;
@@ -32,7 +30,7 @@ const LoginForm: Page = () => {
   });
 
   const onSubmit = async (data: FormData) => {
-    console.log(data);
+    // console.log(data);
     const resAuth = await signIn("credentials", {
       redirect: false,
       correo: data.correo,

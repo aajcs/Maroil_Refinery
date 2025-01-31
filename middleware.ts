@@ -47,27 +47,27 @@ export async function middleware(req: NextRequest) {
     throw new Error("AUTH_SECRET environment variable is not defined");
   }
 
-  // Agregar registros de depuración
-  console.log("AUTH_SECRET:", process.env.AUTH_SECRET);
-  //   console.log("Request Headers:", req.headers);
+  // // Agregar registros de depuración
+  // console.log("AUTH_SECRET:", process.env.AUTH_SECRET);
+  // //   console.log("Request Headers:", req.headers);
 
   // Verificar la cookie de sesión
   const cookies = req.headers.get("cookie");
-  console.log("Cookies:", cookies);
+  // console.log("Cookies:", cookies);
 
   const token = await getToken({
     req,
     secret: process.env.AUTH_SECRET,
   });
 
-  // Más registros de depuración
-  console.log("Token:", token);
+  // // Más registros de depuración
+  // console.log("Token:", token);
   // console.log("Request:", req);
 
   const { nextUrl } = req;
   const isLoggedIn = !!token;
 
-  console.log({ isLoggedIn, path: nextUrl.pathname });
+  // console.log({ isLoggedIn, path: nextUrl.pathname });
 
   // Permitir todas las rutas de API de autenticación
   if (nextUrl.pathname.startsWith(apiAuthPrefix)) {

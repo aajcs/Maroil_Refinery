@@ -13,11 +13,11 @@ const handler = NextAuth({
       },
       authorize: async (credentials) => {
         try {
-          console.log("credentials", credentials);
+          // console.log("credentials", credentials);
           let user = null;
 
           user = await loginUser(credentials);
-          console.log(user);
+          // console.log(user);
 
           if (!user) {
             // No user found, so this is their first attempt to login

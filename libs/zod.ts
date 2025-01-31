@@ -14,3 +14,12 @@ export const registerSchema = object({
     .min(6, "La contraseña debe tener al menos 6 caracteres")
     .nonempty("La contraseña es obligatoria"),
 });
+
+export const profileSchema = object({
+  nombre: string().min(1, "El nombre es obligatorio"),
+  correo: string().email("Correo electrónico inválido"),
+  password: string().min(6, "La contraseña debe tener al menos 6 caracteres"),
+  rol: string().min(1, "Debes seleccionar un rol"),
+  estado: string().min(1, "Debes seleccionar un estado"),
+  acceso: string().min(1, "Debes seleccionar un acceso"),
+});

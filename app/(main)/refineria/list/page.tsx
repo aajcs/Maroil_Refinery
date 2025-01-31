@@ -1,8 +1,8 @@
-import UsuarioList from "@/components/usuarioComponents/UsuarioList";
 import { Page } from "../../../../types/layout";
+import RefineriaList from "@/components/refineriaComponents/RefineriaList";
 
 const Login: Page = () => {
-  return <UsuarioList />;
+  return <RefineriaList />;
 };
 
 export default Login;
