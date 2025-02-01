@@ -8,12 +8,12 @@ const AppMenu = () => {
       icon: "pi pi-home",
       items: [
         {
-          label: "SaaS",
+          label: "Operaciones",
           icon: "pi pi-fw pi-home",
           to: "/",
         },
         {
-          label: "Sales",
+          label: "Finanzas",
           icon: "pi pi-fw pi-image",
           to: "/dashboard-sales",
         },

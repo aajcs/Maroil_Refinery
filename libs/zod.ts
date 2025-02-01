@@ -1,4 +1,4 @@
-import { object, string } from "zod";
+import { boolean, object, string } from "zod";
 
 export const loginSchema = object({
   correo: string().email("Correo inválido"),
@@ -22,4 +22,16 @@ export const profileSchema = object({
   rol: string().min(1, "Debes seleccionar un rol"),
   estado: string().min(1, "Debes seleccionar un estado"),
   acceso: string().min(1, "Debes seleccionar un acceso"),
+});
+
+export const refineriaSchema = object({
+  nombre: string().min(1, "El nombre es obligatorio"),
+  estado: string().min(1, "Debes seleccionar un estado"),
+  eliminado: boolean().default(false),
+  ubicacion: string().min(1, "La ubicación es obligatoria"),
+  nit: string().min(1, "El NIT es obligatorio"),
+  img: string().url("La URL de la imagen es inválida"),
+  createdAt: string().optional(),
+  updatedAt: string().optional(),
+  id: string().optional(),
 });

@@ -10,7 +10,7 @@ import { deleteUser } from "@/app/api/userService";
 import { Toast } from "primereact/toast";
 import { Dialog } from "primereact/dialog";
 import RefineriaForm from "./RefineriaForm";
-import { getRefinerias } from "@/app/api/refineriaService";
+import { deleteRefineria, getRefinerias } from "@/app/api/refineriaService";
 
 function RefineriaList() {
   interface Refineria {
@@ -61,7 +61,7 @@ function RefineriaList() {
   const deleteProduct = async () => {
     let _refinerias = refinerias.filter((val) => val.id !== refineria?.id);
     if (refineria?.id) {
-      const refineriaElminado = await deleteUser(refineria.id);
+      const refineriaElminado = await deleteRefineria(refineria.id);
       console.log(refineriaElminado);
       setRefinerias(_refinerias);
       setDeleteProductDialog(false);
@@ -102,13 +102,13 @@ function RefineriaList() {
   const renderHeader = () => {
     return (
       <div className="flex flex-wrap gap-2 align-items-center justify-content-between">
-        <div>
+        {/* <div>
           {refinerias.length > 0 ? (
             <pre>{JSON.stringify(refinerias, null, 2)}</pre>
           ) : (
             <p>No hay refinerias disponibles</p>
           )}
-        </div>
+        </div> */}
         <span className="p-input-icon-left w-full sm:w-20rem flex-order-1 sm:flex-order-0">
           <i className="pi pi-search"></i>
           <InputText
@@ -181,6 +181,13 @@ function RefineriaList() {
           headerStyle={{ minWidth: "10rem" }}
         ></Column>
         <Column
+          field="img"
+          header="Imagen"
+          sortable
+          headerClassName="white-space-nowrap"
+          style={{ width: "25%" }}
+        ></Column>
+        <Column
           field="nombre"
           header="Nombre"
           sortable
@@ -188,26 +195,20 @@ function RefineriaList() {
           style={{ width: "25%" }}
         ></Column>
         <Column
-          field="correo"
-          header="Correo"
+          field="ubicacion"
+          header="Ubicación"
           sortable
           headerClassName="white-space-nowrap"
           style={{ width: "25%" }}
         ></Column>
         <Column
-          field="rol"
-          header="Rol"
+          field="nit"
+          header="Identificación"
           sortable
           headerClassName="white-space-nowrap"
           style={{ width: "25%" }}
         ></Column>
-        <Column
-          field="acceso"
-          header="Acceso"
-          sortable
-          headerClassName="white-space-nowrap"
-          style={{ width: "25%" }}
-        ></Column>
+
         <Column
           field="estado"
           header="Estado"

@@ -1,17 +1,17 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
-import { Dropdown } from "primereact/dropdown";
 import { classNames } from "primereact/utils";
-import { profileSchema } from "@/libs/zod";
-import { createUser, updateUser } from "@/app/api/userService";
+import { refineriaSchema } from "@/libs/zod";
+import { createRefineria, updateRefineria } from "@/app/api/refineriaService";
 import { Toast } from "primereact/toast";
+import { Dropdown } from "primereact/dropdown";
 
-type FormData = z.infer<typeof profileSchema>;
+type FormData = z.infer<typeof refineriaSchema>;
 
 interface RefineriaFormProps {
   refineria: any;
@@ -19,13 +19,13 @@ interface RefineriaFormProps {
   refinerias: any[];
   setRefinerias: (refinerias: any[]) => void;
 }
+
 function RefineriaForm({
   refineria,
   hideRefineriaFormDialog,
   refinerias,
   setRefinerias,
 }: RefineriaFormProps) {
-  console.log(refineria);
   const toast = useRef<Toast | null>(null);
   const {
     register,
@@ -34,18 +34,23 @@ function RefineriaForm({
     setValue,
     watch,
   } = useForm<FormData>({
-    resolver: zodResolver(profileSchema),
+    resolver: zodResolver(refineriaSchema),
   });
+
   useEffect(() => {
     if (refineria) {
       setValue("nombre", refineria.nombre);
-      setValue("correo", refineria.correo);
-      setValue("password", refineria.password);
-      setValue("rol", refineria.rol);
-      setValue("acceso", refineria.acceso);
       setValue("estado", refineria.estado);
+      setValue("eliminado", refineria.eliminado);
+      setValue("ubicacion", refineria.ubicacion);
+      setValue("nit", refineria.nit);
+      setValue("img", refineria.img);
+      setValue("createdAt", refineria.createdAt);
+      setValue("updatedAt", refineria.updatedAt);
+      setValue("id", refineria.id);
     }
   }, [refineria, setValue]);
+
   const findIndexById = (id: string) => {
     let index = -1;
     for (let i = 0; i < refinerias.length; i++) {
@@ -54,24 +59,24 @@ function RefineriaForm({
         break;
       }
     }
-
     return index;
   };
+
   const onSubmit = async (data: FormData) => {
     try {
       if (refineria) {
-        // Actualizar el refineria en el backend
-        const refineriaActualizado = await updateUser(refineria.id, data);
+        // Actualizar la refinería en el backend
+        const refineriaActualizada = await updateRefineria(refineria.id, data);
 
-        // Encontrar el índice del refineria actualizado en el arreglo local
+        // Encontrar el índice de la refinería actualizada en el arreglo local
         const index = findIndexById(refineria.id);
 
         if (index !== -1) {
-          // Crear una copia del arreglo de refinerias
+          // Crear una copia del arreglo de refinerías
           const _refinerias = [...refinerias];
 
-          // Actualizar el refineria en la copia del arreglo
-          _refinerias[index] = refineriaActualizado;
+          // Actualizar la refinería en la copia del arreglo
+          _refinerias[index] = refineriaActualizada;
 
           // Actualizar el estado local con el nuevo arreglo
           setRefinerias(_refinerias);
@@ -80,33 +85,33 @@ function RefineriaForm({
           toast.current?.show({
             severity: "success",
             summary: "Éxito",
-            detail: "Refineria Actualizado",
+            detail: "Refinería Actualizada",
             life: 3000,
           });
 
           // Cerrar el diálogo del formulario
           hideRefineriaFormDialog();
         } else {
-          // Mostrar notificación de error si no se encuentra el refineria
+          // Mostrar notificación de error si no se encuentra la refinería
           toast.current?.show({
             severity: "error",
             summary: "Error",
-            detail: "No se pudo encontrar el refineria",
+            detail: "No se pudo encontrar la refinería",
             life: 3000,
           });
         }
       } else {
-        // Crear un nuevo refineria
-        const refineriaCreado = await createUser(data);
+        // Crear una nueva refinería
+        const refineriaCreada = await createRefineria(data);
 
-        // Actualizar el estado local con el nuevo refineria
-        // setRefinerias([...refinerias, refineriaCreado]);
+        // Actualizar el estado local con la nueva refinería
+        // setRefinerias([...refinerias, refineriaCreada]);
 
         // Mostrar notificación de éxito
         toast.current?.show({
           severity: "success",
           summary: "Éxito",
-          detail: "Refineria Creado",
+          detail: "Refinería Creada",
           life: 3000,
         });
 
@@ -124,18 +129,15 @@ function RefineriaForm({
       console.error("Error al procesar la solicitud:", error);
     }
   };
+
   const estatusValues = ["true", "false"];
-
-  const rolValues = ["superAdmin", "admin", "operador", "user", "lectura"];
-
-  const accesoValues = ["completo", "limitado", "ninguno"];
 
   return (
     <div className="card">
       <Toast ref={toast} />
       {!refineria && (
         <span className="text-900 text-xl font-bold mb-4 block">
-          Crear Refineria
+          Crear Refinería
         </span>
       )}
       <div className="grid">
@@ -168,79 +170,6 @@ function RefineriaForm({
               </div>
 
               <div className="field mb-4 col-12 md:col-6">
-                <label htmlFor="correo" className="font-medium text-900">
-                  Correo Electrónico
-                </label>
-                <InputText
-                  id="correo"
-                  type="text"
-                  className={classNames("w-full", {
-                    "p-invalid": errors.correo,
-                  })}
-                  {...register("correo")}
-                />
-                {errors.correo && (
-                  <small className="p-error">{errors.correo.message}</small>
-                )}
-              </div>
-
-              <div className="field mb-4 col-12 md:col-6">
-                <label htmlFor="password" className="font-medium text-900">
-                  Contraseña
-                </label>
-                <InputText
-                  id="password"
-                  type="password"
-                  className={classNames("w-full", {
-                    "p-invalid": errors.password,
-                  })}
-                  {...register("password")}
-                />
-                {errors.password && (
-                  <small className="p-error">{errors.password.message}</small>
-                )}
-              </div>
-
-              <div className="field mb-4 col-12 md:col-6">
-                <label htmlFor="rol" className="font-medium text-900">
-                  Rol
-                </label>
-                <Dropdown
-                  id="rol"
-                  value={watch("rol")}
-                  onChange={(e) => setValue("rol", e.value)}
-                  options={rolValues}
-                  //   optionLabel="name"
-                  placeholder="Seleccionar"
-                  className={classNames("w-full", {
-                    "p-invalid": errors.rol,
-                  })}
-                />
-                {errors.rol && (
-                  <small className="p-error">{errors.rol.message}</small>
-                )}
-              </div>
-              <div className="field mb-4 col-12 md:col-6">
-                <label htmlFor="acceso" className="font-medium text-900">
-                  acceso
-                </label>
-                <Dropdown
-                  id="acceso"
-                  value={watch("acceso")}
-                  onChange={(e) => setValue("acceso", e.value)}
-                  options={accesoValues}
-                  //   optionLabel="name"
-                  placeholder="Seleccionar"
-                  className={classNames("w-full", {
-                    "p-invalid": errors.acceso,
-                  })}
-                />
-                {errors.rol && (
-                  <small className="p-error">{errors.rol.message}</small>
-                )}
-              </div>
-
-              <div className="field mb-4 col-12 md:col-6">
                 <label htmlFor="estado" className="font-medium text-900">
                   Estado
                 </label>
@@ -249,7 +178,6 @@ function RefineriaForm({
                   value={watch("estado")}
                   onChange={(e) => setValue("estado", e.value)}
                   options={estatusValues}
-                  //   optionLabel="name"
                   placeholder="Seleccionar"
                   className={classNames("w-full", {
                     "p-invalid": errors.estado,
@@ -260,10 +188,80 @@ function RefineriaForm({
                 )}
               </div>
 
+              <div className="field mb-4 col-12 md:col-6">
+                <label htmlFor="eliminado" className="font-medium text-900">
+                  Eliminado
+                </label>
+                <Dropdown
+                  id="eliminado"
+                  value={watch("eliminado")}
+                  onChange={(e) => setValue("eliminado", e.value)}
+                  options={estatusValues}
+                  placeholder="Seleccionar"
+                  className={classNames("w-full", {
+                    "p-invalid": errors.eliminado,
+                  })}
+                />
+                {errors.eliminado && (
+                  <small className="p-error">{errors.eliminado.message}</small>
+                )}
+              </div>
+
+              <div className="field mb-4 col-12">
+                <label htmlFor="ubicacion" className="font-medium text-900">
+                  Ubicación
+                </label>
+                <InputText
+                  id="ubicacion"
+                  type="text"
+                  className={classNames("w-full", {
+                    "p-invalid": errors.ubicacion,
+                  })}
+                  {...register("ubicacion")}
+                />
+                {errors.ubicacion && (
+                  <small className="p-error">{errors.ubicacion.message}</small>
+                )}
+              </div>
+
+              <div className="field mb-4 col-12">
+                <label htmlFor="nit" className="font-medium text-900">
+                  NIT
+                </label>
+                <InputText
+                  id="nit"
+                  type="text"
+                  className={classNames("w-full", {
+                    "p-invalid": errors.nit,
+                  })}
+                  {...register("nit")}
+                />
+                {errors.nit && (
+                  <small className="p-error">{errors.nit.message}</small>
+                )}
+              </div>
+
+              <div className="field mb-4 col-12">
+                <label htmlFor="img" className="font-medium text-900">
+                  Imagen
+                </label>
+                <InputText
+                  id="img"
+                  type="text"
+                  className={classNames("w-full", {
+                    "p-invalid": errors.img,
+                  })}
+                  {...register("img")}
+                />
+                {errors.img && (
+                  <small className="p-error">{errors.img.message}</small>
+                )}
+              </div>
+
               <div className="col-12">
                 <Button
                   type="submit"
-                  label={refineria ? "Modificar Refineria" : "Crear Refineria"}
+                  label={refineria ? "Modificar Refinería" : "Crear Refinería"}
                   className="w-auto mt-3"
                 />
               </div>
