@@ -1,3 +1,4 @@
+"use client";
 import { Page } from "../../../../types/layout";
 import RefineriaList from "@/components/refineriaComponents/RefineriaList";
 

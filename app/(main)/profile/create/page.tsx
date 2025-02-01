@@ -1,3 +1,4 @@
+"use client";
 import { Page } from "../../../../types/layout";
 import UsuarioForm from "@/components/usuarioComponents/UsuarioForm";
 

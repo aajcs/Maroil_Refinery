@@ -1,3 +1,4 @@
+"use client";
 import UsuarioList from "@/components/usuarioComponents/UsuarioList";
 import { Page } from "../../../../types/layout";
 
