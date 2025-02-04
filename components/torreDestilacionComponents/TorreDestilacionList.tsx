@@ -154,17 +154,18 @@ function TorreDestilacionList() {
   const materialBodyTemplate = (rowData: TorreDestilacion) => {
     return (
       <div>
-        {rowData.material.map((material, index) => (
-          <span
-            key={index}
-            className={`customer-badge status-${material
-              .toLowerCase()
-              .replace(/[()]/g, "")
-              .replace(/\s+/g, "-")}`}
-          >
-            {material}
-          </span>
-        ))}
+        {Array.isArray(rowData.material) &&
+          rowData.material.map((material, index) => (
+            <span
+              key={index}
+              className={`customer-badge status-${material
+                .toLowerCase()
+                .replace(/[()]/g, "")
+                .replace(/\s+/g, "-")}`}
+            >
+              {material}
+            </span>
+          ))}
       </div>
     );
   };
