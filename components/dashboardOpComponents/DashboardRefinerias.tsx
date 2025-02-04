@@ -1,9 +1,16 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { getRefinerias } from "@/app/api/refineriaService";
+import { useRouter } from "next/navigation";
+import { useRefineriaStore } from "@/store/refineriaStore";
 
 function DashboardRefinerias() {
   const [refinerias, setRefinerias] = useState<any[]>([]);
+  // const setActiveRefineriaId = useRefineriaStore(
+  //   (state) => state.setActiveRefineriaId
+  // );
+  const { activeRefineria, setActiveRefineria } = useRefineriaStore();
+  const router = useRouter();
   console.log(refinerias);
 
   useEffect(() => {
@@ -23,12 +30,24 @@ function DashboardRefinerias() {
 
     fetchRefinerias();
   }, []);
-
+  const handleDivClick = (refineria: any) => {
+    setActiveRefineria(refineria);
+    router.push("/refineria");
+  };
   return (
     <div className="grid">
+      <h1 className="text-4xl font-bold text-blue-500">
+        {" "}
+        {activeRefineria?.nombre}
+      </h1>
+
       {Array.isArray(refinerias) && refinerias.length > 0 ? (
         refinerias.map((refineria) => (
-          <div className="col-12 lg:col-6 xl:col-3">
+          <div
+            className="col-12 lg:col-6 xl:col-3 clickable"
+            key={refineria.id}
+            onClick={() => handleDivClick(refineria)}
+          >
             <div className="card p-0 overflow-hidden flex flex-column">
               <div className="flex align-items-center p-3">
                 <img

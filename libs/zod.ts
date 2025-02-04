@@ -1,4 +1,4 @@
-import { boolean, object, string } from "zod";
+import { array, boolean, object, string } from "zod";
 
 export const loginSchema = object({
   correo: string().email("Correo inválido"),
@@ -34,4 +34,16 @@ export const refineriaSchema = object({
   createdAt: string().optional(),
   updatedAt: string().optional(),
   id: string().optional(),
+});
+
+export const torreDestilacionSchema = object({
+  id: string().optional(),
+  nombre: string().min(1, "El nombre es obligatorio"),
+  estado: string().min(1, "El estado es obligatorio"),
+  eliminado: boolean().default(false),
+  ubicacion: string().min(1, "La ubicación es obligatoria"),
+  material: array(string()).min(1, "El material es obligatorio"),
+  id_empresa: string().optional(),
+  createdAt: string().optional(),
+  updatedAt: string().optional(),
 });
