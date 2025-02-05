@@ -6,6 +6,7 @@ import ModeladoRefineriaTorre from "./ModeladoRefineriaTorre";
 import { useEffect, useState } from "react";
 import { getTanques } from "@/app/api/tanqueService";
 import { getTorresDestilacion } from "@/app/api/torreDestilacionService";
+import ModeladoRefineriaLinaCarga from "./ModeladoRefineriaLinaCarga";
 
 interface Tanque {
   id: string;
@@ -128,6 +129,9 @@ function ModeladoRefineriaDashboard() {
           </div>
         </div>
       )}
+      <div>
+        <ModeladoRefineriaLinaCarga />
+      </div>
     </>
   );
 }
