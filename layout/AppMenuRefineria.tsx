@@ -12,7 +12,7 @@ const AppMenuRefineria = () => {
         {
           label: "Operaciones",
           icon: "pi pi-fw pi-home",
-          to: "/",
+          to: "/refineria",
         },
         {
           label: "Finanzas",

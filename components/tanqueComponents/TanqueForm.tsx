@@ -27,6 +27,7 @@ const materiales = [
   "Fuel Oil 4 (MOG)",
   "Fuel Oil 6 (Fondo)",
   "Queroseno",
+  "Petroleo Crudo",
 ];
 const estatusValues = ["true", "false"];
 

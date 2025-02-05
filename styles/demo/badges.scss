@@ -96,6 +96,10 @@
     background: var(--red-200);
     color: var(--red-800);
   }
+  &.status-petroleo-crudo {
+    background: var(--purple-200);
+    color: var(--purple-800);
+  }
 }
 
 .order-badge {
