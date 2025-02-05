@@ -6,26 +6,22 @@ import { z } from "zod";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { classNames } from "primereact/utils";
-import { torreDestilacionSchema } from "@/libs/zod";
-import {
-  createTorreDestilacion,
-  updateTorreDestilacion,
-} from "@/app/api/torreDestilacionService";
+import { tanqueSchema } from "@/libs/zod";
+import { createTanque, updateTanque } from "@/app/api/tanqueService";
 import { Toast } from "primereact/toast";
 import { Dropdown } from "primereact/dropdown";
 import { useRefineriaStore } from "@/store/refineriaStore";
 import { Checkbox } from "primereact/checkbox";
 
-type FormData = z.infer<typeof torreDestilacionSchema>;
+type FormData = z.infer<typeof tanqueSchema>;
 
-interface TorreDestilacionFormProps {
-  torreDestilacion: any;
-  hideTorreDestilacionFormDialog: () => void;
-  torresDestilacion: any[];
-  setTorresDestilacion: (torresDestilacion: any[]) => void;
-  setTorreDestilacion: (torreDestilacion: any) => void;
+interface TanqueFormProps {
+  tanque: any;
+  hideTanqueFormDialog: () => void;
+  tanques: any[];
+  setTanques: (tanques: any[]) => void;
+  setTanque: (tanque: any) => void;
 }
-
 const materiales = [
   "Nafta",
   "Fuel Oil 4 (MOG)",
@@ -34,15 +30,16 @@ const materiales = [
 ];
 const estatusValues = ["true", "false"];
 
-function TorreDestilacionForm({
-  torreDestilacion,
-  hideTorreDestilacionFormDialog,
-  torresDestilacion,
-  setTorresDestilacion,
-}: TorreDestilacionFormProps) {
+function TanqueForm({
+  tanque,
+  hideTanqueFormDialog,
+  tanques,
+  setTanques,
+}: TanqueFormProps) {
   const { activeRefineria } = useRefineriaStore();
   const toast = useRef<Toast | null>(null);
   const [checkboxValue, setCheckboxValue] = useState<string[]>([]);
+  console.log(tanque);
 
   const {
     register,
@@ -51,44 +48,44 @@ function TorreDestilacionForm({
     setValue,
     watch,
   } = useForm<FormData>({
-    resolver: zodResolver(torreDestilacionSchema),
+    resolver: zodResolver(tanqueSchema),
   });
-
+  // console.log("error del formulario", errors);
   useEffect(() => {
-    if (torreDestilacion) {
-      Object.keys(torreDestilacion).forEach((key) =>
-        setValue(key as keyof FormData, torreDestilacion[key])
+    if (tanque) {
+      Object.keys(tanque).forEach((key) =>
+        setValue(key as keyof FormData, tanque[key])
       );
-      if (Array.isArray(torreDestilacion.material)) {
-        setCheckboxValue(torreDestilacion.material);
+      if (Array.isArray(tanque.material)) {
+        setCheckboxValue(tanque.material);
       }
     }
-  }, [torreDestilacion, setValue]);
+  }, [tanque, setValue]);
 
   const onSubmit = async (data: FormData) => {
     try {
-      if (torreDestilacion) {
-        const updatedTorre = await updateTorreDestilacion(
-          torreDestilacion.id,
-          data
-        );
-        const updatedTorres = torresDestilacion.map((t) =>
+      if (tanque) {
+        const updatedTorre = await updateTanque(tanque.id, data);
+        console.log(updatedTorre);
+        const updatedTanques = tanques.map((t) =>
           t.id === updatedTorre.id ? updatedTorre : t
         );
-        setTorresDestilacion(updatedTorres);
-        showToast("success", "Éxito", "Torre de destilación actualizada");
+        setTanques(updatedTanques);
+        showToast("success", "Éxito", "Tanque actualizado");
       } else {
         if (!activeRefineria)
           throw new Error("No se ha seleccionado una refinería");
-        const newTorre = await createTorreDestilacion({
+        const newTorre = await createTanque({
           ...data,
           id_refineria: activeRefineria.id,
         });
-        setTorresDestilacion([...torresDestilacion, newTorre.torre]);
-        showToast("success", "Éxito", "Torre de destilación creada");
+        console.log(newTorre);
+        setTanques([...tanques, newTorre.tanque]);
+        showToast("success", "Éxito", "Tanque creado");
       }
-      hideTorreDestilacionFormDialog();
+      hideTanqueFormDialog();
     } catch (error) {
+      console.error("Error al crear/modificar tanque:", error);
       showToast(
         "error",
         "Error",
@@ -112,7 +109,7 @@ function TorreDestilacionForm({
     setCheckboxValue(selectedValues);
     setValue("material", selectedValues);
   };
-  console.log(errors);
+
   return (
     <div>
       <Toast ref={toast} />
@@ -187,15 +184,43 @@ function TorreDestilacionForm({
               <small className="p-error">{errors.material.message}</small>
             )}
           </div>
+          <div className="field mb-4 col-12">
+            <label htmlFor="capacidad" className="font-medium text-900">
+              Capacidad
+            </label>
+            <InputText
+              id="capacidad"
+              type="number"
+              className={classNames("w-full", {
+                "p-invalid": errors.capacidad,
+              })}
+              {...register("capacidad", { valueAsNumber: true })}
+            />
+            {errors.capacidad && (
+              <small className="p-error">{errors.capacidad.message}</small>
+            )}
+          </div>
 
+          <div className="field mb-4 col-12">
+            <label htmlFor="almacenamiento" className="font-medium text-900">
+              Almacenamiento
+            </label>
+            <InputText
+              id="almacenamiento"
+              type="number"
+              className={classNames("w-full", {
+                "p-invalid": errors.almacenamiento,
+              })}
+              {...register("almacenamiento", { valueAsNumber: true })}
+            />
+            {errors.almacenamiento && (
+              <small className="p-error">{errors.almacenamiento.message}</small>
+            )}
+          </div>
           <div className="col-12">
             <Button
               type="submit"
-              label={
-                torreDestilacion
-                  ? "Modificar torre de destilación"
-                  : "Crear torre de destilación"
-              }
+              label={tanque ? "Modificar tanque" : "Crear tanque"}
               className="w-auto mt-3"
             />
           </div>
@@ -205,4 +230,4 @@ function TorreDestilacionForm({
   );
 }
 
-export default TorreDestilacionForm;
+export default TanqueForm;

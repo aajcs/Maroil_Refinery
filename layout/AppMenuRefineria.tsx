@@ -46,6 +46,11 @@ const AppMenuRefineria = () => {
           icon: "pi pi-fw pi-plus",
           to: "/refineria/linea-despacho",
         },
+        {
+          label: "Contactos",
+          icon: "pi pi-fw pi-plus",
+          to: "/refineria/contacto",
+        },
       ],
     },
     {

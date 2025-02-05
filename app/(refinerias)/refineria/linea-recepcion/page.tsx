@@ -1,10 +1,12 @@
 "use client";
 
+import LineaRecepcionList from "@/components/lineaRecepcionComponents/LineaRecepcionList";
+
 function LineaRecepcion() {
   return (
-    <h1>
-      <span>LineaRecepcion</span>
-    </h1>
+    <>
+      <LineaRecepcionList />
+    </>
   );
 }
 

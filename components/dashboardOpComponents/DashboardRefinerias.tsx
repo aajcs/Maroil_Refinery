@@ -36,11 +36,6 @@ function DashboardRefinerias() {
   };
   return (
     <div className="grid">
-      <h1 className="text-4xl font-bold text-blue-500">
-        {" "}
-        {activeRefineria?.nombre}
-      </h1>
-
       {Array.isArray(refinerias) && refinerias.length > 0 ? (
         refinerias.map((refineria) => (
           <div

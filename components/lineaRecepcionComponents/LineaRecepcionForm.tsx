@@ -6,43 +6,37 @@ import { z } from "zod";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { classNames } from "primereact/utils";
-import { torreDestilacionSchema } from "@/libs/zod";
+import { lineaRecepcionSchema } from "@/libs/zod";
 import {
-  createTorreDestilacion,
-  updateTorreDestilacion,
-} from "@/app/api/torreDestilacionService";
+  createLineaRecepcion,
+  updateLineaRecepcion,
+} from "@/app/api/lineaRecepcionService";
 import { Toast } from "primereact/toast";
 import { Dropdown } from "primereact/dropdown";
 import { useRefineriaStore } from "@/store/refineriaStore";
 import { Checkbox } from "primereact/checkbox";
 
-type FormData = z.infer<typeof torreDestilacionSchema>;
+type FormData = z.infer<typeof lineaRecepcionSchema>;
 
-interface TorreDestilacionFormProps {
-  torreDestilacion: any;
-  hideTorreDestilacionFormDialog: () => void;
-  torresDestilacion: any[];
-  setTorresDestilacion: (torresDestilacion: any[]) => void;
-  setTorreDestilacion: (torreDestilacion: any) => void;
+interface LineaRecepcionFormProps {
+  lineaRecepcion: any;
+  hideLineaRecepcionFormDialog: () => void;
+  lineaRecepcions: any[];
+  setLineaRecepcions: (lineaRecepcions: any[]) => void;
+  setLineaRecepcion: (lineaRecepcion: any) => void;
 }
 
-const materiales = [
-  "Nafta",
-  "Fuel Oil 4 (MOG)",
-  "Fuel Oil 6 (Fondo)",
-  "Queroseno",
-];
 const estatusValues = ["true", "false"];
 
-function TorreDestilacionForm({
-  torreDestilacion,
-  hideTorreDestilacionFormDialog,
-  torresDestilacion,
-  setTorresDestilacion,
-}: TorreDestilacionFormProps) {
+function LineaRecepcionForm({
+  lineaRecepcion,
+  hideLineaRecepcionFormDialog,
+  lineaRecepcions,
+  setLineaRecepcions,
+}: LineaRecepcionFormProps) {
   const { activeRefineria } = useRefineriaStore();
   const toast = useRef<Toast | null>(null);
-  const [checkboxValue, setCheckboxValue] = useState<string[]>([]);
+  console.log(lineaRecepcion);
 
   const {
     register,
@@ -51,44 +45,46 @@ function TorreDestilacionForm({
     setValue,
     watch,
   } = useForm<FormData>({
-    resolver: zodResolver(torreDestilacionSchema),
+    resolver: zodResolver(lineaRecepcionSchema),
   });
-
+  // console.log("error del formulario", errors);
   useEffect(() => {
-    if (torreDestilacion) {
-      Object.keys(torreDestilacion).forEach((key) =>
-        setValue(key as keyof FormData, torreDestilacion[key])
+    if (lineaRecepcion) {
+      Object.keys(lineaRecepcion).forEach((key) =>
+        setValue(key as keyof FormData, lineaRecepcion[key])
       );
-      if (Array.isArray(torreDestilacion.material)) {
-        setCheckboxValue(torreDestilacion.material);
+      if (Array.isArray(lineaRecepcion.material)) {
       }
     }
-  }, [torreDestilacion, setValue]);
+  }, [lineaRecepcion, setValue]);
 
   const onSubmit = async (data: FormData) => {
     try {
-      if (torreDestilacion) {
-        const updatedTorre = await updateTorreDestilacion(
-          torreDestilacion.id,
+      if (lineaRecepcion) {
+        const updatedTorre = await updateLineaRecepcion(
+          lineaRecepcion.id,
           data
         );
-        const updatedTorres = torresDestilacion.map((t) =>
+        console.log(updatedTorre);
+        const updatedLineaRecepcions = lineaRecepcions.map((t) =>
           t.id === updatedTorre.id ? updatedTorre : t
         );
-        setTorresDestilacion(updatedTorres);
-        showToast("success", "Éxito", "Torre de destilación actualizada");
+        setLineaRecepcions(updatedLineaRecepcions);
+        showToast("success", "Éxito", "LineaRecepcion actualizado");
       } else {
         if (!activeRefineria)
           throw new Error("No se ha seleccionado una refinería");
-        const newTorre = await createTorreDestilacion({
+        const newTorre = await createLineaRecepcion({
           ...data,
           id_refineria: activeRefineria.id,
         });
-        setTorresDestilacion([...torresDestilacion, newTorre.torre]);
-        showToast("success", "Éxito", "Torre de destilación creada");
+        console.log(newTorre);
+        setLineaRecepcions([...lineaRecepcions, newTorre.linea_carga]);
+        showToast("success", "Éxito", "LineaRecepcion creado");
       }
-      hideTorreDestilacionFormDialog();
+      hideLineaRecepcionFormDialog();
     } catch (error) {
+      console.error("Error al crear/modificar lineaRecepcion:", error);
       showToast(
         "error",
         "Error",
@@ -105,14 +101,6 @@ function TorreDestilacionForm({
     toast.current?.show({ severity, summary, detail, life: 3000 });
   };
 
-  const onCheckboxChange = (e: any) => {
-    const selectedValues = e.checked
-      ? [...checkboxValue, e.value]
-      : checkboxValue.filter((val) => val !== e.value);
-    setCheckboxValue(selectedValues);
-    setValue("material", selectedValues);
-  };
-  console.log(errors);
   return (
     <div>
       <Toast ref={toast} />
@@ -167,34 +155,13 @@ function TorreDestilacionForm({
             )}
           </div>
 
-          <div className="field mb-4 col-12">
-            <label htmlFor="material" className="font-medium text-900">
-              Material
-            </label>
-            {materiales.map((material) => (
-              <div key={material} className="field-checkbox">
-                <Checkbox
-                  inputId={material}
-                  name="material"
-                  value={material}
-                  checked={checkboxValue.includes(material)}
-                  onChange={onCheckboxChange}
-                />
-                <label htmlFor={material}>{material}</label>
-              </div>
-            ))}
-            {errors.material && (
-              <small className="p-error">{errors.material.message}</small>
-            )}
-          </div>
-
           <div className="col-12">
             <Button
               type="submit"
               label={
-                torreDestilacion
-                  ? "Modificar torre de destilación"
-                  : "Crear torre de destilación"
+                lineaRecepcion
+                  ? "Modificar lineaRecepcion"
+                  : "Crear lineaRecepcion"
               }
               className="w-auto mt-3"
             />
@@ -205,4 +172,4 @@ function TorreDestilacionForm({
   );
 }
 
-export default TorreDestilacionForm;
+export default LineaRecepcionForm;
