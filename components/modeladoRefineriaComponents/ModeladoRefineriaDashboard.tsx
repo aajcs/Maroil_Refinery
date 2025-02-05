@@ -1,194 +1,133 @@
 "use client";
+
+import { useRefineriaStore } from "@/store/refineriaStore";
+import ModeladoRefineriaTanque from "./ModeladoRefineriaTanque";
+import ModeladoRefineriaTorre from "./ModeladoRefineriaTorre";
 import { useEffect, useState } from "react";
+import { getTanques } from "@/app/api/tanqueService";
+import { getTorresDestilacion } from "@/app/api/torreDestilacionService";
+
+interface Tanque {
+  id: string;
+  nombre: string;
+  estado: boolean;
+  eliminado: boolean;
+  ubicacion: string;
+  material: string[];
+  almacenamiento: number;
+  capacidad: number;
+  createdAt: string;
+  updatedAt: string;
+  id_refineria: {
+    _id: string | undefined;
+    id: string;
+  };
+}
+
+interface TorreDestilacion {
+  id: string;
+  nombre: string;
+  estado: boolean;
+  eliminado: boolean;
+  ubicacion: string;
+  material: string[];
+  createdAt: string;
+  updatedAt: string;
+  id_refineria: {
+    _id: string | undefined;
+    nombre: string;
+  };
+}
 
 function ModeladoRefineriaDashboard() {
-  const [apiData, setApiData] = useState({ tankLevel: 50 }); // Nivel inicial
+  const { activeRefineria } = useRefineriaStore();
+  const [tanques, setTanques] = useState<Tanque[]>([]);
+  const [torresDestilacion, setTorresDestilacion] = useState<
+    TorreDestilacion[]
+  >([]);
+  const [loading, setLoading] = useState(true);
 
-  // Simulación de la API (puedes reemplazar con tu llamada real)
+  // Obtener tanques y torres de destilación
   useEffect(() => {
-    const fetchData = () => {
-      setTimeout(() => {
-        setApiData({ tankLevel: Math.floor(Math.random() * 100) });
-      }, 2000);
+    const fetchData = async () => {
+      if (activeRefineria?.id) {
+        await fetchTanques();
+        await fetchTorresDestilacion();
+        setLoading(false);
+      }
     };
 
     fetchData();
-    const interval = setInterval(fetchData, 5000);
-    return () => clearInterval(interval);
-  }, []);
+  }, [activeRefineria]);
 
-  // Definiciones de posiciones:
-  const bottomY = 250; // parte inferior del tanque
-  const tankHeight = 150; // altura conceptual (de y = 100 a y = 250)
-  // Calcular la altura del relleno según el nivel (en px)
-  const fillHeight = (apiData.tankLevel / 100) * tankHeight;
-  // La coordenada Y del nivel de líquido
-  const waterLevelY = bottomY - fillHeight;
+  // Obtener tanques de la refinería activa
+  const fetchTanques = async () => {
+    try {
+      const tanquesDB = await getTanques();
+      if (tanquesDB && Array.isArray(tanquesDB.tanques)) {
+        const filteredTanques = tanquesDB.tanques.filter(
+          (tanque: Tanque) => tanque.id_refineria._id === activeRefineria?.id
+        );
+        setTanques(filteredTanques);
+      } else {
+        console.error("La estructura de tanquesDB no es la esperada");
+      }
+    } catch (error) {
+      console.error("Error al obtener los tanques:", error);
+    }
+  };
 
-  // Definir el path del área de relleno:
-  // Se inicia en (50,250), sigue el arco elíptico inferior hasta (250,250)
-  // y luego sube hasta el nivel de líquido (waterLevelY) para cerrar la figura.
-  const fillPath = `M 50,250 
-  Q 150,500 250,250 
-  L 250,${waterLevelY} 
-  Q 150,${waterLevelY + 50} 50,${waterLevelY} 
-  Z`;
+  // Obtener torres de destilación de la refinería activa
+  const fetchTorresDestilacion = async () => {
+    try {
+      const torresDestilacionDB = await getTorresDestilacion();
+      if (torresDestilacionDB && Array.isArray(torresDestilacionDB.torres)) {
+        const filteredTorresDestilacion = torresDestilacionDB.torres.filter(
+          (torre: TorreDestilacion) =>
+            torre.id_refineria._id === activeRefineria?.id
+        );
+        setTorresDestilacion(filteredTorresDestilacion);
+      } else {
+        console.error("La estructura de torresDestilacionDB no es la esperada");
+      }
+    } catch (error) {
+      console.error("Error al obtener las torres de destilación:", error);
+    }
+  };
 
   return (
     <>
-      <svg
-        width="400"
-        height="400"
-        viewBox="0 0 400 400"
-        style={{ border: "1px solid #ccc" }}
-      >
-        {/* ----------- GRADIENTE Y CLIP-PATH PARA EL TANQUE ----------- */}
-        <defs>
-          {/* Gradiente para el líquido */}
-          <linearGradient id="tankGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#4F8CF3" />
-            <stop offset="100%" stopColor="#1D53A0" />
-          </linearGradient>
-
-          {/* ClipPath con la forma del tanque */}
-          <clipPath id="tankClip">
-            <path
-              d="M 50,100 
-                 A 100,40 0 0 1 250,100
-                 L 250,250
-                 A 100,40 0 0 1 50,250
-                 Z"
-            />
-          </clipPath>
-        </defs>
-        {/* ----------- RELLENO DINÁMICO CON CURVA INFERIOR ----------- */}
-        <path
-          d={fillPath}
-          fill="url(#tankGradient)"
-          clipPath="url(#tankClip)"
-          className="fill-animate"
-        />
-
-        {/* ----------- CUERPO DEL TANQUE ----------- */}
-        {/* Elipse superior */}
-        <ellipse
-          cx="150"
-          cy="100"
-          rx="100"
-          ry="40"
-          fill="#ccc"
-          stroke="#888"
-          strokeWidth="2"
-        />
-        {/* Elipse inferior */}
-        <ellipse
-          cx="150"
-          cy="250"
-          rx="100"
-          ry="40"
-          fill="rgba(204, 204, 204, 0.5)"
-          stroke="#888"
-          strokeWidth="2"
-        />
-        {/* Contorno lateral */}
-        <path
-          d="M 50,100 
-             L 50,250
-             M 250,100
-             L 250,250"
-          stroke="#999"
-          strokeWidth="2"
-        />
-        {/* Líneas horizontales simulando costillas */}
-        {Array.from({ length: 8 }).map((_, i) => {
-          const yPos = 110 + i * ((240 - 110) / 7);
-          return (
-            <path
-              key={i}
-              d={`
-                M 50,${yPos} 
-                A 100,40 0 0 0 250,${yPos}
-              `}
-              fill="none"
-              stroke="#bbb"
-              strokeWidth="1"
-            />
-          );
-        })}
-        {/* ----------- PLATAFORMA / PASARELA ----------- */}
-        <rect
-          x="230"
-          y="85"
-          width="40"
-          height="10"
-          fill="#ccc"
-          stroke="#666"
-          strokeWidth="1"
-        />
-        <line
-          x1="230"
-          y1="85"
-          x2="270"
-          y2="85"
-          stroke="#f2a13e"
-          strokeWidth="2"
-        />
-        <line
-          x1="230"
-          y1="85"
-          x2="230"
-          y2="95"
-          stroke="#f2a13e"
-          strokeWidth="2"
-        />
-        <line
-          x1="270"
-          y1="85"
-          x2="270"
-          y2="95"
-          stroke="#f2a13e"
-          strokeWidth="2"
-        />
-        {/* ----------- ESCALERA LATERAL ----------- */}
-        <path
-          d="M 270,95 L 270,250
-             M 260,95 L 260,250
-            "
-          stroke="#f2a13e"
-          strokeWidth="3"
-        />
-        {Array.from({ length: 10 }).map((_, i) => {
-          const stepY = 100 + i * ((250 - 100) / 9);
-          return (
-            <line
-              key={i}
-              x1="260"
-              y1={stepY}
-              x2="270"
-              y2={stepY}
-              stroke="#f2a13e"
-              strokeWidth="2"
-            />
-          );
-        })}
-        {/* ----------- TEXTO DEL NIVEL ----------- */}
-        <text x="120" y="320" fill="black" fontSize="18" fontWeight="bold">
-          Nivel: {apiData.tankLevel}%
-        </text>
-        <text x="80" y="100" fill="black" fontSize="18" fontWeight="bold">
-          nombre tanque
-        </text>
-        <text x="80" y="120" fill="black" fontSize="18" fontWeight="bold">
-          Crudo
-        </text>
-      </svg>
-
-      {/* Animación simple al cambiar el "d" del path */}
-      <style jsx>{`
-        .fill-animate {
-          transition: d 2s ease-in-out;
-        }
-      `}</style>
+      {loading ? (
+        <p>Cargando...</p>
+      ) : (
+        <div className="grid card">
+          <div className="">
+            {tanques
+              .filter((tanque) => tanque.material.includes("Petroleo Crudo"))
+              .map((tanque) => (
+                <div className="mx-2" key={tanque.id}>
+                  <ModeladoRefineriaTanque tanque={tanque} />
+                </div>
+              ))}
+          </div>
+          <div className="lg:flex">
+            {torresDestilacion.map((torre) => (
+              <div className="mx-2" key={torre.id}>
+                <ModeladoRefineriaTorre torre={torre} />
+              </div>
+            ))}
+          </div>
+          <div className="">
+            {tanques
+              .filter((tanque) => !tanque.material.includes("Petroleo Crudo"))
+              .map((tanque) => (
+                <div className="mx-2" key={tanque.id}>
+                  <ModeladoRefineriaTanque tanque={tanque} />
+                </div>
+              ))}
+          </div>
+        </div>
+      )}
     </>
   );
 }

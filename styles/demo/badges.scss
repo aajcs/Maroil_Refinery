@@ -77,28 +77,52 @@
     background: var(--orange-200);
     color: var(--orange-800);
   }
+  // &.status-nafta {
+  //   background: var(--orange-200);
+  //   color: var(--orange-800);
+  // }
+
+  // &.status-fuel-oil-4-mog {
+  //   background: var(--blue-200);
+  //   color: var(--blue-800);
+  // }
+
+  // &.status-fuel-oil-6-fondo {
+  //   background: var(--green-200);
+  //   color: var(--green-800);
+  // }
+
+  // &.status-queroseno {
+  //   background: var(--red-200);
+  //   color: var(--red-800);
+  // }
+  // &.status-petroleo-crudo {
+  //   background: var(--purple-200);
+  //   color: var(--purple-800);
+  // }
   &.status-nafta {
-    background: var(--orange-200);
-    color: var(--orange-800);
+    background: var(--light-blue); /* Azul claro / Celeste */
+    color: var(--surface-0);
   }
 
   &.status-fuel-oil-4-mog {
-    background: var(--blue-200);
-    color: var(--blue-800);
+    background: var(--dark-green); /* Verde oscuro / Verde oliva */
+    color: var(--surface-0);
   }
 
   &.status-fuel-oil-6-fondo {
-    background: var(--green-200);
-    color: var(--green-800);
+    background: var(--dark-brown); /* Marrón oscuro / Negro */
+    color: var(--surface-0);
   }
 
   &.status-queroseno {
-    background: var(--red-200);
-    color: var(--red-800);
+    background: var(--yellow); /* Amarillo / Dorado */
+    color: var(--black);
   }
+
   &.status-petroleo-crudo {
-    background: var(--purple-200);
-    color: var(--purple-800);
+    background: var(--black); /* Negro / Marrón muy oscuro */
+    color: var(--surface-0);
   }
 }
 
