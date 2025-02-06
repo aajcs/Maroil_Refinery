@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { getTanques } from "@/app/api/tanqueService";
 import { getTorresDestilacion } from "@/app/api/torreDestilacionService";
 import ModeladoRefineriaLinaCarga from "./ModeladoRefineriaLinaCarga";
+import ModeladoRefineriaLineaDescarga from "./ModeladoRefineriaLineaDescarga";
 
 interface Tanque {
   id: string;
@@ -124,6 +125,15 @@ function ModeladoRefineriaDashboard() {
               .map((tanque) => (
                 <div className="mx-2" key={tanque.id}>
                   <ModeladoRefineriaTanque tanque={tanque} />
+                </div>
+              ))}
+          </div>
+          <div className="">
+            {tanques
+              .filter((tanque) => !tanque.material.includes("Petroleo Crudo"))
+              .map((tanque) => (
+                <div className="mx-2" key={tanque.id}>
+                  <ModeladoRefineriaLineaDescarga />
                 </div>
               ))}
           </div>
