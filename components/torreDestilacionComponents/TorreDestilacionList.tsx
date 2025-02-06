@@ -158,12 +158,12 @@ function TorreDestilacionList() {
           rowData.material.map((material, index) => (
             <span
               key={index}
-              className={`customer-badge status-${material
+              className={`customer-badge status-${material.nombre
                 .toLowerCase()
                 .replace(/[()]/g, "")
                 .replace(/\s+/g, "-")}`}
             >
-              {material}
+              {material.nombre}
             </span>
           ))}
       </div>

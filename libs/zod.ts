@@ -34,6 +34,17 @@ export const refineriaSchema = object({
   createdAt: string().optional(),
   updatedAt: string().optional(),
   id: string().optional(),
+  id_refineria: object({
+    _id: string(),
+    nombre: string(),
+  }).optional(),
+  material: array(
+    object({
+      estadoMaterial: string(),
+      posicion: string(),
+      nombre: string(),
+    })
+  ).optional(),
 });
 
 export const torreDestilacionSchema = object({
@@ -42,7 +53,13 @@ export const torreDestilacionSchema = object({
   estado: string().min(1, "El estado es obligatorio"),
   eliminado: boolean().default(false),
   ubicacion: string().min(1, "La ubicación es obligatoria"),
-  material: array(string()).min(1, "El material es obligatorio"),
+  material: array(
+    object({
+      estadoMaterial: string(),
+      posicion: string(),
+      nombre: string(),
+    })
+  ).optional(),
   id_refineria: object({
     _id: string().optional(),
   }).optional(),

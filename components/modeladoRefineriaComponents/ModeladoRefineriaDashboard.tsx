@@ -8,6 +8,7 @@ import { getTanques } from "@/app/api/tanqueService";
 import { getTorresDestilacion } from "@/app/api/torreDestilacionService";
 import ModeladoRefineriaLinaCarga from "./ModeladoRefineriaLinaCarga";
 import ModeladoRefineriaLineaDescarga from "./ModeladoRefineriaLineaDescarga";
+import ModeladoRefineriaTorreSVG from "./ModeladoRefineriaTorreSVG";
 
 interface Tanque {
   id: string;
@@ -32,7 +33,7 @@ interface TorreDestilacion {
   estado: boolean;
   eliminado: boolean;
   ubicacion: string;
-  material: string[];
+  material: { estadoMaterial: string; posicion: string; nombre: string }[];
   createdAt: string;
   updatedAt: string;
   id_refineria: {
@@ -83,14 +84,34 @@ function ModeladoRefineriaDashboard() {
   const fetchTorresDestilacion = async () => {
     try {
       const torresDestilacionDB = await getTorresDestilacion();
-      if (torresDestilacionDB && Array.isArray(torresDestilacionDB.torres)) {
-        const filteredTorresDestilacion = torresDestilacionDB.torres.filter(
-          (torre: TorreDestilacion) =>
-            torre.id_refineria._id === activeRefineria?.id
-        );
+
+      if (
+        torresDestilacionDB?.torres &&
+        Array.isArray(torresDestilacionDB.torres)
+      ) {
+        const filteredTorresDestilacion = torresDestilacionDB.torres
+          .filter(
+            (torre: TorreDestilacion) =>
+              torre.id_refineria?._id === activeRefineria?.id
+          )
+          .sort((a: TorreDestilacion, b: TorreDestilacion) => {
+            // Verifica que ambas torres tengan materiales y que la posición sea válida
+            const posA = a.material?.length
+              ? parseInt(a.material[0].posicion, 10) || 0
+              : 0;
+            const posB = b.material?.length
+              ? parseInt(b.material[0].posicion, 10) || 0
+              : 0;
+
+            return posA - posB;
+          });
+
         setTorresDestilacion(filteredTorresDestilacion);
       } else {
-        console.error("La estructura de torresDestilacionDB no es la esperada");
+        console.error(
+          "La estructura de torresDestilacionDB no es la esperada:",
+          torresDestilacionDB
+        );
       }
     } catch (error) {
       console.error("Error al obtener las torres de destilación:", error);
@@ -116,6 +137,7 @@ function ModeladoRefineriaDashboard() {
             {torresDestilacion.map((torre) => (
               <div className="mx-2" key={torre.id}>
                 <ModeladoRefineriaTorre torre={torre} />
+                <ModeladoRefineriaTorreSVG />
               </div>
             ))}
           </div>
