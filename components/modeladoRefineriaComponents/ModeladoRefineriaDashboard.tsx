@@ -9,6 +9,7 @@ import { getTorresDestilacion } from "@/app/api/torreDestilacionService";
 import ModeladoRefineriaLinaCarga from "./ModeladoRefineriaLinaCarga";
 import ModeladoRefineriaLineaDescarga from "./ModeladoRefineriaLineaDescarga";
 import ModeladoRefineriaTorreSVG from "./ModeladoRefineriaTorreSVG";
+import { ProgressSpinner } from "primereact/progressspinner";
 
 interface Tanque {
   id: string;
@@ -84,7 +85,7 @@ function ModeladoRefineriaDashboard() {
   const fetchTorresDestilacion = async () => {
     try {
       const torresDestilacionDB = await getTorresDestilacion();
-
+      console.log(torresDestilacionDB);
       if (
         torresDestilacionDB?.torres &&
         Array.isArray(torresDestilacionDB.torres)
@@ -94,77 +95,117 @@ function ModeladoRefineriaDashboard() {
             (torre: TorreDestilacion) =>
               torre.id_refineria?._id === activeRefineria?.id
           )
-          .sort((a: TorreDestilacion, b: TorreDestilacion) => {
-            // Verifica que ambas torres tengan materiales y que la posición sea válida
-            const posA = a.material?.length
-              ? parseInt(a.material[0].posicion, 10) || 0
-              : 0;
-            const posB = b.material?.length
-              ? parseInt(b.material[0].posicion, 10) || 0
-              : 0;
-
-            return posA - posB;
+          .map((torre: TorreDestilacion) => {
+            // Ordenar el array de materiales por la posición
+            torre.material.sort(
+              (a, b) => parseInt(a.posicion, 10) - parseInt(b.posicion, 10)
+            );
+            return torre;
           });
 
         setTorresDestilacion(filteredTorresDestilacion);
       } else {
-        console.error(
-          "La estructura de torresDestilacionDB no es la esperada:",
-          torresDestilacionDB
-        );
+        console.error("La estructura de torresDestilacionDB no es la esperada");
       }
     } catch (error) {
       console.error("Error al obtener las torres de destilación:", error);
     }
   };
-
   return (
-    <>
+    <div className="p-4">
       {loading ? (
-        <p>Cargando...</p>
+        <div className="flex justify-content-center align-items-center h-screen">
+          <ProgressSpinner />
+        </div>
       ) : (
-        <div className="grid card">
-          <div className="">
-            {tanques
-              .filter((tanque) => tanque.material.includes("Petroleo Crudo"))
-              .map((tanque) => (
-                <div className="mx-2" key={tanque.id}>
-                  <ModeladoRefineriaTanque tanque={tanque} />
-                </div>
-              ))}
+        <div className="grid">
+          {/* Línea de recepción */}
+          <div className="col-12 md:col-6 lg:col-2">
+            <div className="card p-3">
+              <h1 className="text-2xl font-bold mb-3">Línea de Recepción</h1>
+
+              {tanques
+                .filter((tanque) => !tanque.material.includes("Petroleo Crudo"))
+                .map((tanque, index) => (
+                  <div key={index} className="col-12 md:col-6">
+                    <ModeladoRefineriaLineaDescarga />
+                  </div>
+                ))}
+            </div>
           </div>
-          <div className="lg:flex">
-            {torresDestilacion.map((torre) => (
-              <div className="mx-2" key={torre.id}>
-                <ModeladoRefineriaTorre torre={torre} />
-                <ModeladoRefineriaTorreSVG />
+          {/* Almacenamiento Crudo */}
+          <div className="col-12 md:col-6 lg:col-2">
+            <div className="card p-3">
+              <h1 className="text-2xl font-bold mb-3">Almacenamiento Crudo</h1>
+              {tanques
+                .filter((tanque) => tanque.material.includes("Petroleo Crudo"))
+                .map((tanque) => (
+                  <div key={tanque.id} className="mb-2">
+                    <ModeladoRefineriaTanque tanque={tanque} />
+                  </div>
+                ))}
+            </div>
+          </div>
+
+          {/* Torres de Procesamiento */}
+          <div className="col-12 md:col-6 lg:col-3">
+            <div className="card p-3">
+              <h1 className="text-2xl font-bold mb-3">
+                Torres de Procesamiento
+              </h1>
+              <div className="grid">
+                {torresDestilacion.map((torre) => (
+                  <div key={torre.id} className="col-12 md:col-6">
+                    <ModeladoRefineriaTorre torre={torre} />
+                    <ModeladoRefineriaTorreSVG />
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
           </div>
-          <div className="">
-            {tanques
-              .filter((tanque) => !tanque.material.includes("Petroleo Crudo"))
-              .map((tanque) => (
-                <div className="mx-2" key={tanque.id}>
-                  <ModeladoRefineriaTanque tanque={tanque} />
-                </div>
-              ))}
+
+          {/* Almacenamiento de Productos */}
+          <div className="col-12 md:col-6 lg:col-3">
+            <div className="card p-3">
+              <h1 className="text-2xl font-bold mb-3">
+                Almacenamiento de Productos
+              </h1>
+              <div className="grid">
+                {tanques
+                  .filter(
+                    (tanque) => !tanque.material.includes("Petroleo Crudo")
+                  )
+                  .map((tanque) => (
+                    <div key={tanque.id} className="mb-2">
+                      <ModeladoRefineriaTanque tanque={tanque} />
+                    </div>
+                  ))}
+              </div>
+            </div>
           </div>
-          <div className="">
-            {tanques
-              .filter((tanque) => !tanque.material.includes("Petroleo Crudo"))
-              .map((tanque) => (
-                <div className="mx-2" key={tanque.id}>
-                  <ModeladoRefineriaLineaDescarga />
-                </div>
-              ))}
+
+          {/* Línea de Despacho */}
+          <div className="col-12 md:col-6 lg:col-2">
+            <div className="card p-3">
+              <h1 className="text-2xl font-bold mb-3">Línea de Despacho</h1>
+
+              {tanques
+                .filter((tanque) => !tanque.material.includes("Petroleo Crudo"))
+                .map((tanque, index) => (
+                  <div key={index} className="col-12 md:col-6">
+                    <ModeladoRefineriaLineaDescarga />
+                  </div>
+                ))}
+            </div>
           </div>
         </div>
       )}
-      <div>
+
+      {/* Línea de Carga */}
+      <div className="mt-4">
         <ModeladoRefineriaLinaCarga />
       </div>
-    </>
+    </div>
   );
 }
 

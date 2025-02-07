@@ -29,7 +29,7 @@ function getFillColor(material: string): string {
 }
 
 function ModeladoRefineriaTanque({ tanque }: TanqueProps) {
-  const [apiData, setApiData] = useState({ tankLevel: 50 }); // Nivel inicial
+  const [apiData, setApiData] = useState({ tankLevel: 0 }); // Nivel inicial
 
   // Simulación de la API (puedes reemplazar con tu llamada real)
   useEffect(() => {
@@ -67,7 +67,7 @@ function ModeladoRefineriaTanque({ tanque }: TanqueProps) {
         width="200"
         height="200"
         viewBox="0 50 300 300"
-        style={{ border: "1px solid #ccc" }}
+        // className="card m-0 p-0"
       >
         {/* ----------- GRADIENTE Y CLIP-PATH PARA EL TANQUE ----------- */}
         <defs>

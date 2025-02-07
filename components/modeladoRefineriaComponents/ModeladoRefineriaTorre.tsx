@@ -80,7 +80,7 @@ function ModeladoRefineriaTorre(
       width="200"
       height="300"
       viewBox="100 100 300 300"
-      style={{ border: "1px solid #ccc" }}
+      // className="card m-0 p-0"
       id="e73Ach9EHV41"
       xmlns="http://www.w3.org/2000/svg"
       xmlnsXlink="http://www.w3.org/1999/xlink"

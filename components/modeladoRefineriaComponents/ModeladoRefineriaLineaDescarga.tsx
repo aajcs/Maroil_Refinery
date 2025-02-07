@@ -12,6 +12,7 @@ const ModeladoRefineriaLineaDescarga = (props: any) => (
     project-id="be6fbb0f9bd74a698581b7dd144c3cc0"
     export-id="8bbb831ca7944f759f77e141ff4bfb70"
     cached="false"
+    // className="card m-0 p-0"
     {...props}
   >
     <defs>
