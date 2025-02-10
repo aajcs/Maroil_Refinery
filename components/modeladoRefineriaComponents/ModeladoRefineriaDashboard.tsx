@@ -10,6 +10,7 @@ import ModeladoRefineriaLineaDescarga from "./ModeladoRefineriaLineaDescarga";
 import ModeladoRefineriaTorreSVG from "./ModeladoRefineriaTorreSVG";
 import { ProgressSpinner } from "primereact/progressspinner";
 import ModeladoRefineriaLineaCarga from "./ModeladoRefineriaLineaCarga";
+import { getLineaRecepcions } from "@/app/api/lineaRecepcionService";
 
 interface Tanque {
   id: string;
@@ -43,12 +44,28 @@ interface TorreDestilacion {
   };
 }
 
+interface LineaRecepcion {
+  id: string;
+  nombre: string;
+  estado: boolean;
+  eliminado: boolean;
+  ubicacion: string;
+  material: string;
+  createdAt: string;
+  updatedAt: string;
+  id_refineria: {
+    _id: string | undefined;
+    id: string;
+  };
+}
+
 function ModeladoRefineriaDashboard() {
   const { activeRefineria } = useRefineriaStore();
   const [tanques, setTanques] = useState<Tanque[]>([]);
   const [torresDestilacion, setTorresDestilacion] = useState<
     TorreDestilacion[]
   >([]);
+  const [lineaRecepcions, setLineaRecepcions] = useState<LineaRecepcion[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Obtener tanques y torres de destilación
@@ -57,6 +74,8 @@ function ModeladoRefineriaDashboard() {
       if (activeRefineria?.id) {
         await fetchTanques();
         await fetchTorresDestilacion();
+        await fetchLineaRecepcions();
+
         setLoading(false);
       }
     };
@@ -110,6 +129,25 @@ function ModeladoRefineriaDashboard() {
       console.error("Error al obtener las torres de destilación:", error);
     }
   };
+  const fetchLineaRecepcions = async () => {
+    try {
+      const lineaRecepcionsDB = await getLineaRecepcions();
+      console.log(lineaRecepcionsDB);
+      if (lineaRecepcionsDB && Array.isArray(lineaRecepcionsDB.linea_cargas)) {
+        const filteredLineaRecepcions = lineaRecepcionsDB.linea_cargas.filter(
+          (lineaRecepcion: LineaRecepcion) =>
+            lineaRecepcion.id_refineria._id === activeRefineria?.id
+        );
+        setLineaRecepcions(filteredLineaRecepcions);
+      } else {
+        console.error("La estructura de lineaRecepcionsDB no es la esperada");
+      }
+    } catch (error) {
+      console.error("Error al obtener los lineaRecepcions:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <div className="p-4">
       {loading ? (
@@ -123,13 +161,21 @@ function ModeladoRefineriaDashboard() {
             <div className="card p-3">
               <h1 className="text-2xl font-bold mb-3">Línea de Recepción</h1>
 
-              {tanques
+              {lineaRecepcions.map((lineaRecepcion) => (
+                <div key={lineaRecepcion.id} className="mb-2">
+                  <ModeladoRefineriaLineaCarga
+                    lineaRecepcion={lineaRecepcion}
+                  />
+                </div>
+              ))}
+
+              {/* {tanques
                 .filter((tanque) => !tanque.material.includes("Petroleo Crudo"))
                 .map((tanque, index) => (
                   <div key={index} className="col-12 md:col-6">
                     <ModeladoRefineriaLineaCarga />
                   </div>
-                ))}
+                ))} */}
             </div>
           </div>
           {/* Almacenamiento Crudo */}
