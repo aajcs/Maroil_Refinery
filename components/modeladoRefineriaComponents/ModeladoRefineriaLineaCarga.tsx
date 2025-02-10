@@ -5271,7 +5271,7 @@ const ModeladoRefineriaLineaCarga = (props: any) => (
       <animateTransform
         attributeName="transform"
         type="translate"
-        from="170.493 163.57889"
+        from="-170.493 163.57889"
         to="0 0"
         dur="2s"
         fill="freeze"
