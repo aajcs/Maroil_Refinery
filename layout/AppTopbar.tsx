@@ -135,7 +135,7 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
             className="topbar-profile-button p-link"
             type="button"
           >
-            <img alt="avatar" src="/layout/images/avatar.png" />
+            <img alt="avatar" src="/layout/images/avatarHombre.png" />
             <span className="profile-details">
               <span className="profile-name">
                 {(session?.user as ExtendedUser)?.usuario?.nombre}

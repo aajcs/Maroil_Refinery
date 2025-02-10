@@ -6,10 +6,10 @@ import ModeladoRefineriaTorre from "./ModeladoRefineriaTorre";
 import { useEffect, useState } from "react";
 import { getTanques } from "@/app/api/tanqueService";
 import { getTorresDestilacion } from "@/app/api/torreDestilacionService";
-import ModeladoRefineriaLinaCarga from "./ModeladoRefineriaLinaCarga";
 import ModeladoRefineriaLineaDescarga from "./ModeladoRefineriaLineaDescarga";
 import ModeladoRefineriaTorreSVG from "./ModeladoRefineriaTorreSVG";
 import { ProgressSpinner } from "primereact/progressspinner";
+import ModeladoRefineriaLineaCarga from "./ModeladoRefineriaLineaCarga";
 
 interface Tanque {
   id: string;
@@ -85,7 +85,6 @@ function ModeladoRefineriaDashboard() {
   const fetchTorresDestilacion = async () => {
     try {
       const torresDestilacionDB = await getTorresDestilacion();
-      console.log(torresDestilacionDB);
       if (
         torresDestilacionDB?.torres &&
         Array.isArray(torresDestilacionDB.torres)
@@ -128,7 +127,7 @@ function ModeladoRefineriaDashboard() {
                 .filter((tanque) => !tanque.material.includes("Petroleo Crudo"))
                 .map((tanque, index) => (
                   <div key={index} className="col-12 md:col-6">
-                    <ModeladoRefineriaLineaDescarga />
+                    <ModeladoRefineriaLineaCarga />
                   </div>
                 ))}
             </div>
@@ -201,10 +200,10 @@ function ModeladoRefineriaDashboard() {
         </div>
       )}
 
-      {/* Línea de Carga */}
+      {/* Línea de Carga
       <div className="mt-4">
         <ModeladoRefineriaLinaCarga />
-      </div>
+      </div> */}
     </div>
   );
 }
