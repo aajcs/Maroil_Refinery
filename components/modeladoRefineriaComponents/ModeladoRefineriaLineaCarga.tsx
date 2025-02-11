@@ -60,45 +60,16 @@ const ModeladoRefineriaLineaCarga = (props: any) => {
       <text x="0" y="10" fill="black" fontSize="12" fontWeight="bold">
         {lineaRecepcion.nombre}
       </text>
-      <path d="M32 2C15.432 2 2 15.432 2 32s13.432 30 30 30 30-13.432 30-30S48.568 2 32 2zm0 56C17.64 58 6 46.36 6 32S17.64 6 32 6s26 11.64 26 26-11.64 26-26 26z" />
-      <path d="M46 34h-6v-6a2 2 0 0 0-4 0v6h-6a2 2 0 0 0 0 4h6v6a2 2 0 0 0 4 0v-6h6a2 2 0 0 0 0-4z" />
+      {/* Botón verde titilando */}
+      <circle cx="180" cy="20" r="10" fill="green">
+        <animate
+          attributeName="opacity"
+          values="1;0;1"
+          dur="1s"
+          repeatCount="indefinite"
+        />
+      </circle>
       {/* <script /> */}
-
-      <foreignObject x="10" y="150" width="180" height="40">
-        <foreignObject x="10" y="150" width="180" height="40">
-          <button
-            onClick={toggleButton}
-            style={{
-              backgroundColor: isActive ? "green" : "red",
-              color: "white",
-              border: "none",
-              padding: "10px 20px",
-              borderRadius: "5px",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              transition: "background-color 0.3s ease",
-              width: "100%",
-              height: "100%",
-            }}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 64 64"
-              width="24"
-              height="24"
-              fill="currentColor"
-              style={{ marginRight: "10px" }}
-            >
-              <path d="M32 2C15.432 2 2 15.432 2 32s13.432 30 30 30 30-13.432 30-30S48.568 2 32 2zm0 56C17.64 58 6 46.36 6 32S17.64 6 32 6s26 11.64 26 26-11.64 26-26 26z" />
-              <path d="M46 34h-6v-6a2 2 0 0 0-4 0v6h-6a2 2 0 0 0 0 4h6v6a2 2 0 0 0 4 0v-6h6a2 2 0 0 0 0-4z" />
-            </svg>
-            {isActive ? "ON" : "OFF"}
-          </button>
-        </foreignObject>
-      </foreignObject>
-      <BotonOnOff />
     </svg>
   );
 };
