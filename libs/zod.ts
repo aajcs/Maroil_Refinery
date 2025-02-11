@@ -116,3 +116,80 @@ export const contactoSchema = object({
   createdAt: string().optional(),
   updatedAt: string().optional(),
 });
+
+export const contratoSchema = object({
+  condicionesPago: object({
+    tipo: string().min(1, "El tipo es obligatorio"),
+    plazo: number().min(0, "El plazo debe ser un número no negativo"),
+    abono: array(
+      object({
+        _id: string().optional(),
+        monto: number().min(0, "El monto debe ser un número no negativo"),
+        fecha: string().optional(),
+      })
+    ).optional(),
+  }),
+  estadoEntrega: string().min(1, "El estado de entrega es obligatorio"),
+  clausulas: array(string()).optional(),
+  estado: string().min(1, "El estado es obligatorio"),
+  eliminado: boolean().default(false),
+  numeroContrato: string().min(1, "El número de contrato es obligatorio"),
+  id_refineria: object({
+    _id: string().optional(),
+    nombre: string().min(1, "El nombre de la refinería es obligatorio"),
+  }),
+  id_contacto: object({
+    _id: string().optional(),
+    nombre: string().min(1, "El nombre del contacto es obligatorio"),
+  }),
+  abono: array(
+    object({
+      _id: string().optional(),
+      monto: number().min(0, "El monto debe ser un número no negativo"),
+      fecha: string().optional(),
+    })
+  ).optional(),
+  id_contrato_items: array(
+    object({
+      // estado: string().min(1, "El estado es obligatorio"),
+      eliminado: boolean().default(false),
+      _id: string().optional(),
+      producto: string().min(1, "El producto es obligatorio"),
+      cantidad: number().min(0, "La cantidad debe ser un número no negativo"),
+      precioUnitario: number().min(
+        0,
+        "El precio unitario debe ser un número no negativo"
+      ),
+      gravedadAPI: number().min(
+        0,
+        "La gravedad API debe ser un número no negativo"
+      ),
+      azufre: number().min(0, "El azufre debe ser un número no negativo"),
+      viscosidad: number().min(
+        0,
+        "La viscosidad debe ser un número no negativo"
+      ),
+      densidad: number().min(0, "La densidad debe ser un número no negativo"),
+      contenidoAgua: number().min(
+        0,
+        "El contenido de agua debe ser un número no negativo"
+      ),
+      origen: string().min(1, "El origen es obligatorio"),
+      temperatura: number().min(
+        0,
+        "La temperatura debe ser un número no negativo"
+      ),
+      presion: number().min(0, "La presión debe ser un número no negativo"),
+    })
+  ).optional(),
+  historialModificaciones: array(
+    object({
+      _id: string().optional(),
+      fecha: string().optional(),
+      descripcion: string().optional(),
+    })
+  ).optional(),
+  createdAt: string().optional(),
+  updatedAt: string().optional(),
+  id: string().optional(),
+});
