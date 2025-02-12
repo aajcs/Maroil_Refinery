@@ -62,7 +62,6 @@ function RefineriaList() {
     let _refinerias = refinerias.filter((val) => val.id !== refineria?.id);
     if (refineria?.id) {
       const refineriaElminado = await deleteRefineria(refineria.id);
-      console.log(refineriaElminado);
       setRefinerias(_refinerias);
       setDeleteProductDialog(false);
       toast.current?.show({
@@ -135,12 +134,10 @@ function RefineriaList() {
   const editRefineria = (refineria: any) => {
     setRefineria(refineria);
     setRefineriaFormDialog(true);
-    console.log(refineria);
   };
   const confirmDeleteProduct = (refineria: any) => {
     setRefineria(refineria);
     setDeleteProductDialog(true);
-    console.log(refineria);
   };
   const actionBodyTemplate = (rowData: any) => {
     return (

@@ -4,65 +4,86 @@ import { useRouter } from "next/navigation";
 import { FilterMatchMode } from "primereact/api";
 import { Button } from "primereact/button";
 import { Column } from "primereact/column";
-import { DataTable, DataTableFilterMeta } from "primereact/datatable";
+import {
+  DataTable,
+  DataTableExpandedRows,
+  DataTableFilterMeta,
+} from "primereact/datatable";
 import { InputText } from "primereact/inputtext";
 import { Toast } from "primereact/toast";
 import { Dialog } from "primereact/dialog";
-import TanqueForm from "./TanqueForm";
 import { useRefineriaStore } from "@/store/refineriaStore";
-import { getTanques, deleteTanque } from "@/app/api/tanqueService";
-import { Tanque } from "@/libs/interfaces";
+import RecepcionForm from "./RecepcionForm";
+import { deleteRecepcion, getRecepcions } from "@/app/api/recepcionService";
 
-function TanqueList() {
+interface Recepcion {
+  id: string;
+  nombre: string;
+  estado: boolean;
+  eliminado: boolean;
+  ubicacion: string;
+  material: string;
+  createdAt: string;
+  updatedAt: string;
+  id_refineria: {
+    _id: string | undefined;
+    id: string;
+  };
+}
+
+function RecepcionList() {
   const { activeRefineria } = useRefineriaStore();
-  const [tanques, setTanques] = useState<Tanque[]>([]);
-  const [tanque, setTanque] = useState<Tanque | null>(null);
+  const [recepcions, setRecepcions] = useState<Recepcion[]>([]);
+  console.log(recepcions);
+  const [recepcion, setRecepcion] = useState<Recepcion | null>(null);
   const [filters, setFilters] = useState<DataTableFilterMeta>({});
   const [loading, setLoading] = useState(true);
   const [globalFilterValue, setGlobalFilterValue] = useState("");
   const [deleteProductDialog, setDeleteProductDialog] = useState(false);
-  const [tanqueFormDialog, setTanqueFormDialog] = useState(false);
+  const [recepcionFormDialog, setRecepcionFormDialog] = useState(false);
 
   const router = useRouter();
   const dt = useRef(null);
   const toast = useRef<Toast | null>(null);
 
   useEffect(() => {
-    fetchTanques();
+    fetchRecepcions();
   }, [activeRefineria]);
 
-  const fetchTanques = async () => {
+  const fetchRecepcions = async () => {
     try {
-      const tanquesDB = await getTanques();
-      if (tanquesDB && Array.isArray(tanquesDB.tanques)) {
-        const filteredTanques = tanquesDB.tanques.filter(
-          (tanque: Tanque) => tanque.id_refineria._id === activeRefineria?.id
+      const recepcionsDB = await getRecepcions();
+      console.log(recepcionsDB);
+      if (recepcionsDB && Array.isArray(recepcionsDB.recepcions)) {
+        const filteredRecepcions = recepcionsDB.recepcions.filter(
+          (recepcion: Recepcion) =>
+            recepcion.id_refineria._id === activeRefineria?.id
         );
-        setTanques(filteredTanques);
+        setRecepcions(filteredRecepcions);
       } else {
-        console.error("La estructura de tanquesDB no es la esperada");
+        console.error("La estructura de recepcionsDB no es la esperada");
       }
     } catch (error) {
-      console.error("Error al obtener los tanques:", error);
+      console.error("Error al obtener los recepcions:", error);
     } finally {
       setLoading(false);
     }
   };
 
   const hideDeleteProductDialog = () => setDeleteProductDialog(false);
-  const hideTanqueFormDialog = () => {
-    setTanque(null);
-    setTanqueFormDialog(false);
+  const hideRecepcionFormDialog = () => {
+    setRecepcion(null);
+    setRecepcionFormDialog(false);
   };
 
-  const handleDeleteTanque = async () => {
-    if (tanque?.id) {
-      await deleteTanque(tanque.id);
-      setTanques(tanques.filter((val) => val.id !== tanque.id));
+  const handleDeleteRecepcion = async () => {
+    if (recepcion?.id) {
+      await deleteRecepcion(recepcion.id);
+      setRecepcions(recepcions.filter((val) => val.id !== recepcion.id));
       toast.current?.show({
         severity: "success",
         summary: "Éxito",
-        detail: "Tanque Eliminada",
+        detail: "Recepcion Eliminada",
         life: 3000,
       });
     } else {
@@ -99,12 +120,12 @@ function TanqueList() {
         label="Agregar Nuevo"
         outlined
         className="w-full sm:w-auto flex-order-0 sm:flex-order-1"
-        onClick={() => setTanqueFormDialog(true)}
+        onClick={() => setRecepcionFormDialog(true)}
       />
     </div>
   );
 
-  const actionBodyTemplate = (rowData: Tanque) => (
+  const actionBodyTemplate = (rowData: Recepcion) => (
     <>
       <Button
         icon="pi pi-pencil"
@@ -112,8 +133,8 @@ function TanqueList() {
         severity="success"
         className="mr-2"
         onClick={() => {
-          setTanque(rowData);
-          setTanqueFormDialog(true);
+          setRecepcion(rowData);
+          setRecepcionFormDialog(true);
         }}
       />
       <Button
@@ -121,36 +142,20 @@ function TanqueList() {
         severity="warning"
         rounded
         onClick={() => {
-          setTanque(rowData);
+          setRecepcion(rowData);
           setDeleteProductDialog(true);
         }}
       />
     </>
   );
-  const materialBodyTemplate = (rowData: Tanque) => {
-    return (
-      <div>
-        {Array.isArray(rowData.material) &&
-          rowData.material.map((material, index) => (
-            <span
-              key={index}
-              className={`customer-badge status-${material
-                .toLowerCase()
-                .replace(/[()]/g, "")
-                .replace(/\s+/g, "-")}`}
-            >
-              {material}
-            </span>
-          ))}
-      </div>
-    );
-  };
+
   return (
     <div className="card">
       <Toast ref={toast} />
+
       <DataTable
         ref={dt}
-        value={tanques}
+        value={recepcions}
         header={renderHeader()}
         paginator
         rows={10}
@@ -159,45 +164,80 @@ function TanqueList() {
         rowsPerPageOptions={[10, 25, 50]}
         filters={filters}
         loading={loading}
-        emptyMessage="No hay tanques disponibles"
+        emptyMessage="No hay recepcions disponibles"
       >
         <Column body={actionBodyTemplate} headerStyle={{ minWidth: "10rem" }} />
-        <Column
-          field="nombre"
-          header="Nombre"
-          sortable
-          style={{ width: "25%" }}
-        />
-        <Column
-          field="ubicacion"
-          header="Ubicación"
-          sortable
-          style={{ width: "25%" }}
-        />
-        <Column
-          field="material"
-          header="Material"
-          sortable
-          style={{ width: "25%" }}
-          body={materialBodyTemplate}
-        />
         <Column
           field="estado"
           header="Estado"
           sortable
-          style={{ width: "25%" }}
+          style={{ width: "10%" }}
+        />
+        <Column
+          field="cantidadRecibida"
+          header="Cantidad Recibida"
+          sortable
+          style={{ width: "10%" }}
+        />
+        <Column
+          field="fechaInicio"
+          header="Fecha de Inicio"
+          sortable
+          style={{ width: "15%" }}
+        />
+        <Column
+          field="fechaFin"
+          header="Fecha de Fin"
+          sortable
+          style={{ width: "10%" }}
+        />
+        <Column
+          field="id_contrato.numeroContrato"
+          header="Número de Contrato"
+          sortable
+          style={{ width: "10%" }}
+        />
+        <Column
+          field="id_linea.nombre"
+          header="Nombre de la Línea"
+          sortable
+          style={{ width: "10%" }}
+        />
+        <Column
+          field="id_tanque.nombre"
+          header="ID del Tanque"
+          sortable
+          style={{ width: "10%" }}
+        />
+        <Column
+          field="placa"
+          header="Placa"
+          sortable
+          style={{ width: "10%" }}
+        />
+        <Column
+          field="nombre_chofer"
+          header="Nombre del Chofer"
+          sortable
+          style={{ width: "10%" }}
+        />
+        <Column
+          field="apellido_chofer"
+          header="Apellido del Chofer"
+          sortable
+          style={{ width: "10%" }}
         />
         <Column
           field="createdAt"
           header="Fecha de Creación"
           sortable
-          style={{ width: "25%" }}
+          style={{ width: "20%" }}
         />
         <Column
           field="updatedAt"
           header="Última Actualización"
           sortable
-          style={{ width: "25%" }}
+          style={{ width: "20%" }}
         />
       </DataTable>
 
@@ -218,7 +258,7 @@ function TanqueList() {
               label="Sí"
               icon="pi pi-check"
               text
-              onClick={handleDeleteTanque}
+              onClick={handleDeleteRecepcion}
             />
           </>
         }
@@ -229,31 +269,31 @@ function TanqueList() {
             className="pi pi-exclamation-triangle mr-3"
             style={{ fontSize: "2rem" }}
           />
-          {tanque && (
+          {recepcion && (
             <span>
-              ¿Estás seguro de que deseas eliminar <b>{tanque.nombre}</b>?
+              ¿Estás seguro de que deseas eliminar <b>{recepcion.nombre}</b>?
             </span>
           )}
         </div>
       </Dialog>
 
       <Dialog
-        visible={tanqueFormDialog}
-        style={{ width: "850px" }}
-        header={`${tanque ? "Editar" : "Agregar"} Tanque`}
+        visible={recepcionFormDialog}
+        style={{ width: "50vw" }}
+        header={`${recepcion ? "Editar" : "Agregar"} Recepcion`}
         modal
-        onHide={hideTanqueFormDialog}
+        onHide={hideRecepcionFormDialog}
       >
-        <TanqueForm
-          tanque={tanque}
-          hideTanqueFormDialog={hideTanqueFormDialog}
-          tanques={tanques}
-          setTanques={setTanques}
-          setTanque={setTanque}
+        <RecepcionForm
+          recepcion={recepcion}
+          hideRecepcionFormDialog={hideRecepcionFormDialog}
+          recepcions={recepcions}
+          setRecepcions={setRecepcions}
+          setRecepcion={setRecepcion}
         />
       </Dialog>
     </div>
   );
 }
 
-export default TanqueList;
+export default RecepcionList;

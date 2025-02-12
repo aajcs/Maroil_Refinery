@@ -149,7 +149,6 @@ function TorreDestilacionForm({
         (material) => material.posicion !== e.value.posicion
       );
     }
-    console.log(_selectedMaterials);
     setValue("material", _selectedMaterials);
     setSelectedMaterials(_selectedMaterials);
   };
@@ -171,12 +170,10 @@ function TorreDestilacionForm({
       _selectedMaterials[materialIndex].estadoMaterial = e.checked
         ? "True"
         : "False";
-      console.log(_selectedMaterials);
       setSelectedMaterials(_selectedMaterials);
       setValue("material", _selectedMaterials);
     }
   };
-  console.log(errors);
   return (
     <div>
       <Toast ref={toast} />

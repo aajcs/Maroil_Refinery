@@ -61,7 +61,6 @@ function UsuarioList() {
     let _usuarios = usuarios.filter((val) => val.id !== usuario?.id);
     if (usuario?.id) {
       const usuarioElminado = await deleteUser(usuario.id);
-      console.log(usuarioElminado);
       setUsuarios(_usuarios);
       setDeleteProductDialog(false);
       toast.current?.show({
@@ -134,12 +133,10 @@ function UsuarioList() {
   const editUsuario = (usuario: any) => {
     setUsuario(usuario);
     setUsuarioFormDialog(true);
-    console.log(usuario);
   };
   const confirmDeleteProduct = (usuario: any) => {
     setUsuario(usuario);
     setDeleteProductDialog(true);
-    console.log(usuario);
   };
   const actionBodyTemplate = (rowData: any) => {
     return (

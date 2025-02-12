@@ -7,7 +7,6 @@ import { useRefineriaStore } from "@/store/refineriaStore";
 function RefineriasDashboard() {
   const [refineria, setRefineria] = useState<any>(null);
   const { activeRefineria, setActiveRefineria } = useRefineriaStore();
-  console.log(activeRefineria);
   const router = useRouter();
 
   useEffect(() => {

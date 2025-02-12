@@ -36,7 +36,6 @@ function LineaRecepcionForm({
 }: LineaRecepcionFormProps) {
   const { activeRefineria } = useRefineriaStore();
   const toast = useRef<Toast | null>(null);
-  console.log(lineaRecepcion);
 
   const {
     register,
@@ -47,7 +46,6 @@ function LineaRecepcionForm({
   } = useForm<FormData>({
     resolver: zodResolver(lineaRecepcionSchema),
   });
-  // console.log("error del formulario", errors);
   useEffect(() => {
     if (lineaRecepcion) {
       Object.keys(lineaRecepcion).forEach((key) =>
@@ -65,7 +63,6 @@ function LineaRecepcionForm({
           lineaRecepcion.id,
           data
         );
-        console.log(updatedTorre);
         const updatedLineaRecepcions = lineaRecepcions.map((t) =>
           t.id === updatedTorre.id ? updatedTorre : t
         );
@@ -78,7 +75,6 @@ function LineaRecepcionForm({
           ...data,
           id_refineria: activeRefineria.id,
         });
-        console.log(newTorre);
         setLineaRecepcions([...lineaRecepcions, newTorre.linea_carga]);
         showToast("success", "Éxito", "LineaRecepcion creado");
       }

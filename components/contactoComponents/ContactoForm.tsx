@@ -90,7 +90,6 @@ function ContactoForm({
   ) => {
     toast.current?.show({ severity, summary, detail, life: 3000 });
   };
-  console.log(errors);
   return (
     <div>
       <Toast ref={toast} />

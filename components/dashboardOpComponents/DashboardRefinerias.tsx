@@ -11,7 +11,6 @@ function DashboardRefinerias() {
   // );
   const { activeRefineria, setActiveRefineria } = useRefineriaStore();
   const router = useRouter();
-  console.log(refinerias);
 
   useEffect(() => {
     const fetchRefinerias = async () => {

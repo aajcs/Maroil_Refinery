@@ -7,12 +7,15 @@ import { Button } from "primereact/button";
 import { classNames } from "primereact/utils";
 import { contratoSchema } from "@/libs/zod";
 import { Toast } from "primereact/toast";
-import { Dropdown } from "primereact/dropdown";
+import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
 import { useRefineriaStore } from "@/store/refineriaStore";
 import { createContrato, updateContrato } from "@/app/api/contratoService";
 import { InputNumber } from "primereact/inputnumber";
 import { DataTable } from "primereact/datatable";
-import { Column } from "primereact/column";
+import { Column, ColumnEditorOptions } from "primereact/column";
+import { Tag } from "primereact/tag";
+import { getContactos } from "@/app/api/contactoService";
+import { Calendar } from "primereact/calendar";
 
 type FormData = z.infer<typeof contratoSchema>;
 
@@ -24,7 +27,32 @@ interface ContratoFormProps {
   setContrato: (contrato: any) => void;
 }
 
+interface Contacto {
+  id: string;
+  nombre: string;
+  estado: boolean;
+  eliminado: boolean;
+  ubicacion: string;
+  material: string;
+  createdAt: string;
+  updatedAt: string;
+  id_refineria: {
+    _id: string | undefined;
+    id: string;
+  };
+}
 const estatusValues = ["true", "false"];
+const estadoEntregaOptions = [
+  { label: "Pendiente", value: "Pendiente" },
+  { label: "En Tránsito", value: "En Tránsito" },
+  { label: "Entregado", value: "Entregado" },
+  { label: "Cancelado", value: "Cancelado" },
+];
+const estado_contratoOptions = [
+  { label: "Adjudicado", value: "Adjudicado" },
+  { label: "Activo", value: "Activo" },
+  { label: "Inactivo", value: "Inactivo" },
+];
 
 function ContratoForm({
   contrato,
@@ -34,8 +62,9 @@ function ContratoForm({
 }: ContratoFormProps) {
   const { activeRefineria } = useRefineriaStore();
   const toast = useRef<Toast | null>(null);
-  const [items, setItems] = useState(contrato?.id_contrato_items || []);
-  console.log(items);
+  const [items, setItems] = useState(contrato?.id_items || []);
+  const [contactos, setContactos] = useState<Contacto[]>([]);
+  const [loading, setLoading] = useState(true);
   const {
     register,
     handleSubmit,
@@ -47,6 +76,13 @@ function ContratoForm({
     resolver: zodResolver(contratoSchema),
   });
 
+  const [productos] = useState<string[]>([
+    "Nafta",
+    "Queroseno",
+    "Fuel Oil 4 (MOG)",
+    "Fuel Oil 6 (Fondo)",
+    "Petroleo Crudo",
+  ]);
   useEffect(() => {
     if (contrato) {
       Object.keys(contrato).forEach((key) =>
@@ -54,10 +90,31 @@ function ContratoForm({
       );
     }
   }, [contrato, setValue]);
+  useEffect(() => {
+    fetchContactos();
+  }, [contrato, setValue]);
 
+  const fetchContactos = async () => {
+    try {
+      const contactosDB = await getContactos();
+      if (contactosDB && Array.isArray(contactosDB.contactos)) {
+        const filteredContactos = contactosDB.contactos.filter(
+          (contacto: Contacto) =>
+            contacto.id_refineria._id === activeRefineria?.id
+        );
+        setContactos(filteredContactos);
+      } else {
+        console.error("La estructura de contactosDB no es la esperada");
+      }
+    } catch (error) {
+      console.error("Error al obtener los contactos:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
   const onSubmit = async (data: FormData) => {
     try {
-      data.id_contrato_items = items; // Add items to the form data
+      data.items = items;
       if (contrato) {
         const updatedContrato = await updateContrato(contrato.id, data);
         const updatedContratos = contratos.map((t) =>
@@ -72,7 +129,8 @@ function ContratoForm({
           ...data,
           id_refineria: activeRefineria.id,
         });
-        setContratos([...contratos, newContrato.contrato]);
+        console.log(newContrato);
+        setContratos([...contratos, newContrato.nuevoContrato]);
         showToast("success", "Éxito", "Contrato creado");
       }
       hideContratoFormDialog();
@@ -105,10 +163,9 @@ function ContratoForm({
   };
 
   const deleteItem = (index: number) => {
-    console.log(index);
     const newItems = items.filter((_: any, i: number) => i !== index);
     setItems(newItems);
-    setValue("id_contrato_items", newItems);
+    setValue("id_items", newItems);
   };
 
   const actionBodyTemplate = (rowData: any, options: any) => {
@@ -131,23 +188,97 @@ function ContratoForm({
       </div>
     );
   };
-  const onRowEditComplete = (e: any) => {
-    let _items = [...items];
-    let { newData, index } = e;
 
-    _items[index] = newData;
+  const productoEditor = (options: ColumnEditorOptions) => {
+    return (
+      <Dropdown
+        value={options.value}
+        options={productos}
+        onChange={(e: DropdownChangeEvent) => options.editorCallback!(e.value)}
+        placeholder="Selecionar un producto"
+        itemTemplate={(option) => {
+          return (
+            <Tag
+              value={option}
+              className={`customer-badge status-${option
+                .toLowerCase()
+                .replace(/[()]/g, "")
+                .replace(/\s+/g, "-")}`}
+            ></Tag>
+          );
+        }}
+      />
+    );
+  };
 
-    setItems(_items);
-  };
-  const allowEdit = (rowData: any) => {
-    return rowData.name !== "Blue Band";
-  };
   console.log(errors);
   return (
     <div>
       <Toast ref={toast} />
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="grid">
+          {/* Campo: Número de Contrato */}
+          <div className="field mb-4 col-12 sm:col-6 lg:col-4">
+            <label htmlFor="numeroContrato" className="font-medium text-900">
+              Número de Contrato
+            </label>
+            <InputText
+              id="numeroContrato"
+              {...register("numeroContrato")}
+              className={classNames("w-full", {
+                "p-invalid": errors.numeroContrato,
+              })}
+            />
+            {errors.numeroContrato && (
+              <small className="p-error">{errors.numeroContrato.message}</small>
+            )}
+          </div>
+          {/* Campo: Descripcion de Contrato */}
+          <div className="field mb-4 col-12 sm:col-6 lg:col-8">
+            <label htmlFor="numeroContrato" className="font-medium text-900">
+              Descripción de Contrato
+            </label>
+            <InputText
+              id="descripcion"
+              {...register("descripcion")}
+              className={classNames("w-full", {
+                "p-invalid": errors.descripcion,
+              })}
+            />
+            {errors.descripcion && (
+              <small className="p-error">{errors.descripcion.message}</small>
+            )}
+          </div>
+          {/* Campo: Nombre de Contacto */}
+          <div className="field mb-4 col-12 sm:col-6 lg:col-4">
+            <label
+              htmlFor="id_contacto.nombre"
+              className="font-medium text-900"
+            >
+              Nombre de Proveedor
+            </label>
+            <Dropdown
+              id="id_contacto._id"
+              value={watch("id_contacto")}
+              // {...register("id_contacto._id")}
+              onChange={(e) => {
+                setValue("id_contacto", e.value);
+              }}
+              options={contactos.map((contacto) => ({
+                label: contacto.nombre,
+                value: { _id: contacto.id, nombre: contacto.nombre },
+              }))}
+              placeholder="Seleccionar un proveedor"
+              className={classNames("w-full", {
+                "p-invalid": errors.id_contacto?.nombre,
+              })}
+            />
+            {errors.id_contacto?.nombre && (
+              <small className="p-error">
+                {errors.id_contacto.nombre.message}
+              </small>
+            )}
+          </div>
           {/* Campo: Tipo de Condiciones de Pago */}
           <div className="field mb-4 col-12 sm:col-6 lg:col-4">
             <label
@@ -156,9 +287,12 @@ function ContratoForm({
             >
               Tipo de Condiciones de Pago
             </label>
-            <InputText
+            <Dropdown
               id="condicionesPago.tipo"
+              value={watch("condicionesPago.tipo")}
               {...register("condicionesPago.tipo")}
+              options={["Contado", "Crédito"]}
+              placeholder="Seleccionar un tipo de condiciones de pago"
               className={classNames("w-full", {
                 "p-invalid": errors.condicionesPago?.tipo,
               })}
@@ -176,7 +310,7 @@ function ContratoForm({
               htmlFor="condicionesPago.plazo"
               className="font-medium text-900"
             >
-              Plazo de Condiciones de Pago
+              {" Plazo de Condiciones de Pago (Dias)"}
             </label>
             <Controller
               name="condicionesPago.plazo"
@@ -202,11 +336,35 @@ function ContratoForm({
           {/* Campo: Estado de Entrega */}
           <div className="field mb-4 col-12 sm:col-6 lg:col-4">
             <label htmlFor="estadoEntrega" className="font-medium text-900">
+              Estado de Contrato
+            </label>
+            <Dropdown
+              id="estado_contrato"
+              value={watch("estado_contrato")}
+              {...register("estado_contrato")}
+              options={estado_contratoOptions}
+              placeholder="Seleccionar estado de entrega"
+              className={classNames("w-full", {
+                "p-invalid": errors.estado_contrato,
+              })}
+            />
+            {errors.estado_contrato && (
+              <small className="p-error">
+                {errors.estado_contrato.message}
+              </small>
+            )}
+          </div>
+          {/* Campo: Estado de Entrega */}
+          <div className="field mb-4 col-12 sm:col-6 lg:col-4">
+            <label htmlFor="estadoEntrega" className="font-medium text-900">
               Estado de Entrega
             </label>
-            <InputText
+            <Dropdown
               id="estadoEntrega"
+              value={watch("estadoEntrega")}
               {...register("estadoEntrega")}
+              options={estadoEntregaOptions}
+              placeholder="Seleccionar estado de entrega"
               className={classNames("w-full", {
                 "p-invalid": errors.estadoEntrega,
               })}
@@ -215,39 +373,56 @@ function ContratoForm({
               <small className="p-error">{errors.estadoEntrega.message}</small>
             )}
           </div>
-
-          {/* Campo: Estado */}
+          {/* Campo: Fecha Inicio */}
           <div className="field mb-4 col-12 sm:col-6 lg:col-4">
-            <label htmlFor="estado" className="font-medium text-900">
-              Estado
+            <label htmlFor="estadoEntrega" className="font-medium text-900">
+              Fecha de Inicio
             </label>
-            <InputText
-              id="estado"
-              {...register("estado")}
-              className={classNames("w-full", { "p-invalid": errors.estado })}
-            />
-            {errors.estado && (
-              <small className="p-error">{errors.estado.message}</small>
-            )}
-          </div>
 
-          {/* Campo: Número de Contrato */}
-          <div className="field mb-4 col-12 sm:col-6 lg:col-4">
-            <label htmlFor="numeroContrato" className="font-medium text-900">
-              Número de Contrato
-            </label>
-            <InputText
-              id="numeroContrato"
-              {...register("numeroContrato")}
+            <Calendar
+              id="fechaInicio"
+              value={
+                watch("fechaInicio")
+                  ? new Date(watch("fechaInicio") as any)
+                  : undefined
+              }
+              {...register("fechaInicio")}
+              showTime
+              hourFormat="24"
               className={classNames("w-full", {
-                "p-invalid": errors.numeroContrato,
+                "p-invalid": errors.fechaInicio,
               })}
+              locale="es"
             />
-            {errors.numeroContrato && (
-              <small className="p-error">{errors.numeroContrato.message}</small>
+            {errors.fechaInicio && (
+              <small className="p-error">{errors.fechaInicio.message}</small>
             )}
           </div>
+          {/* Campo: Fecha Fin */}
+          <div className="field mb-4 col-12 sm:col-6 lg:col-4">
+            <label htmlFor="estadoEntrega" className="font-medium text-900">
+              Fecha de Fin
+            </label>
 
+            <Calendar
+              id="fechaFin"
+              value={
+                watch("fechaFin")
+                  ? new Date(watch("fechaFin") as any)
+                  : undefined
+              }
+              {...register("fechaFin")}
+              showTime
+              hourFormat="24"
+              className={classNames("w-full", {
+                "p-invalid": errors.fechaFin,
+              })}
+              locale="es"
+            />
+            {errors.fechaFin && (
+              <small className="p-error">{errors.fechaFin.message}</small>
+            )}
+          </div>
           {/* Tabla de Items del Contrato */}
           <div className="orders-subtable col-12">
             <h5>Items for {contrato?.name}</h5>
@@ -256,22 +431,14 @@ function ContratoForm({
               responsiveLayout="scroll"
               scrollable
               className="datatable-responsive"
-              editMode="row"
-              onRowEditComplete={onRowEditComplete}
+              size="small"
             >
               <Column
                 field="producto"
                 header="Producto"
                 sortable
                 // style={{ width: "20%" }}
-                editor={(options) => (
-                  <InputText
-                    value={options.value}
-                    onChange={(e) =>
-                      updateItem(options.rowIndex, "producto", e.target.value)
-                    }
-                  />
-                )}
+                editor={(options) => productoEditor(options)}
               />
               <Column
                 field="cantidad"
@@ -414,7 +581,7 @@ function ContratoForm({
                 )}
               />
               <Column
-                rowEditor={allowEdit}
+                rowEditor
                 headerStyle={{ width: "10%", minWidth: "8rem" }}
                 bodyStyle={{ textAlign: "center" }}
               ></Column>
@@ -433,85 +600,21 @@ function ContratoForm({
             />
           </div>
 
-          {/* Campo: ID de Refinería */}
-          <div className="field mb-4 col-12 sm:col-6 lg:col-4">
-            <label htmlFor="id_refineria._id" className="font-medium text-900">
-              ID de Refinería
+          {/* Campo: Estado */}
+          <div className="field mb-4 col-12 md:col-6">
+            <label htmlFor="estado" className="font-medium text-900">
+              Estado
             </label>
-            <InputText
-              id="id_refineria._id"
-              {...register("id_refineria._id")}
-              className={classNames("w-full", {
-                "p-invalid": errors.id_refineria?._id,
-              })}
+            <Dropdown
+              id="estado"
+              value={watch("estado")}
+              onChange={(e) => setValue("estado", e.value)}
+              options={estatusValues}
+              placeholder="Seleccionar"
+              className={classNames("w-full", { "p-invalid": errors.estado })}
             />
-            {errors.id_refineria?._id && (
-              <small className="p-error">
-                {errors.id_refineria._id.message}
-              </small>
-            )}
-          </div>
-
-          {/* Campo: Nombre de Refinería */}
-          <div className="field mb-4 col-12 sm:col-6 lg:col-4">
-            <label
-              htmlFor="id_refineria.nombre"
-              className="font-medium text-900"
-            >
-              Nombre de Refinería
-            </label>
-            <InputText
-              id="id_refineria.nombre"
-              {...register("id_refineria.nombre")}
-              className={classNames("w-full", {
-                "p-invalid": errors.id_refineria?.nombre,
-              })}
-            />
-            {errors.id_refineria?.nombre && (
-              <small className="p-error">
-                {errors.id_refineria.nombre.message}
-              </small>
-            )}
-          </div>
-
-          {/* Campo: ID de Contacto */}
-          <div className="field mb-4 col-12 sm:col-6 lg:col-4">
-            <label htmlFor="id_contacto._id" className="font-medium text-900">
-              ID de Contacto
-            </label>
-            <InputText
-              id="id_contacto._id"
-              {...register("id_contacto._id")}
-              className={classNames("w-full", {
-                "p-invalid": errors.id_contacto?._id,
-              })}
-            />
-            {errors.id_contacto?._id && (
-              <small className="p-error">
-                {errors.id_contacto._id.message}
-              </small>
-            )}
-          </div>
-
-          {/* Campo: Nombre de Contacto */}
-          <div className="field mb-4 col-12 sm:col-6 lg:col-4">
-            <label
-              htmlFor="id_contacto.nombre"
-              className="font-medium text-900"
-            >
-              Nombre de Contacto
-            </label>
-            <InputText
-              id="id_contacto.nombre"
-              {...register("id_contacto.nombre")}
-              className={classNames("w-full", {
-                "p-invalid": errors.id_contacto?.nombre,
-              })}
-            />
-            {errors.id_contacto?.nombre && (
-              <small className="p-error">
-                {errors.id_contacto.nombre.message}
-              </small>
+            {errors.estado && (
+              <small className="p-error">{errors.estado.message}</small>
             )}
           </div>
 

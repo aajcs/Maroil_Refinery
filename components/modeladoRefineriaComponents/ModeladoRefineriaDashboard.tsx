@@ -132,7 +132,6 @@ function ModeladoRefineriaDashboard() {
   const fetchLineaRecepcions = async () => {
     try {
       const lineaRecepcionsDB = await getLineaRecepcions();
-      console.log(lineaRecepcionsDB);
       if (lineaRecepcionsDB && Array.isArray(lineaRecepcionsDB.linea_cargas)) {
         const filteredLineaRecepcions = lineaRecepcionsDB.linea_cargas.filter(
           (lineaRecepcion: LineaRecepcion) =>

@@ -14,21 +14,7 @@ import {
   deleteLineaRecepcion,
 } from "@/app/api/lineaRecepcionService";
 import LineaRecepcionForm from "./LineaRecepcionForm";
-
-interface LineaRecepcion {
-  id: string;
-  nombre: string;
-  estado: boolean;
-  eliminado: boolean;
-  ubicacion: string;
-  material: string;
-  createdAt: string;
-  updatedAt: string;
-  id_refineria: {
-    _id: string | undefined;
-    id: string;
-  };
-}
+import { LineaRecepcion } from "@/libs/interfaces";
 
 function LineaRecepcionList() {
   const { activeRefineria } = useRefineriaStore();
@@ -54,7 +40,6 @@ function LineaRecepcionList() {
   const fetchLineaRecepcions = async () => {
     try {
       const lineaRecepcionsDB = await getLineaRecepcions();
-      console.log(lineaRecepcionsDB);
       if (lineaRecepcionsDB && Array.isArray(lineaRecepcionsDB.linea_cargas)) {
         const filteredLineaRecepcions = lineaRecepcionsDB.linea_cargas.filter(
           (lineaRecepcion: LineaRecepcion) =>

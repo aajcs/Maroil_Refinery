@@ -13,9 +13,7 @@ export const createTorreDestilacion = async (data: any) => {
   return response.data;
 };
 export const updateTorreDestilacion = async (id: string, data: any) => {
-  console.log(data);
   const response = await apiClient.put(`/torre/${id}`, data);
-  console.log(response.data);
   return response.data;
 };
 export const deleteTorreDestilacion = async (id: string) => {

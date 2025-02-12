@@ -25,7 +25,6 @@ function ModeladoRefineriaTorre(
   { torre }: TorreProps,
   props: SVGProps<SVGSVGElement>
 ) {
-  console.log(torre);
   const [apiData, setApiData] = useState({
     sections: torre.material.map((material) => ({
       name: material.nombre,

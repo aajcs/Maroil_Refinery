@@ -25,7 +25,6 @@ function UsuarioForm({
   usuarios,
   setUsuarios,
 }: UsuarioFormProps) {
-  console.log(usuario);
   const toast = useRef<Toast | null>(null);
   const {
     register,

@@ -40,7 +40,6 @@ function TanqueForm({
   const { activeRefineria } = useRefineriaStore();
   const toast = useRef<Toast | null>(null);
   const [checkboxValue, setCheckboxValue] = useState<string[]>([]);
-  console.log(tanque);
 
   const {
     register,
@@ -51,7 +50,6 @@ function TanqueForm({
   } = useForm<FormData>({
     resolver: zodResolver(tanqueSchema),
   });
-  // console.log("error del formulario", errors);
   useEffect(() => {
     if (tanque) {
       Object.keys(tanque).forEach((key) =>
@@ -67,7 +65,6 @@ function TanqueForm({
     try {
       if (tanque) {
         const updatedTorre = await updateTanque(tanque.id, data);
-        console.log(updatedTorre);
         const updatedTanques = tanques.map((t) =>
           t.id === updatedTorre.id ? updatedTorre : t
         );
@@ -80,7 +77,6 @@ function TanqueForm({
           ...data,
           id_refineria: activeRefineria.id,
         });
-        console.log(newTorre);
         setTanques([...tanques, newTorre.tanque]);
         showToast("success", "Éxito", "Tanque creado");
       }

@@ -15,21 +15,7 @@ import { Dialog } from "primereact/dialog";
 import { useRefineriaStore } from "@/store/refineriaStore";
 import { deleteContrato, getContratos } from "@/app/api/contratoService";
 import ContratoForm from "./ContratoForm";
-
-interface Contrato {
-  id: string;
-  nombre: string;
-  estado: boolean;
-  eliminado: boolean;
-  ubicacion: string;
-  material: string;
-  createdAt: string;
-  updatedAt: string;
-  id_refineria: {
-    _id: string | undefined;
-    id: string;
-  };
-}
+import { Contrato } from "@/libs/interfaces";
 
 function ContratoList() {
   const { activeRefineria } = useRefineriaStore();
@@ -149,29 +135,12 @@ function ContratoList() {
       />
     </>
   );
-  const materialBodyTemplate = (rowData: Contrato) => {
-    return (
-      <div>
-        {Array.isArray(rowData.material) &&
-          rowData.material.map((material, index) => (
-            <span
-              key={index}
-              className={`customer-badge status-${material
-                .toLowerCase()
-                .replace(/[()]/g, "")
-                .replace(/\s+/g, "-")}`}
-            >
-              {material}
-            </span>
-          ))}
-      </div>
-    );
-  };
+
   const rowExpansionTemplate = (data: any) => {
     return (
       <div className="orders-subtable">
         <h5>Items for {data.name}</h5>
-        <DataTable value={data.id_contrato_items} responsiveLayout="scroll">
+        <DataTable value={data.id_items} responsiveLayout="scroll">
           <Column
             field="producto"
             header="Producto"
@@ -271,6 +240,12 @@ function ContratoList() {
           style={{ width: "20%" }}
         />
         <Column
+          field="descripcion"
+          header="Descripción de Contrato"
+          sortable
+          style={{ width: "20%" }}
+        />
+        <Column
           field="condicionesPago.tipo"
           header="Tipo de Condiciones de Pago"
           sortable
@@ -290,6 +265,12 @@ function ContratoList() {
           style={{ width: "20%" }}
         />
         <Column
+          field="estado_contrato"
+          header="Estado de Contrato"
+          sortable
+          style={{ width: "20%" }}
+        />
+        <Column
           field="estado"
           header="Estado"
           sortable
@@ -305,6 +286,18 @@ function ContratoList() {
         <Column
           field="id_contacto.nombre"
           header="Nombre de Contacto"
+          sortable
+          style={{ width: "20%" }}
+        />
+        <Column
+          field="fechaInicio"
+          header="Fecha de Inicio"
+          sortable
+          style={{ width: "20%" }}
+        />
+        <Column
+          field="fechaFin"
+          header="Fecha de Fin"
           sortable
           style={{ width: "20%" }}
         />
@@ -360,7 +353,7 @@ function ContratoList() {
 
       <Dialog
         visible={contratoFormDialog}
-        style={{ width: "850px" }}
+        style={{ width: "80vw" }}
         header={`${contrato ? "Editar" : "Agregar"} Contrato`}
         modal
         onHide={hideContratoFormDialog}
