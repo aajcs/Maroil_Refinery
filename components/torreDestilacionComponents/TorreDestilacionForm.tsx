@@ -109,7 +109,7 @@ function TorreDestilacionForm({
           throw new Error("No se ha seleccionado una refinería");
         const newTorre = await createTorreDestilacion({
           ...requestData,
-          id_refineria: activeRefineria.id,
+          idRefineria: activeRefineria.id,
         });
         setTorresDestilacion([...torresDestilacion, newTorre.torre]);
         showToast("success", "Éxito", "Torre de destilación creada");

@@ -73,13 +73,13 @@ function RefineriaForm({
 
         if (index !== -1) {
           // Crear una copia del arreglo de refinerías
-          const _refinerias = [...refinerias];
+          const Refinerias = [...refinerias];
 
           // Actualizar la refinería en la copia del arreglo
-          _refinerias[index] = refineriaActualizada;
+          Refinerias[index] = refineriaActualizada;
 
           // Actualizar el estado local con el nuevo arreglo
-          setRefinerias(_refinerias);
+          setRefinerias(Refinerias);
 
           // Mostrar notificación de éxito
           toast.current?.show({

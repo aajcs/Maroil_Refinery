@@ -15,7 +15,7 @@ interface TorreProps {
     }[];
     createdAt: string;
     updatedAt: string;
-    id_refineria: {
+    idRefineria: {
       id: string | undefined;
       nombre: string;
     };

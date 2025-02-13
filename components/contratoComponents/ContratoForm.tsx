@@ -36,7 +36,7 @@ interface Contacto {
   material: string;
   createdAt: string;
   updatedAt: string;
-  id_refineria: {
+  idRefineria: {
     id: string | undefined;
   };
 }
@@ -61,7 +61,7 @@ function ContratoForm({
 }: ContratoFormProps) {
   const { activeRefineria } = useRefineriaStore();
   const toast = useRef<Toast | null>(null);
-  const [items, setItems] = useState(contrato?.id_items || []);
+  const [items, setItems] = useState(contrato?.idItems || []);
   const [contactos, setContactos] = useState<Contacto[]>([]);
   const [loading, setLoading] = useState(true);
   const {
@@ -99,7 +99,7 @@ function ContratoForm({
       if (contactosDB && Array.isArray(contactosDB.contactos)) {
         const filteredContactos = contactosDB.contactos.filter(
           (contacto: Contacto) =>
-            contacto.id_refineria.id === activeRefineria?.id
+            contacto.idRefineria.id === activeRefineria?.id
         );
         setContactos(filteredContactos);
       } else {
@@ -126,7 +126,7 @@ function ContratoForm({
           throw new Error("No se ha seleccionado una refinería");
         const newContrato = await createContrato({
           ...data,
-          id_refineria: activeRefineria.id,
+          idRefineria: activeRefineria.id,
         });
         console.log(newContrato);
         setContratos([...contratos, newContrato.nuevoContrato]);
@@ -164,7 +164,7 @@ function ContratoForm({
   const deleteItem = (index: number) => {
     const newItems = items.filter((_: any, i: number) => i !== index);
     setItems(newItems);
-    setValue("id_items", newItems);
+    setValue("idItems", newItems);
   };
 
   const actionBodyTemplate = (rowData: any, options: any) => {
@@ -250,18 +250,15 @@ function ContratoForm({
           </div>
           {/* Campo: Nombre de Contacto */}
           <div className="field mb-4 col-12 sm:col-6 lg:col-4">
-            <label
-              htmlFor="id_contacto.nombre"
-              className="font-medium text-900"
-            >
+            <label htmlFor="idContacto.nombre" className="font-medium text-900">
               Nombre de Proveedor
             </label>
             <Dropdown
-              id="id_contacto.id"
-              value={watch("id_contacto")}
-              // {...register("id_contacto.id")}
+              id="idContacto.id"
+              value={watch("idContacto")}
+              // {...register("idContacto.id")}
               onChange={(e) => {
-                setValue("id_contacto", e.value);
+                setValue("idContacto", e.value);
               }}
               options={contactos.map((contacto) => ({
                 label: contacto.nombre,
@@ -269,12 +266,12 @@ function ContratoForm({
               }))}
               placeholder="Seleccionar un proveedor"
               className={classNames("w-full", {
-                "p-invalid": errors.id_contacto?.nombre,
+                "p-invalid": errors.idContacto?.nombre,
               })}
             />
-            {errors.id_contacto?.nombre && (
+            {errors.idContacto?.nombre && (
               <small className="p-error">
-                {errors.id_contacto.nombre.message}
+                {errors.idContacto.nombre.message}
               </small>
             )}
           </div>

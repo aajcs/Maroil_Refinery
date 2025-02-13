@@ -67,7 +67,7 @@ function ContactoForm({
           throw new Error("No se ha seleccionado una refinería");
         const newContacto = await createContacto({
           ...data,
-          id_refineria: activeRefineria.id,
+          idRefineria: activeRefineria.id,
         });
         setContactos([...contactos, newContacto.contacto]);
         showToast("success", "Éxito", "Contacto creado");

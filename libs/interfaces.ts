@@ -7,7 +7,7 @@ export interface LineaRecepcion {
   material: string;
   createdAt: string;
   updatedAt: string;
-  id_refineria: {
+  idRefineria: {
     id: string | undefined;
   };
 }
@@ -21,7 +21,7 @@ export interface Tanque {
   material: string[];
   createdAt: string;
   updatedAt: string;
-  id_refineria: {
+  idRefineria: {
     id: string | undefined;
   };
   almacenamiento: number;
@@ -29,13 +29,15 @@ export interface Tanque {
 }
 // export interface Tanque {
 //   id: string;
-//   // id_refineria: { id: string };
+//   // idRefineria: { id: string };
 
 //   nombre: string;
 //   material: string[];
 // }
 
 export interface Contrato {
+  idItems: any;
+  idContacto: any;
   id: string;
   nombre: string;
   numeroContrato: string;
@@ -45,7 +47,7 @@ export interface Contrato {
   material: string;
   createdAt: string;
   updatedAt: string;
-  id_refineria: {
+  idRefineria: {
     id: string | undefined;
   };
 }
@@ -73,7 +75,7 @@ export interface Contacto {
   material: string;
   createdAt: string;
   updatedAt: string;
-  id_refineria: {
+  idRefineria: {
     id: string | undefined;
   };
 }
@@ -87,7 +89,7 @@ export interface TorreDestilacion {
   material: { estadoMaterial: string; posicion: string; nombre: string }[];
   createdAt: string;
   updatedAt: string;
-  id_refineria: {
+  idRefineria: {
     id: string | undefined;
     nombre: string;
   };

@@ -37,7 +37,7 @@ function ContactoList() {
       if (contactosDB && Array.isArray(contactosDB.contactos)) {
         const filteredContactos = contactosDB.contactos.filter(
           (contacto: Contacto) =>
-            contacto.id_refineria.id === activeRefineria?.id
+            contacto.idRefineria.id === activeRefineria?.id
         );
         setContactos(filteredContactos);
       } else {
@@ -195,7 +195,7 @@ function ContactoList() {
         />
         <Column field="tipo" header="Tipo" sortable style={{ width: "20%" }} />
         <Column
-          field="id_refineria.nombre"
+          field="idRefineria.nombre"
           header="ID Refinería"
           sortable
           style={{ width: "20%" }}

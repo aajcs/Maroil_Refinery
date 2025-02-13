@@ -44,7 +44,7 @@ function ContratoList() {
       if (contratosDB && Array.isArray(contratosDB.contratos)) {
         const filteredContratos = contratosDB.contratos.filter(
           (contrato: Contrato) =>
-            contrato.id_refineria.id === activeRefineria?.id
+            contrato.idRefineria.id === activeRefineria?.id
         );
         setContratos(filteredContratos);
       } else {
@@ -137,10 +137,11 @@ function ContratoList() {
   );
 
   const rowExpansionTemplate = (data: any) => {
+    console.log(data);
     return (
       <div className="orders-subtable">
         <h5>Items for {data.name}</h5>
-        <DataTable value={data.id_items} responsiveLayout="scroll">
+        <DataTable value={data.idItems} responsiveLayout="scroll">
           <Column
             field="producto"
             header="Producto"
@@ -265,7 +266,7 @@ function ContratoList() {
           style={{ width: "20%" }}
         />
         <Column
-          field="estado_contrato"
+          field="estadoContrato"
           header="Estado de Contrato"
           sortable
           style={{ width: "20%" }}
@@ -278,13 +279,13 @@ function ContratoList() {
         />
 
         <Column
-          field="id_refineria.nombre"
+          field="idRefineria.nombre"
           header="Nombre de Refinería"
           sortable
           style={{ width: "20%" }}
         />
         <Column
-          field="id_contacto.nombre"
+          field="idContacto.nombre"
           header="Nombre de Contacto"
           sortable
           style={{ width: "20%" }}

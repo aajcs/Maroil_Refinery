@@ -40,10 +40,10 @@ function LineaRecepcionList() {
   const fetchLineaRecepcions = async () => {
     try {
       const lineaRecepcionsDB = await getLineaRecepcions();
-      if (lineaRecepcionsDB && Array.isArray(lineaRecepcionsDB.linea_cargas)) {
-        const filteredLineaRecepcions = lineaRecepcionsDB.linea_cargas.filter(
+      if (lineaRecepcionsDB && Array.isArray(lineaRecepcionsDB.lineaCargas)) {
+        const filteredLineaRecepcions = lineaRecepcionsDB.lineaCargas.filter(
           (lineaRecepcion: LineaRecepcion) =>
-            lineaRecepcion.id_refineria.id === activeRefineria?.id
+            lineaRecepcion.idRefineria.id === activeRefineria?.id
         );
         setLineaRecepcions(filteredLineaRecepcions);
       } else {

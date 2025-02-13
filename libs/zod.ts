@@ -34,7 +34,7 @@ export const refineriaSchema = object({
   createdAt: string().optional(),
   updatedAt: string().optional(),
   id: string().optional(),
-  id_refineria: object({
+  idRefineria: object({
     id: string(),
     nombre: string(),
   }).optional(),
@@ -60,7 +60,7 @@ export const torreDestilacionSchema = object({
       nombre: string(),
     })
   ).optional(),
-  id_refineria: object({
+  idRefineria: object({
     id: string().optional(),
   }).optional(),
   createdAt: string().optional(),
@@ -76,7 +76,7 @@ export const tanqueSchema = object({
   material: array(string()).min(1, "El material es obligatorio"),
   capacidad: number().min(1, "La capacidad es obligatoria"),
   almacenamiento: number().min(1, "El almacenamiento es obligatorio"),
-  id_refineria: object({
+  idRefineria: object({
     id: string().optional(),
   }).optional(),
   createdAt: string().optional(),
@@ -91,7 +91,7 @@ export const lineaRecepcionSchema = object({
   ubicacion: string().min(1, "La ubicación es obligatoria"),
   createdAt: string().optional(),
   updatedAt: string().optional(),
-  id_refineria: object({
+  idRefineria: object({
     id: string().optional(),
   }).optional(),
 });
@@ -107,7 +107,7 @@ export const contactoSchema = object({
   direccion: string().min(1, "La dirección es obligatoria"),
   telefono: string().min(1, "El teléfono es obligatorio"),
   tipo: string().min(1, "El tipo es obligatorio"),
-  id_refineria: object({
+  idRefineria: object({
     id: string().optional(),
   }).optional(),
   representanteLegal: string().min(1, "El representante legal es obligatorio"),
@@ -136,11 +136,11 @@ export const contratoSchema = object({
   eliminado: boolean().default(false),
   numeroContrato: string().min(1, "El número de contrato es obligatorio"),
   descripcion: string().min(1, "El número de contrato es obligatorio"),
-  id_refineria: object({
+  idRefineria: object({
     id: string().optional(),
     nombre: string().min(1, "El nombre de la refinería es obligatorio"),
   }).optional(),
-  id_contacto: object({
+  idContacto: object({
     id: string().optional(),
     nombre: string().min(1, "El nombre del contacto es obligatorio"),
   }),
@@ -151,7 +151,7 @@ export const contratoSchema = object({
       fecha: string().optional(),
     })
   ).optional(),
-  id_items: array(
+  idItems: array(
     object({
       // estado: string().min(1, "El estado es obligatorio"),
       eliminado: boolean().default(false),
@@ -252,7 +252,7 @@ export const recepcionSchema = object({
       id: string().optional(),
       nombre: string().min(1, "El nombre del contacto es obligatorio"),
     }).optional(),
-    idContrato_items: array(
+    idItems: array(
       object({
         estado: string().min(1, "El estado es obligatorio"),
         eliminado: boolean().default(false),

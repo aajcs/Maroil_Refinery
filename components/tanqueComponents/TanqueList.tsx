@@ -36,7 +36,7 @@ function TanqueList() {
       const tanquesDB = await getTanques();
       if (tanquesDB && Array.isArray(tanquesDB.tanques)) {
         const filteredTanques = tanquesDB.tanques.filter(
-          (tanque: Tanque) => tanque.id_refineria.id === activeRefineria?.id
+          (tanque: Tanque) => tanque.idRefineria.id === activeRefineria?.id
         );
         setTanques(filteredTanques);
       } else {

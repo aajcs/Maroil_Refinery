@@ -59,10 +59,10 @@ function RefineriaList() {
     setRefineriaFormDialog(false);
   };
   const deleteProduct = async () => {
-    let _refinerias = refinerias.filter((val) => val.id !== refineria?.id);
+    let Refinerias = refinerias.filter((val) => val.id !== refineria?.id);
     if (refineria?.id) {
       const refineriaElminado = await deleteRefineria(refineria.id);
-      setRefinerias(_refinerias);
+      setRefinerias(Refinerias);
       setDeleteProductDialog(false);
       toast.current?.show({
         severity: "success",

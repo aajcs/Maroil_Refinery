@@ -41,9 +41,10 @@ function ModeladoRefineriaDashboard() {
   const fetchTanques = async () => {
     try {
       const tanquesDB = await getTanques();
+      console.log(tanquesDB);
       if (tanquesDB && Array.isArray(tanquesDB.tanques)) {
         const filteredTanques = tanquesDB.tanques.filter(
-          (tanque: Tanque) => tanque.id_refineria.id === activeRefineria?.id
+          (tanque: Tanque) => tanque.idRefineria.id === activeRefineria?.id
         );
         setTanques(filteredTanques);
       } else {
@@ -65,7 +66,7 @@ function ModeladoRefineriaDashboard() {
         const filteredTorresDestilacion = torresDestilacionDB.torres
           .filter(
             (torre: TorreDestilacion) =>
-              torre.id_refineria?.id === activeRefineria?.id
+              torre.idRefineria?.id === activeRefineria?.id
           )
           .map((torre: TorreDestilacion) => {
             // Ordenar el array de materiales por la posición
@@ -86,10 +87,10 @@ function ModeladoRefineriaDashboard() {
   const fetchLineaRecepcions = async () => {
     try {
       const lineaRecepcionsDB = await getLineaRecepcions();
-      if (lineaRecepcionsDB && Array.isArray(lineaRecepcionsDB.linea_cargas)) {
-        const filteredLineaRecepcions = lineaRecepcionsDB.linea_cargas.filter(
+      if (lineaRecepcionsDB && Array.isArray(lineaRecepcionsDB.lineaCargas)) {
+        const filteredLineaRecepcions = lineaRecepcionsDB.lineaCargas.filter(
           (lineaRecepcion: LineaRecepcion) =>
-            lineaRecepcion.id_refineria.id === activeRefineria?.id
+            lineaRecepcion.idRefineria.id === activeRefineria?.id
         );
         setLineaRecepcions(filteredLineaRecepcions);
       } else {

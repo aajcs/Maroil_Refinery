@@ -44,7 +44,7 @@ function TorreDestilacionList() {
       if (torresDestilacionDB && Array.isArray(torresDestilacionDB.torres)) {
         const filteredTorresDestilacion = torresDestilacionDB.torres.filter(
           (torre: TorreDestilacion) =>
-            torre.id_refineria.id === activeRefineria?.id
+            torre.idRefineria.id === activeRefineria?.id
         );
         setTorresDestilacion(filteredTorresDestilacion);
       } else {

@@ -73,9 +73,9 @@ function LineaRecepcionForm({
           throw new Error("No se ha seleccionado una refinería");
         const newTorre = await createLineaRecepcion({
           ...data,
-          id_refineria: activeRefineria.id,
+          idRefineria: activeRefineria.id,
         });
-        setLineaRecepcions([...lineaRecepcions, newTorre.linea_carga]);
+        setLineaRecepcions([...lineaRecepcions, newTorre.lineaCarga]);
         showToast("success", "Éxito", "LineaRecepcion creado");
       }
       hideLineaRecepcionFormDialog();
