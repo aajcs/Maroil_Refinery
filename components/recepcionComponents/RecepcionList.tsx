@@ -4,11 +4,7 @@ import { useRouter } from "next/navigation";
 import { FilterMatchMode } from "primereact/api";
 import { Button } from "primereact/button";
 import { Column } from "primereact/column";
-import {
-  DataTable,
-  DataTableExpandedRows,
-  DataTableFilterMeta,
-} from "primereact/datatable";
+import { DataTable, DataTableFilterMeta } from "primereact/datatable";
 import { InputText } from "primereact/inputtext";
 import { Toast } from "primereact/toast";
 import { Dialog } from "primereact/dialog";
