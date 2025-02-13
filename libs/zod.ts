@@ -35,7 +35,7 @@ export const refineriaSchema = object({
   updatedAt: string().optional(),
   id: string().optional(),
   id_refineria: object({
-    _id: string(),
+    id: string(),
     nombre: string(),
   }).optional(),
   material: array(
@@ -61,7 +61,7 @@ export const torreDestilacionSchema = object({
     })
   ).optional(),
   id_refineria: object({
-    _id: string().optional(),
+    id: string().optional(),
   }).optional(),
   createdAt: string().optional(),
   updatedAt: string().optional(),
@@ -77,7 +77,7 @@ export const tanqueSchema = object({
   capacidad: number().min(1, "La capacidad es obligatoria"),
   almacenamiento: number().min(1, "El almacenamiento es obligatorio"),
   id_refineria: object({
-    _id: string().optional(),
+    id: string().optional(),
   }).optional(),
   createdAt: string().optional(),
   updatedAt: string().optional(),
@@ -92,7 +92,7 @@ export const lineaRecepcionSchema = object({
   createdAt: string().optional(),
   updatedAt: string().optional(),
   id_refineria: object({
-    _id: string().optional(),
+    id: string().optional(),
   }).optional(),
 });
 
@@ -108,7 +108,7 @@ export const contactoSchema = object({
   telefono: string().min(1, "El teléfono es obligatorio"),
   tipo: string().min(1, "El tipo es obligatorio"),
   id_refineria: object({
-    _id: string().optional(),
+    id: string().optional(),
   }).optional(),
   representanteLegal: string().min(1, "El representante legal es obligatorio"),
   estado: string().min(1, "El estado es obligatorio"),
@@ -123,7 +123,7 @@ export const contratoSchema = object({
     plazo: number().min(0, "El plazo debe ser un número no negativo"),
     abono: array(
       object({
-        _id: string().optional(),
+        id: string().optional(),
         monto: number().min(0, "El monto debe ser un número no negativo"),
         fecha: string().optional(),
       })
@@ -137,16 +137,16 @@ export const contratoSchema = object({
   numeroContrato: string().min(1, "El número de contrato es obligatorio"),
   descripcion: string().min(1, "El número de contrato es obligatorio"),
   id_refineria: object({
-    _id: string().optional(),
+    id: string().optional(),
     nombre: string().min(1, "El nombre de la refinería es obligatorio"),
   }).optional(),
   id_contacto: object({
-    _id: string().optional(),
+    id: string().optional(),
     nombre: string().min(1, "El nombre del contacto es obligatorio"),
   }),
   abono: array(
     object({
-      _id: string().optional(),
+      id: string().optional(),
       monto: number().min(0, "El monto debe ser un número no negativo"),
       fecha: string().optional(),
     })
@@ -155,7 +155,7 @@ export const contratoSchema = object({
     object({
       // estado: string().min(1, "El estado es obligatorio"),
       eliminado: boolean().default(false),
-      _id: string().optional(),
+      id: string().optional(),
       producto: string().min(1, "El producto es obligatorio"),
       cantidad: number().min(0, "La cantidad debe ser un número no negativo"),
       precioUnitario: number().min(
@@ -188,7 +188,7 @@ export const contratoSchema = object({
     object({
       // estado: string().min(1, "El estado es obligatorio"),
       eliminado: boolean().default(false),
-      _id: string().optional(),
+      id: string().optional(),
       producto: string().min(1, "El producto es obligatorio"),
       cantidad: number().min(0, "La cantidad debe ser un número no negativo"),
       precioUnitario: number().min(
@@ -219,7 +219,7 @@ export const contratoSchema = object({
   ).optional(),
   historialModificaciones: array(
     object({
-      _id: string().optional(),
+      id: string().optional(),
       fecha: string().optional(),
       descripcion: string().optional(),
     })
@@ -241,22 +241,22 @@ export const recepcionSchema = object({
   ),
   fechaInicio: union([string(), date()]).optional(),
   fechaFin: union([string(), date()]).optional(),
-  id_contrato: object({
+  idContrato: object({
     numeroContrato: string().min(1, "El estado es obligatorio").optional(),
-    _id: string().optional(),
-    id_refineria: object({
-      _id: string().optional(),
+    id: string().optional(),
+    idRefineria: object({
+      id: string().optional(),
       nombre: string().min(1, "El nombre de la refinería es obligatorio"),
     }).optional(),
-    id_contacto: object({
-      _id: string().optional(),
+    idContacto: object({
+      id: string().optional(),
       nombre: string().min(1, "El nombre del contacto es obligatorio"),
     }).optional(),
-    id_contrato_items: array(
+    idContrato_items: array(
       object({
         estado: string().min(1, "El estado es obligatorio"),
         eliminado: boolean().default(false),
-        _id: string().optional(),
+        id: string().optional(),
         producto: string().min(1, "El producto es obligatorio"),
         cantidad: number().min(0, "La cantidad debe ser un número no negativo"),
         precioUnitario: number().min(
@@ -286,22 +286,22 @@ export const recepcionSchema = object({
       })
     ).optional(),
   }).optional(),
-  id_linea: object({
-    _id: string().optional(),
+  idLinea: object({
+    id: string().optional(),
     nombre: string().min(1, "El nombre de la línea es obligatorio"),
   }).optional(),
-  id_tanque: object({
-    _id: string().optional(),
+  idTanque: object({
+    id: string().optional(),
     nombre: string().min(1, "El nombre del tanque es obligatorio"),
   }).optional(),
-  id_guia: number().min(0, "El ID de la guía debe ser un número no negativo"),
-  id_refineria: object({
-    _id: string().optional(),
+  idGuia: number().min(0, "El ID de la guía debe ser un número no negativo"),
+  idRefineria: object({
+    id: string().optional(),
     nombre: string().min(1, "El nombre de la refinería es obligatorio"),
   }).optional(),
   placa: string().min(1, "La placa es obligatoria"),
-  nombre_chofer: string().min(1, "El nombre del chofer es obligatorio"),
-  apellido_chofer: string().min(1, "El apellido del chofer es obligatorio"),
+  nombreChofer: string().min(1, "El nombre del chofer es obligatorio"),
+  apellidoChofer: string().min(1, "El apellido del chofer es obligatorio"),
   createdAt: union([string(), date()]).optional(),
   updatedAt: union([string(), date()]).optional(),
   id: string().optional(),

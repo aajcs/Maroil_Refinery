@@ -11,21 +11,7 @@ import { Dialog } from "primereact/dialog";
 import { useRefineriaStore } from "@/store/refineriaStore";
 import { deleteContacto, getContactos } from "@/app/api/contactoService";
 import ContactoForm from "./ContactoForm";
-
-interface Contacto {
-  id: string;
-  nombre: string;
-  estado: boolean;
-  eliminado: boolean;
-  ubicacion: string;
-  material: string;
-  createdAt: string;
-  updatedAt: string;
-  id_refineria: {
-    _id: string | undefined;
-    id: string;
-  };
-}
+import { Contacto } from "@/libs/interfaces";
 
 function ContactoList() {
   const { activeRefineria } = useRefineriaStore();
@@ -51,7 +37,7 @@ function ContactoList() {
       if (contactosDB && Array.isArray(contactosDB.contactos)) {
         const filteredContactos = contactosDB.contactos.filter(
           (contacto: Contacto) =>
-            contacto.id_refineria._id === activeRefineria?.id
+            contacto.id_refineria.id === activeRefineria?.id
         );
         setContactos(filteredContactos);
       } else {

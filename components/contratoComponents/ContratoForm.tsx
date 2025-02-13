@@ -37,8 +37,7 @@ interface Contacto {
   createdAt: string;
   updatedAt: string;
   id_refineria: {
-    _id: string | undefined;
-    id: string;
+    id: string | undefined;
   };
 }
 const estatusValues = ["true", "false"];
@@ -100,7 +99,7 @@ function ContratoForm({
       if (contactosDB && Array.isArray(contactosDB.contactos)) {
         const filteredContactos = contactosDB.contactos.filter(
           (contacto: Contacto) =>
-            contacto.id_refineria._id === activeRefineria?.id
+            contacto.id_refineria.id === activeRefineria?.id
         );
         setContactos(filteredContactos);
       } else {
@@ -258,15 +257,15 @@ function ContratoForm({
               Nombre de Proveedor
             </label>
             <Dropdown
-              id="id_contacto._id"
+              id="id_contacto.id"
               value={watch("id_contacto")}
-              // {...register("id_contacto._id")}
+              // {...register("id_contacto.id")}
               onChange={(e) => {
                 setValue("id_contacto", e.value);
               }}
               options={contactos.map((contacto) => ({
                 label: contacto.nombre,
-                value: { _id: contacto.id, nombre: contacto.nombre },
+                value: { id: contacto.id, nombre: contacto.nombre },
               }))}
               placeholder="Seleccionar un proveedor"
               className={classNames("w-full", {

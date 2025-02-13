@@ -14,21 +14,7 @@ import {
 } from "@/app/api/torreDestilacionService";
 import TorreDestilacionForm from "./TorreDestilacionForm";
 import { useRefineriaStore } from "@/store/refineriaStore";
-
-interface TorreDestilacion {
-  id: string;
-  nombre: string;
-  estado: boolean;
-  eliminado: boolean;
-  ubicacion: string;
-  material: string;
-  createdAt: string;
-  updatedAt: string;
-  id_refineria: {
-    _id: string | undefined;
-    id: string;
-  };
-}
+import { TorreDestilacion } from "@/libs/interfaces";
 
 function TorreDestilacionList() {
   const { activeRefineria } = useRefineriaStore();
@@ -58,7 +44,7 @@ function TorreDestilacionList() {
       if (torresDestilacionDB && Array.isArray(torresDestilacionDB.torres)) {
         const filteredTorresDestilacion = torresDestilacionDB.torres.filter(
           (torre: TorreDestilacion) =>
-            torre.id_refineria._id === activeRefineria?.id
+            torre.id_refineria.id === activeRefineria?.id
         );
         setTorresDestilacion(filteredTorresDestilacion);
       } else {

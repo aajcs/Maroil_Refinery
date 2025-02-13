@@ -44,7 +44,7 @@ function ContratoList() {
       if (contratosDB && Array.isArray(contratosDB.contratos)) {
         const filteredContratos = contratosDB.contratos.filter(
           (contrato: Contrato) =>
-            contrato.id_refineria._id === activeRefineria?.id
+            contrato.id_refineria.id === activeRefineria?.id
         );
         setContratos(filteredContratos);
       } else {

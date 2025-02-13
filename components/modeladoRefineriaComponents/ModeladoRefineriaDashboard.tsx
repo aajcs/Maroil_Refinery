@@ -11,53 +11,7 @@ import ModeladoRefineriaTorreSVG from "./ModeladoRefineriaTorreSVG";
 import { ProgressSpinner } from "primereact/progressspinner";
 import ModeladoRefineriaLineaCarga from "./ModeladoRefineriaLineaCarga";
 import { getLineaRecepcions } from "@/app/api/lineaRecepcionService";
-
-interface Tanque {
-  id: string;
-  nombre: string;
-  estado: boolean;
-  eliminado: boolean;
-  ubicacion: string;
-  material: string[];
-  almacenamiento: number;
-  capacidad: number;
-  createdAt: string;
-  updatedAt: string;
-  id_refineria: {
-    _id: string | undefined;
-    id: string;
-  };
-}
-
-interface TorreDestilacion {
-  id: string;
-  nombre: string;
-  estado: boolean;
-  eliminado: boolean;
-  ubicacion: string;
-  material: { estadoMaterial: string; posicion: string; nombre: string }[];
-  createdAt: string;
-  updatedAt: string;
-  id_refineria: {
-    _id: string | undefined;
-    nombre: string;
-  };
-}
-
-interface LineaRecepcion {
-  id: string;
-  nombre: string;
-  estado: boolean;
-  eliminado: boolean;
-  ubicacion: string;
-  material: string;
-  createdAt: string;
-  updatedAt: string;
-  id_refineria: {
-    _id: string | undefined;
-    id: string;
-  };
-}
+import { LineaRecepcion, Tanque, TorreDestilacion } from "@/libs/interfaces";
 
 function ModeladoRefineriaDashboard() {
   const { activeRefineria } = useRefineriaStore();
@@ -89,7 +43,7 @@ function ModeladoRefineriaDashboard() {
       const tanquesDB = await getTanques();
       if (tanquesDB && Array.isArray(tanquesDB.tanques)) {
         const filteredTanques = tanquesDB.tanques.filter(
-          (tanque: Tanque) => tanque.id_refineria._id === activeRefineria?.id
+          (tanque: Tanque) => tanque.id_refineria.id === activeRefineria?.id
         );
         setTanques(filteredTanques);
       } else {
@@ -111,7 +65,7 @@ function ModeladoRefineriaDashboard() {
         const filteredTorresDestilacion = torresDestilacionDB.torres
           .filter(
             (torre: TorreDestilacion) =>
-              torre.id_refineria?._id === activeRefineria?.id
+              torre.id_refineria?.id === activeRefineria?.id
           )
           .map((torre: TorreDestilacion) => {
             // Ordenar el array de materiales por la posición
@@ -135,7 +89,7 @@ function ModeladoRefineriaDashboard() {
       if (lineaRecepcionsDB && Array.isArray(lineaRecepcionsDB.linea_cargas)) {
         const filteredLineaRecepcions = lineaRecepcionsDB.linea_cargas.filter(
           (lineaRecepcion: LineaRecepcion) =>
-            lineaRecepcion.id_refineria._id === activeRefineria?.id
+            lineaRecepcion.id_refineria.id === activeRefineria?.id
         );
         setLineaRecepcions(filteredLineaRecepcions);
       } else {

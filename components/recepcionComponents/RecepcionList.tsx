@@ -15,21 +15,7 @@ import { Dialog } from "primereact/dialog";
 import { useRefineriaStore } from "@/store/refineriaStore";
 import RecepcionForm from "./RecepcionForm";
 import { deleteRecepcion, getRecepcions } from "@/app/api/recepcionService";
-
-interface Recepcion {
-  id: string;
-  nombre: string;
-  estado: boolean;
-  eliminado: boolean;
-  ubicacion: string;
-  material: string;
-  createdAt: string;
-  updatedAt: string;
-  id_refineria: {
-    _id: string | undefined;
-    id: string;
-  };
-}
+import { Recepcion } from "@/libs/interfaces";
 
 function RecepcionList() {
   const { activeRefineria } = useRefineriaStore();
@@ -57,7 +43,7 @@ function RecepcionList() {
       if (recepcionsDB && Array.isArray(recepcionsDB.recepcions)) {
         const filteredRecepcions = recepcionsDB.recepcions.filter(
           (recepcion: Recepcion) =>
-            recepcion.id_refineria._id === activeRefineria?.id
+            recepcion.idRefineria.id === activeRefineria?.id
         );
         setRecepcions(filteredRecepcions);
       } else {
@@ -192,19 +178,19 @@ function RecepcionList() {
           style={{ width: "10%" }}
         />
         <Column
-          field="id_contrato.numeroContrato"
+          field="idContrato.numeroContrato"
           header="Número de Contrato"
           sortable
           style={{ width: "10%" }}
         />
         <Column
-          field="id_linea.nombre"
+          field="idLinea.nombre"
           header="Nombre de la Línea"
           sortable
           style={{ width: "10%" }}
         />
         <Column
-          field="id_tanque.nombre"
+          field="idTanque.nombre"
           header="ID del Tanque"
           sortable
           style={{ width: "10%" }}
@@ -216,13 +202,13 @@ function RecepcionList() {
           style={{ width: "10%" }}
         />
         <Column
-          field="nombre_chofer"
+          field="nombreChofer"
           header="Nombre del Chofer"
           sortable
           style={{ width: "10%" }}
         />
         <Column
-          field="apellido_chofer"
+          field="apellidoChofer"
           header="Apellido del Chofer"
           sortable
           style={{ width: "10%" }}

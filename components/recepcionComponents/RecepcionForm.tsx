@@ -11,10 +11,7 @@ import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
 import { useRefineriaStore } from "@/store/refineriaStore";
 import { createRecepcion, updateRecepcion } from "@/app/api/recepcionService";
 import { InputNumber } from "primereact/inputnumber";
-import { DataTable } from "primereact/datatable";
-import { Column, ColumnEditorOptions } from "primereact/column";
-import { Tag } from "primereact/tag";
-import { getContactos } from "@/app/api/contactoService";
+
 import { Calendar } from "primereact/calendar";
 import { getLineaRecepcions } from "@/app/api/lineaRecepcionService";
 import { Contrato, LineaRecepcion, Tanque } from "@/libs/interfaces";
@@ -31,20 +28,6 @@ interface RecepcionFormProps {
   setRecepcion: (recepcion: any) => void;
 }
 
-interface Contacto {
-  id: string;
-  nombre: string;
-  estado: boolean;
-  eliminado: boolean;
-  ubicacion: string;
-  material: string;
-  createdAt: string;
-  updatedAt: string;
-  id_refineria: {
-    _id: string | undefined;
-    id: string;
-  };
-}
 const estatusValues = ["true", "false"];
 
 function RecepcionForm({
@@ -92,10 +75,11 @@ function RecepcionForm({
   const fetchLineaRecepcions = async () => {
     try {
       const lineaRecepcionsDB = await getLineaRecepcions();
+      console.log(lineaRecepcionsDB);
       if (lineaRecepcionsDB && Array.isArray(lineaRecepcionsDB.linea_cargas)) {
         const filteredLineaRecepcions = lineaRecepcionsDB.linea_cargas.filter(
           (lineaRecepcion: LineaRecepcion) =>
-            lineaRecepcion.id_refineria._id === activeRefineria?.id
+            lineaRecepcion.id_refineria.id === activeRefineria?.id
         );
         setLineaRecepcions(filteredLineaRecepcions);
       } else {
@@ -112,7 +96,7 @@ function RecepcionForm({
       const tanquesDB = await getTanques();
       if (tanquesDB && Array.isArray(tanquesDB.tanques)) {
         const filteredTanques = tanquesDB.tanques.filter(
-          (tanque: Tanque) => tanque.id_refineria._id === activeRefineria?.id
+          (tanque: Tanque) => tanque.id_refineria.id === activeRefineria?.id
         );
         setTanques(filteredTanques);
       } else {
@@ -130,7 +114,7 @@ function RecepcionForm({
       if (contratosDB && Array.isArray(contratosDB.contratos)) {
         const filteredContratos = contratosDB.contratos.filter(
           (contrato: Contrato) =>
-            contrato.id_refineria._id === activeRefineria?.id
+            contrato.id_refineria.id === activeRefineria?.id
         );
         setContratos(filteredContratos);
       } else {
@@ -282,54 +266,51 @@ function RecepcionForm({
 
           {/* Campo: Número de Contrato */}
           <div className="field mb-4 col-12 sm:col-6 lg:col-4">
-            <label
-              htmlFor="id_contacto.nombre"
-              className="font-medium text-900"
-            >
+            <label htmlFor="idContacto.nombre" className="font-medium text-900">
               Numero de Contrato
             </label>
             <Dropdown
-              id="id_contrato._id"
-              value={watch("id_contrato")}
-              // {...register("id_linea._id")}
+              id="idContrato.id"
+              value={watch("idContrato")}
+              // {...register("idLinea.id")}
               onChange={(e) => {
-                setValue("id_contrato", e.value);
+                setValue("idContrato", e.value);
               }}
               options={contratos.map((contrato) => ({
                 label: contrato.numeroContrato,
                 value: {
-                  _id: contrato.id,
+                  id: contrato.id,
                   nombre: contrato.numeroContrato,
                 },
               }))}
               placeholder="Seleccionar un proveedor"
               className={classNames("w-full", {
-                "p-invalid": errors.id_contrato?.numeroContrato,
+                "p-invalid": errors.idContrato?.numeroContrato,
               })}
             />
-            {errors.id_contrato?.numeroContrato && (
+            {errors.idContrato?.numeroContrato && (
               <small className="p-error">
-                {errors.id_contrato.numeroContrato.message}
+                {errors.idContrato.numeroContrato.message}
               </small>
             )}
           </div>
           <div className="field mb-4 col-12 sm:col-6 lg:col-4">
             <label
-              htmlFor="id_contrato.numeroContrato"
+              htmlFor="idContrato.numeroContrato"
               className="font-medium text-900"
             >
               Número de Contrato
             </label>
             <InputText
-              id="id_contrato.numeroContrato"
-              {...register("id_contrato.numeroContrato")}
+              id="idContrato.numeroContrato"
+              {...register("idContrato.numeroContrato")}
               className={classNames("w-full", {
-                "p-invalid": errors.id_contrato?.numeroContrato,
+                "p-invalid": errors.idContrato?.numeroContrato,
               })}
             />
-            {errors.id_contrato?.numeroContrato && (
+            {errors.idContrato?.numeroContrato && (
               <small className="p-error">
-                {errors.id_contrato.numeroContrato.message}
+                {errors.idContrato.numeroContrato.message}
               </small>
             )}
           </div>
@@ -341,46 +322,42 @@ function RecepcionForm({
               Nombre de la Línea
             </label>
             <Dropdown
-              id="id_linea._id"
-              value={watch("id_linea")}
-              // {...register("id_linea._id")}
+              id="idLinea.id"
+              value={watch("idLinea")}
+              // {...register("idLinea.id")}
               onChange={(e) => {
-                setValue("id_linea", e.value);
+                setValue("idLinea", e.value);
               }}
               options={lineaRecepcions.map((lineaRecepcion) => ({
                 label: lineaRecepcion.nombre,
                 value: {
-                  _id: lineaRecepcion.id,
+                  id: lineaRecepcion.id,
                   nombre: lineaRecepcion.nombre,
                 },
               }))}
               placeholder="Seleccionar un proveedor"
               className={classNames("w-full", {
-                "p-invalid": errors.id_linea?.nombre,
+                "p-invalid": errors.idLinea?.nombre,
               })}
             />
-            {errors.id_linea?.nombre && (
-              <small className="p-error">
-                {errors.id_linea.nombre.message}
-              </small>
+            {errors.idLinea?.nombre && (
+              <small className="p-error">{errors.idLinea.nombre.message}</small>
             )}
           </div>
           {/* Campo: Nombre de la Línea */}
           <div className="field mb-4 col-12 sm:col-6 lg:col-4">
-            <label htmlFor="id_linea.nombre" className="font-medium text-900">
+            <label htmlFor="idLinea.nombre" className="font-medium text-900">
               Nombre de la Línea
             </label>
             <InputText
-              id="id_linea.nombre"
-              {...register("id_linea.nombre")}
+              id="idLinea.nombre"
+              {...register("idLinea.nombre")}
               className={classNames("w-full", {
-                "p-invalid": errors.id_linea?.nombre,
+                "p-invalid": errors.idLinea?.nombre,
               })}
             />
-            {errors.id_linea?.nombre && (
-              <small className="p-error">
-                {errors.id_linea.nombre.message}
-              </small>
+            {errors.idLinea?.nombre && (
+              <small className="p-error">{errors.idLinea.nombre.message}</small>
             )}
           </div>
           {/* Campo:  del Tanque */}
@@ -392,45 +369,45 @@ function RecepcionForm({
               Nombre de Tanque
             </label>
             <Dropdown
-              id="id_tanque._id"
-              value={watch("id_tanque")}
-              // {...register("id_tanque._id")}
+              id="idTanque.id"
+              value={watch("idTanque")}
+              // {...register("idTanque.id")}
               onChange={(e) => {
-                setValue("id_tanque", e.value);
+                setValue("idTanque", e.value);
               }}
               options={tanques.map((tanque) => ({
                 label: tanque.nombre,
                 value: {
-                  _id: tanque.id,
+                  id: tanque.id,
                   nombre: tanque.nombre,
                 },
               }))}
               placeholder="Seleccionar un proveedor"
               className={classNames("w-full", {
-                "p-invalid": errors.id_tanque?.nombre,
+                "p-invalid": errors.idTanque?.nombre,
               })}
             />
-            {errors.id_tanque?.nombre && (
+            {errors.idTanque?.nombre && (
               <small className="p-error">
-                {errors.id_tanque.nombre.message}
+                {errors.idTanque.nombre.message}
               </small>
             )}
           </div>
           {/* Campo: ID del Tanque */}
           <div className="field mb-4 col-12 sm:col-6 lg:col-4">
-            <label htmlFor="id_tanque._id" className="font-medium text-900">
+            <label htmlFor="idTanque.id" className="font-medium text-900">
               Nombre del Tanque
             </label>
             <InputText
-              id="id_tanque.nombre"
-              {...register("id_tanque.nombre")}
+              id="idTanque.nombre"
+              {...register("idTanque.nombre")}
               className={classNames("w-full", {
-                "p-invalid": errors.id_tanque?.nombre,
+                "p-invalid": errors.idTanque?.nombre,
               })}
             />
-            {errors.id_tanque?.nombre && (
+            {errors.idTanque?.nombre && (
               <small className="p-error">
-                {errors.id_tanque.nombre.message}
+                {errors.idTanque.nombre.message}
               </small>
             )}
           </div>
@@ -452,62 +429,60 @@ function RecepcionForm({
 
           {/* Campo: Nombre del Chofer */}
           <div className="field mb-4 col-12 sm:col-6 lg:col-4">
-            <label htmlFor="nombre_chofer" className="font-medium text-900">
+            <label htmlFor="nombreChofer" className="font-medium text-900">
               Nombre del Chofer
             </label>
             <InputText
-              id="nombre_chofer"
-              {...register("nombre_chofer")}
+              id="nombreChofer"
+              {...register("nombreChofer")}
               className={classNames("w-full", {
-                "p-invalid": errors.nombre_chofer,
+                "p-invalid": errors.nombreChofer,
               })}
             />
-            {errors.nombre_chofer && (
-              <small className="p-error">{errors.nombre_chofer.message}</small>
+            {errors.nombreChofer && (
+              <small className="p-error">{errors.nombreChofer.message}</small>
             )}
           </div>
 
           {/* Campo: Apellido del Chofer */}
           <div className="field mb-4 col-12 sm:col-6 lg:col-4">
-            <label htmlFor="apellido_chofer" className="font-medium text-900">
+            <label htmlFor="apellidoChofer" className="font-medium text-900">
               Apellido del Chofer
             </label>
             <InputText
-              id="apellido_chofer"
-              {...register("apellido_chofer")}
+              id="apellidoChofer"
+              {...register("apellidoChofer")}
               className={classNames("w-full", {
-                "p-invalid": errors.apellido_chofer,
+                "p-invalid": errors.apellidoChofer,
               })}
             />
-            {errors.apellido_chofer && (
-              <small className="p-error">
-                {errors.apellido_chofer.message}
-              </small>
+            {errors.apellidoChofer && (
+              <small className="p-error">{errors.apellidoChofer.message}</small>
             )}
           </div>
 
           {/* Campo: ID de la Guía */}
           <div className="field mb-4 col-12 sm:col-6 lg:col-4">
-            <label htmlFor="id_guia" className="font-medium text-900">
+            <label htmlFor="idGuia" className="font-medium text-900">
               ID de la Guía
             </label>
             <Controller
-              name="id_guia"
+              name="idGuia"
               control={control}
               render={({ field }) => (
                 <InputNumber
-                  id="id_guia"
+                  id="idGuia"
                   value={field.value}
                   onValueChange={(e) => field.onChange(e.value)}
                   className={classNames("w-full", {
-                    "p-invalid": errors.id_guia,
+                    "p-invalid": errors.idGuia,
                   })}
                   min={0}
                 />
               )}
             />
-            {errors.id_guia && (
-              <small className="p-error">{errors.id_guia.message}</small>
+            {errors.idGuia && (
+              <small className="p-error">{errors.idGuia.message}</small>
             )}
           </div>
         </div>

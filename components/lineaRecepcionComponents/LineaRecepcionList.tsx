@@ -43,7 +43,7 @@ function LineaRecepcionList() {
       if (lineaRecepcionsDB && Array.isArray(lineaRecepcionsDB.linea_cargas)) {
         const filteredLineaRecepcions = lineaRecepcionsDB.linea_cargas.filter(
           (lineaRecepcion: LineaRecepcion) =>
-            lineaRecepcion.id_refineria._id === activeRefineria?.id
+            lineaRecepcion.id_refineria.id === activeRefineria?.id
         );
         setLineaRecepcions(filteredLineaRecepcions);
       } else {
