@@ -3,7 +3,7 @@
 import { useRefineriaStore } from "@/store/refineriaStore";
 import ModeladoRefineriaTanque from "./ModeladoRefineriaTanque";
 import ModeladoRefineriaTorre from "./ModeladoRefineriaTorre";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { getTanques } from "@/app/api/tanqueService";
 import { getTorresDestilacion } from "@/app/api/torreDestilacionService";
 import ModeladoRefineriaLineaDescarga from "./ModeladoRefineriaLineaDescarga";
@@ -11,7 +11,13 @@ import ModeladoRefineriaTorreSVG from "./ModeladoRefineriaTorreSVG";
 import { ProgressSpinner } from "primereact/progressspinner";
 import ModeladoRefineriaLineaCarga from "./ModeladoRefineriaLineaCarga";
 import { getLineaRecepcions } from "@/app/api/lineaRecepcionService";
-import { LineaRecepcion, Tanque, TorreDestilacion } from "@/libs/interfaces";
+import {
+  LineaRecepcion,
+  Recepcion,
+  Tanque,
+  TorreDestilacion,
+} from "@/libs/interfaces";
+import { getRecepcions } from "@/app/api/recepcionService";
 
 function ModeladoRefineriaDashboard() {
   const { activeRefineria } = useRefineriaStore();
@@ -20,88 +26,149 @@ function ModeladoRefineriaDashboard() {
     TorreDestilacion[]
   >([]);
   const [lineaRecepcions, setLineaRecepcions] = useState<LineaRecepcion[]>([]);
+  const [recepcions, setRecepcions] = useState<Recepcion[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Obtener tanques y torres de destilación
-  useEffect(() => {
-    const fetchData = async () => {
-      if (activeRefineria?.id) {
-        await fetchTanques();
-        await fetchTorresDestilacion();
-        await fetchLineaRecepcions();
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     if (activeRefineria?.id) {
+  //       await fetchTanques();
+  //       await fetchTorresDestilacion();
+  //       await fetchLineaRecepcions();
 
-        setLoading(false);
-      }
-    };
+  //       setLoading(false);
+  //     }
+  //   };
 
-    fetchData();
-  }, [activeRefineria]);
+  //   fetchData();
+  // }, [activeRefineria]);
 
-  // Obtener tanques de la refinería activa
-  const fetchTanques = async () => {
+  // // Obtener tanques de la refinería activa
+  // const fetchTanques = async () => {
+  //   try {
+  //     const tanquesDB = await getTanques();
+  //     console.log(tanquesDB);
+  //     if (tanquesDB && Array.isArray(tanquesDB.tanques)) {
+  //       const filteredTanques = tanquesDB.tanques.filter(
+  //         (tanque: Tanque) => tanque.idRefineria.id === activeRefineria?.id
+  //       );
+  //       setTanques(filteredTanques);
+  //     } else {
+  //       console.error("La estructura de tanquesDB no es la esperada");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error al obtener los tanques:", error);
+  //   }
+  // };
+
+  // // Obtener torres de destilación de la refinería activa
+  // const fetchTorresDestilacion = async () => {
+  //   try {
+  //     const torresDestilacionDB = await getTorresDestilacion();
+  //     if (
+  //       torresDestilacionDB?.torres &&
+  //       Array.isArray(torresDestilacionDB.torres)
+  //     ) {
+  //       const filteredTorresDestilacion = torresDestilacionDB.torres
+  //         .filter(
+  //           (torre: TorreDestilacion) =>
+  //             torre.idRefineria?.id === activeRefineria?.id
+  //         )
+  //         .map((torre: TorreDestilacion) => {
+  //           // Ordenar el array de materiales por la posición
+  //           torre.material.sort(
+  //             (a, b) => parseInt(a.posicion, 10) - parseInt(b.posicion, 10)
+  //           );
+  //           return torre;
+  //         });
+
+  //       setTorresDestilacion(filteredTorresDestilacion);
+  //     } else {
+  //       console.error("La estructura de torresDestilacionDB no es la esperada");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error al obtener las torres de destilación:", error);
+  //   }
+  // };
+  // const fetchLineaRecepcions = async () => {
+  //   try {
+  //     const lineaRecepcionsDB = await getLineaRecepcions();
+  //     if (lineaRecepcionsDB && Array.isArray(lineaRecepcionsDB.lineaCargas)) {
+  //       const filteredLineaRecepcions = lineaRecepcionsDB.lineaCargas.filter(
+  //         (lineaRecepcion: LineaRecepcion) =>
+  //           lineaRecepcion.idRefineria.id === activeRefineria?.id
+  //       );
+  //       setLineaRecepcions(filteredLineaRecepcions);
+  //     } else {
+  //       console.error("La estructura de lineaRecepcionsDB no es la esperada");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error al obtener los lineaRecepcions:", error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+  const fetchData = useCallback(async (activeRefineriaId: string) => {
+    setLoading(true);
     try {
-      const tanquesDB = await getTanques();
-      console.log(tanquesDB);
-      if (tanquesDB && Array.isArray(tanquesDB.tanques)) {
-        const filteredTanques = tanquesDB.tanques.filter(
-          (tanque: Tanque) => tanque.idRefineria.id === activeRefineria?.id
-        );
-        setTanques(filteredTanques);
-      } else {
-        console.error("La estructura de tanquesDB no es la esperada");
-      }
-    } catch (error) {
-      console.error("Error al obtener los tanques:", error);
-    }
-  };
+      const [tanquesDB, torresDestilacionDB, lineaRecepcionsDB, recepcionsDB] =
+        await Promise.all([
+          getTanques(),
+          getTorresDestilacion(),
+          getLineaRecepcions(),
+          getRecepcions(),
+        ]);
 
-  // Obtener torres de destilación de la refinería activa
-  const fetchTorresDestilacion = async () => {
-    try {
-      const torresDestilacionDB = await getTorresDestilacion();
-      if (
-        torresDestilacionDB?.torres &&
-        Array.isArray(torresDestilacionDB.torres)
-      ) {
-        const filteredTorresDestilacion = torresDestilacionDB.torres
-          .filter(
+      // Filtrar y procesar tanques
+      const filteredTanques =
+        tanquesDB?.tanques?.filter(
+          (tanque: Tanque) => tanque.idRefineria?.id === activeRefineriaId
+        ) || [];
+      setTanques(filteredTanques);
+
+      // Filtrar y procesar torres de destilación
+      const filteredTorresDestilacion =
+        torresDestilacionDB?.torres
+          ?.filter(
             (torre: TorreDestilacion) =>
-              torre.idRefineria?.id === activeRefineria?.id
+              torre.idRefineria?.id === activeRefineriaId
           )
-          .map((torre: TorreDestilacion) => {
-            // Ordenar el array de materiales por la posición
-            torre.material.sort(
+          .map((torre: TorreDestilacion) => ({
+            ...torre,
+            material: torre.material.sort(
               (a, b) => parseInt(a.posicion, 10) - parseInt(b.posicion, 10)
-            );
-            return torre;
-          });
+            ),
+          })) || [];
+      setTorresDestilacion(filteredTorresDestilacion);
 
-        setTorresDestilacion(filteredTorresDestilacion);
-      } else {
-        console.error("La estructura de torresDestilacionDB no es la esperada");
-      }
-    } catch (error) {
-      console.error("Error al obtener las torres de destilación:", error);
-    }
-  };
-  const fetchLineaRecepcions = async () => {
-    try {
-      const lineaRecepcionsDB = await getLineaRecepcions();
-      if (lineaRecepcionsDB && Array.isArray(lineaRecepcionsDB.lineaCargas)) {
-        const filteredLineaRecepcions = lineaRecepcionsDB.lineaCargas.filter(
+      // Filtrar línea de recepciones
+      const filteredLineaRecepcions =
+        lineaRecepcionsDB?.lineaCargas?.filter(
           (lineaRecepcion: LineaRecepcion) =>
-            lineaRecepcion.idRefineria.id === activeRefineria?.id
-        );
-        setLineaRecepcions(filteredLineaRecepcions);
-      } else {
-        console.error("La estructura de lineaRecepcionsDB no es la esperada");
-      }
+            lineaRecepcion.idRefineria?.id === activeRefineriaId
+        ) || [];
+      setLineaRecepcions(filteredLineaRecepcions);
+
+      // Filtrar recepciones
+      const filteredRecepcions =
+        recepcionsDB?.recepcions?.filter(
+          (recepcion: Recepcion) =>
+            recepcion.idRefineria?.id === activeRefineriaId
+        ) || [];
+      setRecepcions(filteredRecepcions);
     } catch (error) {
-      console.error("Error al obtener los lineaRecepcions:", error);
+      console.error("Error al obtener los datos:", error);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    if (activeRefineria?.id) {
+      fetchData(activeRefineria.id);
+    }
+  }, [activeRefineria?.id, fetchData]);
   return (
     <div className="p-4">
       {loading ? (
@@ -119,6 +186,7 @@ function ModeladoRefineriaDashboard() {
                 <div key={lineaRecepcion.id} className="mb-2">
                   <ModeladoRefineriaLineaCarga
                     lineaRecepcion={lineaRecepcion}
+                    recepcions={recepcions}
                   />
                 </div>
               ))}
