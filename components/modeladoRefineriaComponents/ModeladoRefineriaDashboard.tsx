@@ -18,15 +18,18 @@ import {
   TorreDestilacion,
 } from "@/libs/interfaces";
 import { getRecepcions } from "@/app/api/recepcionService";
-
+import { formatDateFH } from "@/utils/dateUtils";
+import { useSocket } from "@/hooks/useSocket";
 function ModeladoRefineriaDashboard() {
   const { activeRefineria } = useRefineriaStore();
+  const { recepcionModificado, refineriaModificado } = useSocket();
   const [tanques, setTanques] = useState<Tanque[]>([]);
   const [torresDestilacion, setTorresDestilacion] = useState<
     TorreDestilacion[]
   >([]);
   const [lineaRecepcions, setLineaRecepcions] = useState<LineaRecepcion[]>([]);
   const [recepcions, setRecepcions] = useState<Recepcion[]>([]);
+  console.log(recepcions);
   const [loading, setLoading] = useState(true);
 
   // Obtener tanques y torres de destilación
@@ -169,6 +172,23 @@ function ModeladoRefineriaDashboard() {
       fetchData(activeRefineria.id);
     }
   }, [activeRefineria?.id, fetchData]);
+  useEffect(() => {
+    if (recepcionModificado) {
+      console.log(JSON.stringify(recepcionModificado, null, 2));
+      setRecepcions((prevRecepcions) => {
+        const index = prevRecepcions.findIndex(
+          (recepcion) => recepcion.id === recepcionModificado.id
+        );
+        if (index !== -1) {
+          const updatedRecepcions = [...prevRecepcions];
+          updatedRecepcions[index] = recepcionModificado;
+          return updatedRecepcions;
+        }
+        return prevRecepcions;
+      });
+    }
+  }, [recepcionModificado]);
+
   return (
     <div className="p-4">
       {loading ? (
@@ -177,6 +197,72 @@ function ModeladoRefineriaDashboard() {
         </div>
       ) : (
         <div className="grid">
+          <div className="col-12 md:col-6 lg:col-12">
+            <div className="  flex flex-row">
+              {/* <pre className="bg-gray-100 p-2 rounded text-sm overflow-auto">
+                {JSON.stringify(recepcions, null, 2)}
+              </pre> */}
+
+              {recepcions.map((recepcion) => (
+                <div key={recepcion.id} className="m-2 flex flex-column card">
+                  <div>
+                    <strong>Cantidad Recibida:</strong>{" "}
+                    {recepcion.cantidadRecibida}
+                  </div>
+                  <div>
+                    <strong>Tanque:</strong>{" "}
+                    {recepcion.idTanque
+                      ? recepcion.idTanque.nombre
+                      : "No tiene tanque asignado"}
+                  </div>
+                  <div>
+                    <strong>Línea:</strong>{" "}
+                    {recepcion.idLinea
+                      ? recepcion.idLinea.nombre
+                      : "No tiene línea asignada"}
+                  </div>
+                  <div>
+                    <strong>Producto:</strong>{" "}
+                    {recepcion.idContratoItems.producto}
+                  </div>
+                  <div>
+                    <strong>Fecha de Inicio:</strong>{" "}
+                    {formatDateFH(recepcion.fechaInicio)}
+                  </div>
+                  <div>
+                    <strong>Fecha de Fin:</strong>{" "}
+                    {formatDateFH(recepcion.fechaFin)}
+                  </div>
+                  <div>
+                    <strong>Placa:</strong> {recepcion.placa}
+                  </div>
+                  <div>
+                    <strong>Chofer:</strong> {recepcion.nombreChofer}{" "}
+                    {recepcion.apellidoChofer}
+                  </div>
+
+                  <div>
+                    <strong>Estado de Carga:</strong> {recepcion.estadoCarga}
+                  </div>
+                  <div>
+                    <strong>ID de Guía:</strong> {recepcion.idGuia}
+                  </div>
+                  <div>
+                    <strong>Número de Contrato:</strong>{" "}
+                    {recepcion.idContrato.numeroContrato}
+                  </div>
+                  <div>
+                    <strong>Última Actualización:</strong>{" "}
+                    {formatDateFH(recepcion.updatedAt)}
+                  </div>
+                  <div>
+                    <strong>Estado</strong> {recepcion.estado}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
           {/* Línea de recepción */}
           <div className="col-12 md:col-6 lg:col-2">
             <div className="card p-3">

@@ -113,9 +113,16 @@ function RecepcionForm({
     fetchData();
   }, [fetchData]);
   const onSubmit = async (data: FormData) => {
+    console.log(data);
     try {
       if (recepcion) {
-        const updatedRecepcion = await updateRecepcion(recepcion.id, data);
+        const updatedRecepcion = await updateRecepcion(recepcion.id, {
+          ...data,
+          idContrato: data.idContrato?.id,
+          idLinea: data.idLinea?.id,
+          idTanque: data.idTanque?.id,
+          idRefineria: activeRefineria?.id,
+        });
         const updatedRecepcions = recepcions.map((t) =>
           t.id === updatedRecepcion.id ? updatedRecepcion : t
         );
@@ -128,7 +135,6 @@ function RecepcionForm({
           ...data,
           idRefineria: activeRefineria.id,
         });
-        console.log(newRecepcion);
         setRecepcions([...recepcions, newRecepcion.nuevoRecepcion]);
         showToast("success", "Éxito", "Recepcion creado");
       }
@@ -153,7 +159,7 @@ function RecepcionForm({
 
   // console.log(errors);
   // console.log(JSON.stringify(watch("idContrato"), null, 2));
-  console.log(watch("idContrato"));
+  // console.log(watch("idContrato"));
   if (loading) {
     return (
       <div
@@ -461,6 +467,13 @@ function RecepcionForm({
               <small className="p-error">{errors.estado.message}</small>
             )}
           </div>
+        </div>
+        <div className="col-12">
+          <Button
+            type="submit"
+            label={recepcion ? "Modificar Refinería" : "Crear Refinería"}
+            className="w-auto mt-3"
+          />
         </div>
       </form>
     </div>

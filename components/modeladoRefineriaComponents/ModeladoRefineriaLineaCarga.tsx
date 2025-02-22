@@ -6,17 +6,19 @@ import {
   PocisionCerrada,
   Tuberia,
 } from "./ElementosLineaCarga";
+import { Recepcion } from "@/libs/interfaces";
 const ModeladoRefineriaLineaCarga = (props: any) => {
   const { lineaRecepcion, recepcions } = props;
-  console.log(recepcions);
   const [isActive, setIsActive] = useState(false);
 
   const toggleButton = () => {
     setIsActive(!isActive);
   };
   const hasAssociatedRecepcion = recepcions.some(
-    (recepcion: any) => recepcion.idLinea.id === lineaRecepcion.id
+    (recepcion: Recepcion) =>
+      recepcion.idLinea.id === lineaRecepcion.id && recepcion.estado === "true"
   );
+  console.log(hasAssociatedRecepcion);
   return (
     <svg
       id="eYfEaAlRzTb1"
@@ -49,7 +51,8 @@ const ModeladoRefineriaLineaCarga = (props: any) => {
         <g>
           {recepcions
             .filter(
-              (recepcion: any) => recepcion.idLinea.id === lineaRecepcion.id
+              (recepcion: Recepcion) =>
+                recepcion.idLinea.id === lineaRecepcion.id
             )
             .map((recepcion: any, index: number) => (
               <g key={index}>

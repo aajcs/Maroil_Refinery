@@ -80,7 +80,6 @@ function RecepcionForm({
   const fetchLineaRecepcions = async () => {
     try {
       const lineaRecepcionsDB = await getLineaRecepcions();
-      console.log(lineaRecepcionsDB);
       if (lineaRecepcionsDB && Array.isArray(lineaRecepcionsDB.lineaCargas)) {
         const filteredLineaRecepcions = lineaRecepcionsDB.lineaCargas.filter(
           (lineaRecepcion: LineaRecepcion) =>
@@ -116,7 +115,6 @@ function RecepcionForm({
   const fetchContratos = async () => {
     try {
       const contratosDB = await getContratos();
-      console.log("contratoDB", contratosDB);
       if (contratosDB && Array.isArray(contratosDB.contratos)) {
         const filteredContratos = contratosDB.contratos.filter(
           (contrato: Contrato) =>
@@ -148,7 +146,6 @@ function RecepcionForm({
           ...data,
           idRefineria: activeRefineria.id,
         });
-        console.log(newRecepcion);
         setRecepcions([...recepcions, newRecepcion.nuevoRecepcion]);
         showToast("success", "Éxito", "Recepcion creado");
       }

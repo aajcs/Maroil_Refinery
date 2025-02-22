@@ -11,17 +11,9 @@ import { Toast } from "primereact/toast";
 import { Dialog } from "primereact/dialog";
 import RefineriaForm from "./RefineriaForm";
 import { deleteRefineria, getRefinerias } from "@/app/api/refineriaService";
+import { Refineria } from "@/libs/interfaces";
 
 function RefineriaList() {
-  interface Refineria {
-    id: string;
-    nombre: string;
-    correo: string;
-    rol: string;
-    acceso: string;
-    estado: string;
-  }
-
   const [refinerias, setRefinerias] = useState<Refineria[]>([]);
   const [refineria, setRefineria] = useState<Refineria | null>(null);
 

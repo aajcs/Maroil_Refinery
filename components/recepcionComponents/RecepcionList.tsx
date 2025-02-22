@@ -16,7 +16,6 @@ import { Recepcion } from "@/libs/interfaces";
 function RecepcionList() {
   const { activeRefineria } = useRefineriaStore();
   const [recepcions, setRecepcions] = useState<Recepcion[]>([]);
-  console.log(recepcions);
   const [recepcion, setRecepcion] = useState<Recepcion | null>(null);
   const [filters, setFilters] = useState<DataTableFilterMeta>({});
   const [loading, setLoading] = useState(true);
@@ -35,7 +34,6 @@ function RecepcionList() {
   const fetchRecepcions = async () => {
     try {
       const recepcionsDB = await getRecepcions();
-      console.log(recepcionsDB);
       if (recepcionsDB && Array.isArray(recepcionsDB.recepcions)) {
         const filteredRecepcions = recepcionsDB.recepcions.filter(
           (recepcion: Recepcion) =>
@@ -253,7 +251,7 @@ function RecepcionList() {
           />
           {recepcion && (
             <span>
-              ¿Estás seguro de que deseas eliminar <b>{recepcion.nombre}</b>?
+              ¿Estás seguro de que deseas eliminar <b>{recepcion.idGuia}</b>?
             </span>
           )}
         </div>

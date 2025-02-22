@@ -137,7 +137,6 @@ function ContratoList() {
   );
 
   const rowExpansionTemplate = (data: any) => {
-    console.log(data);
     return (
       <div className="orders-subtable">
         <h5>Items for {data.name}</h5>

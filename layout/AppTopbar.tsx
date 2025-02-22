@@ -15,6 +15,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { classNames } from "primereact/utils";
 import { signOut, useSession } from "next-auth/react";
 import { User } from "next-auth";
+import { useSocket } from "@/hooks/useSocket";
 interface ExtendedUser extends User {
   usuario: {
     nombre: string;
@@ -25,9 +26,11 @@ interface ExtendedUser extends User {
 
 const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
   const { data: session } = useSession();
+  const { online, desconectarSocket } = useSocket();
 
   const handleSignOut = async () => {
     await signOut();
+    desconectarSocket();
   };
 
   const { onMenuToggle, layoutConfig, tabs, closeTab } =
@@ -142,6 +145,9 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
               </span>
               <span className="profile-job">
                 {(session?.user as ExtendedUser)?.usuario.rol.toLowerCase()}
+              </span>
+              <span className="profile-job">
+                {online ? "Conectado" : "Desconectado"}
               </span>
             </span>
             <i className="pi pi-angle-down"></i>

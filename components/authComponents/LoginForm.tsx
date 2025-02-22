@@ -12,6 +12,7 @@ import { loginSchema } from "@/libs/zod";
 import { LayoutContext } from "@/layout/context/layoutcontext";
 import { Page } from "@/types";
 import { signIn } from "next-auth/react";
+import { useSocket } from "@/hooks/useSocket";
 
 type FormData = z.infer<typeof loginSchema>;
 
@@ -20,7 +21,7 @@ const LoginForm: Page = () => {
   const { layoutConfig } = useContext(LayoutContext);
   const [error, setError] = useState("");
   const filledInput = layoutConfig.inputStyle === "filled";
-
+  const { conectarSocket } = useSocket();
   const {
     register,
     handleSubmit,
@@ -38,8 +39,11 @@ const LoginForm: Page = () => {
     });
     if (resAuth?.error) setError(resAuth.error as string);
 
-    if (resAuth?.ok) return router.push("/");
-    // router.push("/");
+    if (resAuth?.ok) {
+      router.push("/");
+      conectarSocket();
+      return;
+    }
   };
 
   return (

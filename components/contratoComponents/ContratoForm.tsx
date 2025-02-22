@@ -128,7 +128,6 @@ function ContratoForm({
           ...data,
           idRefineria: activeRefineria.id,
         });
-        console.log(newContrato);
         setContratos([...contratos, newContrato.nuevoContrato]);
         showToast("success", "Éxito", "Contrato creado");
       }

@@ -1,3 +1,12 @@
+export interface Refineria {
+  id: string;
+  nombre: string;
+  correo: string;
+  rol: string;
+  acceso: string;
+  estado: string;
+}
+
 export interface LineaRecepcion {
   id: string;
   nombre: string;
@@ -54,16 +63,64 @@ export interface Contrato {
 
 export interface Recepcion {
   id: string;
-  nombre: string;
-  estado: boolean;
+  estadoCarga: string;
+  estado: string;
   eliminado: boolean;
-  ubicacion: string;
-  material: string;
-  createdAt: string;
-  updatedAt: string;
-  idRefineria: {
+  idContrato: {
+    idItems: {
+      estado: boolean;
+      eliminado: boolean;
+      producto: string;
+      cantidad: number;
+      precioUnitario: number;
+      gravedadAPI: number;
+      azufre: number;
+      viscosidad: number;
+      densidad: number;
+      contenidoAgua: number;
+      origen: string;
+      temperatura: number;
+      presion: number;
+      idContrato: string;
+      id: string;
+    }[];
+    numeroContrato: string;
+    idRefineria: {
+      nombre: string;
+      id: string;
+    };
+    idContacto: {
+      nombre: string;
+      id: string;
+    };
     id: string;
   };
+  idContratoItems: {
+    producto: string;
+    cantidad: number;
+    id: string;
+  };
+  idLinea: {
+    nombre: string;
+    id: string;
+  };
+  idRefineria: {
+    nombre: string;
+    id: string;
+  };
+  idTanque: {
+    nombre: string;
+    id: string;
+  };
+  cantidadRecibida: number;
+  fechaInicio: string;
+  fechaFin: string;
+  idGuia: number;
+  placa: string;
+  nombreChofer: string;
+  apellidoChofer: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Contacto {
