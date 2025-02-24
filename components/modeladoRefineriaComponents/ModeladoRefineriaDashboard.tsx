@@ -174,14 +174,6 @@ function ModeladoRefineriaDashboard() {
                   />
                 </div>
               ))}
-
-              {/* {tanques
-                .filter((tanque) => !tanque.material.includes("Petroleo Crudo"))
-                .map((tanque, index) => (
-                  <div key={index} className="col-12 md:col-6">
-                    <ModeladoRefineriaLineaCarga />
-                  </div>
-                ))} */}
             </div>
           </div>
           {/* Almacenamiento Crudo */}
@@ -211,7 +203,7 @@ function ModeladoRefineriaDashboard() {
                 {torresDestilacion.map((torre) => (
                   <div key={torre.id} className="col-12 md:col-6">
                     <ModeladoRefineriaTorre torre={torre} />
-                    <ModeladoRefineriaTorreSVG />
+                    {/* <ModeladoRefineriaTorreSVG /> */}
                   </div>
                 ))}
               </div>

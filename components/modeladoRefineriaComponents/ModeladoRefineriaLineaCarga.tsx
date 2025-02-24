@@ -6,24 +6,24 @@ import {
   PocisionCerrada,
   Tuberia,
 } from "./ElementosLineaCarga";
-import { Recepcion } from "@/libs/interfaces";
-const ModeladoRefineriaLineaCarga = (props: any) => {
-  const { lineaRecepcion, recepcions } = props;
-  const [isActive, setIsActive] = useState(false);
+import { LineaRecepcion, Recepcion } from "@/libs/interfaces";
+interface ModeladoRefineriaLineaCargaProps {
+  lineaRecepcion: LineaRecepcion; // Ajusta el tipo según sea necesario
+  recepcions: Recepcion[]; // Ajusta el tipo según sea necesario
+}
+const ModeladoRefineriaLineaCarga = ({
+  lineaRecepcion,
+  recepcions,
+}: ModeladoRefineriaLineaCargaProps) => {
   const [animationKey, setAnimationKey] = useState(0);
 
-  const toggleButton = () => {
-    setIsActive(!isActive);
-  };
   const hasAssociatedRecepcion = recepcions.some(
-    (recepcion: Recepcion) =>
+    (recepcion) =>
       recepcion.idLinea.id === lineaRecepcion.id && recepcion.estado === "true"
   );
   useEffect(() => {
     setAnimationKey((prev) => prev + 1);
   }, [hasAssociatedRecepcion]);
-
-  console.log(hasAssociatedRecepcion);
 
   return (
     <svg
@@ -37,8 +37,8 @@ const ModeladoRefineriaLineaCarga = (props: any) => {
       textRendering="geometricPrecision"
       project-id="be6fbb0f9bd74a698581b7dd144c3cc0"
       export-id="7883f6bc6f9a4492a90e99a6643eceea"
-      cached="false"
-      {...props}
+      // cached="false"
+      // {...props}
     >
       <Defs />
       <g transform="matrix(-1 0 0-1 390.484357 167.237367)">

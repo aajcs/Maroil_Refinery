@@ -59,10 +59,10 @@ function LineaRecepcionForm({
   const onSubmit = async (data: FormData) => {
     try {
       if (lineaRecepcion) {
-        const updatedTorre = await updateLineaRecepcion(
-          lineaRecepcion.id,
-          data
-        );
+        const updatedTorre = await updateLineaRecepcion(lineaRecepcion.id, {
+          ...data,
+          idRefineria: activeRefineria?.id,
+        });
         const updatedLineaRecepcions = lineaRecepcions.map((t) =>
           t.id === updatedTorre.id ? updatedTorre : t
         );
