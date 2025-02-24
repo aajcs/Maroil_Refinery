@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Defs,
   GandolaCarga,
@@ -10,6 +10,7 @@ import { Recepcion } from "@/libs/interfaces";
 const ModeladoRefineriaLineaCarga = (props: any) => {
   const { lineaRecepcion, recepcions } = props;
   const [isActive, setIsActive] = useState(false);
+  const [animationKey, setAnimationKey] = useState(0);
 
   const toggleButton = () => {
     setIsActive(!isActive);
@@ -18,7 +19,12 @@ const ModeladoRefineriaLineaCarga = (props: any) => {
     (recepcion: Recepcion) =>
       recepcion.idLinea.id === lineaRecepcion.id && recepcion.estado === "true"
   );
+  useEffect(() => {
+    setAnimationKey((prev) => prev + 1);
+  }, [hasAssociatedRecepcion]);
+
   console.log(hasAssociatedRecepcion);
+
   return (
     <svg
       id="eYfEaAlRzTb1"
@@ -55,7 +61,7 @@ const ModeladoRefineriaLineaCarga = (props: any) => {
                 recepcion.idLinea.id === lineaRecepcion.id
             )
             .map((recepcion: any, index: number) => (
-              <g key={index}>
+              <g key={`${animationKey}-${index}`}>
                 <g
                   id="eYfEaAlRzTb66"
                   transform="matrix(-1 0 0 1 195.70719 21.492352)"

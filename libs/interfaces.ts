@@ -56,6 +56,11 @@ export interface Contrato {
   material: string;
   createdAt: string;
   updatedAt: string;
+  fechaInicio: string;
+  fechaFin: string;
+  estadoContrato: string;
+  estadoEntrega: string;
+  descripcion: string;
   idRefineria: {
     id: string | undefined;
   };
@@ -115,6 +120,7 @@ export interface Recepcion {
   cantidadRecibida: number;
   fechaInicio: string;
   fechaFin: string;
+  fechaDespacho: string;
   idGuia: number;
   placa: string;
   nombreChofer: string;
