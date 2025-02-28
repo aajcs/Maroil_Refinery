@@ -74,7 +74,7 @@ function ContratoForm({
   } = useForm<FormData>({
     resolver: zodResolver(contratoSchema),
   });
-
+  console.log("quetiene", contrato);
   const [productos] = useState<string[]>([
     "Nafta",
     "Queroseno",
@@ -114,6 +114,7 @@ function ContratoForm({
   const onSubmit = async (data: FormData) => {
     try {
       data.items = items;
+      console.log("data", data);
       if (contrato) {
         const updatedContrato = await updateContrato(contrato.id, {
           ...data,
@@ -133,7 +134,9 @@ function ContratoForm({
           idRefineria: activeRefineria.id,
           idContacto: data.idContacto.id,
         });
-        setContratos([...contratos, newContrato.nuevoContrato]);
+        console.log("nuevoContrato", newContrato);
+        setContratos([...contratos, newContrato]);
+        console.log(contratos);
         showToast("success", "Éxito", "Contrato creado");
       }
       hideContratoFormDialog();
@@ -214,7 +217,6 @@ function ContratoForm({
     );
   };
 
-  console.log(errors);
   return (
     <div>
       <Toast ref={toast} />
@@ -339,19 +341,17 @@ function ContratoForm({
               Estado de Contrato
             </label>
             <Dropdown
-              id="estado_contrato"
-              value={watch("estado_contrato")}
-              {...register("estado_contrato")}
+              id="estadoContrato"
+              value={watch("estadoContrato")}
+              {...register("estadoContrato")}
               options={estado_contratoOptions}
               placeholder="Seleccionar estado de entrega"
               className={classNames("w-full", {
-                "p-invalid": errors.estado_contrato,
+                "p-invalid": errors.estadoContrato,
               })}
             />
-            {errors.estado_contrato && (
-              <small className="p-error">
-                {errors.estado_contrato.message}
-              </small>
+            {errors.estadoContrato && (
+              <small className="p-error">{errors.estadoContrato.message}</small>
             )}
           </div>
           {/* Campo: Estado de Entrega */}

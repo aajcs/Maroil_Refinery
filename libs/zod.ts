@@ -132,7 +132,7 @@ export const contratoSchema = object({
   estadoEntrega: string().min(1, "El estado de entrega es obligatorio"),
   clausulas: array(string()).optional(),
   estado: string().min(1, "El estado es obligatorio"),
-  estado_contrato: string().min(1, "El estado es obligatorio"),
+  estadoContrato: string().min(1, "El estado es obligatorio"),
   eliminado: boolean().default(false),
   numeroContrato: string().min(1, "El número de contrato es obligatorio"),
   descripcion: string().min(1, "El número de contrato es obligatorio"),
