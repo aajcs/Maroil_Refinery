@@ -34,60 +34,75 @@ function ModeladoRefineriaDashboard() {
     activeRefineria?.id || "",
     recepcionModificado || undefined // Pasa recepcionModificado como dependencia
   );
+
   const [visible, setVisible] = useState<boolean>(false);
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
-  const showDialog = (product: any) => {
+
+  const showDialog = useCallback((product: any) => {
     setSelectedProduct(product);
     setVisible(true);
-  };
+  }, []);
 
-  const hideDialog = () => {
+  const hideDialog = useCallback(() => {
     setVisible(false);
     setSelectedProduct(null);
-  };
+  }, []);
+
   // Agrupar recepciones por contrato y producto
-  const recepcionesPorContrato = contratos.map((contrato) => {
-    const recepcionesContrato = recepcions.filter(
-      (recepcion) => recepcion.idContrato.id === contrato.id
-    );
-
-    const productos = contrato.idItems.map((item: any) => {
-      const recepcionesProducto = recepcionesContrato.filter(
-        (recepcion) => recepcion.idContratoItems.producto === item.producto
+  const recepcionesPorContrato = useMemo(() => {
+    return contratos.map((contrato) => {
+      const recepcionesContrato = recepcions.filter(
+        (recepcion) => recepcion.idContrato.id === contrato.id
       );
 
-      const cantidadRecibida = recepcionesProducto.reduce(
-        (total, recepcion) => total + recepcion.cantidadRecibida,
-        0
-      );
+      const productos = contrato.idItems.map((item: any) => {
+        const recepcionesProducto = recepcionesContrato.filter(
+          (recepcion) => recepcion.idContratoItems.producto === item.producto
+        );
 
-      const cantidadFaltante = item.cantidad - cantidadRecibida;
-      const porcentaje = (cantidadRecibida / item.cantidad) * 100;
-      console.log(porcentaje);
+        const cantidadRecibida = recepcionesProducto.reduce(
+          (total, recepcion) => total + recepcion.cantidadRecibida,
+          0
+        );
+        const cantidadFaltante = item.cantidad - cantidadRecibida;
+        const porcentaje = (cantidadRecibida / item.cantidad) * 100;
+
+        return {
+          producto: item.producto,
+          cantidad: item.cantidad,
+          cantidadRecibida,
+          cantidadFaltante,
+          recepciones: recepcionesProducto,
+          porcentaje,
+        };
+      });
+
       return {
-        producto: item.producto,
-        cantidad: item.cantidad,
-        cantidadRecibida,
-        cantidadFaltante,
-        recepciones: recepcionesProducto,
-        porcentaje,
+        ...contrato,
+        productos,
       };
     });
+  }, [contratos, recepcions]);
 
-    return {
-      ...contrato,
-      productos,
-    };
-  });
-  const valueTemplate =
+  const valueTemplate = useCallback(
     (cantidad: number, cantidadRecibida: number) =>
-    (value: string | number | null | undefined): React.ReactNode => {
-      return (
-        <span>
-          {cantidadRecibida} / {cantidad}Bbl ({value}%)
-        </span>
-      );
-    };
+      (value: string | number | null | undefined): React.ReactNode => {
+        return (
+          <span>
+            {cantidadRecibida} / {cantidad}Bbl ({value}%)
+          </span>
+        );
+      },
+    []
+  );
+
+  if (loading) {
+    return (
+      <div className="flex justify-content-center align-items-center h-screen">
+        <ProgressSpinner />
+      </div>
+    );
+  }
 
   return (
     <div className="p-4">
