@@ -13,7 +13,7 @@ import { useRefineriaStore } from "@/store/refineriaStore";
 import { getTanques, deleteTanque } from "@/app/api/tanqueService";
 import { Tanque } from "@/libs/interfaces";
 
-function TanqueList() {
+const TanqueList = () => {
   const { activeRefineria } = useRefineriaStore();
   const [tanques, setTanques] = useState<Tanque[]>([]);
   const [tanque, setTanque] = useState<Tanque | null>(null);
@@ -254,6 +254,6 @@ function TanqueList() {
       </Dialog>
     </div>
   );
-}
+};
 
 export default TanqueList;

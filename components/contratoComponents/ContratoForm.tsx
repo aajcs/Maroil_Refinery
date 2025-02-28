@@ -118,6 +118,7 @@ function ContratoForm({
         const updatedContrato = await updateContrato(contrato.id, {
           ...data,
           idRefineria: activeRefineria?.id,
+          idContacto: data.idContacto.id,
         });
         const updatedContratos = contratos.map((t) =>
           t.id === updatedContrato.id ? updatedContrato : t
@@ -130,6 +131,7 @@ function ContratoForm({
         const newContrato = await createContrato({
           ...data,
           idRefineria: activeRefineria.id,
+          idContacto: data.idContacto.id,
         });
         setContratos([...contratos, newContrato.nuevoContrato]);
         showToast("success", "Éxito", "Contrato creado");

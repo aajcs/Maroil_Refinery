@@ -17,7 +17,7 @@ import { deleteContrato, getContratos } from "@/app/api/contratoService";
 import ContratoForm from "./ContratoForm";
 import { Contrato } from "@/libs/interfaces";
 
-function ContratoList() {
+const ContratoList = () => {
   const { activeRefineria } = useRefineriaStore();
   const [contratos, setContratos] = useState<Contrato[]>([]);
   const [contrato, setContrato] = useState<Contrato | null>(null);
@@ -368,6 +368,6 @@ function ContratoList() {
       </Dialog>
     </div>
   );
-}
+};
 
 export default ContratoList;

@@ -21,10 +21,10 @@ interface TorreProps {
     };
   };
 }
-function ModeladoRefineriaTorre(
+const ModeladoRefineriaTorre = (
   { torre }: TorreProps,
   props: SVGProps<SVGSVGElement>
-) {
+) => {
   const [apiData, setApiData] = useState({
     sections: torre.material.map((material) => ({
       name: material.nombre,
@@ -209,6 +209,6 @@ function ModeladoRefineriaTorre(
       })}
     </svg>
   );
-}
+};
 
 export default ModeladoRefineriaTorre;

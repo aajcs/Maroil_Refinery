@@ -36,12 +36,12 @@ const materiales = [
 
 const estatusValues = ["true", "false"];
 
-function TorreDestilacionForm({
+const TorreDestilacionForm = ({
   torreDestilacion,
   hideTorreDestilacionFormDialog,
   torresDestilacion,
   setTorresDestilacion,
-}: TorreDestilacionFormProps) {
+}: TorreDestilacionFormProps) => {
   const { activeRefineria } = useRefineriaStore();
   const toast = useRef<Toast | null>(null);
   const [selectedMaterials, setSelectedMaterials] = useState<
@@ -286,6 +286,6 @@ function TorreDestilacionForm({
       </form>
     </div>
   );
-}
+};
 
 export default TorreDestilacionForm;

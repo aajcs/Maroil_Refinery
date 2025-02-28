@@ -224,8 +224,8 @@ export const contratoSchema = object({
       descripcion: string().optional(),
     })
   ).optional(),
-  fechaInicio: date().optional(),
-  fechaFin: date().optional(),
+  fechaInicio: union([string(), date()]).optional(),
+  fechaFin: union([string(), date()]).optional(),
   createdAt: string().optional(),
   updatedAt: string().optional(),
   id: string().optional(),

@@ -31,12 +31,12 @@ const materiales = [
 ];
 const estatusValues = ["true", "false"];
 
-function TanqueForm({
+const TanqueForm = ({
   tanque,
   hideTanqueFormDialog,
   tanques,
   setTanques,
-}: TanqueFormProps) {
+}: TanqueFormProps) => {
   const { activeRefineria } = useRefineriaStore();
   const toast = useRef<Toast | null>(null);
   const [checkboxValue, setCheckboxValue] = useState<string[]>([]);
@@ -225,6 +225,6 @@ function TanqueForm({
       </form>
     </div>
   );
-}
+};
 
 export default TanqueForm;

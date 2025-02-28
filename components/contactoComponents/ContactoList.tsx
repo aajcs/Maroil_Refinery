@@ -13,7 +13,7 @@ import { deleteContacto, getContactos } from "@/app/api/contactoService";
 import ContactoForm from "./ContactoForm";
 import { Contacto } from "@/libs/interfaces";
 
-function ContactoList() {
+const ContactoList = () => {
   const { activeRefineria } = useRefineriaStore();
   const [contactos, setContactos] = useState<Contacto[]>([]);
   const [contacto, setContacto] = useState<Contacto | null>(null);
@@ -285,6 +285,6 @@ function ContactoList() {
       </Dialog>
     </div>
   );
-}
+};
 
 export default ContactoList;

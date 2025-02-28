@@ -13,7 +13,7 @@ import RecepcionForm from "./RecepcionForm";
 import { deleteRecepcion, getRecepcions } from "@/app/api/recepcionService";
 import { Recepcion } from "@/libs/interfaces";
 
-function RecepcionList() {
+const RecepcionList = () => {
   const { activeRefineria } = useRefineriaStore();
   const [recepcions, setRecepcions] = useState<Recepcion[]>([]);
   const [recepcion, setRecepcion] = useState<Recepcion | null>(null);
@@ -274,6 +274,6 @@ function RecepcionList() {
       </Dialog>
     </div>
   );
-}
+};
 
 export default RecepcionList;

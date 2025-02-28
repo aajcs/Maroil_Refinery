@@ -11,7 +11,7 @@ import { Toast } from "primereact/toast";
 import { Dialog } from "primereact/dialog";
 import UsuarioForm from "./UsuarioForm";
 
-function UsuarioList() {
+const UsuarioList = () => {
   interface Usuario {
     id: string;
     nombre: string;
@@ -251,6 +251,6 @@ function UsuarioList() {
       </Dialog>
     </div>
   );
-}
+};
 
 export default UsuarioList;

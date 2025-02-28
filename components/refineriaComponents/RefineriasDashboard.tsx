@@ -4,7 +4,7 @@ import { getRefineria } from "@/app/api/refineriaService";
 import { useRouter } from "next/navigation";
 import { useRefineriaStore } from "@/store/refineriaStore";
 
-function RefineriasDashboard() {
+const RefineriasDashboard = () => {
   const [refineria, setRefineria] = useState<any>(null);
   const { activeRefineria, setActiveRefineria } = useRefineriaStore();
   const router = useRouter();
@@ -70,6 +70,6 @@ function RefineriasDashboard() {
       )}
     </div>
   );
-}
+};
 
 export default RefineriasDashboard;

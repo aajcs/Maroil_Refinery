@@ -16,7 +16,7 @@ import TorreDestilacionForm from "./TorreDestilacionForm";
 import { useRefineriaStore } from "@/store/refineriaStore";
 import { TorreDestilacion } from "@/libs/interfaces";
 
-function TorreDestilacionList() {
+const TorreDestilacionList = () => {
   const { activeRefineria } = useRefineriaStore();
   const [torresDestilacion, setTorresDestilacion] = useState<
     TorreDestilacion[]
@@ -265,6 +265,6 @@ function TorreDestilacionList() {
       </Dialog>
     </div>
   );
-}
+};
 
 export default TorreDestilacionList;

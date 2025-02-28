@@ -16,7 +16,7 @@ import { ProgressBar } from "primereact/progressbar";
 let revenueChartData: ChartData;
 let overviewChartData: ChartData;
 
-function DashboardEjemplo() {
+const DashboardEjemplo = () => {
   const { layoutConfig } = useContext(LayoutContext);
   const [products, setProducts] = useState<Demo.Product[]>([]);
   const [ordersOptions, setOrdersOptions] = useState<ChartOptions | null>(null);
@@ -1270,6 +1270,6 @@ function DashboardEjemplo() {
       </div>
     </>
   );
-}
+};
 
 export default DashboardEjemplo;

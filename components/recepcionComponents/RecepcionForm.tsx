@@ -32,12 +32,12 @@ interface RecepcionFormProps {
 
 const estatusValues = ["true", "false"];
 
-function RecepcionForm({
+const RecepcionForm = ({
   recepcion,
   hideRecepcionFormDialog,
   recepcions,
   setRecepcions,
-}: RecepcionFormProps) {
+}: RecepcionFormProps) => {
   const { activeRefineria } = useRefineriaStore();
   const toast = useRef<Toast | null>(null);
   const [lineaRecepcions, setLineaRecepcions] = useState<LineaRecepcion[]>([]);
@@ -478,6 +478,6 @@ function RecepcionForm({
       </form>
     </div>
   );
-}
+};
 
 export default RecepcionForm;

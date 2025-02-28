@@ -2,28 +2,17 @@
 import { Recepcion, Tanque } from "@/libs/interfaces";
 import { useEffect, useState, useMemo } from "react";
 import { PocisionAbierta, PocisionCerrada } from "./ElementosLineaCarga";
-
-const materialColors: Record<string, string> = {
-  nafta: "#add8e6", // Azul claro / Celeste
-  "fuel oil 4 (mog)": "#556b2f", // Verde oscuro / Verde oliva
-  "fuel oil 6 (fondo)": "#654321", // Marrón oscuro / Negro
-  queroseno: "#ffd700", // Amarillo / Dorado
-  "petroleo crudo": "#000000", // Negro / Marrón muy oscuro
-};
-
-function getFillColor(material: string): string {
-  return materialColors[material.toLowerCase()] || "#cccccc";
-}
+import { getFillColor } from "@/utils/getFillCollor";
 
 interface ModeladoRefineriaTanqueProps {
   tanque: Tanque;
   recepcions?: Recepcion[];
 }
 
-function ModeladoRefineriaTanque({
+const ModeladoRefineriaTanque = ({
   tanque,
   recepcions,
-}: ModeladoRefineriaTanqueProps) {
+}: ModeladoRefineriaTanqueProps) => {
   const [apiData, setApiData] = useState({ tankLevel: 0 });
 
   const totalRecepcion = useMemo(() => {
@@ -356,6 +345,6 @@ function ModeladoRefineriaTanque({
       `}</style>
     </>
   );
-}
+};
 
 export default ModeladoRefineriaTanque;

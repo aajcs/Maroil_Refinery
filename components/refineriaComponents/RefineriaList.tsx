@@ -13,7 +13,7 @@ import RefineriaForm from "./RefineriaForm";
 import { deleteRefineria, getRefinerias } from "@/app/api/refineriaService";
 import { Refineria } from "@/libs/interfaces";
 
-function RefineriaList() {
+const RefineriaList = () => {
   const [refinerias, setRefinerias] = useState<Refineria[]>([]);
   const [refineria, setRefineria] = useState<Refineria | null>(null);
 
@@ -245,6 +245,6 @@ function RefineriaList() {
       </Dialog>
     </div>
   );
-}
+};
 
 export default RefineriaList;

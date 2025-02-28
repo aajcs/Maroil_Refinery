@@ -19,12 +19,12 @@ interface UsuarioFormProps {
   usuarios: any[];
   setUsuarios: (usuarios: any[]) => void;
 }
-function UsuarioForm({
+const UsuarioForm = ({
   usuario,
   hideUsuarioFormDialog,
   usuarios,
   setUsuarios,
-}: UsuarioFormProps) {
+}: UsuarioFormProps) => {
   const toast = useRef<Toast | null>(null);
   const {
     register,
@@ -272,6 +272,6 @@ function UsuarioForm({
       </div>
     </div>
   );
-}
+};
 
 export default UsuarioForm;

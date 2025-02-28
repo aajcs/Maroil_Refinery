@@ -20,12 +20,12 @@ interface RefineriaFormProps {
   setRefinerias: (refinerias: any[]) => void;
 }
 
-function RefineriaForm({
+const RefineriaForm = ({
   refineria,
   hideRefineriaFormDialog,
   refinerias,
   setRefinerias,
-}: RefineriaFormProps) {
+}: RefineriaFormProps) => {
   const toast = useRef<Toast | null>(null);
   const {
     register,
@@ -271,6 +271,6 @@ function RefineriaForm({
       </div>
     </div>
   );
-}
+};
 
 export default RefineriaForm;

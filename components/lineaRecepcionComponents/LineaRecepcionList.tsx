@@ -16,7 +16,7 @@ import {
 import LineaRecepcionForm from "./LineaRecepcionForm";
 import { LineaRecepcion } from "@/libs/interfaces";
 
-function LineaRecepcionList() {
+const LineaRecepcionList = () => {
   const { activeRefineria } = useRefineriaStore();
   const [lineaRecepcions, setLineaRecepcions] = useState<LineaRecepcion[]>([]);
   const [lineaRecepcion, setLineaRecepcion] = useState<LineaRecepcion | null>(
@@ -258,6 +258,6 @@ function LineaRecepcionList() {
       </Dialog>
     </div>
   );
-}
+};
 
 export default LineaRecepcionList;

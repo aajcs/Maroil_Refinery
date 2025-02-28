@@ -4,7 +4,7 @@ import { getRefinerias } from "@/app/api/refineriaService";
 import { useRouter } from "next/navigation";
 import { useRefineriaStore } from "@/store/refineriaStore";
 
-function DashboardRefinerias() {
+const DashboardRefinerias = () => {
   const [refinerias, setRefinerias] = useState<any[]>([]);
   // const setActiveRefineriaId = useRefineriaStore(
   //   (state) => state.setActiveRefineriaId
@@ -72,6 +72,6 @@ function DashboardRefinerias() {
       )}
     </div>
   );
-}
+};
 
 export default DashboardRefinerias;

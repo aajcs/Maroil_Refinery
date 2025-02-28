@@ -26,12 +26,12 @@ interface ContactoFormProps {
 const estatusValues = ["true", "false"];
 const tipoValues = ["cliente", "proveedor"]; // Valores para el campo "tipo"
 
-function ContactoForm({
+const ContactoForm = ({
   contacto,
   hideContactoFormDialog,
   contactos,
   setContactos,
-}: ContactoFormProps) {
+}: ContactoFormProps) => {
   const { activeRefineria } = useRefineriaStore();
   const toast = useRef<Toast | null>(null);
 
@@ -255,6 +255,6 @@ function ContactoForm({
       </form>
     </div>
   );
-}
+};
 
 export default ContactoForm;
