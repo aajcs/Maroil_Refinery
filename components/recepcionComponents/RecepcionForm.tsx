@@ -31,6 +31,10 @@ interface RecepcionFormProps {
 }
 
 const estatusValues = ["true", "false"];
+const estadoCargaOptions = [
+  { label: "EN_TRANSITO", value: "EN_TRANSITO" },
+  { label: "ENTREGADO", value: "ENTREGADO" },
+];
 
 const RecepcionForm = ({
   recepcion,
@@ -120,6 +124,7 @@ const RecepcionForm = ({
           ...data,
           idContrato: data.idContrato?.id,
           idLinea: data.idLinea?.id,
+          idContratoItems: data.idContratoItems?.id,
           idTanque: data.idTanque?.id,
           idRefineria: activeRefineria?.id,
         });
@@ -133,9 +138,13 @@ const RecepcionForm = ({
           throw new Error("No se ha seleccionado una refinería");
         const newRecepcion = await createRecepcion({
           ...data,
-          idRefineria: activeRefineria.id,
+          idContrato: data.idContrato?.id,
+          idLinea: data.idLinea?.id,
+          idTanque: data.idTanque?.id,
+          idContratoItems: data.idContratoItems?.id,
+          idRefineria: activeRefineria?.id,
         });
-        setRecepcions([...recepcions, newRecepcion.nuevoRecepcion]);
+        setRecepcions([...recepcions, newRecepcion.recepcion]);
         showToast("success", "Éxito", "Recepcion creado");
       }
       hideRecepcionFormDialog();
@@ -176,6 +185,45 @@ const RecepcionForm = ({
       <Toast ref={toast} />
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="grid formgrid p-fluid">
+          {/* Campo: ID de la Guía */}
+          <div className="field mb-4 col-12 sm:col-6 lg:col-2">
+            <label htmlFor="idGuia" className="font-medium text-900">
+              ID de la Guía
+            </label>
+            <Controller
+              name="idGuia"
+              control={control}
+              render={({ field }) => (
+                <InputNumber
+                  id="idGuia"
+                  value={field.value}
+                  onValueChange={(e) => field.onChange(e.value)}
+                  className={classNames("w-full", {
+                    "p-invalid": errors.idGuia,
+                  })}
+                  min={0}
+                  locale="es"
+                />
+              )}
+            />
+            {errors.idGuia && (
+              <small className="p-error">{errors.idGuia.message}</small>
+            )}
+          </div>
+          {/* Campo: Placa */}
+          <div className="field mb-4 col-12 sm:col-6 lg:col-2">
+            <label htmlFor="placa" className="font-medium text-900">
+              Placa
+            </label>
+            <InputText
+              id="placa"
+              {...register("placa")}
+              className={classNames("w-full", { "p-invalid": errors.placa })}
+            />
+            {errors.placa && (
+              <small className="p-error">{errors.placa.message}</small>
+            )}
+          </div>
           {/* Campo: Nombre del Chofer */}
           <div className="field mb-4 col-12 sm:col-6 lg:col-4">
             <label htmlFor="nombreChofer" className="font-medium text-900">
@@ -206,93 +254,6 @@ const RecepcionForm = ({
             />
             {errors.apellidoChofer && (
               <small className="p-error">{errors.apellidoChofer.message}</small>
-            )}
-          </div>
-          {/* Campo: Placa */}
-          <div className="field mb-4 col-12 sm:col-6 lg:col-2">
-            <label htmlFor="placa" className="font-medium text-900">
-              Placa
-            </label>
-            <InputText
-              id="placa"
-              {...register("placa")}
-              className={classNames("w-full", { "p-invalid": errors.placa })}
-            />
-            {errors.placa && (
-              <small className="p-error">{errors.placa.message}</small>
-            )}
-          </div>
-          {/* Campo: ID de la Guía */}
-          <div className="field mb-4 col-12 sm:col-6 lg:col-2">
-            <label htmlFor="idGuia" className="font-medium text-900">
-              ID de la Guía
-            </label>
-            <Controller
-              name="idGuia"
-              control={control}
-              render={({ field }) => (
-                <InputNumber
-                  id="idGuia"
-                  value={field.value}
-                  onValueChange={(e) => field.onChange(e.value)}
-                  className={classNames("w-full", {
-                    "p-invalid": errors.idGuia,
-                  })}
-                  min={0}
-                  locale="es"
-                />
-              )}
-            />
-            {errors.idGuia && (
-              <small className="p-error">{errors.idGuia.message}</small>
-            )}
-          </div>
-
-          {/* Campo: Fecha de Inicio */}
-          <div className="field mb-4 col-12 sm:col-6 lg:col-4">
-            <label htmlFor="fechaInicio" className="font-medium text-900">
-              Fecha de Inicio
-            </label>
-            <Calendar
-              id="fechaInicio"
-              value={
-                watch("fechaInicio")
-                  ? new Date(watch("fechaInicio") as string | Date)
-                  : undefined
-              }
-              {...register("fechaInicio")}
-              showTime
-              hourFormat="24"
-              className={classNames("w-full", {
-                "p-invalid": errors.fechaInicio,
-              })}
-              locale="es"
-            />
-            {errors.fechaInicio && (
-              <small className="p-error">{errors.fechaInicio.message}</small>
-            )}
-          </div>
-
-          {/* Campo: Fecha de Fin */}
-          <div className="field mb-4 col-12 sm:col-6 lg:col-4">
-            <label htmlFor="fechaFin" className="font-medium text-900">
-              Fecha de Fin
-            </label>
-            <Calendar
-              id="fechaFin"
-              value={
-                watch("fechaFin")
-                  ? new Date(watch("fechaFin") as string | Date)
-                  : undefined
-              }
-              {...register("fechaFin")}
-              showTime
-              hourFormat="24"
-              className={classNames("w-full", { "p-invalid": errors.fechaFin })}
-              locale="es"
-            />
-            {errors.fechaFin && (
-              <small className="p-error">{errors.fechaFin.message}</small>
             )}
           </div>
 
@@ -331,30 +292,63 @@ const RecepcionForm = ({
               </small>
             )}
           </div>
+          {/* Campo: Nombre del producto*/}
           <div className="field mb-4 col-12 sm:col-6 lg:col-4">
             <label htmlFor="idContacto.nombre" className="font-medium text-900">
               Seleccione Producto
             </label>
-            {watch("idContrato.idItems")?.map((items) => {
-              return (
-                <div key={items.id} className="flex align-items-center">
-                  <RadioButton
-                    inputId={items.id}
-                    name="items"
-                    value={items}
-                    onChange={(e) => setSelectedCategory(e.value)}
-                    checked={selectedCategory?.id === items.id}
-                  />
-                  <label htmlFor={items.id} className="ml-2">
-                    {items.producto + "-" + items.cantidad + "Bbl"}
-                  </label>
-                </div>
-              );
-            })}
-
-            {errors.idContrato?.numeroContrato && (
+            <Controller
+              name="idContratoItems"
+              control={control}
+              render={({ field }) => (
+                <>
+                  {watch("idContrato.idItems")?.map((items) => (
+                    <div key={items.id} className="flex align-items-center">
+                      <RadioButton
+                        inputId={items.id}
+                        name="items"
+                        value={items}
+                        onChange={(e) => field.onChange(e.value)}
+                        checked={field.value?.id === items.id}
+                      />
+                      <label htmlFor={items.id} className="ml-2">
+                        {items.producto + "-" + items.cantidad + "Bbl"}
+                      </label>
+                    </div>
+                  ))}
+                </>
+              )}
+            />
+            {errors.idContratoItems && (
               <small className="p-error">
-                {errors.idContrato.numeroContrato.message}
+                {errors.idContratoItems.message}
+              </small>
+            )}
+          </div>
+          {/* Campo: Cantidad Recibida */}
+          <div className="field mb-4 col-12 sm:col-6 lg:col-4">
+            <label htmlFor="cantidadRecibida" className="font-medium text-900">
+              Cantidad Recibida
+            </label>
+            <Controller
+              name="cantidadRecibida"
+              control={control}
+              render={({ field }) => (
+                <InputNumber
+                  id="cantidadRecibida"
+                  value={field.value}
+                  onValueChange={(e) => field.onChange(e.value)}
+                  className={classNames("w-full", {
+                    "p-invalid": errors.cantidadRecibida,
+                  })}
+                  min={0}
+                  locale="es"
+                />
+              )}
+            />
+            {errors.cantidadRecibida && (
+              <small className="p-error">
+                {errors.cantidadRecibida.message}
               </small>
             )}
           </div>
@@ -423,31 +417,72 @@ const RecepcionForm = ({
               </small>
             )}
           </div>
-          {/* Campo: Cantidad Recibida */}
+
+          {/* Campo: Estado de carga*/}
           <div className="field mb-4 col-12 sm:col-6 lg:col-4">
-            <label htmlFor="cantidadRecibida" className="font-medium text-900">
-              Cantidad Recibida
+            <label htmlFor="estadoEntrega" className="font-medium text-900">
+              Estado de Carga
             </label>
-            <Controller
-              name="cantidadRecibida"
-              control={control}
-              render={({ field }) => (
-                <InputNumber
-                  id="cantidadRecibida"
-                  value={field.value}
-                  onValueChange={(e) => field.onChange(e.value)}
-                  className={classNames("w-full", {
-                    "p-invalid": errors.cantidadRecibida,
-                  })}
-                  min={0}
-                  locale="es"
-                />
-              )}
+            <Dropdown
+              id="estadoCarga"
+              value={watch("estadoCarga")}
+              {...register("estadoCarga")}
+              options={estadoCargaOptions}
+              placeholder="Seleccionar estado de entrega"
+              className={classNames("w-full", {
+                "p-invalid": errors.estadoCarga,
+              })}
             />
-            {errors.cantidadRecibida && (
-              <small className="p-error">
-                {errors.cantidadRecibida.message}
-              </small>
+            {errors.estadoCarga && (
+              <small className="p-error">{errors.estadoCarga.message}</small>
+            )}
+          </div>
+
+          {/* Campo: Fecha de Inicio */}
+          <div className="field mb-4 col-12 sm:col-6 lg:col-4">
+            <label htmlFor="fechaInicio" className="font-medium text-900">
+              Fecha de Inicio
+            </label>
+            <Calendar
+              id="fechaInicio"
+              value={
+                watch("fechaInicio")
+                  ? new Date(watch("fechaInicio") as string | Date)
+                  : undefined
+              }
+              {...register("fechaInicio")}
+              showTime
+              hourFormat="24"
+              className={classNames("w-full", {
+                "p-invalid": errors.fechaInicio,
+              })}
+              locale="es"
+            />
+            {errors.fechaInicio && (
+              <small className="p-error">{errors.fechaInicio.message}</small>
+            )}
+          </div>
+
+          {/* Campo: Fecha de Fin */}
+          <div className="field mb-4 col-12 sm:col-6 lg:col-4">
+            <label htmlFor="fechaFin" className="font-medium text-900">
+              Fecha de Fin
+            </label>
+            <Calendar
+              id="fechaFin"
+              value={
+                watch("fechaFin")
+                  ? new Date(watch("fechaFin") as string | Date)
+                  : undefined
+              }
+              {...register("fechaFin")}
+              showTime
+              hourFormat="24"
+              className={classNames("w-full", { "p-invalid": errors.fechaFin })}
+              locale="es"
+            />
+            {errors.fechaFin && (
+              <small className="p-error">{errors.fechaFin.message}</small>
             )}
           </div>
           {/* Campo: Estado */}

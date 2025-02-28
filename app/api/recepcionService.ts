@@ -9,6 +9,8 @@ export const getRecepcions = async () => {
   return response.data;
 };
 export const createRecepcion = async (data: any) => {
+  console.log("data", data);
+
   const response = await apiClient.post("/recepcion", data);
   return response.data;
 };

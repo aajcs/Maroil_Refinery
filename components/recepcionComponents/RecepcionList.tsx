@@ -12,6 +12,7 @@ import { useRefineriaStore } from "@/store/refineriaStore";
 import RecepcionForm from "./RecepcionForm";
 import { deleteRecepcion, getRecepcions } from "@/app/api/recepcionService";
 import { Recepcion } from "@/libs/interfaces";
+import { formatDateFH } from "@/utils/dateUtils";
 
 const RecepcionList = () => {
   const { activeRefineria } = useRefineriaStore();
@@ -146,78 +147,48 @@ const RecepcionList = () => {
         loading={loading}
         emptyMessage="No hay recepcions disponibles"
       >
-        <Column body={actionBodyTemplate} headerStyle={{ minWidth: "10rem" }} />
-        <Column
-          field="estado"
-          header="Estado"
-          sortable
-          style={{ width: "10%" }}
-        />
-        <Column
-          field="cantidadRecibida"
-          header="Cantidad Recibida"
-          sortable
-          style={{ width: "10%" }}
-        />
-        <Column
-          field="fechaInicio"
-          header="Fecha de Inicio"
-          sortable
-          style={{ width: "15%" }}
-        />
-        <Column
-          field="fechaFin"
-          header="Fecha de Fin"
-          sortable
-          style={{ width: "10%" }}
-        />
+        <Column body={actionBodyTemplate} />
+        <Column field="idGuia" header="ID de la Guía" sortable />
+        <Column field="placa" header="Placa" />
+        <Column field="nombreChofer" header="Nombre del Chofer" sortable />
+        <Column field="apellidoChofer" header="Apellido del Chofer" sortable />
         <Column
           field="idContrato.numeroContrato"
           header="Número de Contrato"
           sortable
-          style={{ width: "10%" }}
+        />
+        <Column field="idContratoItems.producto" header="Nombre del Producto" />
+        <Column
+          field="cantidadRecibida"
+          header="Cantidad Recibida"
+          body={(rowData: Recepcion) =>
+            ` ${Number(rowData.cantidadRecibida).toLocaleString("de-DE")}Bbl`
+          }
+        />
+
+        <Column field="idLinea.nombre" header="Nombre de la Línea" sortable />
+        <Column field="idTanque.nombre" header="ID del Tanque" sortable />
+        <Column
+          field="fechaInicio"
+          header="Fecha de Inicio"
+          body={(rowData: Recepcion) => formatDateFH(rowData.fechaInicio)}
         />
         <Column
-          field="idLinea.nombre"
-          header="Nombre de la Línea"
-          sortable
-          style={{ width: "10%" }}
+          field="fechaFin"
+          header="Fecha de Fin"
+          body={(rowData: Recepcion) => formatDateFH(rowData.fechaFin)}
         />
-        <Column
-          field="idTanque.nombre"
-          header="ID del Tanque"
-          sortable
-          style={{ width: "10%" }}
-        />
-        <Column
-          field="placa"
-          header="Placa"
-          sortable
-          style={{ width: "10%" }}
-        />
-        <Column
-          field="nombreChofer"
-          header="Nombre del Chofer"
-          sortable
-          style={{ width: "10%" }}
-        />
-        <Column
-          field="apellidoChofer"
-          header="Apellido del Chofer"
-          sortable
-          style={{ width: "10%" }}
-        />
+        <Column field="estadoCarga" header="Estado de la Carga" />
+        <Column field="estado" header="Estado" />
         <Column
           field="createdAt"
           header="Fecha de Creación"
-          sortable
-          style={{ width: "20%" }}
+          body={(rowData: Recepcion) => formatDateFH(rowData.createdAt)}
         />
         <Column
           field="updatedAt"
           header="Última Actualización"
-          sortable
-          style={{ width: "20%" }}
+          body={(rowData: Recepcion) => formatDateFH(rowData.updatedAt)}
         />
       </DataTable>
 

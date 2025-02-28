@@ -286,6 +286,34 @@ export const recepcionSchema = object({
       })
     ).optional(),
   }).optional(),
+  idContratoItems: object({
+    estado: string().min(1, "El estado es obligatorio"),
+    eliminado: boolean().default(false),
+    id: string().optional(),
+    producto: string().min(1, "El producto es obligatorio"),
+    cantidad: number().min(0, "La cantidad debe ser un número no negativo"),
+    precioUnitario: number().min(
+      0,
+      "El precio unitario debe ser un número no negativo"
+    ),
+    gravedadAPI: number().min(
+      0,
+      "La gravedad API debe ser un número no negativo"
+    ),
+    azufre: number().min(0, "El azufre debe ser un número no negativo"),
+    viscosidad: number().min(0, "La viscosidad debe ser un número no negativo"),
+    densidad: number().min(0, "La densidad debe ser un número no negativo"),
+    contenidoAgua: number().min(
+      0,
+      "El contenido de agua debe ser un número no negativo"
+    ),
+    origen: string().min(1, "El origen es obligatorio"),
+    temperatura: number().min(
+      0,
+      "La temperatura debe ser un número no negativo"
+    ),
+    presion: number().min(0, "La presión debe ser un número no negativo"),
+  }).optional(),
   idLinea: object({
     id: string().optional(),
     nombre: string().min(1, "El nombre de la línea es obligatorio"),

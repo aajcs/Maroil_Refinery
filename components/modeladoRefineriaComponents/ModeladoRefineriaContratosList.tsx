@@ -6,6 +6,7 @@ import { ProgressBar } from "primereact/progressbar";
 import { formatDateSinAnoFH } from "@/utils/dateUtils";
 import { useCallback } from "react";
 import { getFillColor } from "@/utils/getFillCollor";
+import { Badge } from "primereact/badge";
 
 interface Contrato {
   id: string;
@@ -84,16 +85,33 @@ const ModeladoRefineriaContratosList = ({
                   <span className="font-bold" style={{ minWidth: "5rem" }}>
                     {item.producto}
                   </span>
-                  <ProgressBar
-                    value={item.porcentaje}
-                    displayValueTemplate={valueTemplate(
-                      item.cantidad,
-                      item.cantidadRecibida
-                    )}
-                    className="w-8"
-                    style={{ minWidth: "15rem" }}
-                    color={getFillColor(item.producto)}
-                  />
+                  <div className="">
+                    <ProgressBar
+                      value={item.porcentaje}
+                      // displayValueTemplate={valueTemplate(
+                      //   item.cantidad,
+                      //   item.cantidadRecibida
+                      // )}
+                      displayValueTemplate={(value) => null}
+                      className="w-8"
+                      style={{ minWidth: "15rem", height: "0.5rem" }}
+                      color={getFillColor(item.producto)}
+                    />
+                    <div>
+                      <span className="text-xs">
+                        {item.cantidad.toLocaleString("de-DE")}Bbl-||-
+                      </span>
+                      <span className="text-xs text-green-800">
+                        {item.cantidadRecibida.toLocaleString("de-DE")}Bbl-||-
+                      </span>
+                      <span className="text-xs text-red-800">
+                        {item.cantidadFaltante.toLocaleString("de-DE")}Bbl
+                      </span>
+                      {/* <span className="text-xs">
+                        {item.recepciones.length} Rec
+                      </span> */}
+                    </div>
+                  </div>
                   <Button
                     icon="pi pi-search"
                     onClick={() => onShowDialog(item)}
@@ -102,9 +120,9 @@ const ModeladoRefineriaContratosList = ({
                     severity="info"
                     text
                     size="small"
-                    rounded
+                    // rounded
                     style={{ padding: "0.5rem" }}
-                  />
+                  ></Button>
                 </div>
               ))}
             </div>
