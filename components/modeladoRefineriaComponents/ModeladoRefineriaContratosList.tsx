@@ -4,9 +4,7 @@
 import { Button } from "primereact/button";
 import { ProgressBar } from "primereact/progressbar";
 import { formatDateSinAnoFH } from "@/utils/dateUtils";
-import { useCallback } from "react";
 import { getFillColor } from "@/utils/getFillCollor";
-import { Badge } from "primereact/badge";
 
 interface Contrato {
   id: string;
@@ -33,98 +31,84 @@ interface ModeladoRefineriaContratosListProps {
   onShowDialog: (product: Producto) => void;
 }
 
-const valueTemplate =
-  (cantidad: number, cantidadRecibida: number) =>
-  (value: string | number | null | undefined): React.ReactNode => {
-    return (
-      <span>
-        {cantidadRecibida} / {cantidad}Bbl ({value}%)
-      </span>
-    );
-  };
-
 const ModeladoRefineriaContratosList = ({
   contratos,
   onShowDialog,
 }: ModeladoRefineriaContratosListProps) => {
   return (
-    <div className="col-12 md:col-6 lg:col-12">
+    <div className="col-12">
       <h1 className="text-2xl font-bold mb-3">Contratos</h1>
-      <div className="flex flex-row">
+      <div className="grid">
         {contratos.map((contrato) => (
-          <div key={contrato.id} className="m-2 flex flex-column card">
-            <div className="flex flex-row justify-content-between">
-              <div>
-                {contrato.descripcion.toLocaleUpperCase()}
-                <div className="text-xs mt-1 font-italic">
-                  {`(${contrato.idContacto.nombre})`}
-                </div>
-              </div>
-              <div className="ml-2 text-right">
-                <strong>Nº:</strong> {contrato.numeroContrato}
-                <div className="text-xs text-green-500">
-                  <strong>Act-</strong>
-                  {formatDateSinAnoFH(contrato.updatedAt)}
-                </div>
-              </div>
-            </div>
-            <hr />
-            <div>
-              <strong>Inicio:</strong>{" "}
-              {formatDateSinAnoFH(contrato.fechaInicio)}
-              {" -||- "}
-              <strong>Fin:</strong> {formatDateSinAnoFH(contrato.fechaFin)}
-            </div>
-            <hr />
-            <div>
-              {contrato.productos.map((item) => (
-                <div
-                  key={item.producto}
-                  className="flex align-items-center gap-2"
-                >
-                  <span className="font-bold" style={{ minWidth: "5rem" }}>
-                    {item.producto}
+          <div
+            key={contrato.id}
+            className="col-12 md:col-6 lg:col-4 xl:col-3 p-2"
+          >
+            <div className="p-3 surface-card border-round shadow-2">
+              <div className="flex justify-content-between align-items-start">
+                <div className="flex flex-column">
+                  <span className="text-lg font-bold white-space-normal">
+                    {contrato.descripcion.toLocaleUpperCase()}
                   </span>
-                  <div className="">
-                    <ProgressBar
-                      value={item.porcentaje}
-                      // displayValueTemplate={valueTemplate(
-                      //   item.cantidad,
-                      //   item.cantidadRecibida
-                      // )}
-                      displayValueTemplate={(value) => null}
-                      className="w-8"
-                      style={{ minWidth: "15rem", height: "0.5rem" }}
-                      color={getFillColor(item.producto)}
-                    />
-                    <div>
-                      <span className="text-xs">
-                        {item.cantidad.toLocaleString("de-DE")}Bbl-||-
-                      </span>
-                      <span className="text-xs text-green-800">
-                        {item.cantidadRecibida.toLocaleString("de-DE")}Bbl-||-
-                      </span>
-                      <span className="text-xs text-red-800">
-                        {item.cantidadFaltante.toLocaleString("de-DE")}Bbl
-                      </span>
-                      {/* <span className="text-xs">
-                        {item.recepciones.length} Rec
-                      </span> */}
-                    </div>
-                  </div>
-                  <Button
-                    icon="pi pi-search"
-                    onClick={() => onShowDialog(item)}
-                    className="h-2rem"
-                    tooltip="Mostrar todas las Recepciones"
-                    severity="info"
-                    text
-                    size="small"
-                    // rounded
-                    style={{ padding: "0.5rem" }}
-                  ></Button>
+                  <span className="text-sm text-500 mt-1">
+                    {`(${contrato.idContacto.nombre})`}
+                  </span>
                 </div>
-              ))}
+                <div className="flex flex-column text-right">
+                  <span className="text-sm font-semibold">
+                    Nº: {contrato.numeroContrato}
+                  </span>
+                  <span className="text-xs text-green-500">
+                    Act-{formatDateSinAnoFH(contrato.updatedAt)}
+                  </span>
+                </div>
+              </div>
+              <hr className="my-2" />
+              <div className="text-sm">
+                <span className="font-medium">Inicio:</span>{" "}
+                {formatDateSinAnoFH(contrato.fechaInicio)}
+                {" - "}
+                <span className="font-medium">Fin:</span>{" "}
+                {formatDateSinAnoFH(contrato.fechaFin)}
+              </div>
+              <hr className="my-2" />
+              <div className="flex flex-column gap-2">
+                {contrato.productos.map((item) => (
+                  <div
+                    key={item.producto}
+                    className="flex align-items-center gap-2"
+                  >
+                    <span className="font-bold min-w-8rem">
+                      {item.producto}
+                    </span>
+                    <div className="flex-grow-1">
+                      <ProgressBar
+                        value={item.porcentaje}
+                        showValue={false}
+                        // className="h-1rem"
+                        style={{ minWidth: "10rem", height: "0.6rem" }}
+                        color={getFillColor(item.producto)}
+                      />
+                      <div className="flex justify-content-between text-xs mt-1">
+                        <span>{item.cantidad.toLocaleString("de-DE")}Bbl</span>
+                        <span className="text-green-800">
+                          {item.cantidadRecibida.toLocaleString("de-DE")}Bbl
+                        </span>
+                        <span className="text-red-800">
+                          {item.cantidadFaltante.toLocaleString("de-DE")}Bbl
+                        </span>
+                      </div>
+                    </div>
+                    <Button
+                      icon="pi pi-search"
+                      onClick={() => onShowDialog(item)}
+                      className="p-button-sm p-button-text p-button-rounded"
+                      tooltip="Mostrar todas las Recepciones"
+                      tooltipOptions={{ position: "top" }}
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         ))}

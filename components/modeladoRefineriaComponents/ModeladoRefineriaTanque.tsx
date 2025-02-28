@@ -229,20 +229,8 @@ const ModeladoRefineriaTanque = ({
         <text x="80" y="120" fill="black" fontSize="18" fontWeight="bold">
           {tanque.material.join(", ")} {/* Mostrar todos los materiales */}
         </text>
-        <text
-          x="100"
-          y="340"
-          fill={isLoading ? "green" : "red"}
-          fontSize="18"
-          fontWeight="bold"
-        >
-          {isLoading ? " (Descargando)" : "(Estable)"}
-          <animate
-            attributeName="opacity"
-            values="1;0;1"
-            dur="3s"
-            repeatCount="indefinite"
-          />
+        <text x="100" y="340" fontSize="18" fontWeight="bold">
+          Cantidad: {totalRecepcion} Bbl
         </text>
         {/* {isLoading && (
           <rect x="50" y="150" width="10" height="150" fill="rgb(255, 0, 0)">
