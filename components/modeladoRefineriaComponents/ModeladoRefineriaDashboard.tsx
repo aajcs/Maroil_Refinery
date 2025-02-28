@@ -5,13 +5,23 @@ import ModeladoRefineriaTanque from "./ModeladoRefineriaTanque";
 import ModeladoRefineriaTorre from "./ModeladoRefineriaTorre";
 
 import ModeladoRefineriaLineaDescarga from "./ModeladoRefineriaLineaDescarga";
-import ModeladoRefineriaTorreSVG from "./ModeladoRefineriaTorreSVG";
 import { ProgressSpinner } from "primereact/progressspinner";
 import ModeladoRefineriaLineaCarga from "./ModeladoRefineriaLineaCarga";
 
-import { formatDateFH } from "@/utils/dateUtils";
+import {
+  formatDateFH,
+  formatDateSinAnoFH,
+  formatDuration,
+} from "@/utils/dateUtils";
 import { useSocket } from "@/hooks/useSocket";
 import { useRefineryData } from "@/hooks/useRefineryData";
+import { Button } from "primereact/button";
+import { Dialog } from "primereact/dialog";
+import { useState } from "react";
+import { ProgressBar } from "primereact/progressbar";
+import { Card } from "primereact/card";
+import { DataTable } from "primereact/datatable";
+import { Column } from "primereact/column";
 function ModeladoRefineriaDashboard() {
   const { activeRefineria } = useRefineriaStore();
   const { recepcionModificado } = useSocket(); // Obtén recepcionModificado desde el socket
@@ -26,7 +36,145 @@ function ModeladoRefineriaDashboard() {
     activeRefineria?.id || "",
     recepcionModificado || undefined // Pasa recepcionModificado como dependencia
   );
+  const [visible, setVisible] = useState<boolean>(false);
+  const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const showDialog = (product: any) => {
+    setSelectedProduct(product);
+    setVisible(true);
+  };
 
+  const hideDialog = () => {
+    setVisible(false);
+    setSelectedProduct(null);
+  };
+  // Agrupar recepciones por contrato y producto
+  const recepcionesPorContrato = contratos.map((contrato) => {
+    const recepcionesContrato = recepcions.filter(
+      (recepcion) => recepcion.idContrato.id === contrato.id
+    );
+
+    const productos = contrato.idItems.map((item: any) => {
+      const recepcionesProducto = recepcionesContrato.filter(
+        (recepcion) => recepcion.idContratoItems.producto === item.producto
+      );
+
+      const cantidadRecibida = recepcionesProducto.reduce(
+        (total, recepcion) => total + recepcion.cantidadRecibida,
+        0
+      );
+
+      const cantidadFaltante = item.cantidad - cantidadRecibida;
+      const porcentaje = (cantidadRecibida / item.cantidad) * 100;
+      console.log(porcentaje);
+      return {
+        producto: item.producto,
+        cantidad: item.cantidad,
+        cantidadRecibida,
+        cantidadFaltante,
+        recepciones: recepcionesProducto,
+        porcentaje,
+      };
+    });
+
+    return {
+      ...contrato,
+      productos,
+    };
+  });
+  const valueTemplate =
+    (cantidad: number, cantidadRecibida: number) =>
+    (value: string | number | null | undefined): React.ReactNode => {
+      return (
+        <span>
+          {cantidadRecibida} / {cantidad}Bbl ({value}%)
+        </span>
+      );
+    };
+  const meter = (props: any, attr: any) => (
+    <span
+      {...attr}
+      key={props.index}
+      style={{
+        background: `linear-gradient(to right, ${props.color1}, ${props.color2})`,
+        width: props.percentage + "%",
+      }}
+    />
+  );
+
+  const start = ({ totalPercent }: { totalPercent: number }) => (
+    <div className="flex justify-content-between mt-3 mb-2 relative">
+      <span>Storage</span>
+      <span
+        style={{ width: totalPercent + "%" }}
+        className="absolute text-right"
+      >
+        {totalPercent}%
+      </span>
+      <span className="font-medium">1TB</span>
+    </div>
+  );
+
+  const end = (
+    <div className="flex justify-content-between mt-3">
+      <Button label="Manage Storage" outlined size="small" />
+      <Button label="Update Plan" size="small" />
+    </div>
+  );
+
+  const labelList = ({ values }: { values: any[] }) => (
+    <div className="flex flex-wrap gap-3">
+      {values.map((item, index) => (
+        <Card className="flex-1" key={index}>
+          <div className="flex justify-content-between gap-5">
+            <div className="flex flex-column gap-1">
+              <span className="text-secondary text-sm">{item.label}</span>
+              <span className="font-bold text-lg">{item.value}%</span>
+            </div>
+            <span
+              className="w-2rem h-2rem border-circle inline-flex justify-content-center align-items-center text-center"
+              style={{ backgroundColor: item.color1, color: "#ffffff" }}
+            >
+              <i className={item.icon} />
+            </span>
+          </div>
+        </Card>
+      ))}
+    </div>
+  );
+
+  // const values = [
+  //   {
+  //     label: "Apps",
+  //     color1: "#34d399",
+  //     color2: "#fbbf24",
+  //     value: 25,
+  //     icon: "pi pi-table",
+  //   },
+  //   {
+  //     label: "Messages",
+  //     color1: "#fbbf24",
+  //     color2: "#60a5fa",
+  //     value: 15,
+  //     icon: "pi pi-inbox",
+  //   },
+  //   {
+  //     label: "Media",
+  //     color1: "#60a5fa",
+  //     color2: "#c084fc",
+  //     value: 20,
+  //     icon: "pi pi-image",
+  //   },
+  //   {
+  //     label: "System",
+  //     color1: "#c084fc",
+  //     color2: "#c084fc",
+  //     value: 10,
+  //     icon: "pi pi-cog",
+  //     meterTemplate: meter,
+  //   },
+  // ];
+
+  const values = [{ label: "Space used", value: 15 }];
   return (
     <div className="p-4">
       {loading ? (
@@ -37,38 +185,35 @@ function ModeladoRefineriaDashboard() {
         <div className="grid">
           <div className="col-12 md:col-6 lg:col-12">
             <h1 className="text-2xl font-bold mb-3">Contratos</h1>
-            <div className="  flex flex-row">
-              {/* <pre className="bg-gray-100 p-2 rounded text-sm overflow-auto">
-                {JSON.stringify(contratos, null, 2)}
-              </pre> */}
-              {contratos.map((contrato) => (
+            <div className="flex flex-row">
+              {recepcionesPorContrato.map((contrato) => (
                 <div key={contrato.id} className="m-2 flex flex-column card">
-                  <div>
-                    <strong>Número de Contrato:</strong>{" "}
-                    {contrato.numeroContrato}
+                  <div className="flex flex-row justify-content-between">
+                    <div>
+                      {/* <strong>Descripcion:</strong> */}
+                      {contrato.descripcion.toLocaleUpperCase()}
+                      <div className="text-xs mt-1 font-italic">
+                        {/* <strong>Cliente:</strong>  */}
+                        {`(${contrato.idContacto.nombre})`}
+                      </div>
+                    </div>
+                    <div className="ml-2 text-right">
+                      <strong>Nº:</strong> {contrato.numeroContrato}
+                      <div className="text-xs   text-green-500">
+                        <strong>Act-</strong>
+                        {formatDateSinAnoFH(contrato.updatedAt)}
+                      </div>
+                    </div>
                   </div>
+                  <hr />
                   <div>
-                    {/* <strong>Producto:</strong> {contrato.idItems} */}
-                    <strong>Producto:</strong>{" "}
-                    {contrato.idItems
-                      .map((item: any) => item.producto)
-                      .join(", ")}
+                    <strong>Inicio:</strong>{" "}
+                    {formatDateSinAnoFH(contrato.fechaInicio)}
+                    {" -||- "}
+                    <strong>Fin:</strong>{" "}
+                    {formatDateSinAnoFH(contrato.fechaFin)}
                   </div>
-                  <div>
-                    <strong>Cliente:</strong> {contrato.idContacto.nombre}
-                  </div>
-                  <div>
-                    <strong>Descripcion:</strong> {contrato.descripcion}
-                  </div>
-                  <div>
-                    <strong>Fecha de inicio:</strong>{" "}
-                    {formatDateFH(contrato.fechaInicio)}
-                  </div>
-                  <div>
-                    <strong>Fecha de fin:</strong>{" "}
-                    {formatDateFH(contrato.fechaFin)}
-                  </div>
-                  <div>
+                  {/* <div>
                     <strong>Estado:</strong>{" "}
                     {contrato.estado ? "Activo" : "Inactivo"}
                   </div>
@@ -78,10 +223,52 @@ function ModeladoRefineriaDashboard() {
                   <div>
                     <strong>Estado de Contrato:</strong>{" "}
                     {contrato.estadoContrato}
-                  </div>
+                  </div> */}
+                  <hr />
                   <div>
-                    <strong>Última Actualización:</strong>{" "}
-                    {formatDateFH(contrato.updatedAt)}
+                    {/* <strong>Producto:</strong> */}
+                    {contrato.productos.map((item: any) => (
+                      <div
+                        key={item.producto}
+                        className="flex align-items-center gap-2 "
+                      >
+                        <span
+                          className="font-bold "
+                          style={{ minWidth: "5rem" }}
+                        >
+                          {item.producto}
+                        </span>
+                        {/* ({item.cantidad} Bbls) - Recibido:{" "}
+                          {item.cantidadRecibida} Bbls - Faltante:{" "}
+                          {item.cantidadFaltante} Bbls
+                          {item.porcentaje} Bbls */}
+                        <ProgressBar
+                          value={item.porcentaje}
+                          displayValueTemplate={valueTemplate(
+                            item.cantidad,
+                            item.cantidadRecibida
+                          )}
+                          className="w-8"
+                        ></ProgressBar>
+
+                        <Button
+                          // label="Show"
+                          icon="pi pi-search"
+                          onClick={() => showDialog(item)}
+                          className="h-2rem"
+                          tooltip="Mostrar todas las Recepciones"
+                          severity="info"
+                          text
+                          size="small"
+                          rounded
+                          // tooltipOptions={{
+                          //   showDelay: 1000,
+                          //   hideDelay: 300,
+                          // }}
+                          style={{ padding: "0.5rem" }}
+                        />
+                      </div>
+                    ))}
                   </div>
                 </div>
               ))}
@@ -89,6 +276,7 @@ function ModeladoRefineriaDashboard() {
           </div>
           <div className="col-12 md:col-6 lg:col-12">
             <h1 className="text-2xl font-bold mb-3">Recepciones</h1>
+
             <div className="  flex flex-row">
               {/* <pre className="bg-gray-100 p-2 rounded text-sm overflow-auto">
                 {JSON.stringify(recepcions, null, 2)}
@@ -251,6 +439,93 @@ function ModeladoRefineriaDashboard() {
       <div className="mt-4">
         <ModeladoRefineriaLinaCarga />
       </div> */}
+      <Dialog
+        header="Detalles de Recepciones"
+        visible={visible}
+        modal
+        onHide={hideDialog}
+        style={{ width: "80vw" }}
+        breakpoints={{
+          "960px": "75vw",
+          "641px": "100vw",
+        }}
+      >
+        {selectedProduct && (
+          <>
+            <DataTable
+              value={selectedProduct.recepciones}
+              size="small"
+              tableStyle={{ minWidth: "50rem" }}
+              footer={
+                <div className="p-2 flex justify-content-between">
+                  <div>
+                    <strong>Producto:</strong> {selectedProduct.producto}
+                  </div>
+                  <div>
+                    <strong>Cantidad:</strong>{" "}
+                    {selectedProduct.cantidad.toLocaleString("de-DE")} Bbls
+                  </div>
+                  <div>
+                    <strong>Cantidad Recibida:</strong>{" "}
+                    {selectedProduct.cantidadRecibida.toLocaleString("de-DE")}{" "}
+                    Bbls
+                  </div>
+                  <div>
+                    <strong>Cantidad Faltante:</strong>{" "}
+                    {selectedProduct.cantidadFaltante.toLocaleString("de-DE")}{" "}
+                    Bbls
+                  </div>
+                </div>
+              }
+            >
+              <Column field="placa" header="Placa"></Column>
+              <Column
+                field="nombreChofer"
+                header="Chofer"
+                body={(rowData: any) =>
+                  rowData.nombreChofer + " " + rowData.apellidoChofer
+                }
+              ></Column>
+              <Column field="idGuia" header="Guía"></Column>
+              <Column field="idTanque.nombre" header="Tanque"></Column>
+              <Column
+                field="cantidadRecibida"
+                header="Cantidad Recibida"
+                body={(rowData: any) =>
+                  `${Number(rowData.cantidadRecibida).toLocaleString(
+                    "de-DE"
+                  )} Bbls`
+                }
+              ></Column>
+
+              <Column
+                field="fechaInicio"
+                header="Fecha Inicio"
+                body={(rowData: any) => formatDateFH(rowData.fechaInicio)}
+              ></Column>
+              <Column
+                field="fechaDespacho"
+                header="Fecha Despacho"
+                body={(rowData: any) => formatDateFH(rowData.fechaDespacho)}
+              ></Column>
+              <Column
+                field="fechaFin"
+                header="Fecha Fin"
+                body={(rowData: any) => formatDateFH(rowData.fechaFin)}
+              ></Column>
+              <Column
+                header="Tiempo de Carga"
+                body={(rowData: any) => {
+                  const tiempoCarga =
+                    new Date(rowData.fechaFin).getTime() -
+                    new Date(rowData.fechaInicio).getTime();
+                  return formatDuration(tiempoCarga);
+                }}
+              ></Column>
+            </DataTable>
+          </>
+        )}
+      </Dialog>
     </div>
   );
 }
