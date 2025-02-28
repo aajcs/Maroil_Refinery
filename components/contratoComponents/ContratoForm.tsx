@@ -115,7 +115,10 @@ function ContratoForm({
     try {
       data.items = items;
       if (contrato) {
-        const updatedContrato = await updateContrato(contrato.id, data);
+        const updatedContrato = await updateContrato(contrato.id, {
+          ...data,
+          idRefineria: activeRefineria?.id,
+        });
         const updatedContratos = contratos.map((t) =>
           t.id === updatedContrato.id ? updatedContrato : t
         );
