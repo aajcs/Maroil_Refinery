@@ -61,7 +61,7 @@ const ModeladoRefineriaTorre = (
     switch (material.toLowerCase()) {
       case "nafta":
         return "#add8e6"; // Azul claro / Celeste
-      case "fuel oil 4 (mog)":
+      case "fuel oil 4 (mgo)":
         return "#556b2f"; // Verde oscuro / Verde oliva
       case "fuel oil 6 (fondo)":
         return "#654321"; // Marrón oscuro / Negro

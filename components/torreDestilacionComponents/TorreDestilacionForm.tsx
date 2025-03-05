@@ -29,7 +29,7 @@ interface TorreDestilacionFormProps {
 const materiales = [
   { estadoMaterial: "True", posicion: "1", nombre: "Nafta" },
   { estadoMaterial: "True", posicion: "2", nombre: "Queroseno" },
-  { estadoMaterial: "True", posicion: "3", nombre: "Fuel Oil 4 (MOG)" },
+  { estadoMaterial: "True", posicion: "3", nombre: "Fuel Oil 4 (MGO)" },
   { estadoMaterial: "True", posicion: "4", nombre: "Fuel Oil 6 (Fondo)" },
   { estadoMaterial: "True", posicion: "5", nombre: "Petroleo Crudo" },
 ];

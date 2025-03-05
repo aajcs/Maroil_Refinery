@@ -24,7 +24,7 @@ interface TanqueFormProps {
 }
 const materiales = [
   "Nafta",
-  "Fuel Oil 4 (MOG)",
+  "Fuel Oil 4 (MGO)",
   "Fuel Oil 6 (Fondo)",
   "Queroseno",
   "Petroleo Crudo",

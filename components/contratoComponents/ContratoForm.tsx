@@ -78,7 +78,7 @@ function ContratoForm({
   const [productos] = useState<string[]>([
     "Nafta",
     "Queroseno",
-    "Fuel Oil 4 (MOG)",
+    "Fuel Oil 4 (MGO)",
     "Fuel Oil 6 (Fondo)",
     "Petroleo Crudo",
   ]);
