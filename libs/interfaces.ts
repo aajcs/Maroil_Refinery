@@ -118,6 +118,7 @@ export interface Recepcion {
     id: string;
   };
   cantidadRecibida: number;
+  cantidadEnviada: number;
   fechaInicio: string;
   fechaFin: string;
   fechaDespacho: string;

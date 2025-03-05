@@ -14,6 +14,7 @@ import { useState, useMemo, useCallback } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import ModeladoRefineriaContratosList from "./ModeladoRefineriaContratosList";
+import ModeladoRefineriaRecepcionesList from "./ModeladoRefineriaRecepcionesList";
 
 const ModeladoRefineriaDashboard = () => {
   const { activeRefineria } = useRefineriaStore();
@@ -94,77 +95,7 @@ const ModeladoRefineriaDashboard = () => {
           contratos={recepcionesPorContrato}
           onShowDialog={showDialog}
         />
-        <div className="col-12 md:col-6 lg:col-12">
-          <h1 className="text-2xl font-bold mb-3">Recepciones</h1>
-
-          <div className="  flex flex-row">
-            {/* <pre className="bg-gray-100 p-2 rounded text-sm overflow-auto">
-                {JSON.stringify(recepcions, null, 2)}
-              </pre> */}
-
-            {recepcions.map((recepcion) => (
-              <div key={recepcion.id} className="m-2 flex flex-column card">
-                <div>
-                  <strong>Cantidad Recibida:</strong>{" "}
-                  {recepcion.cantidadRecibida}
-                </div>
-                <div>
-                  <strong>Tanque:</strong>{" "}
-                  {recepcion.idTanque
-                    ? recepcion.idTanque.nombre
-                    : "No tiene tanque asignado"}
-                </div>
-                <div>
-                  <strong>Línea:</strong>{" "}
-                  {recepcion.idLinea
-                    ? recepcion.idLinea.nombre
-                    : "No tiene línea asignada"}
-                </div>
-                <div>
-                  <strong>Producto:</strong>{" "}
-                  {recepcion.idContratoItems.producto}
-                </div>
-                <div>
-                  <strong>Fecha de Inicio:</strong>{" "}
-                  {formatDateFH(recepcion.fechaInicio)}
-                </div>
-                <div>
-                  <strong>Fecha de Fin:</strong>{" "}
-                  {formatDateFH(recepcion.fechaFin)}
-                </div>
-                <div>
-                  <strong>Placa:</strong> {recepcion.placa}
-                </div>
-                <div>
-                  <strong>Chofer:</strong> {recepcion.nombreChofer}{" "}
-                  {recepcion.apellidoChofer}
-                </div>
-
-                <div>
-                  <strong>Estado de Carga:</strong> {recepcion.estadoCarga}
-                </div>
-                <div>
-                  <strong>ID de Guía:</strong> {recepcion.idGuia}
-                </div>
-                <div>
-                  <strong>Número de Contrato:</strong>{" "}
-                  {recepcion.idContrato.numeroContrato}
-                </div>
-                <div>
-                  <strong>Última Actualización:</strong>{" "}
-                  {formatDateFH(recepcion.updatedAt)}
-                </div>
-                <div>
-                  <strong>Fecha de Despacho:</strong>{" "}
-                  {formatDateFH(recepcion.fechaDespacho)}
-                </div>
-                <div>
-                  <strong>Estado</strong> {recepcion.estado}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        <ModeladoRefineriaRecepcionesList recepciones={recepcions} />
 
         {/* Línea de recepción */}
         <h1 className="text-2xl font-bold mb-3 col-12">
@@ -326,12 +257,9 @@ const ModeladoRefineriaDashboard = () => {
               ></Column>
               <Column
                 header="Tiempo de Carga"
-                body={(rowData: any) => {
-                  const tiempoCarga =
-                    new Date(rowData.fechaFin).getTime() -
-                    new Date(rowData.fechaInicio).getTime();
-                  return formatDuration(tiempoCarga);
-                }}
+                body={(rowData: any) =>
+                  formatDuration(rowData.fechaInicio, rowData.fechaFin)
+                }
               ></Column>
             </DataTable>
           </>

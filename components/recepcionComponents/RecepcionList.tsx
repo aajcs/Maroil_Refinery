@@ -159,6 +159,13 @@ const RecepcionList = () => {
         />
         <Column field="idContratoItems.producto" header="Nombre del Producto" />
         <Column
+          field="cantidadEnviada"
+          header="Cantidad Enviada"
+          body={(rowData: Recepcion) =>
+            ` ${Number(rowData.cantidadEnviada).toLocaleString("de-DE")}Bbl`
+          }
+        />
+        <Column
           field="cantidadRecibida"
           header="Cantidad Recibida"
           body={(rowData: Recepcion) =>

@@ -235,6 +235,10 @@ export const recepcionSchema = object({
   estadoCarga: string().min(1, "El estado de carga es obligatorio"),
   estado: string().min(1, "El estado es obligatorio"),
   eliminado: boolean().default(false),
+  cantidadEnviada: number().min(
+    0,
+    "La cantidad enviada debe ser un número no negativo"
+  ),
   cantidadRecibida: number().min(
     0,
     "La cantidad recibida debe ser un número no negativo"

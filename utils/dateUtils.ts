@@ -12,7 +12,17 @@ export const formatDateSinAnoFH = (dateString: Date | string) => {
   }
   return format(new Date(dateString), "dd/MM HH:mm");
 };
-export const formatDuration = (milliseconds: number) => {
+export const formatDuration = (
+  startDate: Date | string,
+  endDate: Date | string
+) => {
+  if (!startDate || !endDate) {
+    return "Duración no disponible";
+  }
+  const start = new Date(startDate).getTime();
+  const end = new Date(endDate).getTime();
+  const milliseconds = end - start;
+
   const seconds = Math.floor(milliseconds / 1000);
   const minutes = Math.floor(seconds / 60);
   const hours = Math.floor(minutes / 60);
@@ -22,5 +32,5 @@ export const formatDuration = (milliseconds: number) => {
   const remainingMinutes = minutes % 60;
   const remainingSeconds = seconds % 60;
 
-  return `${days}d ${remainingHours}h ${remainingMinutes}m `;
+  return `${days}d ${remainingHours}h ${remainingMinutes}m ${remainingSeconds}s`;
 };

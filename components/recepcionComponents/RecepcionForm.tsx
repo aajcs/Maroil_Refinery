@@ -325,8 +325,35 @@ const RecepcionForm = ({
               </small>
             )}
           </div>
+          {/* Campo: Cantidad Enviada */}
+          <div className="field mb-4 col-12 sm:col-6 lg:col-2">
+            <label htmlFor="cantidadEnviada" className="font-medium text-900">
+              Cantidad Enviada
+            </label>
+            <Controller
+              name="cantidadEnviada"
+              control={control}
+              render={({ field }) => (
+                <InputNumber
+                  id="cantidadEnviada"
+                  value={field.value}
+                  onValueChange={(e) => field.onChange(e.value)}
+                  className={classNames("w-full", {
+                    "p-invalid": errors.cantidadEnviada,
+                  })}
+                  min={0}
+                  locale="es"
+                />
+              )}
+            />
+            {errors.cantidadEnviada && (
+              <small className="p-error">
+                {errors.cantidadEnviada.message}
+              </small>
+            )}
+          </div>
           {/* Campo: Cantidad Recibida */}
-          <div className="field mb-4 col-12 sm:col-6 lg:col-4">
+          <div className="field mb-4 col-12 sm:col-6 lg:col-2">
             <label htmlFor="cantidadRecibida" className="font-medium text-900">
               Cantidad Recibida
             </label>
