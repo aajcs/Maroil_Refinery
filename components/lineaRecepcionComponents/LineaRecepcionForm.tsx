@@ -24,6 +24,11 @@ interface LineaRecepcionFormProps {
   lineaRecepcions: any[];
   setLineaRecepcions: (lineaRecepcions: any[]) => void;
   setLineaRecepcion: (lineaRecepcion: any) => void;
+  showToast: (
+    severity: "success" | "error",
+    summary: string,
+    detail: string
+  ) => void;
 }
 
 const estatusValues = ["true", "false"];
@@ -33,6 +38,7 @@ const LineaRecepcionForm = ({
   hideLineaRecepcionFormDialog,
   lineaRecepcions,
   setLineaRecepcions,
+  showToast,
 }: LineaRecepcionFormProps) => {
   const { activeRefineria } = useRefineriaStore();
   const toast = useRef<Toast | null>(null);
@@ -87,14 +93,6 @@ const LineaRecepcionForm = ({
         error instanceof Error ? error.message : "Ocurrió un error inesperado"
       );
     }
-  };
-
-  const showToast = (
-    severity: "success" | "error",
-    summary: string,
-    detail: string
-  ) => {
-    toast.current?.show({ severity, summary, detail, life: 3000 });
   };
 
   return (

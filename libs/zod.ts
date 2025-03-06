@@ -27,7 +27,7 @@ export const profileSchema = object({
 export const refineriaSchema = object({
   nombre: string().min(1, "El nombre es obligatorio"),
   estado: string().min(1, "Debes seleccionar un estado"),
-  eliminado: boolean().default(false),
+  // eliminado: boolean().default(false),
   ubicacion: string().min(1, "La ubicación es obligatoria"),
   nit: string().min(1, "El NIT es obligatorio"),
   img: string().url("La URL de la imagen es inválida"),

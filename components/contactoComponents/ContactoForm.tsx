@@ -21,6 +21,11 @@ interface ContactoFormProps {
   contactos: any[];
   setContactos: (contactos: any[]) => void;
   setContacto: (contacto: any) => void;
+  showToast: (
+    severity: "success" | "error",
+    summary: string,
+    detail: string
+  ) => void;
 }
 
 const estatusValues = ["true", "false"];
@@ -31,6 +36,7 @@ const ContactoForm = ({
   hideContactoFormDialog,
   contactos,
   setContactos,
+  showToast,
 }: ContactoFormProps) => {
   const { activeRefineria } = useRefineriaStore();
   const toast = useRef<Toast | null>(null);
@@ -56,7 +62,10 @@ const ContactoForm = ({
   const onSubmit = async (data: FormData) => {
     try {
       if (contacto) {
-        const updatedContacto = await updateContacto(contacto.id, data);
+        const updatedContacto = await updateContacto(contacto.id, {
+          ...data,
+          idRefineria: activeRefineria?.id,
+        });
         const updatedContactos = contactos.map((t) =>
           t.id === updatedContacto.id ? updatedContacto : t
         );
@@ -69,7 +78,7 @@ const ContactoForm = ({
           ...data,
           idRefineria: activeRefineria.id,
         });
-        setContactos([...contactos, newContacto.contacto]);
+        setContactos([...contactos, newContacto]);
         showToast("success", "Éxito", "Contacto creado");
       }
       hideContactoFormDialog();
@@ -83,13 +92,6 @@ const ContactoForm = ({
     }
   };
 
-  const showToast = (
-    severity: "success" | "error",
-    summary: string,
-    detail: string
-  ) => {
-    toast.current?.show({ severity, summary, detail, life: 3000 });
-  };
   return (
     <div>
       <Toast ref={toast} />

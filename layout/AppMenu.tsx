@@ -335,12 +335,12 @@ const AppMenu = () => {
         {
           label: "Lista",
           icon: "pi pi-fw pi-list",
-          to: "/refineria/list",
+          to: "/todas-refinerias/list",
         },
         {
           label: "Crear",
           icon: "pi pi-fw pi-plus",
-          to: "/refineria/create",
+          to: "/todas-refinerias/create",
         },
       ],
     },

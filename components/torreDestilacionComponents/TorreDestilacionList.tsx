@@ -15,6 +15,7 @@ import {
 import TorreDestilacionForm from "./TorreDestilacionForm";
 import { useRefineriaStore } from "@/store/refineriaStore";
 import { TorreDestilacion } from "@/libs/interfaces";
+import { formatDateFH } from "@/utils/dateUtils";
 
 const TorreDestilacionList = () => {
   const { activeRefineria } = useRefineriaStore();
@@ -91,7 +92,14 @@ const TorreDestilacionList = () => {
     setFilters({ global: { value, matchMode: FilterMatchMode.CONTAINS } });
     setGlobalFilterValue(value);
   };
-
+  // Mostrar notificaciones Toast
+  const showToast = (
+    severity: "success" | "error",
+    summary: string,
+    detail: string
+  ) => {
+    toast.current?.show({ severity, summary, detail, life: 3000 });
+  };
   const renderHeader = () => (
     <div className="flex flex-wrap gap-2 align-items-center justify-content-between">
       <span className="p-input-icon-left w-full sm:w-20rem flex-order-1 sm:flex-order-0">
@@ -200,12 +208,14 @@ const TorreDestilacionList = () => {
         <Column
           field="createdAt"
           header="Fecha de Creación"
+          body={(rowData: TorreDestilacion) => formatDateFH(rowData.createdAt)}
           sortable
           style={{ width: "25%" }}
         />
         <Column
           field="updatedAt"
           header="Última Actualización"
+          body={(rowData: TorreDestilacion) => formatDateFH(rowData.updatedAt)}
           sortable
           style={{ width: "25%" }}
         />
@@ -261,6 +271,7 @@ const TorreDestilacionList = () => {
           torresDestilacion={torresDestilacion}
           setTorresDestilacion={setTorresDestilacion}
           setTorreDestilacion={setTorreDestilacion}
+          showToast={showToast}
         />
       </Dialog>
     </div>

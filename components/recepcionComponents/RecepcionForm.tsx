@@ -60,6 +60,11 @@ const RecepcionForm = ({
     control,
   } = useForm<FormData>({
     resolver: zodResolver(recepcionSchema),
+    defaultValues: {
+      idGuia: 0,
+      cantidadEnviada: 0,
+      cantidadRecibida: 0,
+    },
   });
 
   const [productos] = useState<string[]>([
@@ -333,11 +338,12 @@ const RecepcionForm = ({
             <Controller
               name="cantidadEnviada"
               control={control}
+              defaultValue={0} // Valor inicial como número
               render={({ field }) => (
                 <InputNumber
                   id="cantidadEnviada"
                   value={field.value}
-                  onValueChange={(e) => field.onChange(e.value)}
+                  onValueChange={(e) => field.onChange(e.value ?? 0)} // Manejo de valores nulos
                   className={classNames("w-full", {
                     "p-invalid": errors.cantidadEnviada,
                   })}

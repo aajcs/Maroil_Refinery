@@ -10,6 +10,7 @@ import { classNames } from "primereact/utils";
 import { profileSchema } from "@/libs/zod";
 import { createUser, updateUser } from "@/app/api/userService";
 import { Toast } from "primereact/toast";
+import { useRouter } from "next/navigation";
 
 type FormData = z.infer<typeof profileSchema>;
 
@@ -26,12 +27,14 @@ const UsuarioForm = ({
   setUsuarios,
 }: UsuarioFormProps) => {
   const toast = useRef<Toast | null>(null);
+  const router = useRouter();
   const {
     register,
     handleSubmit,
     formState: { errors },
     setValue,
     watch,
+    reset,
   } = useForm<FormData>({
     resolver: zodResolver(profileSchema),
   });
@@ -108,7 +111,9 @@ const UsuarioForm = ({
           detail: "Usuario Creado",
           life: 3000,
         });
+        reset();
 
+        // router.push("/");
         // Cerrar el diálogo del formulario
         // hideUsuarioFormDialog();
       }
@@ -121,6 +126,9 @@ const UsuarioForm = ({
         life: 3000,
       });
       console.error("Error al procesar la solicitud:", error);
+    } finally {
+      // Redirigir después de que todo esté completo
+      router.push("/profile/list");
     }
   };
   const estatusValues = ["true", "false"];

@@ -12,6 +12,7 @@ import TanqueForm from "./TanqueForm";
 import { useRefineriaStore } from "@/store/refineriaStore";
 import { getTanques, deleteTanque } from "@/app/api/tanqueService";
 import { Tanque } from "@/libs/interfaces";
+import { formatDateFH } from "@/utils/dateUtils";
 
 const TanqueList = () => {
   const { activeRefineria } = useRefineriaStore();
@@ -145,6 +146,13 @@ const TanqueList = () => {
       </div>
     );
   };
+  const showToast = (
+    severity: "success" | "error",
+    summary: string,
+    detail: string
+  ) => {
+    toast.current?.show({ severity, summary, detail, life: 3000 });
+  };
   return (
     <div className="card">
       <Toast ref={toast} />
@@ -190,12 +198,14 @@ const TanqueList = () => {
         <Column
           field="createdAt"
           header="Fecha de Creación"
+          body={(rowData: Tanque) => formatDateFH(rowData.createdAt)}
           sortable
           style={{ width: "25%" }}
         />
         <Column
           field="updatedAt"
           header="Última Actualización"
+          body={(rowData: Tanque) => formatDateFH(rowData.updatedAt)}
           sortable
           style={{ width: "25%" }}
         />
@@ -250,6 +260,7 @@ const TanqueList = () => {
           tanques={tanques}
           setTanques={setTanques}
           setTanque={setTanque}
+          showToast={showToast}
         />
       </Dialog>
     </div>

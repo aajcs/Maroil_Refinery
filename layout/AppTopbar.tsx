@@ -16,6 +16,7 @@ import { classNames } from "primereact/utils";
 import { signOut, useSession } from "next-auth/react";
 import { User } from "next-auth";
 import { useSocket } from "@/hooks/useSocket";
+import { useRefineriaStore } from "@/store/refineriaStore";
 interface ExtendedUser extends User {
   usuario: {
     nombre: string;
@@ -26,6 +27,8 @@ interface ExtendedUser extends User {
 
 const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
   const { data: session } = useSession();
+  const { activeRefineria } = useRefineriaStore();
+
   const { online, desconectarSocket } = useSocket();
 
   const handleSignOut = async () => {
@@ -120,7 +123,12 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
           );
         })}
         {!tabs ||
-          (tabs.length === 0 && <li className="topbar-menu-empty">Maroil</li>)}
+          (tabs.length === 0 && (
+            <li className="topbar-menu-empty app-logo">
+              <img alt="app logo" src={activeRefineria?.img} />
+              {activeRefineria?.nombre}
+            </li>
+          ))}
       </ul>
 
       <div className="topbar-profile">

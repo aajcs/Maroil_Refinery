@@ -15,6 +15,7 @@ import {
 } from "@/app/api/lineaRecepcionService";
 import LineaRecepcionForm from "./LineaRecepcionForm";
 import { LineaRecepcion } from "@/libs/interfaces";
+import { formatDateFH } from "@/utils/dateUtils";
 
 const LineaRecepcionList = () => {
   const { activeRefineria } = useRefineriaStore();
@@ -136,23 +137,13 @@ const LineaRecepcionList = () => {
       />
     </>
   );
-  const materialBodyTemplate = (rowData: LineaRecepcion) => {
-    return (
-      <div>
-        {Array.isArray(rowData.material) &&
-          rowData.material.map((material, index) => (
-            <span
-              key={index}
-              className={`customer-badge status-${material
-                .toLowerCase()
-                .replace(/[()]/g, "")
-                .replace(/\s+/g, "-")}`}
-            >
-              {material}
-            </span>
-          ))}
-      </div>
-    );
+
+  const showToast = (
+    severity: "success" | "error",
+    summary: string,
+    detail: string
+  ) => {
+    toast.current?.show({ severity, summary, detail, life: 3000 });
   };
   return (
     <div className="card">
@@ -193,12 +184,14 @@ const LineaRecepcionList = () => {
         <Column
           field="createdAt"
           header="Fecha de Creación"
+          body={(rowData: LineaRecepcion) => formatDateFH(rowData.createdAt)}
           sortable
           style={{ width: "25%" }}
         />
         <Column
           field="updatedAt"
           header="Última Actualización"
+          body={(rowData: LineaRecepcion) => formatDateFH(rowData.updatedAt)}
           sortable
           style={{ width: "25%" }}
         />
@@ -254,6 +247,7 @@ const LineaRecepcionList = () => {
           lineaRecepcions={lineaRecepcions}
           setLineaRecepcions={setLineaRecepcions}
           setLineaRecepcion={setLineaRecepcion}
+          showToast={showToast}
         />
       </Dialog>
     </div>

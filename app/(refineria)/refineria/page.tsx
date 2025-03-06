@@ -6,7 +6,7 @@ import RefineriasDashboard from "@/components/refineriaComponents/RefineriasDash
 function Dashboard() {
   return (
     <>
-      <RefineriasDashboard />
+      {/* <RefineriasDashboard /> */}
       <ModeladoRefineriaDashboard />
     </>
   );

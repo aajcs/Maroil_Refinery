@@ -16,6 +16,7 @@ import { Column, ColumnEditorOptions } from "primereact/column";
 import { Tag } from "primereact/tag";
 import { getContactos } from "@/app/api/contactoService";
 import { Calendar } from "primereact/calendar";
+import { Contacto } from "@/libs/interfaces";
 
 type FormData = z.infer<typeof contratoSchema>;
 
@@ -25,21 +26,13 @@ interface ContratoFormProps {
   contratos: any[];
   setContratos: (contratos: any[]) => void;
   setContrato: (contrato: any) => void;
+  showToast: (
+    severity: "success" | "error",
+    summary: string,
+    detail: string
+  ) => void;
 }
 
-interface Contacto {
-  id: string;
-  nombre: string;
-  estado: boolean;
-  eliminado: boolean;
-  ubicacion: string;
-  material: string;
-  createdAt: string;
-  updatedAt: string;
-  idRefineria: {
-    id: string | undefined;
-  };
-}
 const estatusValues = ["true", "false"];
 const estadoEntregaOptions = [
   { label: "Pendiente", value: "Pendiente" },
@@ -58,6 +51,7 @@ function ContratoForm({
   hideContratoFormDialog,
   contratos,
   setContratos,
+  showToast,
 }: ContratoFormProps) {
   const { activeRefineria } = useRefineriaStore();
   const toast = useRef<Toast | null>(null);
@@ -148,14 +142,6 @@ function ContratoForm({
         error instanceof Error ? error.message : "Ocurrió un error inesperado"
       );
     }
-  };
-
-  const showToast = (
-    severity: "success" | "error",
-    summary: string,
-    detail: string
-  ) => {
-    toast.current?.show({ severity, summary, detail, life: 3000 });
   };
 
   const addItem = () => {

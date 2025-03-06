@@ -12,6 +12,7 @@ import { useRefineriaStore } from "@/store/refineriaStore";
 import { deleteContacto, getContactos } from "@/app/api/contactoService";
 import ContactoForm from "./ContactoForm";
 import { Contacto } from "@/libs/interfaces";
+import { formatDateFH } from "@/utils/dateUtils";
 
 const ContactoList = () => {
   const { activeRefineria } = useRefineriaStore();
@@ -128,24 +129,15 @@ const ContactoList = () => {
       />
     </>
   );
-  const materialBodyTemplate = (rowData: Contacto) => {
-    return (
-      <div>
-        {Array.isArray(rowData.material) &&
-          rowData.material.map((material, index) => (
-            <span
-              key={index}
-              className={`customer-badge status-${material
-                .toLowerCase()
-                .replace(/[()]/g, "")
-                .replace(/\s+/g, "-")}`}
-            >
-              {material}
-            </span>
-          ))}
-      </div>
-    );
+
+  const showToast = (
+    severity: "success" | "error",
+    summary: string,
+    detail: string
+  ) => {
+    toast.current?.show({ severity, summary, detail, life: 3000 });
   };
+
   return (
     <div className="card">
       <Toast ref={toast} />
@@ -221,12 +213,14 @@ const ContactoList = () => {
         <Column
           field="createdAt"
           header="Fecha de Creación"
+          body={(rowData: Contacto) => formatDateFH(rowData.createdAt)}
           sortable
           style={{ width: "20%" }}
         />
         <Column
           field="updatedAt"
           header="Última Actualización"
+          body={(rowData: Contacto) => formatDateFH(rowData.updatedAt)}
           sortable
           style={{ width: "20%" }}
         />
@@ -281,6 +275,7 @@ const ContactoList = () => {
           contactos={contactos}
           setContactos={setContactos}
           setContacto={setContacto}
+          showToast={showToast}
         />
       </Dialog>
     </div>

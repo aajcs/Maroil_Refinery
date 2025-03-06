@@ -10,6 +10,7 @@ import { refineriaSchema } from "@/libs/zod";
 import { createRefineria, updateRefineria } from "@/app/api/refineriaService";
 import { Toast } from "primereact/toast";
 import { Dropdown } from "primereact/dropdown";
+import { useRouter } from "next/navigation";
 
 type FormData = z.infer<typeof refineriaSchema>;
 
@@ -27,6 +28,7 @@ const RefineriaForm = ({
   setRefinerias,
 }: RefineriaFormProps) => {
   const toast = useRef<Toast | null>(null);
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -41,7 +43,7 @@ const RefineriaForm = ({
     if (refineria) {
       setValue("nombre", refineria.nombre);
       setValue("estado", refineria.estado);
-      setValue("eliminado", refineria.eliminado);
+      // setValue("eliminado", refineria.eliminado);
       setValue("ubicacion", refineria.ubicacion);
       setValue("nit", refineria.nit);
       setValue("img", refineria.img);
@@ -127,6 +129,9 @@ const RefineriaForm = ({
         life: 3000,
       });
       console.error("Error al procesar la solicitud:", error);
+    } finally {
+      // Redirigir después de que todo esté completo
+      router.push("/todas-refinerias/list");
     }
   };
 
@@ -187,7 +192,7 @@ const RefineriaForm = ({
                   <small className="p-error">{errors.estado.message}</small>
                 )}
               </div>
-
+              {/* 
               <div className="field mb-4 col-12 md:col-6">
                 <label htmlFor="eliminado" className="font-medium text-900">
                   Eliminado
@@ -205,7 +210,7 @@ const RefineriaForm = ({
                 {errors.eliminado && (
                   <small className="p-error">{errors.eliminado.message}</small>
                 )}
-              </div>
+              </div> */}
 
               <div className="field mb-4 col-12">
                 <label htmlFor="ubicacion" className="font-medium text-900">

@@ -33,12 +33,12 @@ const AppMenuRefineria = () => {
         },
         {
           label: "Tanques",
-          icon: "pi pi-fw pi-list",
+          icon: "pi pi-fw pi-database",
           to: "/refineria/tanques",
         },
         {
           label: "Torres de Destilación",
-          icon: "pi pi-fw pi-list",
+          icon: "pi pi-fw pi-building",
           to: "/refineria/torre-destilacion",
         },
         {
@@ -48,12 +48,12 @@ const AppMenuRefineria = () => {
         },
         {
           label: "Contactos",
-          icon: "pi pi-fw pi-plus",
+          icon: "pi pi-fw pi-id-card",
           to: "/refineria/contacto",
         },
         {
           label: "Contrato",
-          icon: "pi pi-fw pi-plus",
+          icon: "pi pi-fw pi-briefcase",
           to: "/refineria/contrato",
         },
         {
@@ -63,22 +63,22 @@ const AppMenuRefineria = () => {
         },
       ],
     },
-    {
-      label: "Gestión de Refinerias",
-      icon: "pi pi-fw pi-user",
-      items: [
-        {
-          label: "Lista",
-          icon: "pi pi-fw pi-list",
-          to: "/refineria/list",
-        },
-        {
-          label: "Crear",
-          icon: "pi pi-fw pi-plus",
-          to: "/refineria/create",
-        },
-      ],
-    },
+    // {
+    //   label: "Gestión de Refinerias",
+    //   icon: "pi pi-fw pi-user",
+    //   items: [
+    //     {
+    //       label: "Lista",
+    //       icon: "pi pi-fw pi-list",
+    //       to: "/refineria/list",
+    //     },
+    //     {
+    //       label: "Crear",
+    //       icon: "pi pi-fw pi-plus",
+    //       to: "/refineria/create",
+    //     },
+    //   ],
+    // },
   ];
 
   return <AppSubMenu model={model} />;

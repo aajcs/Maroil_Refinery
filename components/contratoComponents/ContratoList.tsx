@@ -16,6 +16,7 @@ import { useRefineriaStore } from "@/store/refineriaStore";
 import { deleteContrato, getContratos } from "@/app/api/contratoService";
 import ContratoForm from "./ContratoForm";
 import { Contrato } from "@/libs/interfaces";
+import { formatDateFH } from "@/utils/dateUtils";
 
 const ContratoList = () => {
   const { activeRefineria } = useRefineriaStore();
@@ -136,6 +137,13 @@ const ContratoList = () => {
     </>
   );
 
+  const showToast = (
+    severity: "success" | "error",
+    summary: string,
+    detail: string
+  ) => {
+    toast.current?.show({ severity, summary, detail, life: 3000 });
+  };
   const rowExpansionTemplate = (data: any) => {
     return (
       <div className="orders-subtable">
@@ -304,12 +312,14 @@ const ContratoList = () => {
         <Column
           field="createdAt"
           header="Fecha de Creación"
+          body={(rowData: Contrato) => formatDateFH(rowData.createdAt)}
           sortable
           style={{ width: "20%" }}
         />
         <Column
           field="updatedAt"
           header="Última Actualización"
+          body={(rowData: Contrato) => formatDateFH(rowData.updatedAt)}
           sortable
           style={{ width: "20%" }}
         />
@@ -364,6 +374,7 @@ const ContratoList = () => {
           contratos={contratos}
           setContratos={setContratos}
           setContrato={setContrato}
+          showToast={showToast}
         />
       </Dialog>
     </div>

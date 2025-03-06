@@ -21,6 +21,11 @@ interface TanqueFormProps {
   tanques: any[];
   setTanques: (tanques: any[]) => void;
   setTanque: (tanque: any) => void;
+  showToast: (
+    severity: "success" | "error",
+    summary: string,
+    detail: string
+  ) => void;
 }
 const materiales = [
   "Nafta",
@@ -36,6 +41,7 @@ const TanqueForm = ({
   hideTanqueFormDialog,
   tanques,
   setTanques,
+  showToast,
 }: TanqueFormProps) => {
   const { activeRefineria } = useRefineriaStore();
   const toast = useRef<Toast | null>(null);
@@ -89,14 +95,6 @@ const TanqueForm = ({
         error instanceof Error ? error.message : "Ocurrió un error inesperado"
       );
     }
-  };
-
-  const showToast = (
-    severity: "success" | "error",
-    summary: string,
-    detail: string
-  ) => {
-    toast.current?.show({ severity, summary, detail, life: 3000 });
   };
 
   const onCheckboxChange = (e: any) => {

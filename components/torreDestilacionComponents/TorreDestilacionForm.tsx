@@ -24,6 +24,11 @@ interface TorreDestilacionFormProps {
   torresDestilacion: any[];
   setTorresDestilacion: (torresDestilacion: any[]) => void;
   setTorreDestilacion: (torreDestilacion: any) => void;
+  showToast: (
+    severity: "success" | "error",
+    summary: string,
+    detail: string
+  ) => void;
 }
 
 const materiales = [
@@ -41,6 +46,7 @@ const TorreDestilacionForm = ({
   hideTorreDestilacionFormDialog,
   torresDestilacion,
   setTorresDestilacion,
+  showToast,
 }: TorreDestilacionFormProps) => {
   const { activeRefineria } = useRefineriaStore();
   const toast = useRef<Toast | null>(null);
@@ -95,10 +101,10 @@ const TorreDestilacionForm = ({
       };
 
       if (torreDestilacion) {
-        const updatedTorre = await updateTorreDestilacion(
-          torreDestilacion.id,
-          requestData
-        );
+        const updatedTorre = await updateTorreDestilacion(torreDestilacion.id, {
+          ...requestData,
+          idRefineria: activeRefineria?.id,
+        });
         const updatedTorres = torresDestilacion.map((t) =>
           t.id === updatedTorre.id ? updatedTorre : t
         );
@@ -111,7 +117,8 @@ const TorreDestilacionForm = ({
           ...requestData,
           idRefineria: activeRefineria.id,
         });
-        setTorresDestilacion([...torresDestilacion, newTorre.torre]);
+        console.log(newTorre);
+        setTorresDestilacion([...torresDestilacion, newTorre]);
         showToast("success", "Éxito", "Torre de destilación creada");
       }
       hideTorreDestilacionFormDialog();
@@ -122,15 +129,6 @@ const TorreDestilacionForm = ({
         error instanceof Error ? error.message : "Ocurrió un error inesperado"
       );
     }
-  };
-
-  // Mostrar notificaciones Toast
-  const showToast = (
-    severity: "success" | "error",
-    summary: string,
-    detail: string
-  ) => {
-    toast.current?.show({ severity, summary, detail, life: 3000 });
   };
 
   // Manejar cambios en los checkboxes de materiales
