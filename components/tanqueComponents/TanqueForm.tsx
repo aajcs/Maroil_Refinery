@@ -70,7 +70,10 @@ const TanqueForm = ({
   const onSubmit = async (data: FormData) => {
     try {
       if (tanque) {
-        const updatedTorre = await updateTanque(tanque.id, data);
+        const updatedTorre = await updateTanque(tanque.id, {
+          ...data,
+          idRefineria: activeRefineria?.id,
+        });
         const updatedTanques = tanques.map((t) =>
           t.id === updatedTorre.id ? updatedTorre : t
         );

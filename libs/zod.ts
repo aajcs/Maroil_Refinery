@@ -338,3 +338,89 @@ export const recepcionSchema = object({
   updatedAt: union([string(), date()]).optional(),
   id: string().optional(),
 });
+export const productoSchema = object({
+  idRefineria: object({
+    id: string().optional(),
+    nombre: string().min(1, "El nombre de la refinería es obligatorio"),
+  }).optional(),
+  nombre: string().min(1, "El nombre es obligatorio"),
+  estado: string().min(1, "El estado es obligatorio"),
+  posicion: number().min(1, "La capacidad es obligatoria"),
+  eliminado: boolean().default(false),
+  createdAt: union([string(), date()]).optional(),
+  updatedAt: union([string(), date()]).optional(),
+  id: string().optional(),
+});
+
+export const chequeoCalidadSchema = object({
+  idRefineria: object({
+    nombre: string().min(1, "El nombre de la refinería es obligatorio"),
+    id: string().min(1, "El ID de la refinería es obligatorio"),
+  }).optional(),
+  idProducto: object({
+    nombre: string().min(1, "El nombre del producto es obligatorio"),
+    id: string().min(1, "El ID del producto es obligatorio"),
+  }),
+  idTanque: object({
+    nombre: string().min(1, "El nombre del tanque es obligatorio"),
+    id: string().min(1, "El ID del tanque es obligatorio"),
+  }),
+  idTorre: object({
+    nombre: string().min(1, "El nombre de la torre es obligatorio"),
+    id: string().min(1, "El ID de la torre es obligatorio"),
+  }),
+  operador: string().min(1, "El nombre del operador es obligatorio"),
+  fechaChequeo: union([string(), date()]).refine(
+    (val) => val !== "",
+    "La fecha de chequeo es obligatoria"
+  ),
+  gravedadAPI: number().min(
+    0,
+    "La gravedad API debe ser un número no negativo"
+  ),
+  azufre: number().min(0, "El azufre debe ser un número no negativo"),
+  viscosidad: number().min(0, "La viscosidad debe ser un número no negativo"),
+  densidad: number().min(0, "La densidad debe ser un número no negativo"),
+  contenidoAgua: number().min(
+    0,
+    "El contenido de agua debe ser un número no negativo"
+  ),
+  contenidoPlomo: string().min(1, "El contenido de plomo es obligatorio"),
+  octanaje: string().min(1, "El octanaje es obligatorio"),
+  temperatura: number().min(0, "La temperatura debe ser un número no negativo"),
+  estado: string().min(1, "El estado es obligatorio"),
+  eliminado: boolean().default(false),
+  createdAt: union([string(), date()]).optional(),
+  updatedAt: union([string(), date()]).optional(),
+  id: string().optional(),
+});
+
+export const chequeoCantidadSchema = object({
+  idRefineria: object({
+    nombre: string().min(1, "El nombre de la refinería es obligatorio"),
+    id: string().min(1, "El ID de la refinería es obligatorio"),
+  }).optional(),
+  idProducto: object({
+    nombre: string().min(1, "El nombre del producto es obligatorio"),
+    id: string().min(1, "El ID del producto es obligatorio"),
+  }).nullable(),
+  idTanque: object({
+    nombre: string().min(1, "El nombre del tanque es obligatorio"),
+    id: string().min(1, "El ID del tanque es obligatorio"),
+  }),
+  idTorre: object({
+    nombre: string().min(1, "La ubicación de la torre es obligatoria"),
+    id: string().min(1, "El ID de la torre es obligatorio"),
+  }),
+  operador: string().min(1, "El nombre del operador es obligatorio"),
+  fechaChequeo: union([string(), date()]).refine(
+    (val) => val !== "",
+    "La fecha de chequeo es obligatoria"
+  ),
+  cantidad: number().min(0, "La cantidad debe ser un número no negativo"),
+  estado: string().min(1, "El estado es obligatorio"),
+  eliminado: boolean().default(false),
+  createdAt: union([string(), date()]).optional(),
+  updatedAt: union([string(), date()]).optional(),
+  id: string().optional(),
+});

@@ -8,6 +8,7 @@ import "primereact/resources/primereact.css";
 import "../styles/demo/Demos.scss";
 import { SessionProvider } from "next-auth/react";
 import { Nullable } from "primereact/ts-helpers";
+import "../styles/globals.css";
 
 addLocale("es", {
   firstDayOfWeek: 1,

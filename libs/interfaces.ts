@@ -158,3 +158,78 @@ export interface TorreDestilacion {
     nombre: string;
   };
 }
+
+export interface Producto {
+  idRefineria: {
+    nombre: string;
+    id: string;
+  };
+  nombre: string;
+  posicion: number;
+  estado: boolean;
+  eliminado: boolean;
+  createdAt: string;
+  updatedAt: string;
+  id: string;
+}
+
+export interface ChequeoCalidad {
+  idRefineria: {
+    nombre: string;
+    id: string;
+  };
+  idProducto: {
+    nombre: string;
+    id: string;
+  };
+  idTanque: {
+    nombre: string;
+    id: string;
+  };
+  idTorre: {
+    nombre: string;
+    id: string;
+  };
+  operador: string;
+  fechaChequeo: string;
+  gravedadAPI: number;
+  azufre: number;
+  viscosidad: number;
+  densidad: number;
+  contenidoAgua: number;
+  contenidoPlomo: string;
+  octanaje: string;
+  temperatura: number;
+  estado: string;
+  eliminado: boolean;
+  createdAt: string;
+  updatedAt: string;
+  id: string;
+}
+
+export interface ChequeoCantidad {
+  idRefineria: {
+    nombre: string;
+    id: string;
+  };
+  idProducto: {
+    nombre: string;
+    id: string;
+  } | null;
+  idTanque: {
+    nombre: string;
+    id: string;
+  };
+  idTorre: {
+    nombre: string;
+    id: string;
+  };
+  operador: string;
+  fechaChequeo: string;
+  cantidad: number;
+  estado: string;
+  eliminado: boolean;
+  createdAt: string;
+  updatedAt: string;
+  id: string;
+}
