@@ -7,14 +7,14 @@ interface MainLayoutProps {
 
 export const metadata: Metadata = {
   title: "Maroil Trading",
-  description: "Maroil Trading Refenery.",
+  description: "Maroil Trading Refinery.",
   robots: { index: false, follow: false },
   viewport: { initialScale: 1, width: "device-width" },
   openGraph: {
     type: "website",
     title: "Maroil Trading",
     url: "https://www.maroil.com.ve",
-    description: "Maroil Trading Refenery.",
+    description: "Maroil Trading Refinery.",
 
     ttl: 604800,
   },

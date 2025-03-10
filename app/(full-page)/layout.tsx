@@ -8,7 +8,7 @@ interface FullPageLayoutProps {
 
 export const metadata: Metadata = {
   title: "Maroil Trading",
-  description: "Maroil Trading Refenery.",
+  description: "Maroil Trading Refinery.",
 };
 
 export default function FullPageLayout({ children }: FullPageLayoutProps) {

@@ -424,3 +424,72 @@ export const chequeoCantidadSchema = object({
   updatedAt: union([string(), date()]).optional(),
   id: string().optional(),
 });
+
+export const refinacionSchema = object({
+  idTorre: object({
+    nombre: string().min(1, "El nombre de la torre es obligatorio"),
+    id: string().min(1, "El ID de la torre es obligatorio"),
+  }),
+  idChequeoCalidad: object({
+    id: string().min(1, "El ID del chequeo de calidad es obligatorio"),
+  }),
+  idChequeoCantidad: object({
+    id: string().min(1, "El ID del chequeo de cantidad es obligatorio"),
+  }).nullable(),
+  cantidadRecibida: number().min(
+    0,
+    "La cantidad recibida debe ser un número no negativo"
+  ),
+  idRefineria: object({
+    nombre: string().min(1, "El nombre de la refinería es obligatorio"),
+    id: string().min(1, "El ID de la refinería es obligatorio"),
+  }),
+  historialOperaciones: array(
+    object({
+      proceso: object({
+        fechaInicio: union([string(), date()]).refine(
+          (val) => val !== "",
+          "La fecha de inicio es obligatoria"
+        ),
+        fechaFin: union([string(), date()]).refine(
+          (val) => val !== "",
+          "La fecha de fin es obligatoria"
+        ),
+        temperatura: number().min(
+          0,
+          "La temperatura debe ser un número no negativo"
+        ),
+        duracionHoras: number().min(
+          0,
+          "La duración debe ser un número no negativo"
+        ),
+      }),
+      operador: string().min(1, "El nombre del operador es obligatorio"),
+      _id: string().min(1, "El ID es obligatorio"),
+    })
+  ),
+  material: array(
+    object({
+      idProducto: object({
+        _id: string().min(1, "El ID del producto es obligatorio"),
+        nombre: string().min(1, "El nombre del producto es obligatorio"),
+        id: string().min(1, "El ID del producto es obligatorio"),
+      }),
+      porcentaje: number().min(
+        0,
+        "El porcentaje debe ser un número no negativo"
+      ),
+      idTanque: object({
+        _id: string().min(1, "El ID del tanque es obligatorio"),
+        nombre: string().min(1, "El nombre del tanque es obligatorio"),
+        id: string().min(1, "El ID del tanque es obligatorio"),
+      }),
+      _id: string().min(1, "El ID es obligatorio"),
+    })
+  ),
+  estado: boolean(),
+  eliminado: boolean().default(false),
+  createdAt: union([string(), date()]).optional(),
+  updatedAt: union([string(), date()]).optional(),
+  id: string().optional(),
+});

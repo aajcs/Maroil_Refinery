@@ -18,7 +18,7 @@ const AppFooter = () => {
           }
           alt="logo"
         />
-        <span className="app-name">Maroil Refenery</span>
+        <span className="app-name">Maroil Refinery</span>
       </div>
       <div className="footer-right">
         <span>© Maroil Automation</span>

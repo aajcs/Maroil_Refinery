@@ -57,9 +57,9 @@ const LoginForm: Page = () => {
         className="surface-card py-7 px-5 sm:px-7 shadow-2 flex flex-column w-11 sm:w-30rem"
         style={{ borderRadius: "14px" }}
       >
-        <h1 className="font-bold text-2xl mt-0 mb-2">MAROIL REFENERY</h1>
+        <h1 className="font-bold text-2xl mt-0 mb-2">MAROIL Refinery</h1>
         <p className="text-color-secondary mb-4">
-          Bienvenido a la <strong>Maroil Refenery</strong>, inicie sesión para
+          Bienvenido a la <strong>Maroil Refinery</strong>, inicie sesión para
           continuar.
         </p>
 
