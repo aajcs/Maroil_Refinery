@@ -100,10 +100,11 @@ const ModeladoRefineriaTorre = (
         {/* Gradientes para las secciones (de rojo a naranja) */}
         {apiData.sections.map((_, index) => {
           const color = getFillColor(torre.material[index].nombre); // Obtén el color basado en el material
+          console.log(index, color);
           return (
             <linearGradient
-              key={`sectionGradient${index}`}
-              id={`sectionGradient${index}`}
+              key={`sectionGradient${color}`}
+              id={`sectionGradient${color}`}
               x1="0%"
               y1="0%"
               x2="0%"
@@ -121,6 +122,7 @@ const ModeladoRefineriaTorre = (
       {/* Secciones */}
       {apiData.sections.map((section, index) => {
         const sectionY = towerY + index * sectionHeight;
+        const color = getFillColor(section.name);
         return (
           <g key={section.name}>
             <rect
@@ -129,7 +131,7 @@ const ModeladoRefineriaTorre = (
               width={towerWidth - 30}
               height={sectionHeight - 10}
               fill={
-                section.operational ? `url(#sectionGradient${index})` : "#ddd"
+                section.operational ? `url(#sectionGradient${color})` : "#ddd"
               }
               opacity={section.operational ? "1" : "0.4"}
               stroke="black"

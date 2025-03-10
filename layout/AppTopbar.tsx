@@ -124,10 +124,12 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
         })}
         {!tabs ||
           (tabs.length === 0 && (
-            <li className="topbar-menu-empty app-logo">
+            // <li className="topbar-menu-empty ">
+            <Link href={"/refineria"} className="app-logo">
               <img alt="app logo" src={activeRefineria?.img} />
-              {activeRefineria?.nombre}
-            </li>
+              <span className="app-name">{activeRefineria?.nombre}</span>
+            </Link>
+            // </li>
           ))}
       </ul>
 

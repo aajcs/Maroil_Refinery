@@ -82,11 +82,11 @@ const TanqueForm = ({
       } else {
         if (!activeRefineria)
           throw new Error("No se ha seleccionado una refinería");
-        const newTorre = await createTanque({
+        const newTanque = await createTanque({
           ...data,
           idRefineria: activeRefineria.id,
         });
-        setTanques([...tanques, newTorre.tanque]);
+        setTanques([...tanques, newTanque]);
         showToast("success", "Éxito", "Tanque creado");
       }
       hideTanqueFormDialog();
