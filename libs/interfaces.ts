@@ -235,45 +235,40 @@ export interface ChequeoCantidad {
 }
 
 export interface Refinacion {
-  idTorre: {
-    nombre: string;
-    id: string;
-  };
-  idChequeoCalidad: {
-    id: string;
-  };
-  idChequeoCantidad: {
-    id: string;
-  } | null;
-  cantidadRecibida: number;
   idRefineria: {
     nombre: string;
     id: string;
   };
-  historialOperaciones: {
-    proceso: {
-      fechaInicio: string;
-      fechaFin: string;
-      temperatura: number;
-      duracionHoras: number;
-    };
-    operador: string;
+  idTanque: {
     _id: string;
+    nombre: string;
+    id: string;
+  };
+  idTorre: {
+    nombre: string;
+    id: string;
+  };
+  cantidadTotal: number;
+  idChequeoCalidad: {
+    operador: string;
+    id: string;
   }[];
-  material: {
+  idChequeoCantidad: {
+    operador: string;
+    id: string;
+  }[];
+  derivado: {
     idProducto: {
       _id: string;
       nombre: string;
       id: string;
     };
     porcentaje: number;
-    idTanque: {
-      _id: string;
-      nombre: string;
-      id: string;
-    };
     _id: string;
   }[];
+  fechaInicio: string;
+  fechaFin: string;
+  operador: string;
   estado: boolean;
   eliminado: boolean;
   createdAt: string;

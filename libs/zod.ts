@@ -426,49 +426,36 @@ export const chequeoCantidadSchema = object({
 });
 
 export const refinacionSchema = object({
+  idRefineria: object({
+    nombre: string().min(1, "El nombre de la refinería es obligatorio"),
+    id: string().min(1, "El ID de la refinería es obligatorio"),
+  }).optional(),
+  idTanque: object({
+    _id: string().min(1, "El ID del tanque es obligatorio"),
+    nombre: string().min(1, "El nombre del tanque es obligatorio"),
+    id: string().min(1, "El ID del tanque es obligatorio"),
+  }),
   idTorre: object({
     nombre: string().min(1, "El nombre de la torre es obligatorio"),
     id: string().min(1, "El ID de la torre es obligatorio"),
   }),
-  idChequeoCalidad: object({
-    id: string().min(1, "El ID del chequeo de calidad es obligatorio"),
-  }),
-  idChequeoCantidad: object({
-    id: string().min(1, "El ID del chequeo de cantidad es obligatorio"),
-  }).nullable(),
-  cantidadRecibida: number().min(
+  cantidadTotal: number().min(
     0,
-    "La cantidad recibida debe ser un número no negativo"
+    "La cantidad total debe ser un número no negativo"
   ),
-  idRefineria: object({
-    nombre: string().min(1, "El nombre de la refinería es obligatorio"),
-    id: string().min(1, "El ID de la refinería es obligatorio"),
-  }),
-  historialOperaciones: array(
+  idChequeoCalidad: array(
     object({
-      proceso: object({
-        fechaInicio: union([string(), date()]).refine(
-          (val) => val !== "",
-          "La fecha de inicio es obligatoria"
-        ),
-        fechaFin: union([string(), date()]).refine(
-          (val) => val !== "",
-          "La fecha de fin es obligatoria"
-        ),
-        temperatura: number().min(
-          0,
-          "La temperatura debe ser un número no negativo"
-        ),
-        duracionHoras: number().min(
-          0,
-          "La duración debe ser un número no negativo"
-        ),
-      }),
       operador: string().min(1, "El nombre del operador es obligatorio"),
-      _id: string().min(1, "El ID es obligatorio"),
+      id: string().min(1, "El ID del chequeo de calidad es obligatorio"),
     })
   ),
-  material: array(
+  idChequeoCantidad: array(
+    object({
+      operador: string().min(1, "El nombre del operador es obligatorio"),
+      id: string().min(1, "El ID del chequeo de cantidad es obligatorio"),
+    })
+  ),
+  derivado: array(
     object({
       idProducto: object({
         _id: string().min(1, "El ID del producto es obligatorio"),
@@ -479,15 +466,19 @@ export const refinacionSchema = object({
         0,
         "El porcentaje debe ser un número no negativo"
       ),
-      idTanque: object({
-        _id: string().min(1, "El ID del tanque es obligatorio"),
-        nombre: string().min(1, "El nombre del tanque es obligatorio"),
-        id: string().min(1, "El ID del tanque es obligatorio"),
-      }),
       _id: string().min(1, "El ID es obligatorio"),
     })
   ),
-  estado: boolean(),
+  fechaInicio: union([string(), date()]).refine(
+    (val) => val !== "",
+    "La fecha de inicio es obligatoria"
+  ),
+  fechaFin: union([string(), date()]).refine(
+    (val) => val !== "",
+    "La fecha de fin es obligatoria"
+  ),
+  operador: string().min(1, "El nombre del operador es obligatorio"),
+  estado: string().min(1, "El estado es obligatorio"),
   eliminado: boolean().default(false),
   createdAt: union([string(), date()]).optional(),
   updatedAt: union([string(), date()]).optional(),

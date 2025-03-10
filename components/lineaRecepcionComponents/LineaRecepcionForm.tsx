@@ -65,23 +65,26 @@ const LineaRecepcionForm = ({
   const onSubmit = async (data: FormData) => {
     try {
       if (lineaRecepcion) {
-        const updatedTorre = await updateLineaRecepcion(lineaRecepcion.id, {
-          ...data,
-          idRefineria: activeRefineria?.id,
-        });
+        const updatedLineaRecepcion = await updateLineaRecepcion(
+          lineaRecepcion.id,
+          {
+            ...data,
+            idRefineria: activeRefineria?.id,
+          }
+        );
         const updatedLineaRecepcions = lineaRecepcions.map((t) =>
-          t.id === updatedTorre.id ? updatedTorre : t
+          t.id === updatedLineaRecepcion.id ? updatedLineaRecepcion : t
         );
         setLineaRecepcions(updatedLineaRecepcions);
         showToast("success", "Éxito", "LineaRecepcion actualizado");
       } else {
         if (!activeRefineria)
           throw new Error("No se ha seleccionado una refinería");
-        const newTorre = await createLineaRecepcion({
+        const newLineaRecepcion = await createLineaRecepcion({
           ...data,
           idRefineria: activeRefineria.id,
         });
-        setLineaRecepcions([...lineaRecepcions, newTorre.lineaCarga]);
+        setLineaRecepcions([...lineaRecepcions, newLineaRecepcion]);
         showToast("success", "Éxito", "LineaRecepcion creado");
       }
       hideLineaRecepcionFormDialog();
