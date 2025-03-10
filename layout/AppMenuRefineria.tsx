@@ -76,6 +76,11 @@ const AppMenuRefineria = () => {
           icon: "pi pi-fw pi-plus",
           to: "/refineria/chequeo-cantidad",
         },
+        {
+          label: "Refinación",
+          icon: "pi pi-fw pi-plus",
+          to: "/refineria/refinacion",
+        },
       ],
     },
     // {

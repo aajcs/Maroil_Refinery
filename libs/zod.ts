@@ -439,6 +439,10 @@ export const refinacionSchema = object({
     nombre: string().min(1, "El nombre de la torre es obligatorio"),
     id: string().min(1, "El ID de la torre es obligatorio"),
   }),
+  idProducto: object({
+    nombre: string().min(1, "El nombre del producto es obligatorio"),
+    id: string().min(1, "El ID del producto es obligatorio"),
+  }),
   cantidadTotal: number().min(
     0,
     "La cantidad total debe ser un número no negativo"
