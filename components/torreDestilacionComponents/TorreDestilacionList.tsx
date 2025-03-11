@@ -14,7 +14,7 @@ import {
 } from "@/app/api/torreDestilacionService";
 import TorreDestilacionForm from "./TorreDestilacionForm";
 import { useRefineriaStore } from "@/store/refineriaStore";
-import { TorreDestilacion } from "@/libs/interfaces";
+import { Material, TorreDestilacion } from "@/libs/interfaces";
 import { formatDateFH } from "@/utils/dateUtils";
 
 const TorreDestilacionList = () => {
@@ -30,7 +30,6 @@ const TorreDestilacionList = () => {
   const [deleteProductDialog, setDeleteProductDialog] = useState(false);
   const [torreDestilacionFormDialog, setTorreDestilacionFormDialog] =
     useState(false);
-
   const router = useRouter();
   const dt = useRef(null);
   const toast = useRef<Toast | null>(null);
@@ -152,17 +151,16 @@ const TorreDestilacionList = () => {
           rowData.material.map((material, index) => (
             <span
               key={index}
-              className={`customer-badge status-${material.nombre
-                .toLowerCase()
-                .replace(/[()]/g, "")
-                .replace(/\s+/g, "-")}`}
+              className={"customer-badge"}
+              style={{ backgroundColor: `#${material.idProducto?.color}50` }}
             >
-              {material.nombre}
+              {material.idProducto?.nombre}
             </span>
           ))}
       </div>
     );
   };
+
   return (
     <div className="card">
       <Toast ref={toast} />

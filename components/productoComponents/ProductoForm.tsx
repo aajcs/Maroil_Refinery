@@ -13,6 +13,7 @@ import { Dropdown } from "primereact/dropdown";
 import { useRefineriaStore } from "@/store/refineriaStore";
 import { Checkbox } from "primereact/checkbox";
 import { InputNumber } from "primereact/inputnumber";
+import { ColorPicker } from "primereact/colorpicker";
 
 type FormData = z.infer<typeof productoSchema>;
 
@@ -136,6 +137,24 @@ const ProductoForm = ({
 
             {errors.posicion && (
               <small className="p-error">{errors.posicion.message}</small>
+            )}
+          </div>
+          <div className="field mb-4 col-12">
+            <label htmlFor="color" className="font-medium text-900">
+              Color
+            </label>
+            <ColorPicker
+              id="color"
+              inputId="cp-hex"
+              format="hex"
+              value={watch("color")}
+              {...register("color")}
+              className={classNames("ml-3", {
+                "p-invalid": errors.color,
+              })}
+            />
+            {errors.color && (
+              <small className="p-error">{errors.color.message}</small>
             )}
           </div>
 

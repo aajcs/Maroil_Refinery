@@ -187,18 +187,13 @@ const RefinacionForm = ({
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="grid formgrid p-fluid">
           {/* Campo: Nombre del Producto */}
-
           <div className="field mb-4 col-12 sm:col-6 lg:col-4">
-            <label
-              htmlFor="id_contacto.nombre"
-              className="font-medium text-900"
-            >
+            <label htmlFor="idProducto.id" className="font-medium text-900">
               Nombre de Producto
             </label>
             <Dropdown
               id="idProducto.id"
               value={watch("idProducto")}
-              // {...register("idProducto.id")}
               onChange={(e) => {
                 setValue("idProducto", e.value);
               }}
@@ -206,6 +201,7 @@ const RefinacionForm = ({
                 label: producto.nombre,
                 value: {
                   id: producto.id,
+                  _id: producto.id,
                   nombre: producto.nombre,
                 },
               }))}
@@ -223,16 +219,12 @@ const RefinacionForm = ({
 
           {/* Campo: Nombre del Tanque */}
           <div className="field mb-4 col-12 sm:col-6 lg:col-4">
-            <label
-              htmlFor="id_contacto.nombre"
-              className="font-medium text-900"
-            >
+            <label htmlFor="idTanque.id" className="font-medium text-900">
               Nombre de Tanque
             </label>
             <Dropdown
               id="idTanque.id"
               value={watch("idTanque")}
-              // {...register("idTanque.id")}
               onChange={(e) => {
                 setValue("idTanque", e.value);
               }}
@@ -243,7 +235,7 @@ const RefinacionForm = ({
                   nombre: tanque.nombre,
                 },
               }))}
-              placeholder="Seleccionar un proveedor"
+              placeholder="Seleccionar un tanque"
               className={classNames("w-full", {
                 "p-invalid": errors.idTanque?.nombre,
               })}
@@ -257,16 +249,12 @@ const RefinacionForm = ({
 
           {/* Campo: Nombre de la Torre */}
           <div className="field mb-4 col-12 sm:col-6 lg:col-4">
-            <label
-              htmlFor="id_contacto.nombre"
-              className="font-medium text-900"
-            >
+            <label htmlFor="idTorre.id" className="font-medium text-900">
               Nombre de Torre
             </label>
             <Dropdown
               id="idTorre.id"
               value={watch("idTorre")}
-              // {...register("idTorre.id")}
               onChange={(e) => {
                 setValue("idTorre", e.value);
               }}
@@ -277,7 +265,7 @@ const RefinacionForm = ({
                   nombre: torre.nombre,
                 },
               }))}
-              placeholder="Seleccionar un torre"
+              placeholder="Seleccionar una torre"
               className={classNames("w-full", {
                 "p-invalid": errors.idTorre?.nombre,
               })}
@@ -304,31 +292,58 @@ const RefinacionForm = ({
               <small className="p-error">{errors.operador.message}</small>
             )}
           </div>
-          {/* Campo: Fecha de Chequeo */}
+
+          {/* Campo: Fecha de Inicio */}
           <div className="field mb-4 col-12 sm:col-6 lg:col-4">
-            <label htmlFor="fechaChequeo" className="font-medium text-900">
-              Fecha de Chequeo
+            <label htmlFor="fechaInicio" className="font-medium text-900">
+              Fecha de Inicio
             </label>
             <Calendar
-              id="fechaChequeo"
+              id="fechaInicio"
               value={
-                watch("fechaChequeo")
-                  ? new Date(watch("fechaChequeo") as string | Date)
+                watch("fechaInicio")
+                  ? new Date(watch("fechaInicio") as string | Date)
                   : undefined
               }
-              {...register("fechaChequeo")}
+              {...register("fechaInicio")}
               showTime
               hourFormat="24"
               className={classNames("w-full", {
-                "p-invalid": errors.fechaChequeo,
+                "p-invalid": errors.fechaInicio,
               })}
               locale="es"
             />
-            {errors.fechaChequeo && (
-              <small className="p-error">{errors.fechaChequeo.message}</small>
+            {errors.fechaInicio && (
+              <small className="p-error">{errors.fechaInicio.message}</small>
             )}
           </div>
-          {/* Campo: Cantidad Total*/}
+
+          {/* Campo: Fecha de Fin */}
+          <div className="field mb-4 col-12 sm:col-6 lg:col-4">
+            <label htmlFor="fechaFin" className="font-medium text-900">
+              Fecha de Fin
+            </label>
+            <Calendar
+              id="fechaFin"
+              value={
+                watch("fechaFin")
+                  ? new Date(watch("fechaFin") as string | Date)
+                  : undefined
+              }
+              {...register("fechaFin")}
+              showTime
+              hourFormat="24"
+              className={classNames("w-full", {
+                "p-invalid": errors.fechaFin,
+              })}
+              locale="es"
+            />
+            {errors.fechaFin && (
+              <small className="p-error">{errors.fechaFin.message}</small>
+            )}
+          </div>
+
+          {/* Campo: Cantidad Total */}
           <div className="field mb-4 col-12 sm:col-6 lg:col-4">
             <label htmlFor="cantidadTotal" className="font-medium text-900">
               Cantidad Total
@@ -375,14 +390,11 @@ const RefinacionForm = ({
             )}
           </div>
         </div>
+
         <div className="col-12">
           <Button
             type="submit"
-            label={
-              refinacion
-                ? "Modificar Chequeo de Cantidad"
-                : "Crear Chequeo de Cantidad"
-            }
+            label={refinacion ? "Modificar Refinación" : "Crear Refinación"}
             className="w-auto mt-3"
           />
         </div>

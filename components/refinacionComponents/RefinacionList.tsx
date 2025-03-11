@@ -15,6 +15,8 @@ import { Refinacion } from "@/libs/interfaces";
 import { formatDateFH } from "@/utils/dateUtils";
 import { deleteRefinacion, getRefinacions } from "@/app/api/refinacionService";
 import ChequeoCalidadListCort from "../chequeoCalidadComponents/ChequeoCalidadListCort";
+import ChequeoCantidadListCort from "../chequeoCantidadComponents/ChequeoCantidadListCort";
+import DerivadoListCort from "../productoComponents/DerivadoListCort";
 
 const RefinacionList = () => {
   const { activeRefineria } = useRefineriaStore();
@@ -27,6 +29,7 @@ const RefinacionList = () => {
   const [refinacionFormDialog, setRefinacionFormDialog] = useState(false);
   const [subTablaDialog, setSubTablaDialog] = useState(false);
   const [subTablaInfo, setSubTablaInfo] = useState<any>("");
+  const [selectSubTabla, setSelectSubTabla] = useState<any>("");
 
   const router = useRouter();
   const dt = useRef(null);
@@ -146,8 +149,10 @@ const RefinacionList = () => {
         className="mr-2"
         onClick={() => {
           console.log(rowData[sudTabla]);
+          console.log(sudTabla);
           setSubTablaDialog(true);
           setSubTablaInfo(rowData[sudTabla]);
+          setSelectSubTabla(sudTabla);
           // setRefinacion(rowData);
           // setSubTablaDialog("ChequeoCalidad");
         }}
@@ -205,11 +210,7 @@ const RefinacionList = () => {
             actionSubTableTemplate(rowData, "historiasOperaciones")
           }
         /> */}
-        <Column
-          field="idRefineria.nombre"
-          header="Nombre de la Refinería"
-          sortable
-        />
+
         <Column
           field="idProducto.nombre"
           header="Nombre del Producto"
@@ -307,11 +308,26 @@ const RefinacionList = () => {
       <Dialog
         visible={subTablaDialog}
         style={{ width: "50vw" }}
-        header={`${refinacion ? "Editar" : "Agregar"} Refinacion`}
+        header={
+          selectSubTabla === "idChequeoCalidad"
+            ? "Chequeo de Calidad"
+            : selectSubTabla === "idChequeoCantidad"
+            ? "Chequeo de Cantidad"
+            : "Derivado"
+        }
         modal
         onHide={() => setSubTablaDialog(false)}
       >
-        <ChequeoCalidadListCort chequeoCalidad={subTablaInfo} />
+        {selectSubTabla === "idChequeoCalidad" && (
+          <ChequeoCalidadListCort chequeoCalidad={subTablaInfo} />
+        )}
+        {/* <ChequeoCalidadListCort chequeoCalidad={subTablaInfo} /> */}
+        {selectSubTabla === "idChequeoCantidad" && (
+          <ChequeoCantidadListCort chequeoCantidad={subTablaInfo} />
+        )}
+        {selectSubTabla === "derivado" && (
+          <DerivadoListCort derivado={subTablaInfo} />
+        )}
       </Dialog>
     </div>
   );

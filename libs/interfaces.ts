@@ -150,13 +150,25 @@ export interface TorreDestilacion {
   estado: boolean;
   eliminado: boolean;
   ubicacion: string;
-  material: { estadoMaterial: string; posicion: string; nombre: string }[];
+  material: Material[];
   createdAt: string;
   updatedAt: string;
   idRefineria: {
     id: string | undefined;
     nombre: string;
   };
+}
+export interface Material {
+  idProducto?: {
+    _id: string;
+    nombre: string;
+    posicion: number;
+    color: string;
+    id: string;
+  };
+
+  estadoMaterial: string;
+  _id?: string;
 }
 
 export interface Producto {
@@ -166,6 +178,7 @@ export interface Producto {
   };
   nombre: string;
   posicion: number;
+  color: string;
   estado: boolean;
   eliminado: boolean;
   createdAt: string;
@@ -257,15 +270,7 @@ export interface Refinacion {
     operador: string;
     id: string;
   }[];
-  derivado: {
-    idProducto: {
-      _id: string;
-      nombre: string;
-      id: string;
-    };
-    porcentaje: number;
-    _id: string;
-  }[];
+  derivado: Derivado[];
   fechaInicio: string;
   fechaFin: string;
   operador: string;
@@ -274,4 +279,13 @@ export interface Refinacion {
   createdAt: string;
   updatedAt: string;
   id: string;
+}
+export interface Derivado {
+  idProducto: {
+    _id: string;
+    nombre: string;
+    id: string;
+  };
+  porcentaje: number;
+  _id: string;
 }

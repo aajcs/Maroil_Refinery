@@ -10,8 +10,13 @@ interface TorreProps {
     ubicacion: string;
     material: {
       estadoMaterial: string;
-      posicion: string;
-      nombre: string;
+
+      color: string;
+      idProducto: {
+        color: string;
+        posicion: string;
+        nombre: string;
+      };
     }[];
     createdAt: string;
     updatedAt: string;
@@ -27,12 +32,11 @@ const ModeladoRefineriaTorre = (
 ) => {
   const [apiData, setApiData] = useState({
     sections: torre.material.map((material) => ({
-      name: material.nombre,
+      name: material.idProducto.nombre,
       operational: material.estadoMaterial === "True" ? true : false,
       bblPerHour: 0,
     })),
   });
-
   //   useEffect(() => {
   //     const fetchData = () => {
   //       setTimeout(() => {
@@ -57,22 +61,6 @@ const ModeladoRefineriaTorre = (
   const towerY = 80;
   const sectionHeight = towerHeight / apiData.sections.length;
   const radius = towerWidth / 2;
-  function getFillColor(material: string): string {
-    switch (material.toLowerCase()) {
-      case "nafta":
-        return "#add8e6"; // Azul claro / Celeste
-      case "fuel oil 4 (mgo)":
-        return "#556b2f"; // Verde oscuro / Verde oliva
-      case "fuel oil 6 (fondo)":
-        return "#654321"; // Marrón oscuro / Negro
-      case "queroseno":
-        return "#ffd700"; // Amarillo / Dorado
-      case "petroleo crudo":
-        return "#000000"; // Negro / Marrón muy oscuro
-      default:
-        return "#aaaaaa"; // Color por defecto
-    }
-  }
 
   return (
     <svg
@@ -99,7 +87,7 @@ const ModeladoRefineriaTorre = (
 
         {/* Gradientes para las secciones (de rojo a naranja) */}
         {apiData.sections.map((_, index) => {
-          const color = getFillColor(torre.material[index].nombre); // Obtén el color basado en el material
+          const color = `#${torre.material[index].idProducto.color}`; // Obtén el color basado en el material
           console.log(index, color);
           return (
             <linearGradient
@@ -122,7 +110,8 @@ const ModeladoRefineriaTorre = (
       {/* Secciones */}
       {apiData.sections.map((section, index) => {
         const sectionY = towerY + index * sectionHeight;
-        const color = getFillColor(section.name);
+        const color = `#${torre.material[index].idProducto.color}`; // Obtén el color basado en el material
+
         return (
           <g key={section.name}>
             <rect

@@ -208,6 +208,7 @@ const ChequeoCantidadForm = ({
                 label: producto.nombre,
                 value: {
                   id: producto.id,
+                  _id: producto.id,
                   nombre: producto.nombre,
                 },
               }))}

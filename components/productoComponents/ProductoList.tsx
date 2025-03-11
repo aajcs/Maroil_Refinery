@@ -161,6 +161,20 @@ const ProductoList = () => {
           style={{ width: "25%" }}
         />
         <Column field="posicion" header="Posicion" sortable />
+        <Column
+          field="color"
+          header="Color"
+          body={(rowData: Producto) => (
+            <div className="flex items-center">
+              <div
+                className=" h-6 rounded-full mr-2"
+                style={{ backgroundColor: `#${rowData.color}` }}
+              >
+                <span>{rowData.color}</span>
+              </div>
+            </div>
+          )}
+        />
 
         <Column
           field="estado"

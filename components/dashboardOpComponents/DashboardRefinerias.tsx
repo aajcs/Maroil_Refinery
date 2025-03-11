@@ -53,13 +53,13 @@ const DashboardRefinerias = () => {
                 />
                 {/* <i className="pi pi-users text-6xl text-blue-500"></i> */}
                 <div className="ml-3">
-                  <span className="text-blue-500 block white-space-nowrap">
+                  <span className="text-primary block white-space-nowrap">
                     {refineria.ubicacion}
                   </span>
-                  <span className="text-blue-500 block text-4xl font-bold">
+                  <span className="text-primary block text-4xl font-bold">
                     {refineria.nombre}
                   </span>
-                  <span className="text-blue-500 block white-space-nowrap">
+                  <span className="text-primary block white-space-nowrap">
                     {refineria.nit}
                   </span>
                 </div>

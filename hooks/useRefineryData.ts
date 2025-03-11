@@ -55,7 +55,9 @@ export const useRefineryData = (
           .map((torre: TorreDestilacion) => ({
             ...torre,
             material: torre.material.sort(
-              (a, b) => parseInt(a.posicion, 10) - parseInt(b.posicion, 10)
+              (a, b) =>
+                parseInt(a.idProducto?.posicion?.toString() || "0", 10) -
+                parseInt(b.idProducto?.posicion?.toString() || "0", 10)
             ),
           })) || [];
       const filteredLineaRecepcions =

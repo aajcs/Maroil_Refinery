@@ -1,8 +1,8 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { set, z } from "zod";
+import { z } from "zod";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { classNames } from "primereact/utils";
@@ -14,7 +14,8 @@ import {
 import { Toast } from "primereact/toast";
 import { Dropdown } from "primereact/dropdown";
 import { useRefineriaStore } from "@/store/refineriaStore";
-import { Checkbox } from "primereact/checkbox";
+import { Material, Producto } from "@/libs/interfaces";
+import { getProductos } from "@/app/api/productoService";
 
 type FormData = z.infer<typeof torreDestilacionSchema>;
 
@@ -31,14 +32,6 @@ interface TorreDestilacionFormProps {
   ) => void;
 }
 
-const materiales = [
-  { estadoMaterial: "True", posicion: "1", nombre: "Nafta" },
-  { estadoMaterial: "True", posicion: "2", nombre: "Queroseno" },
-  { estadoMaterial: "True", posicion: "3", nombre: "Fuel Oil 4 (MGO)" },
-  { estadoMaterial: "True", posicion: "4", nombre: "Fuel Oil 6 (Fondo)" },
-  { estadoMaterial: "True", posicion: "5", nombre: "Petroleo Crudo" },
-];
-
 const estatusValues = ["true", "false"];
 
 const TorreDestilacionForm = ({
@@ -50,12 +43,10 @@ const TorreDestilacionForm = ({
 }: TorreDestilacionFormProps) => {
   const { activeRefineria } = useRefineriaStore();
   const toast = useRef<Toast | null>(null);
-  const [selectedMaterials, setSelectedMaterials] = useState<
-    { estadoMaterial: string; posicion: string; nombre: string }[]
-  >([]);
-  const [materialStates, setMaterialStates] = useState<{
-    [key: string]: string;
-  }>({});
+  const [selectedMaterials, setSelectedMaterials] = useState<Material[]>([]);
+  const [productos, setProductos] = useState<Producto[]>([]);
+  const [loading, setLoading] = useState(true);
+  console.log(torreDestilacion);
   const {
     register,
     handleSubmit,
@@ -66,38 +57,44 @@ const TorreDestilacionForm = ({
     resolver: zodResolver(torreDestilacionSchema),
   });
 
-  // Inicializar el formulario con los datos de la torre de destilación
+  // Obtener productos al cargar el componente
+  const fetchData = useCallback(async () => {
+    try {
+      const productosDB = await getProductos();
+      if (productosDB && Array.isArray(productosDB.productos)) {
+        const filteredProductos = productosDB.productos.filter(
+          (producto: Producto) =>
+            producto.idRefineria.id === activeRefineria?.id
+        );
+        setProductos(filteredProductos);
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [activeRefineria]);
+
   useEffect(() => {
-    if (torreDestilacion) {
+    fetchData();
+  }, [fetchData]);
+
+  // Inicializar materiales si hay una torre de destilación
+  useEffect(() => {
+    if (torreDestilacion && torreDestilacion.material) {
       Object.keys(torreDestilacion).forEach((key) =>
         setValue(key as keyof FormData, torreDestilacion[key])
       );
-      if (Array.isArray(torreDestilacion.material)) {
-        setSelectedMaterials(torreDestilacion.material);
-
-        // Crear un objeto para almacenar los estados de los materiales
-        const materialStates = torreDestilacion.material.reduce(
-          (
-            acc: Record<string, string>,
-            material: { estadoMaterial: string; posicion: string }
-          ) => {
-            acc[material.posicion] = material.estadoMaterial;
-            return acc;
-          },
-          {} as Record<string, string>
-        );
-
-        setMaterialStates(materialStates);
-      }
+      setSelectedMaterials(torreDestilacion.material);
     }
-  }, [torreDestilacion, setValue]);
+  }, [torreDestilacion]);
 
   // Manejar el envío del formulario
   const onSubmit = async (data: FormData) => {
     try {
       const requestData = {
         ...data,
-        material: selectedMaterials, // Enviamos el array de objetos completos
+        material: selectedMaterials, // Incluir los materiales seleccionados
       };
 
       if (torreDestilacion) {
@@ -117,7 +114,6 @@ const TorreDestilacionForm = ({
           ...requestData,
           idRefineria: activeRefineria.id,
         });
-        console.log(newTorre);
         setTorresDestilacion([...torresDestilacion, newTorre]);
         showToast("success", "Éxito", "Torre de destilación creada");
       }
@@ -131,47 +127,92 @@ const TorreDestilacionForm = ({
     }
   };
 
-  // Manejar cambios en los checkboxes de materiales
-  const onMaterialChange = (e: {
-    value: { estadoMaterial: string; posicion: string; nombre: string };
-    checked: boolean;
+  // Componente para manejar materiales
+  const MaterialForm = ({
+    materials,
+    onAddMaterial,
+    onRemoveMaterial,
+  }: {
+    materials: Material[];
+    onAddMaterial: (material: Material) => void;
+    onRemoveMaterial: (index: number) => void;
   }) => {
-    let _selectedMaterials = [...selectedMaterials];
-
-    if (e.checked) {
-      // Agregar el material seleccionado
-      _selectedMaterials.push(e.value);
-    } else {
-      // Eliminar el material deseleccionado
-      _selectedMaterials = _selectedMaterials.filter(
-        (material) => material.posicion !== e.value.posicion
-      );
-    }
-    setValue("material", _selectedMaterials);
-    setSelectedMaterials(_selectedMaterials);
-  };
-  const onMaterialStateChange = (
-    e: { value: string; checked: boolean },
-    posicion: string
-  ) => {
-    setMaterialStates({
-      ...materialStates,
-      [posicion]: e.checked ? "True" : "False",
+    const [newMaterial, setNewMaterial] = useState<Material>({
+      idProducto: undefined,
+      estadoMaterial: "True",
     });
 
-    let _selectedMaterials = [...selectedMaterials];
-    const materialIndex = _selectedMaterials.findIndex(
-      (material) => material.posicion === posicion
-    );
+    const handleAddMaterial = () => {
+      if (newMaterial.idProducto) {
+        onAddMaterial({
+          ...newMaterial,
+          idProducto: {
+            _id: newMaterial.idProducto.id,
+            nombre: newMaterial.idProducto.nombre,
+            posicion: newMaterial.idProducto.posicion,
+            color: "#000000",
+            id: newMaterial.idProducto.id,
+          },
+        });
+        setNewMaterial({
+          idProducto: undefined,
+          estadoMaterial: "True",
+        });
+      }
+    };
 
-    if (materialIndex !== -1) {
-      _selectedMaterials[materialIndex].estadoMaterial = e.checked
-        ? "True"
-        : "False";
-      setSelectedMaterials(_selectedMaterials);
-      setValue("material", _selectedMaterials);
-    }
+    return (
+      <div className="mb-4">
+        <h3 className="font-medium text-900 mb-2">Materiales</h3>
+        {materials.map((material, index) => (
+          <div key={index} className="flex items-center gap-2 mb-2">
+            <span>{material.idProducto?.nombre}</span>
+            <Button
+              type="button"
+              icon="pi pi-times"
+              className="p-button-danger p-button-sm"
+              onClick={() => onRemoveMaterial(index)}
+            />
+          </div>
+        ))}
+        <div className="flex gap-2">
+          {/* Campo: Selección de producto */}
+          <Dropdown
+            value={newMaterial.idProducto}
+            options={productos.map((producto) => ({
+              label: producto.nombre,
+              value: { id: producto.id, nombre: producto.nombre },
+            }))}
+            onChange={(e) =>
+              setNewMaterial({ ...newMaterial, idProducto: e.value })
+            }
+            placeholder="Seleccionar producto"
+            optionLabel="label"
+            className="w-full"
+          />
+
+          <Button
+            type="button"
+            label="Agregar"
+            className="p-button-success"
+            onClick={handleAddMaterial}
+          />
+        </div>
+      </div>
+    );
   };
+
+  // Agregar un material
+  const handleAddMaterial = (material: Material) => {
+    setSelectedMaterials([...selectedMaterials, material]);
+  };
+
+  // Eliminar un material
+  const handleRemoveMaterial = (index: number) => {
+    const updatedMaterials = selectedMaterials.filter((_, i) => i !== index);
+    setSelectedMaterials(updatedMaterials);
+  };
+  console.log(errors);
   return (
     <div>
       <Toast ref={toast} />
@@ -229,44 +270,12 @@ const TorreDestilacionForm = ({
             )}
           </div>
 
-          {/* Campo: Material */}
-          <div className="field mb-4 col-12">
-            <label htmlFor="material" className="font-medium text-900">
-              Material
-            </label>
-            {materiales.map((material) => (
-              <div key={material.posicion} className="field-checkbox">
-                <Checkbox
-                  inputId={material.posicion}
-                  name="material"
-                  value={material}
-                  onChange={(e) =>
-                    onMaterialChange({
-                      value: material,
-                      checked: e.checked ?? false,
-                    })
-                  }
-                  checked={selectedMaterials.some(
-                    (selected) => selected.posicion === material.posicion
-                  )}
-                />
-                <label htmlFor={material.posicion}>{material.nombre}</label>
-                <Checkbox
-                  inputId={`estado-${material.posicion}`}
-                  name={`estado-${material.posicion}`}
-                  value={material.estadoMaterial}
-                  onChange={(e) =>
-                    onMaterialStateChange(
-                      { value: e.value, checked: e.checked ?? false },
-                      material.posicion
-                    )
-                  }
-                  checked={materialStates[material.posicion] === "True"}
-                />
-                <label htmlFor={`estado-${material.posicion}`}>Estado</label>
-              </div>
-            ))}
-          </div>
+          {/* Componente de materiales */}
+          <MaterialForm
+            materials={selectedMaterials}
+            onAddMaterial={handleAddMaterial}
+            onRemoveMaterial={handleRemoveMaterial}
+          />
 
           {/* Botón de envío */}
           <div className="col-12">

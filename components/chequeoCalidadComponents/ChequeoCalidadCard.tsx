@@ -10,25 +10,9 @@ const ChequeoCalidadCard = ({
   chequeoCalidad,
   hideChequeoCalidadCardDialog,
 }: ChequeoCalidadCardProps) => {
-  const footer = (
-    <span>
-      <Button
-        label="Cerrar"
-        icon="pi pi-times"
-        onClick={hideChequeoCalidadCardDialog}
-      />
-    </span>
-  );
   console.log(chequeoCalidad);
   return (
-    <Card
-      title="Chequeo de Calidad"
-      subTitle={`Operador: ${chequeoCalidad.operador}`}
-      footer={footer}
-    >
-      <p>
-        <strong>Refinería ID:</strong> {chequeoCalidad.idRefineria}
-      </p>
+    <div className="text-white">
       <p>
         <strong>Tanque:</strong> {chequeoCalidad.idTanque?.nombre}
       </p>
@@ -66,7 +50,7 @@ const ChequeoCalidadCard = ({
       <p>
         <strong>Estado:</strong> {chequeoCalidad.estado ? "Activo" : "Inactivo"}
       </p>
-    </Card>
+    </div>
   );
 };
 

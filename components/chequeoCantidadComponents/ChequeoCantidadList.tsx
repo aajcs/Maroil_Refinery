@@ -170,11 +170,7 @@ const ChequeoCantidadList = () => {
         emptyMessage="No hay chequeoCantidads disponibles"
       >
         <Column body={actionBodyTemplate} />
-        <Column
-          field="idRefineria.nombre"
-          header="Nombre de la Refinería"
-          sortable
-        />
+
         <Column
           field="idProducto.nombre"
           header="Nombre del Producto"
