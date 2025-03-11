@@ -14,6 +14,7 @@ import RefinacionForm from "./RefinacionForm";
 import { Refinacion } from "@/libs/interfaces";
 import { formatDateFH } from "@/utils/dateUtils";
 import { deleteRefinacion, getRefinacions } from "@/app/api/refinacionService";
+import ChequeoCalidadListCort from "../chequeoCalidadComponents/ChequeoCalidadListCort";
 
 const RefinacionList = () => {
   const { activeRefineria } = useRefineriaStore();
@@ -24,6 +25,8 @@ const RefinacionList = () => {
   const [globalFilterValue, setGlobalFilterValue] = useState("");
   const [deleteProductDialog, setDeleteProductDialog] = useState(false);
   const [refinacionFormDialog, setRefinacionFormDialog] = useState(false);
+  const [subTablaDialog, setSubTablaDialog] = useState(false);
+  const [subTablaInfo, setSubTablaInfo] = useState<any>("");
 
   const router = useRouter();
   const dt = useRef(null);
@@ -131,6 +134,27 @@ const RefinacionList = () => {
     </>
   );
 
+  const actionSubTableTemplate = (
+    rowData: Refinacion,
+    sudTabla: keyof Refinacion
+  ) => {
+    return (
+      <Button
+        icon="pi pi-search"
+        rounded
+        // severity="success"
+        className="mr-2"
+        onClick={() => {
+          console.log(rowData[sudTabla]);
+          setSubTablaDialog(true);
+          setSubTablaInfo(rowData[sudTabla]);
+          // setRefinacion(rowData);
+          // setSubTablaDialog("ChequeoCalidad");
+        }}
+      />
+    );
+  };
+
   const showToast = (
     severity: "success" | "error",
     summary: string,
@@ -157,6 +181,30 @@ const RefinacionList = () => {
         emptyMessage="No hay refinacions disponibles"
       >
         <Column body={actionBodyTemplate} />
+        <Column
+          header="Chequeo Calidad"
+          body={(rowData: Refinacion) =>
+            actionSubTableTemplate(rowData, "idChequeoCalidad")
+          }
+        />
+        <Column
+          header="Chequeo Cantidad"
+          body={(rowData: Refinacion) =>
+            actionSubTableTemplate(rowData, "idChequeoCantidad")
+          }
+        />
+        <Column
+          header="Derivados"
+          body={(rowData: Refinacion) =>
+            actionSubTableTemplate(rowData, "derivado")
+          }
+        />
+        {/* <Column
+          header="Historias de Operaciones"
+          body={(rowData: Refinacion) =>
+            actionSubTableTemplate(rowData, "historiasOperaciones")
+          }
+        /> */}
         <Column
           field="idRefineria.nombre"
           header="Nombre de la Refinería"
@@ -255,6 +303,15 @@ const RefinacionList = () => {
           setRefinacion={setRefinacion}
           showToast={showToast}
         />
+      </Dialog>
+      <Dialog
+        visible={subTablaDialog}
+        style={{ width: "50vw" }}
+        header={`${refinacion ? "Editar" : "Agregar"} Refinacion`}
+        modal
+        onHide={() => setSubTablaDialog(false)}
+      >
+        <ChequeoCalidadListCort chequeoCalidad={subTablaInfo} />
       </Dialog>
     </div>
   );
