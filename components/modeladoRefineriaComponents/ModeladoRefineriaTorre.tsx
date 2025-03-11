@@ -1,38 +1,17 @@
 import React, { useEffect, useState, SVGProps } from "react";
 import ModeladoRefineriaTorreSVG from "./ModeladoRefineriaTorreSVG";
 import ModeladoRefineriaTuberiaMaterial from "./ModeladoRefineriaTuberiaMaterial";
-interface TorreProps {
-  torre: {
-    id: string;
-    nombre: string;
-    estado: boolean;
-    eliminado: boolean;
-    ubicacion: string;
-    material: {
-      estadoMaterial: string;
-
-      color: string;
-      idProducto: {
-        color: string;
-        posicion: string;
-        nombre: string;
-      };
-    }[];
-    createdAt: string;
-    updatedAt: string;
-    idRefineria: {
-      id: string | undefined;
-      nombre: string;
-    };
-  };
+import { TorreDestilacion } from "@/libs/interfaces";
+interface ModeladoRefineriaTorreProps {
+  torre: TorreDestilacion;
 }
 const ModeladoRefineriaTorre = (
-  { torre }: TorreProps,
+  { torre }: ModeladoRefineriaTorreProps,
   props: SVGProps<SVGSVGElement>
 ) => {
   const [apiData, setApiData] = useState({
     sections: torre.material.map((material) => ({
-      name: material.idProducto.nombre,
+      name: material.idProducto?.nombre,
       operational: material.estadoMaterial === "True" ? true : false,
       bblPerHour: 0,
     })),
@@ -87,7 +66,7 @@ const ModeladoRefineriaTorre = (
 
         {/* Gradientes para las secciones (de rojo a naranja) */}
         {apiData.sections.map((_, index) => {
-          const color = `#${torre.material[index].idProducto.color}`; // Obtén el color basado en el material
+          const color = `#${torre.material[index].idProducto?.color}`; // Obtén el color basado en el material
           console.log(index, color);
           return (
             <linearGradient
@@ -110,7 +89,7 @@ const ModeladoRefineriaTorre = (
       {/* Secciones */}
       {apiData.sections.map((section, index) => {
         const sectionY = towerY + index * sectionHeight;
-        const color = `#${torre.material[index].idProducto.color}`; // Obtén el color basado en el material
+        const color = `#${torre.material[index].idProducto?.color}`; // Obtén el color basado en el material
 
         return (
           <g key={section.name}>
