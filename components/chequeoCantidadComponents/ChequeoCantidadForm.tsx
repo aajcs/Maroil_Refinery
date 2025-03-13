@@ -19,6 +19,7 @@ import { Calendar } from "primereact/calendar";
 import {
   Contrato,
   Producto,
+  Refinacion,
   Tanque,
   TorreDestilacion,
 } from "@/libs/interfaces";
@@ -29,6 +30,7 @@ import {
   getTorreDestilacion,
   getTorresDestilacion,
 } from "@/app/api/torreDestilacionService";
+import { getRefinacions } from "@/app/api/refinacionService";
 
 type FormData = z.infer<typeof chequeoCantidadSchema>;
 
@@ -62,6 +64,7 @@ const ChequeoCantidadForm = ({
   const [torresDestilacion, setTorresDestilacion] = useState<
     TorreDestilacion[]
   >([]);
+  const [refinacions, setRefinacions] = useState<Refinacion[]>([]);
 
   const [loading, setLoading] = useState(true);
   const {
@@ -87,12 +90,20 @@ const ChequeoCantidadForm = ({
   }, [chequeoCantidad, setValue]);
   const fetchData = useCallback(async () => {
     try {
-      const [productosDB, tanquesDB, torresDestilacionDB] = await Promise.all([
-        getProductos(),
-        getTanques(),
-        getTorresDestilacion(),
-      ]);
-
+      const [refinacionsDB, productosDB, tanquesDB, torresDestilacionDB] =
+        await Promise.all([
+          getRefinacions(),
+          getProductos(),
+          getTanques(),
+          getTorresDestilacion(),
+        ]);
+      if (refinacionsDB && Array.isArray(refinacionsDB.refinacions)) {
+        const filteredRefinacions = refinacionsDB.refinacions.filter(
+          (refinacion: Refinacion) =>
+            refinacion.idRefineria.id === activeRefineria?.id
+        );
+        setRefinacions(filteredRefinacions);
+      }
       if (productosDB && Array.isArray(productosDB.productos)) {
         const filteredProductos = productosDB.productos.filter(
           (producto: Producto) =>
@@ -134,7 +145,7 @@ const ChequeoCantidadForm = ({
             idProducto: data.idProducto?.id,
             idTanque: data.idTanque?.id,
             idTorre: data.idTorre?.id,
-
+            idRefinacion: data.idRefinacion?.id,
             idRefineria: activeRefineria?.id,
           }
         );
@@ -152,7 +163,7 @@ const ChequeoCantidadForm = ({
           idProducto: data.idProducto?.id,
           idTanque: data.idTanque?.id,
           idTorre: data.idTorre?.id,
-
+          idRefinacion: data.idRefinacion?.id,
           idRefineria: activeRefineria?.id,
         });
         setChequeoCantidads([...chequeoCantidads, newChequeoCantidad]);
@@ -188,6 +199,37 @@ const ChequeoCantidadForm = ({
       <Toast ref={toast} />
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="grid formgrid p-fluid">
+          {/* Campo: Refinacion */}
+          <div className="field mb-4 col-12 sm:col-6 lg:4">
+            <label htmlFor="idRefinacion" className="font-medium text-900">
+              Refinacion
+            </label>
+            <Dropdown
+              id="idRefinacion.id"
+              value={watch("idRefinacion")}
+              // {...register("idRefinacion.id")}
+              onChange={(e) => {
+                setValue("idRefinacion", e.value);
+              }}
+              options={refinacions.map((refinacion) => ({
+                label: refinacion.descripcion,
+                value: {
+                  id: refinacion.id,
+                  descripcion: refinacion.descripcion,
+                },
+              }))}
+              placeholder="Seleccionar una refinacion"
+              className={classNames("w-full", {
+                "p-invalid": errors.idRefinacion?.descripcion,
+              })}
+            />
+            {errors.idRefinacion?.descripcion && (
+              <small className="p-error">
+                {errors.idRefinacion.descripcion.message}
+              </small>
+            )}
+          </div>
+
           {/* Campo: Nombre del Producto */}
 
           <div className="field mb-4 col-12 sm:col-6 lg:col-4">
@@ -244,6 +286,7 @@ const ChequeoCantidadForm = ({
                 value: {
                   id: tanque.id,
                   nombre: tanque.nombre,
+                  _id: tanque.id,
                 },
               }))}
               placeholder="Seleccionar un proveedor"
@@ -278,6 +321,7 @@ const ChequeoCantidadForm = ({
                 value: {
                   id: torre.id,
                   nombre: torre.nombre,
+                  _id: torre.id,
                 },
               }))}
               placeholder="Seleccionar un torre"

@@ -128,21 +128,16 @@ const TanqueList = () => {
       />
     </>
   );
-  const materialBodyTemplate = (rowData: Tanque) => {
+  const productoBodyTemplate = (rowData: Tanque) => {
+    const { idProducto } = rowData;
     return (
       <div>
-        {Array.isArray(rowData.material) &&
-          rowData.material.map((material, index) => (
-            <span
-              key={index}
-              className={`customer-badge status-${material
-                .toLowerCase()
-                .replace(/[()]/g, "")
-                .replace(/\s+/g, "-")}`}
-            >
-              {material}
-            </span>
-          ))}
+        <span
+          className={"customer-badge"}
+          style={{ backgroundColor: `#${idProducto?.color}50` }}
+        >
+          {idProducto?.nombre}
+        </span>
       </div>
     );
   };
@@ -153,6 +148,7 @@ const TanqueList = () => {
   ) => {
     toast.current?.show({ severity, summary, detail, life: 3000 });
   };
+
   return (
     <div className="card">
       <Toast ref={toast} />
@@ -170,44 +166,30 @@ const TanqueList = () => {
         emptyMessage="No hay tanques disponibles"
       >
         <Column body={actionBodyTemplate} headerStyle={{ minWidth: "10rem" }} />
+        <Column field="nombre" header="Nombre" sortable />
+        <Column field="ubicacion" header="Ubicación" sortable />
+
         <Column
-          field="nombre"
-          header="Nombre"
-          sortable
-          style={{ width: "25%" }}
+          field="idProducto.nombre"
+          header="Producto"
+          body={productoBodyTemplate}
         />
         <Column
-          field="ubicacion"
-          header="Ubicación"
-          sortable
-          style={{ width: "25%" }}
+          field="almacenamientoMateriaPrimaria"
+          header="Tipo Almacenamiento"
         />
-        <Column
-          field="material"
-          header="Material"
-          sortable
-          style={{ width: "25%" }}
-          body={materialBodyTemplate}
-        />
-        <Column
-          field="estado"
-          header="Estado"
-          sortable
-          style={{ width: "25%" }}
-        />
+        <Column field="estado" header="Estado" sortable />
         <Column
           field="createdAt"
           header="Fecha de Creación"
           body={(rowData: Tanque) => formatDateFH(rowData.createdAt)}
           sortable
-          style={{ width: "25%" }}
         />
         <Column
           field="updatedAt"
           header="Última Actualización"
           body={(rowData: Tanque) => formatDateFH(rowData.updatedAt)}
           sortable
-          style={{ width: "25%" }}
         />
       </DataTable>
 

@@ -67,7 +67,6 @@ const ModeladoRefineriaTorre = (
         {/* Gradientes para las secciones (de rojo a naranja) */}
         {apiData.sections.map((_, index) => {
           const color = `#${torre.material[index].idProducto?.color}`; // Obtén el color basado en el material
-          console.log(index, color);
           return (
             <linearGradient
               key={`sectionGradient${color}`}

@@ -157,7 +157,10 @@ const RecepcionList = () => {
           header="Número de Contrato"
           sortable
         />
-        <Column field="idContratoItems.producto" header="Nombre del Producto" />
+        <Column
+          field="idContratoItems.producto.nombre"
+          header="Nombre del Producto"
+        />
         <Column
           field="cantidadEnviada"
           header="Cantidad Enviada"

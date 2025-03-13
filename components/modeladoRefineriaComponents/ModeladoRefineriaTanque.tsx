@@ -1,5 +1,5 @@
 "use client";
-import { Recepcion, Tanque } from "@/libs/interfaces";
+import { Recepcion, Refinacion, Tanque } from "@/libs/interfaces";
 import { useEffect, useState, useMemo } from "react";
 import { PocisionAbierta, PocisionCerrada } from "./ElementosLineaCarga";
 import { getFillColor } from "@/utils/getFillCollor";
@@ -7,11 +7,13 @@ import { getFillColor } from "@/utils/getFillCollor";
 interface ModeladoRefineriaTanqueProps {
   tanque: Tanque;
   recepcions?: Recepcion[];
+  refinacions?: Refinacion[];
 }
 
 const ModeladoRefineriaTanque = ({
   tanque,
   recepcions,
+  refinacions,
 }: ModeladoRefineriaTanqueProps) => {
   const [apiData, setApiData] = useState({ tankLevel: 0 });
 
@@ -21,10 +23,43 @@ const ModeladoRefineriaTanque = ({
       .filter((recepcion) => recepcion.idTanque.id === tanque.id)
       .reduce((sum, recepcion) => sum + recepcion.cantidadRecibida, 0);
   }, [tanque, recepcions]);
+  const totalRefinacion = useMemo(() => {
+    if (!tanque || !refinacions || tanque.capacidad <= 0) return 0;
 
+    const now = new Date();
+
+    return refinacions
+      .filter((refinacion) => refinacion.idTanque.id === tanque.id)
+      .reduce((acc, refinacion) => {
+        // Ajusta el nombre de campos según tu estructura real
+        const { fechaInicio, fechaFin, cantidadTotal } = refinacion;
+        if (!fechaInicio || !fechaFin) return acc;
+
+        const start = new Date(fechaInicio);
+        const end = new Date(fechaFin);
+
+        // Si la fecha actual está antes del inicio, no se ha consumido nada
+        if (now < start) {
+          return acc;
+        }
+        // Si la fecha actual está después del fin, se ha consumido la totalidad
+        if (now >= end) {
+          return acc + cantidadTotal;
+        }
+        // En caso contrario, calcula la fracción consumida según el tiempo transcurrido
+        const totalTime = end.getTime() - start.getTime();
+        const elapsed = now.getTime() - start.getTime();
+        const fraction = elapsed / totalTime;
+        // Retorna la parte proporcional de la cantidadTotal
+        return acc + cantidadTotal * fraction;
+      }, 0);
+  }, [tanque, refinacions]);
   const tanqueLevel = useMemo(() => {
     if (tanque?.capacidad > 0) {
-      return ((totalRecepcion / tanque.capacidad) * 100).toFixed(2);
+      return (
+        ((totalRecepcion - totalRefinacion) / tanque.capacidad) *
+        100
+      ).toFixed(2);
     }
     return "0.00";
   }, [totalRecepcion, tanque]);
@@ -45,8 +80,9 @@ const ModeladoRefineriaTanque = ({
   const tankHeight = 150;
   const fillHeight = (apiData.tankLevel / 100) * tankHeight;
   const waterLevelY = bottomY - fillHeight;
-  const fillColor =
-    tanque.material.length > 0 ? getFillColor(tanque.material[0]) : "#cccccc";
+  const fillColor = tanque.idProducto
+    ? `#${tanque.idProducto.color}`
+    : "#cccccc";
   const fillPath = `M 50,250 Q 150,500 250,250 L 250,${waterLevelY} Q 150,${
     waterLevelY + 50
   } 50,${waterLevelY} Z`;
@@ -227,10 +263,10 @@ const ModeladoRefineriaTanque = ({
           {tanque.nombre}
         </text>
         <text x="80" y="120" fill="black" fontSize="18" fontWeight="bold">
-          {tanque.material.join(", ")} {/* Mostrar todos los materiales */}
+          {tanque.idProducto?.nombre} {/* Mostrar todos los materiales */}
         </text>
         <text x="100" y="340" fontSize="18" fontWeight="bold">
-          Cantidad: {totalRecepcion} Bbl
+          Cantidad: {totalRecepcion - totalRefinacion} Bbl
         </text>
         {/* {isLoading && (
           <rect x="50" y="150" width="10" height="150" fill="rgb(255, 0, 0)">

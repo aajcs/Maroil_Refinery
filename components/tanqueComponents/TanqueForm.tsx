@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -11,7 +11,9 @@ import { createTanque, updateTanque } from "@/app/api/tanqueService";
 import { Toast } from "primereact/toast";
 import { Dropdown } from "primereact/dropdown";
 import { useRefineriaStore } from "@/store/refineriaStore";
-import { Checkbox } from "primereact/checkbox";
+import { getProductos } from "@/app/api/productoService";
+import { Producto } from "@/libs/interfaces";
+import { InputSwitch } from "primereact/inputswitch";
 
 type FormData = z.infer<typeof tanqueSchema>;
 
@@ -45,7 +47,8 @@ const TanqueForm = ({
 }: TanqueFormProps) => {
   const { activeRefineria } = useRefineriaStore();
   const toast = useRef<Toast | null>(null);
-  const [checkboxValue, setCheckboxValue] = useState<string[]>([]);
+  const [productos, setProductos] = useState<Producto[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const {
     register,
@@ -61,11 +64,28 @@ const TanqueForm = ({
       Object.keys(tanque).forEach((key) =>
         setValue(key as keyof FormData, tanque[key])
       );
-      if (Array.isArray(tanque.material)) {
-        setCheckboxValue(tanque.material);
-      }
     }
   }, [tanque, setValue]);
+  const fetchData = useCallback(async () => {
+    try {
+      const productosDB = await getProductos();
+      if (productosDB && Array.isArray(productosDB.productos)) {
+        const filteredProductos = productosDB.productos.filter(
+          (producto: Producto) =>
+            producto.idRefineria.id === activeRefineria?.id
+        );
+        setProductos(filteredProductos);
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [activeRefineria]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const onSubmit = async (data: FormData) => {
     try {
@@ -73,6 +93,7 @@ const TanqueForm = ({
         const updatedTorre = await updateTanque(tanque.id, {
           ...data,
           idRefineria: activeRefineria?.id,
+          idProducto: data.idProducto.id,
         });
         const updatedTanques = tanques.map((t) =>
           t.id === updatedTorre.id ? updatedTorre : t
@@ -85,6 +106,7 @@ const TanqueForm = ({
         const newTanque = await createTanque({
           ...data,
           idRefineria: activeRefineria.id,
+          idProducto: data.idProducto.id,
         });
         setTanques([...tanques, newTanque]);
         showToast("success", "Éxito", "Tanque creado");
@@ -100,14 +122,7 @@ const TanqueForm = ({
     }
   };
 
-  const onCheckboxChange = (e: any) => {
-    const selectedValues = e.checked
-      ? [...checkboxValue, e.value]
-      : checkboxValue.filter((val) => val !== e.value);
-    setCheckboxValue(selectedValues);
-    setValue("material", selectedValues);
-  };
-
+  console.log(errors);
   return (
     <div>
       <Toast ref={toast} />
@@ -162,26 +177,64 @@ const TanqueForm = ({
             )}
           </div>
 
-          <div className="field mb-4 col-12">
-            <label htmlFor="material" className="font-medium text-900">
-              Material
+          <div className="field mb-4 col-12 sm:col-6 lg:col-4">
+            <label
+              htmlFor="id_contacto.nombre"
+              className="font-medium text-900"
+            >
+              Nombre de Producto
             </label>
-            {materiales.map((material) => (
-              <div key={material} className="field-checkbox">
-                <Checkbox
-                  inputId={material}
-                  name="material"
-                  value={material}
-                  checked={checkboxValue.includes(material)}
-                  onChange={onCheckboxChange}
-                />
-                <label htmlFor={material}>{material}</label>
-              </div>
-            ))}
-            {errors.material && (
-              <small className="p-error">{errors.material.message}</small>
+            <Dropdown
+              id="idProducto.id"
+              value={watch("idProducto")}
+              // {...register("idProducto.id")}
+              onChange={(e) => {
+                setValue("idProducto", e.value);
+              }}
+              options={productos.map((producto) => ({
+                label: producto.nombre,
+                value: {
+                  id: producto.id,
+                  _id: producto.id,
+                  nombre: producto.nombre,
+                  color: producto.color,
+                },
+              }))}
+              placeholder="Seleccionar un producto"
+              className={classNames("w-full", {
+                "p-invalid": errors.idProducto?.nombre,
+              })}
+            />
+            {errors.idProducto?.nombre && (
+              <small className="p-error">
+                {errors.idProducto.nombre.message}
+              </small>
             )}
           </div>
+          <div className="field mb-4 col-12 sm:col-6 lg:col-4">
+            <label
+              htmlFor="almacenamientoMateriaPrimaria"
+              className="font-medium text-900"
+            >
+              Almacenamiento de Materia Prima
+            </label>
+            <div>
+              <InputSwitch
+                id="almacenamientoMateriaPrimaria"
+                checked={watch("almacenamientoMateriaPrimaria") ?? false}
+                className={classNames("", {
+                  "p-invalid": errors.almacenamientoMateriaPrimaria,
+                })}
+                {...register("almacenamientoMateriaPrimaria")}
+              />
+            </div>
+            {errors.almacenamientoMateriaPrimaria && (
+              <small className="p-error">
+                {errors.almacenamientoMateriaPrimaria.message}
+              </small>
+            )}
+          </div>
+
           <div className="field mb-4 col-12">
             <label htmlFor="capacidad" className="font-medium text-900">
               Capacidad

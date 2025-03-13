@@ -43,6 +43,7 @@ const ContratoList = () => {
     try {
       const contratosDB = await getContratos();
       if (contratosDB && Array.isArray(contratosDB.contratos)) {
+        console.log(contratosDB);
         const filteredContratos = contratosDB.contratos.filter(
           (contrato: Contrato) =>
             contrato.idRefineria.id === activeRefineria?.id
@@ -144,77 +145,27 @@ const ContratoList = () => {
   ) => {
     toast.current?.show({ severity, summary, detail, life: 3000 });
   };
+
   const rowExpansionTemplate = (data: any) => {
     return (
       <div className="orders-subtable">
         <h5>Items for {data.name}</h5>
         <DataTable value={data.idItems} responsiveLayout="scroll">
+          <Column field="producto.nombre" header="Producto aqui" sortable />
+          <Column field="cantidad" header="Cantidad" sortable />
+          <Column field="precioUnitario" header="Precio Unitario" sortable />
           <Column
-            field="producto"
-            header="Producto"
-            sortable
-            style={{ width: "20%" }}
+            header="Total"
+            body={(rowData: any) => rowData.cantidad * rowData.precioUnitario}
           />
-          <Column
-            field="cantidad"
-            header="Cantidad"
-            sortable
-            style={{ width: "20%" }}
-          />
-          <Column
-            field="precioUnitario"
-            header="Precio Unitario"
-            sortable
-            style={{ width: "20%" }}
-          />
-          <Column
-            field="gravedadAPI"
-            header="Gravedad API"
-            sortable
-            style={{ width: "20%" }}
-          />
-          <Column
-            field="azufre"
-            header="Azufre"
-            sortable
-            style={{ width: "20%" }}
-          />
-          <Column
-            field="viscosidad"
-            header="Viscosidad"
-            sortable
-            style={{ width: "20%" }}
-          />
-          <Column
-            field="densidad"
-            header="Densidad"
-            sortable
-            style={{ width: "20%" }}
-          />
-          <Column
-            field="contenidoAgua"
-            header="Contenido de Agua"
-            sortable
-            style={{ width: "20%" }}
-          />
-          <Column
-            field="origen"
-            header="Origen"
-            sortable
-            style={{ width: "20%" }}
-          />
-          <Column
-            field="temperatura"
-            header="Temperatura"
-            sortable
-            style={{ width: "20%" }}
-          />
-          <Column
-            field="presion"
-            header="Presión"
-            sortable
-            style={{ width: "20%" }}
-          />
+          <Column field="gravedadAPI" header="Gravedad API" sortable />
+          <Column field="azufre" header="Azufre" sortable />
+          <Column field="viscosidad" header="Viscosidad" sortable />
+          <Column field="densidad" header="Densidad" sortable />
+          <Column field="contenidoAgua" header="Contenido de Agua" sortable />
+          <Column field="origen" header="Origen" sortable />
+          <Column field="temperatura" header="Temperatura" sortable />
+          <Column field="presion" header="Presión" sortable />
         </DataTable>
       </div>
     );
@@ -241,87 +192,46 @@ const ContratoList = () => {
       >
         <Column expander style={{ width: "3em" }} />
         <Column body={actionBodyTemplate} headerStyle={{ minWidth: "10rem" }} />
-        <Column
-          field="numeroContrato"
-          header="Número de Contrato"
-          sortable
-          style={{ width: "20%" }}
-        />
-        <Column
-          field="descripcion"
-          header="Descripción de Contrato"
-          sortable
-          style={{ width: "20%" }}
-        />
+        <Column field="numeroContrato" header="Número de Contrato" sortable />
+        <Column field="descripcion" header="Descripción de Contrato" sortable />
         <Column
           field="condicionesPago.tipo"
           header="Tipo de Condiciones de Pago"
           sortable
-          style={{ width: "20%" }}
         />
         <Column
           field="condicionesPago.plazo"
           header="Plazo de Condiciones de Pago"
           sortable
-          style={{ width: "20%" }}
         />
 
-        <Column
-          field="estadoEntrega"
-          header="Estado de Entrega"
-          sortable
-          style={{ width: "20%" }}
-        />
-        <Column
-          field="estadoContrato"
-          header="Estado de Contrato"
-          sortable
-          style={{ width: "20%" }}
-        />
-        <Column
-          field="estado"
-          header="Estado"
-          sortable
-          style={{ width: "20%" }}
-        />
+        <Column field="estadoEntrega" header="Estado de Entrega" sortable />
+        <Column field="estadoContrato" header="Estado de Contrato" sortable />
+        <Column field="estado" header="Estado" sortable />
 
         <Column
           field="idRefineria.nombre"
           header="Nombre de Refinería"
           sortable
-          style={{ width: "20%" }}
         />
         <Column
           field="idContacto.nombre"
           header="Nombre de Contacto"
           sortable
-          style={{ width: "20%" }}
         />
-        <Column
-          field="fechaInicio"
-          header="Fecha de Inicio"
-          sortable
-          style={{ width: "20%" }}
-        />
-        <Column
-          field="fechaFin"
-          header="Fecha de Fin"
-          sortable
-          style={{ width: "20%" }}
-        />
+        <Column field="fechaInicio" header="Fecha de Inicio" sortable />
+        <Column field="fechaFin" header="Fecha de Fin" sortable />
         <Column
           field="createdAt"
           header="Fecha de Creación"
           body={(rowData: Contrato) => formatDateFH(rowData.createdAt)}
           sortable
-          style={{ width: "20%" }}
         />
         <Column
           field="updatedAt"
           header="Última Actualización"
           body={(rowData: Contrato) => formatDateFH(rowData.updatedAt)}
           sortable
-          style={{ width: "20%" }}
         />
       </DataTable>
 

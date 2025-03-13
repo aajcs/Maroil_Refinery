@@ -26,6 +26,7 @@ const ModeladoRefineriaDashboard = () => {
     recepcions,
     contratos,
     loading,
+    refinacions,
   } = useRefineryData(
     activeRefineria?.id || "",
     recepcionModificado || undefined // Pasa recepcionModificado como dependencia
@@ -50,10 +51,11 @@ const ModeladoRefineriaDashboard = () => {
       const recepcionesContrato = recepcions.filter(
         (recepcion) => recepcion.idContrato.id === contrato.id
       );
-
+      console.log(recepcionesContrato);
       const productos = contrato.idItems.map((item: any) => {
         const recepcionesProducto = recepcionesContrato.filter(
-          (recepcion) => recepcion.idContratoItems.producto === item.producto
+          (recepcion) =>
+            recepcion.idContratoItems.producto.id === item.producto.id
         );
 
         const cantidadRecibida = recepcionesProducto.reduce(
@@ -96,7 +98,54 @@ const ModeladoRefineriaDashboard = () => {
           onShowDialog={showDialog}
         />
         <ModeladoRefineriaRecepcionesList recepciones={recepcions} />
-
+        {refinacions.map((refinacion) => (
+          <div key={refinacion.id} className="mb-2">
+            <div className="card p-3">
+              <p>
+                <strong>Descripción:</strong> {refinacion.descripcion}
+              </p>
+              <p>
+                <strong>Fecha de Inicio:</strong>{" "}
+                {new Date(refinacion.fechaInicio).toLocaleString()}
+              </p>
+              <p>
+                <strong>Fecha de Fin:</strong>{" "}
+                {new Date(refinacion.fechaFin).toLocaleString()}
+              </p>
+              <p>
+                <strong>Estado:</strong> {refinacion.estadoRefinacion}
+              </p>
+              <p>
+                <strong>Operador:</strong> {refinacion.operador}
+              </p>
+              <p>
+                <strong>Tanque:</strong> {refinacion.idTanque.nombre}
+              </p>
+              <p>
+                <strong>Torre:</strong> {refinacion.idTorre.nombre}
+              </p>
+              <p>
+                <strong>Producto:</strong> {refinacion.idProducto.nombre}
+              </p>
+              <p>
+                <strong>Cantidad Total:</strong> {refinacion.cantidadTotal}
+              </p>
+              <h3 className="text-lg font-bold mt-3">Derivados:</h3>
+              <ul>
+                {refinacion.derivado.map((derivado) => (
+                  <li key={derivado._id}>
+                    <p>
+                      <strong>Producto:</strong> {derivado.idProducto.nombre}
+                    </p>
+                    <p>
+                      <strong>Porcentaje:</strong> {derivado.porcentaje}%
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        ))}
         {/* Línea de recepción */}
         <h1 className="text-2xl font-bold mb-3 col-12">
           Modelado de Refinería
@@ -120,12 +169,13 @@ const ModeladoRefineriaDashboard = () => {
           <div className="card p-3">
             <h1 className="text-2xl font-bold mb-3">Almacenamiento Crudo</h1>
             {tanques
-              .filter((tanque) => tanque.material.includes("Petroleo Crudo"))
+              .filter((tanque) => tanque.almacenamientoMateriaPrimaria)
               .map((tanque) => (
                 <div key={tanque.id} className="mb-2">
                   <ModeladoRefineriaTanque
                     tanque={tanque}
                     recepcions={recepcions}
+                    refinacions={refinacions}
                   />
                 </div>
               ))}
@@ -155,7 +205,7 @@ const ModeladoRefineriaDashboard = () => {
             </h1>
             <div className="grid">
               {tanques
-                .filter((tanque) => !tanque.material.includes("Petroleo Crudo"))
+                .filter((tanque) => !tanque.almacenamientoMateriaPrimaria)
                 .map((tanque) => (
                   <div key={tanque.id} className="mb-2">
                     <ModeladoRefineriaTanque tanque={tanque} />
@@ -171,7 +221,7 @@ const ModeladoRefineriaDashboard = () => {
             <h1 className="text-2xl font-bold mb-3">Línea de Despacho</h1>
 
             {tanques
-              .filter((tanque) => !tanque.material.includes("Petroleo Crudo"))
+              .filter((tanque) => !tanque.almacenamientoMateriaPrimaria)
               .map((tanque, index) => (
                 <div key={index} className="col-12 md:col-6">
                   <ModeladoRefineriaLineaDescarga />
@@ -201,7 +251,7 @@ const ModeladoRefineriaDashboard = () => {
               footer={
                 <div className="p-2 flex justify-content-between">
                   <div>
-                    <strong>Producto:</strong> {selectedProduct.producto}
+                    <strong>Producto:</strong> {selectedProduct.producto.nombre}
                   </div>
                   <div>
                     <strong>Cantidad:</strong>{" "}

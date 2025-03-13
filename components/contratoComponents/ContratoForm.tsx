@@ -11,12 +11,13 @@ import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
 import { useRefineriaStore } from "@/store/refineriaStore";
 import { createContrato, updateContrato } from "@/app/api/contratoService";
 import { InputNumber } from "primereact/inputnumber";
-import { DataTable } from "primereact/datatable";
+import { DataTable, DataTableRowEditCompleteEvent } from "primereact/datatable";
 import { Column, ColumnEditorOptions } from "primereact/column";
 import { Tag } from "primereact/tag";
 import { getContactos } from "@/app/api/contactoService";
 import { Calendar } from "primereact/calendar";
 import { Contacto } from "@/libs/interfaces";
+import { useRefineryData } from "@/hooks/useRefineryData";
 
 type FormData = z.infer<typeof contratoSchema>;
 
@@ -54,6 +55,7 @@ function ContratoForm({
   showToast,
 }: ContratoFormProps) {
   const { activeRefineria } = useRefineriaStore();
+  const { productos } = useRefineryData(activeRefineria?.id || "");
   const toast = useRef<Toast | null>(null);
   const [items, setItems] = useState(contrato?.idItems || []);
   const [contactos, setContactos] = useState<Contacto[]>([]);
@@ -69,13 +71,7 @@ function ContratoForm({
     resolver: zodResolver(contratoSchema),
   });
   console.log("quetiene", contrato);
-  const [productos] = useState<string[]>([
-    "Nafta",
-    "Queroseno",
-    "Fuel Oil 4 (MGO)",
-    "Fuel Oil 6 (Fondo)",
-    "Petroleo Crudo",
-  ]);
+
   useEffect(() => {
     if (contrato) {
       Object.keys(contrato).forEach((key) =>
@@ -165,14 +161,6 @@ function ContratoForm({
       <div className="flex justify-content-center">
         <Button
           type="button"
-          icon="pi pi-pencil"
-          className="p-button-rounded p-button-success mr-2"
-          onClick={() =>
-            updateItem(options.rowIndex, "producto", rowData.producto)
-          }
-        />
-        <Button
-          type="button"
           icon="pi pi-trash"
           className="p-button-rounded p-button-danger"
           onClick={() => deleteItem(options.rowIndex)}
@@ -182,27 +170,57 @@ function ContratoForm({
   };
 
   const productoEditor = (options: ColumnEditorOptions) => {
+    console.log(options);
+    const onChange = (e: DropdownChangeEvent) => {
+      options.editorCallback!(e.value);
+    };
+
     return (
-      <Dropdown
-        value={options.value}
-        options={productos}
-        onChange={(e: DropdownChangeEvent) => options.editorCallback!(e.value)}
-        placeholder="Selecionar un producto"
-        itemTemplate={(option) => {
-          return (
-            <Tag
-              value={option}
-              className={`customer-badge status-${option
-                .toLowerCase()
-                .replace(/[()]/g, "")
-                .replace(/\s+/g, "-")}`}
-            ></Tag>
-          );
-        }}
-      />
+      <>
+        <Dropdown
+          id="idProducto.id"
+          // value={watch("idProducto")}
+          // onChange={(e) => {
+          //   setValue("idProducto", e.value);
+          // }}
+          value={options.value}
+          onChange={onChange}
+          options={productos.map((producto) => ({
+            label: producto.nombre,
+            value: {
+              id: producto.id,
+              _id: producto.id,
+              nombre: producto.nombre,
+            },
+          }))}
+          placeholder="Seleccionar un producto"
+          // className={classNames("w-full", {
+          //   "p-invalid": errors.idProducto?.nombre,
+          // })}
+        />
+        {/* <Dropdown
+          value={options.value}
+          options={productos}
+          onChange={(e: DropdownChangeEvent) =>
+            options.editorCallback!(e.value)
+          }
+          placeholder="Selecionar un producto"
+          itemTemplate={(option) => {
+            return (
+              <Tag
+                value={option}
+                className={`customer-badge status-${option
+                  .toLowerCase()
+                  .replace(/[()]/g, "")
+                  .replace(/\s+/g, "-")}`}
+              ></Tag>
+            );
+          }}
+        /> */}
+      </>
     );
   };
-
+  console.log(errors);
   return (
     <div>
       <Toast ref={toast} />
@@ -418,18 +436,33 @@ function ContratoForm({
               scrollable
               className="datatable-responsive"
               size="small"
+              editMode="cell"
             >
               <Column
-                field="producto"
+                field="producto.nombre"
                 header="Producto"
-                sortable
                 // style={{ width: "20%" }}
                 editor={(options) => productoEditor(options)}
+                onCellEditComplete={(e) => {
+                  const {
+                    rowData,
+                    newValue,
+                    rowIndex,
+                    originalEvent: event,
+                  } = e;
+                  if (!newValue || !newValue.id) {
+                    event.preventDefault();
+                    return;
+                  }
+                  rowData.producto = newValue;
+                  const updated = [...items];
+                  updated[rowIndex].producto = newValue;
+                  setItems(updated);
+                }}
               />
               <Column
                 field="cantidad"
                 header="Cantidad"
-                sortable
                 // style={{ width: "20%" }}
                 editor={(options) => (
                   <InputNumber
@@ -443,7 +476,6 @@ function ContratoForm({
               <Column
                 field="precioUnitario"
                 header="Precio Unitario"
-                sortable
                 // style={{ width: "20%" }}
                 editor={(options) => (
                   <InputNumber
@@ -455,9 +487,24 @@ function ContratoForm({
                 )}
               />
               <Column
+                header="Total"
+                body={(rowData: any) =>
+                  rowData.cantidad * rowData.precioUnitario
+                }
+                // footer="Total"
+                footer={() =>
+                  items.reduce(
+                    (
+                      acc: number,
+                      item: { cantidad: number; precioUnitario: number }
+                    ) => acc + item.cantidad * item.precioUnitario,
+                    0
+                  )
+                }
+              />
+              <Column
                 field="gravedadAPI"
                 header="Gravedad API"
-                sortable
                 // style={{ width: "20%" }}
                 editor={(options) => (
                   <InputNumber
@@ -471,7 +518,6 @@ function ContratoForm({
               <Column
                 field="azufre"
                 header="Azufre"
-                sortable
                 // style={{ width: "20%" }}
                 editor={(options) => (
                   <InputNumber
@@ -485,7 +531,6 @@ function ContratoForm({
               <Column
                 field="viscosidad"
                 header="Viscosidad"
-                sortable
                 // style={{ width: "20%" }}
                 editor={(options) => (
                   <InputNumber
@@ -499,7 +544,6 @@ function ContratoForm({
               <Column
                 field="densidad"
                 header="Densidad"
-                sortable
                 // style={{ width: "20%" }}
                 editor={(options) => (
                   <InputNumber
@@ -513,7 +557,6 @@ function ContratoForm({
               <Column
                 field="contenidoAgua"
                 header="Contenido de Agua"
-                sortable
                 // style={{ width: "20%" }}
                 editor={(options) => (
                   <InputNumber
@@ -527,7 +570,6 @@ function ContratoForm({
               <Column
                 field="origen"
                 header="Origen"
-                sortable
                 // style={{ width: "20%" }}
                 editor={(options) => (
                   <InputText
@@ -541,7 +583,6 @@ function ContratoForm({
               <Column
                 field="temperatura"
                 header="Temperatura"
-                sortable
                 // style={{ width: "20%" }}
                 editor={(options) => (
                   <InputNumber
@@ -555,7 +596,6 @@ function ContratoForm({
               <Column
                 field="presion"
                 header="Presión"
-                sortable
                 // style={{ width: "20%" }}
                 editor={(options) => (
                   <InputNumber
@@ -566,11 +606,7 @@ function ContratoForm({
                   />
                 )}
               />
-              <Column
-                rowEditor
-                headerStyle={{ width: "10%", minWidth: "8rem" }}
-                bodyStyle={{ textAlign: "center" }}
-              ></Column>
+
               <Column
                 body={actionBodyTemplate}
                 header="Acciones"

@@ -27,12 +27,13 @@ export interface Tanque {
   estado: boolean;
   eliminado: boolean;
   ubicacion: string;
-  material: string[];
   createdAt: string;
   updatedAt: string;
   idRefineria: {
     id: string | undefined;
   };
+  almacenamientoMateriaPrimaria: boolean;
+  idProducto: Producto;
   almacenamiento: number;
   capacidad: number;
 }
@@ -75,7 +76,11 @@ export interface Recepcion {
     idItems: {
       estado: boolean;
       eliminado: boolean;
-      producto: string;
+      producto: {
+        nombre: string;
+        id: string;
+        color: string;
+      };
       cantidad: number;
       precioUnitario: number;
       gravedadAPI: number;
@@ -101,7 +106,12 @@ export interface Recepcion {
     id: string;
   };
   idContratoItems: {
-    producto: string;
+    producto: {
+      nombre: string;
+      id: string;
+      color: string;
+    };
+
     cantidad: number;
     id: string;
   };
@@ -176,6 +186,7 @@ export interface Producto {
     nombre: string;
     id: string;
   };
+
   nombre: string;
   posicion: number;
   color: string;
@@ -202,6 +213,10 @@ export interface ChequeoCalidad {
   idTorre: {
     nombre: string;
     id: string;
+  };
+  idRefinacion: {
+    id: string;
+    descripcion: string;
   };
   operador: string;
   fechaChequeo: string;
@@ -279,6 +294,12 @@ export interface Refinacion {
   createdAt: string;
   updatedAt: string;
   id: string;
+  descripcion: string;
+  estadoRefinacion: string;
+  idProducto: {
+    nombre: string;
+    id: string;
+  };
 }
 export interface Derivado {
   idProducto: {

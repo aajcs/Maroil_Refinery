@@ -210,18 +210,19 @@ const RefinacionList = () => {
             actionSubTableTemplate(rowData, "historiasOperaciones")
           }
         /> */}
-
+        <Column field="descripcion" header="Descripción" />
         <Column
           field="idProducto.nombre"
           header="Nombre del Producto"
           sortable
         />
         <Column field="idTanque.nombre" header="Nombre del Tanque" sortable />
-        <Column field="idTorre.nombre" header="Nombre de la Torre" sortable />
         <Column field="operador" header="Operador" sortable />
 
         <Column field="cantidadTotal" header="Cantidad Total" sortable />
+        <Column field="idTorre.nombre" header="Nombre de la Torre" sortable />
 
+        <Column field="estadoRefinacion" header="Estado Refinación" sortable />
         <Column field="estado" header="Estado" sortable />
         <Column
           field="fechaInicio"

@@ -436,6 +436,7 @@ function RecepcionForm({
                 value: {
                   id: tanque.id,
                   nombre: tanque.nombre,
+                  _id: tanque.id,
                 },
               }))}
               placeholder="Seleccionar un proveedor"

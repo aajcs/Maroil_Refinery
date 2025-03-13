@@ -18,7 +18,7 @@ interface Contrato {
 }
 
 interface Producto {
-  producto: string;
+  producto: { id: string; nombre: string; color: string };
   cantidad: number;
   cantidadRecibida: number;
   cantidadFaltante: number;
@@ -75,11 +75,11 @@ const ModeladoRefineriaContratosList = ({
               <div className="flex flex-column gap-2">
                 {contrato.productos.map((item) => (
                   <div
-                    key={item.producto}
+                    key={item.producto.id}
                     className="flex align-items-center gap-2"
                   >
                     <span className="font-bold min-w-8rem">
-                      {item.producto}
+                      {item.producto.nombre}
                     </span>
                     <div className="flex-grow-1">
                       <ProgressBar
@@ -87,7 +87,7 @@ const ModeladoRefineriaContratosList = ({
                         showValue={false}
                         // className="h-1rem"
                         style={{ minWidth: "10rem", height: "0.6rem" }}
-                        color={getFillColor(item.producto)}
+                        color={`#${item.producto.color}`}
                       />
                       <div className="flex justify-content-between text-xs mt-1">
                         <span>{item.cantidad.toLocaleString("de-DE")}Bbl</span>

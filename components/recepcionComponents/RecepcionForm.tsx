@@ -67,13 +67,6 @@ const RecepcionForm = ({
     },
   });
 
-  const [productos] = useState<string[]>([
-    "Nafta",
-    "Queroseno",
-    "Fuel Oil 4 (MGO)",
-    "Fuel Oil 6 (Fondo)",
-    "Petroleo Crudo",
-  ]);
   useEffect(() => {
     if (recepcion) {
       Object.keys(recepcion).forEach((key) =>
@@ -270,7 +263,6 @@ const RecepcionForm = ({
             <Dropdown
               id="idContrato.id"
               value={watch("idContrato")}
-              // {...register("idLinea.id")}
               onChange={(e) => {
                 setValue("idContrato", e.value);
               }}
@@ -278,10 +270,9 @@ const RecepcionForm = ({
                 label: contrato.numeroContrato,
                 value: {
                   id: contrato.id,
-                  idContacto: contrato.idContacto,
                   idItems: contrato.idItems,
-                  idRefineria: contrato.idRefineria,
                   numeroContrato: contrato.numeroContrato,
+                  _id: contrato.id,
                 },
               }))}
               // options={contratos}
@@ -317,7 +308,7 @@ const RecepcionForm = ({
                         checked={field.value?.id === items.id}
                       />
                       <label htmlFor={items.id} className="ml-2">
-                        {items.producto + "-" + items.cantidad + "Bbl"}
+                        {items.producto.nombre + "-" + items.cantidad + "Bbl"}
                       </label>
                     </div>
                   ))}
@@ -437,6 +428,7 @@ const RecepcionForm = ({
                 value: {
                   id: tanque.id,
                   nombre: tanque.nombre,
+                  _id: tanque.id,
                 },
               }))}
               placeholder="Seleccionar un proveedor"

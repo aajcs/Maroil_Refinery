@@ -7,7 +7,7 @@ import { Button } from "primereact/button";
 import { classNames } from "primereact/utils";
 import { refinacionSchema } from "@/libs/zod";
 import { Toast } from "primereact/toast";
-import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
+import { Dropdown } from "primereact/dropdown";
 import { useRefineriaStore } from "@/store/refineriaStore";
 
 import { InputNumber } from "primereact/inputnumber";
@@ -22,10 +22,7 @@ import {
 import { getTanques } from "@/app/api/tanqueService";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { getProductos } from "@/app/api/productoService";
-import {
-  getTorreDestilacion,
-  getTorresDestilacion,
-} from "@/app/api/torreDestilacionService";
+import { getTorresDestilacion } from "@/app/api/torreDestilacionService";
 import {
   createRefinacion,
   updateRefinacion,
@@ -47,6 +44,12 @@ interface RefinacionFormProps {
 }
 
 const estatusValues = ["true", "false"];
+const estadoRefinacionValues = [
+  "En Cola",
+  "En Proceso",
+  "Finalizado",
+  "Pausado",
+];
 
 const RefinacionForm = ({
   refinacion,
@@ -63,7 +66,9 @@ const RefinacionForm = ({
   const [torresDestilacion, setTorresDestilacion] = useState<
     TorreDestilacion[]
   >([]);
-
+  const [derivados, setDerivados] = useState<
+    { idProducto: any; porcentaje: number }[]
+  >([]);
   const [loading, setLoading] = useState(true);
   const {
     register,
@@ -124,8 +129,22 @@ const RefinacionForm = ({
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+  useEffect(() => {
+    if (refinacion && refinacion.idTorre?.id) {
+      setDerivados(refinacion.derivado || []);
+    }
+  }, [refinacion, torresDestilacion]);
   const onSubmit = async (data: FormData) => {
-    console.log(data);
+    const sumaPorcentajes = derivados.reduce(
+      (sum, derivado) => sum + derivado.porcentaje,
+      0
+    );
+
+    if (sumaPorcentajes !== 100) {
+      showToast("error", "Error", "La suma de los porcentajes debe ser 100%");
+      return;
+    }
+
     try {
       if (refinacion) {
         const updatedRefinacion = await updateRefinacion(refinacion.id, {
@@ -133,6 +152,7 @@ const RefinacionForm = ({
           idProducto: data.idProducto?.id,
           idTanque: data.idTanque?.id,
           idTorre: data.idTorre?.id,
+          derivado: derivados,
 
           idRefineria: activeRefineria?.id,
         });
@@ -150,6 +170,7 @@ const RefinacionForm = ({
           idProducto: data.idProducto?.id,
           idTanque: data.idTanque?.id,
           idTorre: data.idTorre?.id,
+          derivado: derivados,
 
           idRefineria: activeRefineria?.id,
         });
@@ -181,11 +202,36 @@ const RefinacionForm = ({
       </div>
     );
   }
+  // const selectedTorre = watch("idTorre");
+  // const productosTorre = selectedTorre?.material.map((material) => ({
+  //   idProducto: material.idProducto,
+  //   porcentaje: 0, // Inicialmente el porcentaje es 0
+  // }));
+  // setDerivados(productosTorre || []);
+
   return (
     <div>
       <Toast ref={toast} />
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="grid formgrid p-fluid">
+          {/* Campo: Descripción */}
+          <div className="field mb-4 col-12 sm:col-6 lg:4">
+            <label htmlFor="descripcion" className="font-medium text-900">
+              Descripción
+            </label>
+            <InputText
+              id="descripcion"
+              value={watch("descripcion")}
+              {...register("descripcion")}
+              className={classNames("w-full", {
+                "p-invalid": errors.descripcion,
+              })}
+            />
+            {errors.descripcion && (
+              <small className="p-error">{errors.descripcion.message}</small>
+            )}
+          </div>
+
           {/* Campo: Nombre del Producto */}
           <div className="field mb-4 col-12 sm:col-6 lg:col-4">
             <label htmlFor="idProducto.id" className="font-medium text-900">
@@ -233,6 +279,7 @@ const RefinacionForm = ({
                 value: {
                   id: tanque.id,
                   nombre: tanque.nombre,
+                  _id: tanque.id,
                 },
               }))}
               placeholder="Seleccionar un tanque"
@@ -246,35 +293,31 @@ const RefinacionForm = ({
               </small>
             )}
           </div>
-
-          {/* Campo: Nombre de la Torre */}
+          {/* Campo: Cantidad Total */}
           <div className="field mb-4 col-12 sm:col-6 lg:col-4">
-            <label htmlFor="idTorre.id" className="font-medium text-900">
-              Nombre de Torre
+            <label htmlFor="cantidadTotal" className="font-medium text-900">
+              Cantidad Total
             </label>
-            <Dropdown
-              id="idTorre.id"
-              value={watch("idTorre")}
-              onChange={(e) => {
-                setValue("idTorre", e.value);
-              }}
-              options={torresDestilacion.map((torre) => ({
-                label: torre.nombre,
-                value: {
-                  id: torre.id,
-                  nombre: torre.nombre,
-                },
-              }))}
-              placeholder="Seleccionar una torre"
-              className={classNames("w-full", {
-                "p-invalid": errors.idTorre?.nombre,
-              })}
+            <Controller
+              name="cantidadTotal"
+              control={control}
+              render={({ field }) => (
+                <InputNumber
+                  id="cantidadTotal"
+                  value={field.value}
+                  onValueChange={(e) => field.onChange(e.value)}
+                  className={classNames("w-full", {
+                    "p-invalid": errors.cantidadTotal,
+                  })}
+                  min={0}
+                  locale="es"
+                />
+              )}
             />
-            {errors.idTorre?.nombre && (
-              <small className="p-error">{errors.idTorre.nombre.message}</small>
+            {errors.cantidadTotal && (
+              <small className="p-error">{errors.cantidadTotal.message}</small>
             )}
           </div>
-
           {/* Campo: Operador */}
           <div className="field mb-4 col-12 sm:col-6 lg:col-4">
             <label htmlFor="operador" className="font-medium text-900">
@@ -342,33 +385,113 @@ const RefinacionForm = ({
               <small className="p-error">{errors.fechaFin.message}</small>
             )}
           </div>
-
-          {/* Campo: Cantidad Total */}
+          {/* Campo: estadoRefinacion */}
           <div className="field mb-4 col-12 sm:col-6 lg:col-4">
-            <label htmlFor="cantidadTotal" className="font-medium text-900">
-              Cantidad Total
+            <label htmlFor="estadoRefinacion" className="font-medium text-900">
+              Estado de Refinación
             </label>
-            <Controller
-              name="cantidadTotal"
-              control={control}
-              render={({ field }) => (
-                <InputNumber
-                  id="cantidadTotal"
-                  value={field.value}
-                  onValueChange={(e) => field.onChange(e.value)}
-                  className={classNames("w-full", {
-                    "p-invalid": errors.cantidadTotal,
-                  })}
-                  min={0}
-                  locale="es"
-                />
-              )}
+            <Dropdown
+              id="estadoRefinacion"
+              value={watch("estadoRefinacion")}
+              {...register("estadoRefinacion")}
+              options={estadoRefinacionValues.map((value) => ({
+                label: value,
+                value,
+              }))}
+              placeholder="Seleccionar estado de refinación"
+              className={classNames("w-full", {
+                "p-invalid": errors.estadoRefinacion,
+              })}
             />
-            {errors.cantidadTotal && (
-              <small className="p-error">{errors.cantidadTotal.message}</small>
+            {errors.estadoRefinacion && (
+              <small className="p-error">
+                {errors.estadoRefinacion.message}
+              </small>
             )}
           </div>
-
+          {/* Campo: Nombre de la Torre */}
+          <div className="field mb-4 col-12 sm:col-6 lg:col-4">
+            <label htmlFor="idTorre.id" className="font-medium text-900">
+              Nombre de Torre
+            </label>
+            <Dropdown
+              id="idTorre.id"
+              value={watch("idTorre")}
+              onChange={(e) => {
+                setValue("idTorre", e.value);
+                const selectedTorre = torresDestilacion.find(
+                  (torre) => torre.id === e.value.id
+                );
+                const productosTorre = selectedTorre?.material.map(
+                  (material) => ({
+                    idProducto: material.idProducto,
+                    porcentaje: 0, // Inicialmente el porcentaje es 0
+                  })
+                );
+                setDerivados(productosTorre || []);
+              }}
+              options={torresDestilacion.map((torre) => ({
+                label: torre.nombre,
+                value: {
+                  id: torre.id,
+                  nombre: torre.nombre,
+                  _id: torre.id,
+                },
+              }))}
+              placeholder="Seleccionar una torre"
+              className={classNames("w-full", {
+                "p-invalid": errors.idTorre?.nombre,
+              })}
+            />
+            {/* <Dropdown
+              id="idTorre.id"
+              value={watch("idTorre")}
+              onChange={(e) => {
+                setValue("idTorre", e.value);
+              }}
+              options={torresDestilacion.map((torre) => ({
+                label: torre.nombre,
+                value: {
+                  id: torre.id,
+                  nombre: torre.nombre,
+_id:torre.id
+                },
+              }))}
+              placeholder="Seleccionar una torre"
+              className={classNames("w-full", {
+                "p-invalid": errors.idTorre?.nombre,
+              })}
+            /> */}
+            {errors.idTorre?.nombre && (
+              <small className="p-error">{errors.idTorre.nombre.message}</small>
+            )}
+          </div>
+          {derivados.map((derivado, index) => (
+            <div
+              key={derivado.idProducto.id}
+              className="field mb-4 col-12 sm:col-6 lg:col-4"
+            >
+              <label
+                htmlFor={`derivado-${index}`}
+                className="font-medium text-900"
+              >
+                {derivado.idProducto.nombre}
+              </label>
+              <InputNumber
+                id={`derivado-${index}`}
+                value={derivado.porcentaje}
+                onValueChange={(e) => {
+                  const nuevosDerivados = [...derivados];
+                  nuevosDerivados[index].porcentaje = e.value || 0;
+                  setDerivados(nuevosDerivados);
+                }}
+                min={0}
+                max={100}
+                suffix="%"
+                className={classNames("w-full")}
+              />
+            </div>
+          ))}
           {/* Campo: Estado */}
           <div className="field mb-4 col-12 sm:col-6 lg:col-4">
             <label htmlFor="estado" className="font-medium text-900">

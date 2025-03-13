@@ -1285,7 +1285,85 @@
   .p-inputnumber.p-invalid.p-component > .p-inputtext {
     border-color: #e24c4c;
   }
-
+  .p-inputswitch {
+    position: relative;
+    display: inline-block;
+  }
+  .p-inputswitch-input {
+    appearance: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    opacity: 0;
+    z-index: 1;
+    outline: 0 none;
+    cursor: pointer;
+  }
+  .p-inputswitch-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 1px solid transparent;
+  }
+  .p-inputswitch-slider:before {
+    position: absolute;
+    content: "";
+    top: 50%;
+  }
+  .p-inputswitch {
+    width: 3rem;
+    height: 1.75rem;
+  }
+  .p-inputswitch .p-inputswitch-input {
+    border-radius: 30px;
+  }
+  .p-inputswitch .p-inputswitch-slider {
+    background: #d1d5db;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s,
+      box-shadow 0.2s;
+    border-radius: 30px;
+    outline-color: transparent;
+  }
+  .p-inputswitch .p-inputswitch-slider:before {
+    background: #ffffff;
+    width: 1.25rem;
+    height: 1.25rem;
+    left: 0.25rem;
+    margin-top: -0.625rem;
+    border-radius: 50%;
+    transition-duration: 0.2s;
+  }
+  .p-inputswitch.p-highlight .p-inputswitch-slider {
+    background: #3b82f6;
+  }
+  .p-inputswitch.p-highlight .p-inputswitch-slider:before {
+    background: #ffffff;
+    transform: translateX(1.25rem);
+  }
+  .p-inputswitch:not(.p-disabled):has(.p-inputswitch-input:hover)
+    .p-inputswitch-slider {
+    background: #b7bcc5;
+  }
+  .p-inputswitch:not(.p-disabled):has(.p-inputswitch-input:hover).p-highlight
+    .p-inputswitch-slider {
+    background: #2563eb;
+  }
+  .p-inputswitch:not(.p-disabled):has(.p-inputswitch-input:focus-visible)
+    .p-inputswitch-slider {
+    outline: 0 none;
+    outline-offset: 0;
+    box-shadow: 0 0 0 0.2rem #bfdbfe;
+  }
+  .p-inputswitch.p-invalid > .p-inputswitch-slider {
+    border-color: #e24c4c;
+  }
   .p-inputswitch {
     width: 3rem;
     height: 1.75rem;
