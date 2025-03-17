@@ -130,6 +130,7 @@ export const contactoSchema = object({
 });
 
 export const contratoSchema = object({
+  // Ejemplo de campo adicional
   condicionesPago: object({
     tipo: string().min(1, "El tipo es obligatorio"),
     plazo: number().min(0, "El plazo debe ser un número no negativo"),
@@ -140,22 +141,25 @@ export const contratoSchema = object({
         fecha: string().optional(),
       })
     ).optional(),
-  }),
+  }).optional(),
   estadoEntrega: string().min(1, "El estado de entrega es obligatorio"),
   clausulas: array(string()).optional(),
   estado: string().min(1, "El estado es obligatorio"),
   estadoContrato: string().min(1, "El estado es obligatorio"),
   eliminado: boolean().default(false),
   numeroContrato: string().min(1, "El número de contrato es obligatorio"),
-  descripcion: string().min(1, "El número de contrato es obligatorio"),
+  descripcion: string().min(1, "La descripción es obligatoria"),
+  tipoContrato: string().min(1, "El tipo de contrato es obligatorio"),
   idRefineria: object({
     id: string().optional(),
     nombre: string().min(1, "El nombre de la refinería es obligatorio"),
   }).optional(),
+
   idContacto: object({
     id: string().optional(),
     nombre: string().min(1, "El nombre del contacto es obligatorio"),
   }),
+
   abono: array(
     object({
       id: string().optional(),
@@ -163,20 +167,33 @@ export const contratoSchema = object({
       fecha: string().optional(),
     })
   ).optional(),
+
+  /**
+   * idItems: aquí agregamos los campos
+   * que reflejan la estructura de tu snippet de Mongoose
+   * (producto, brent, convenio, montoTransporte, etc.).
+   */
   idItems: array(
     object({
-      // estado: string().min(1, "El estado es obligatorio"),
-      eliminado: boolean().default(false),
       id: string().optional(),
+      eliminado: boolean().default(false),
+
+      // Referencia al producto
       producto: object({
         nombre: string().min(1, "El nombre del producto es obligatorio"),
         id: string().min(1, "El ID del producto es obligatorio"),
       }),
+
       cantidad: number().min(0, "La cantidad debe ser un número no negativo"),
-      precioUnitario: number().min(
-        0,
-        "El precio unitario debe ser un número no negativo"
-      ),
+      precioUnitario: number().optional(),
+
+      brent: number().optional(),
+      convenio: number().optional(),
+      montoTransporte: number()
+        .min(0, "El monto de transporte debe ser un número no negativo")
+        .optional(),
+
+      // Datos de calidad
       gravedadAPI: number().min(
         0,
         "La gravedad API debe ser un número no negativo"
@@ -197,22 +214,44 @@ export const contratoSchema = object({
         "La temperatura debe ser un número no negativo"
       ),
       presion: number().min(0, "La presión debe ser un número no negativo"),
+
+      // Estado local de cada item
+      estado: string().optional(),
     })
   ).optional(),
+
+  /**
+   * Campos alternativos para items (si tuvieras otra colección con la misma estructura).
+   * Ajusta o elimina si no lo estás usando.
+   */
   items: array(
     object({
-      // estado: string().min(1, "El estado es obligatorio"),
-      eliminado: boolean().default(false),
       id: string().optional(),
+      eliminado: boolean().default(false),
+
+      // Referencia al producto
       producto: object({
         nombre: string().min(1, "El nombre del producto es obligatorio"),
         id: string().min(1, "El ID del producto es obligatorio"),
       }),
+
       cantidad: number().min(0, "La cantidad debe ser un número no negativo"),
       precioUnitario: number().min(
         0,
         "El precio unitario debe ser un número no negativo"
       ),
+
+      brent: number()
+        .min(0, "El valor de brent debe ser un número no negativo")
+        .optional(),
+      convenio: number()
+        .min(0, "El porcentaje de convenio debe ser un número no negativo")
+        .optional(),
+      montoTransporte: number()
+        .min(0, "El monto de transporte debe ser un número no negativo")
+        .optional(),
+
+      // Datos de calidad
       gravedadAPI: number().min(
         0,
         "La gravedad API debe ser un número no negativo"
@@ -228,13 +267,17 @@ export const contratoSchema = object({
         "El contenido de agua debe ser un número no negativo"
       ),
       origen: string().min(1, "El origen es obligatorio"),
-      temperatura: number().min(
-        0,
+      temperatura: string().min(
+        1,
         "La temperatura debe ser un número no negativo"
       ),
       presion: number().min(0, "La presión debe ser un número no negativo"),
+
+      // Estado local de cada item
+      estado: string().optional(),
     })
   ).optional(),
+
   historialModificaciones: array(
     object({
       id: string().optional(),
@@ -242,6 +285,7 @@ export const contratoSchema = object({
       descripcion: string().optional(),
     })
   ).optional(),
+
   fechaInicio: union([string(), date()]).optional(),
   fechaFin: union([string(), date()]).optional(),
   createdAt: string().optional(),
@@ -282,7 +326,7 @@ export const recepcionSchema = object({
         producto: object({
           nombre: string().min(1, "El nombre del producto es obligatorio"),
           id: string().min(1, "El ID del producto es obligatorio"),
-          color: string().min(1, "El color es obligatorio"),
+          color: string().min(1, "El color es obligatorio").optional(),
         }),
         cantidad: number().min(0, "La cantidad debe ser un número no negativo"),
         precioUnitario: number().min(

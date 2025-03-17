@@ -151,13 +151,16 @@ const ContratoList = () => {
       <div className="orders-subtable">
         <h5>Items for {data.name}</h5>
         <DataTable value={data.idItems} responsiveLayout="scroll">
-          <Column field="producto.nombre" header="Producto aqui" sortable />
+          <Column field="producto.nombre" header="Producto" sortable />
           <Column field="cantidad" header="Cantidad" sortable />
           <Column field="precioUnitario" header="Precio Unitario" sortable />
           <Column
             header="Total"
             body={(rowData: any) => rowData.cantidad * rowData.precioUnitario}
           />
+          <Column field="brent" header="Brent" sortable />
+          <Column field="convenio" header="Convenio" sortable />
+          <Column field="montoTransporte" header="Monto Transporte" sortable />
           <Column field="gravedadAPI" header="Gravedad API" sortable />
           <Column field="azufre" header="Azufre" sortable />
           <Column field="viscosidad" header="Viscosidad" sortable />
@@ -192,35 +195,37 @@ const ContratoList = () => {
       >
         <Column expander style={{ width: "3em" }} />
         <Column body={actionBodyTemplate} headerStyle={{ minWidth: "10rem" }} />
+        <Column field="tipoContrato" header="Tipo de Contrato" sortable />
         <Column field="numeroContrato" header="Número de Contrato" sortable />
-        <Column field="descripcion" header="Descripción de Contrato" sortable />
+        <Column field="descripcion" header="Descripción de Contrato" />
         <Column
           field="condicionesPago.tipo"
           header="Tipo de Condiciones de Pago"
-          sortable
         />
         <Column
           field="condicionesPago.plazo"
           header="Plazo de Condiciones de Pago"
-          sortable
         />
-
-        <Column field="estadoEntrega" header="Estado de Entrega" sortable />
-        <Column field="estadoContrato" header="Estado de Contrato" sortable />
-        <Column field="estado" header="Estado" sortable />
-
-        <Column
-          field="idRefineria.nombre"
-          header="Nombre de Refinería"
-          sortable
-        />
+        <Column field="estadoEntrega" header="Estado de Entrega" />
+        <Column field="estadoContrato" header="Estado de Contrato" />
+        {/* <Column field="estado" header="Estado" /> */}
         <Column
           field="idContacto.nombre"
           header="Nombre de Contacto"
           sortable
         />
-        <Column field="fechaInicio" header="Fecha de Inicio" sortable />
-        <Column field="fechaFin" header="Fecha de Fin" sortable />
+        <Column
+          field="fechaInicio"
+          header="Fecha de Inicio"
+          body={(rowData: Contrato) => formatDateFH(rowData.fechaInicio)}
+          sortable
+        />
+        <Column
+          field="fechaFin"
+          header="Fecha de Fin"
+          body={(rowData: Contrato) => formatDateFH(rowData.fechaFin)}
+          sortable
+        />
         <Column
           field="createdAt"
           header="Fecha de Creación"
@@ -265,7 +270,8 @@ const ContratoList = () => {
           />
           {contrato && (
             <span>
-              ¿Estás seguro de que deseas eliminar <b>{contrato.nombre}</b>?
+              ¿Estás seguro de que deseas eliminar el contrato de número{" "}
+              <b>{contrato.numeroContrato}</b>?
             </span>
           )}
         </div>

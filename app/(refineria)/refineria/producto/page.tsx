@@ -1,6 +1,6 @@
 "use client";
 
-import ProductoList from "@/components/productoComponents/ProductoList";
+import ProductoList from "@/components/refineriaComponents/productoComponents/ProductoList";
 
 const Producto = () => {
   return (

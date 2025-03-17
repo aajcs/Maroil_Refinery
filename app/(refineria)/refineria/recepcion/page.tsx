@@ -1,6 +1,6 @@
 "use client";
 
-import RecepcionList from "@/components/recepcionComponents/RecepcionList";
+import RecepcionList from "@/components/refineriaComponents/recepcionComponents/RecepcionList";
 
 function Tanques() {
   return (

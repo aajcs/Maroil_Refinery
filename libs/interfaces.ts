@@ -45,11 +45,44 @@ export interface Tanque {
 //   material: string[];
 // }
 
+export interface ContratoItem {
+  // ID interno del item (por ejemplo, si lo almacenas en MongoDB)
+  id?: string;
+
+  // Referencia al contrato padre
+  idContrato?: string;
+
+  // Referencia al producto asociado
+  producto?: string; // o un objeto { id: string; nombre: string; ... } si lo prefieres
+
+  cantidad?: number;
+  precioUnitario?: number;
+
+  brent?: number;
+  convenio?: number;
+  montoTransporte?: number;
+
+  // Datos de calidad
+  gravedadAPI?: number;
+  azufre?: number;
+  viscosidad?: number;
+  densidad?: number;
+  contenidoAgua?: number;
+  origen?: string;
+  temperatura?: number;
+  presion?: number;
+
+  // Estado y lógica de eliminado
+  estado?: string; // "true" | "false" o como se maneje en tu app
+  eliminado?: boolean;
+}
+
+/**
+ * Interfaz principal del Contrato.
+ * Aquí sustituimos "idItems: any" por un arreglo tipado de `ContratoItem`.
+ */
 export interface Contrato {
-  idItems: any;
-  idContacto: any;
   id: string;
-  nombre: string;
   numeroContrato: string;
   estado: boolean;
   eliminado: boolean;
@@ -62,9 +95,25 @@ export interface Contrato {
   estadoContrato: string;
   estadoEntrega: string;
   descripcion: string;
+  tipoContrato: string;
+  /**
+   * Items (productos) asociados a este contrato.
+   */
+  idItems: ContratoItem[];
+
+  /**
+   * Referencia al contacto/proveedor asociado.
+   */
+  idContacto: any; // Ajusta con la interfaz real si lo deseas
+
+  /**
+   * Referencia a la refinería asociada.
+   */
   idRefineria: {
     id: string | undefined;
   };
+  montoTotal?: number;
+  montoTransporte?: number;
 }
 
 export interface Recepcion {
@@ -233,6 +282,7 @@ export interface ChequeoCalidad {
   createdAt: string;
   updatedAt: string;
   id: string;
+  numeroChequeoCalidad: number;
 }
 
 export interface ChequeoCantidad {
@@ -260,6 +310,7 @@ export interface ChequeoCantidad {
   createdAt: string;
   updatedAt: string;
   id: string;
+  numeroChequeoCantidad: number;
 }
 
 export interface Refinacion {
@@ -300,6 +351,7 @@ export interface Refinacion {
     nombre: string;
     id: string;
   };
+  numeroRefinacion: number;
 }
 export interface Derivado {
   idProducto: {

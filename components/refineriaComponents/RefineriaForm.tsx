@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -29,6 +29,7 @@ const RefineriaForm = ({
 }: RefineriaFormProps) => {
   const toast = useRef<Toast | null>(null);
   const router = useRouter();
+  const [submitting, setSubmitting] = useState(false);
   const {
     register,
     handleSubmit,
@@ -65,6 +66,7 @@ const RefineriaForm = ({
   };
 
   const onSubmit = async (data: FormData) => {
+    setSubmitting(true);
     try {
       if (refineria) {
         // Actualizar la refinería en el backend
@@ -266,6 +268,8 @@ const RefineriaForm = ({
               <div className="col-12">
                 <Button
                   type="submit"
+                  disabled={submitting} // Deshabilitar el botón mientras se envía
+                  icon={submitting ? "pi pi-spinner pi-spin" : ""} // Mostrar ícono de carga
                   label={refineria ? "Modificar Refinería" : "Crear Refinería"}
                   className="w-auto mt-3"
                 />

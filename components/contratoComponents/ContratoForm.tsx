@@ -35,6 +35,7 @@ interface ContratoFormProps {
 }
 
 const estatusValues = ["true", "false"];
+const tipoContatroValues = ["Compra", "Venta"];
 const estadoEntregaOptions = [
   { label: "Pendiente", value: "Pendiente" },
   { label: "En Tránsito", value: "En Tránsito" },
@@ -60,6 +61,7 @@ function ContratoForm({
   const [items, setItems] = useState(contrato?.idItems || []);
   const [contactos, setContactos] = useState<Contacto[]>([]);
   const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
   const {
     register,
     handleSubmit,
@@ -69,8 +71,8 @@ function ContratoForm({
     control,
   } = useForm<FormData>({
     resolver: zodResolver(contratoSchema),
+    defaultValues: {},
   });
-  console.log("quetiene", contrato);
 
   useEffect(() => {
     if (contrato) {
@@ -102,6 +104,7 @@ function ContratoForm({
     }
   };
   const onSubmit = async (data: FormData) => {
+    setSubmitting(true);
     try {
       data.items = items;
       console.log("data", data);
@@ -137,11 +140,31 @@ function ContratoForm({
         "Error",
         error instanceof Error ? error.message : "Ocurrió un error inesperado"
       );
+    } finally {
+      setSubmitting(false); // Desactivar el estado de envío
     }
   };
 
   const addItem = () => {
-    setItems([...items, { producto: "" }]);
+    setItems([
+      ...items,
+      {
+        producto: "",
+        cantidad: 0,
+        brent: 0,
+        convenio: 0,
+        precioUnitario: 0,
+        montoTransporte: 0,
+        gravedadAPI: 0,
+        azufre: 0,
+        viscosidad: 0,
+        densidad: 0,
+        contenido: 0,
+        origen: "",
+        temperatura: 0,
+        presion: 0,
+      },
+    ]);
   };
 
   const updateItem = (index: number, field: string, value: any) => {
@@ -168,7 +191,9 @@ function ContratoForm({
       </div>
     );
   };
-
+  const calculatePrecioUnitario = (brent: number, convenio: number) => {
+    return (brent || 0) + (convenio || 0);
+  };
   const productoEditor = (options: ColumnEditorOptions) => {
     console.log(options);
     const onChange = (e: DropdownChangeEvent) => {
@@ -220,6 +245,7 @@ function ContratoForm({
       </>
     );
   };
+  console.log(watch());
   console.log(errors);
   return (
     <div>
@@ -259,7 +285,7 @@ function ContratoForm({
             )}
           </div>
           {/* Campo: Nombre de Contacto */}
-          <div className="field mb-4 col-12 sm:col-6 lg:col-4">
+          <div className="field mb-4 col-12 sm:col-6 lg:col-3">
             <label htmlFor="idContacto.nombre" className="font-medium text-900">
               Nombre de Proveedor
             </label>
@@ -285,8 +311,27 @@ function ContratoForm({
               </small>
             )}
           </div>
+          {/* Campo: Tipo de contrato */}
+          <div className="field mb-4 col-12 sm:col-6 lg:col-3">
+            <label htmlFor="estado" className="font-medium text-900">
+              Tipo de Contrato
+            </label>
+            <Dropdown
+              id="tipoContrato"
+              value={watch("tipoContrato")}
+              onChange={(e) => setValue("tipoContrato", e.value)}
+              options={tipoContatroValues}
+              placeholder="Seleccionar"
+              className={classNames("w-full", {
+                "p-invalid": errors.tipoContrato,
+              })}
+            />
+            {errors.tipoContrato && (
+              <small className="p-error">{errors.tipoContrato.message}</small>
+            )}
+          </div>
           {/* Campo: Tipo de Condiciones de Pago */}
-          <div className="field mb-4 col-12 sm:col-6 lg:col-4">
+          <div className="field mb-4 col-12 sm:col-6 lg:col-3">
             <label
               htmlFor="condicionesPago.tipo"
               className="font-medium text-900"
@@ -311,7 +356,7 @@ function ContratoForm({
           </div>
 
           {/* Campo: Plazo de Condiciones de Pago */}
-          <div className="field mb-4 col-12 sm:col-6 lg:col-4">
+          <div className="field mb-4 col-12 sm:col-6 lg:col-3">
             <label
               htmlFor="condicionesPago.plazo"
               className="font-medium text-900"
@@ -429,7 +474,7 @@ function ContratoForm({
           </div>
           {/* Tabla de Items del Contrato */}
           <div className="orders-subtable col-12">
-            <h5>Items for {contrato?.name}</h5>
+            {/* <h5>Items for {contrato?.name}</h5> */}
             <DataTable
               value={items}
               responsiveLayout="scroll"
@@ -441,7 +486,6 @@ function ContratoForm({
               <Column
                 field="producto.nombre"
                 header="Producto"
-                // style={{ width: "20%" }}
                 editor={(options) => productoEditor(options)}
                 onCellEditComplete={(e) => {
                   const {
@@ -463,7 +507,6 @@ function ContratoForm({
               <Column
                 field="cantidad"
                 header="Cantidad"
-                // style={{ width: "20%" }}
                 editor={(options) => (
                   <InputNumber
                     value={options.value}
@@ -473,25 +516,158 @@ function ContratoForm({
                   />
                 )}
               />
+              {/* Columnas agregadas */}
               <Column
-                field="precioUnitario"
-                header="Precio Unitario"
-                // style={{ width: "20%" }}
+                field="brent"
+                header="Brent"
                 editor={(options) => (
                   <InputNumber
                     value={options.value}
-                    onValueChange={(e) =>
-                      updateItem(options.rowIndex, "precioUnitario", e.value)
-                    }
+                    onValueChange={(e) => {
+                      updateItem(options.rowIndex, "brent", e.value);
+                      options.editorCallback!(e.value);
+                    }}
                   />
                 )}
+                onCellEditComplete={(e) => {
+                  const {
+                    rowData,
+                    newValue,
+                    rowIndex,
+                    originalEvent: event,
+                  } = e;
+                  if (newValue === undefined) {
+                    event.preventDefault();
+                    return;
+                  }
+                  const newPrecio = calculatePrecioUnitario(
+                    newValue,
+                    rowData.convenio
+                  );
+                  updateItem(rowIndex, "brent", newValue);
+                  updateItem(rowIndex, "precioUnitario", newPrecio);
+                }}
               />
+
+              <Column
+                field="convenio"
+                header="Convenio"
+                editor={(options) => (
+                  <InputNumber
+                    value={options.value}
+                    onValueChange={(e) => {
+                      updateItem(options.rowIndex, "convenio", e.value);
+                      options.editorCallback!(e.value);
+                    }}
+                  />
+                )}
+                onCellEditComplete={(e) => {
+                  const {
+                    rowData,
+                    newValue,
+                    rowIndex,
+                    originalEvent: event,
+                  } = e;
+                  if (newValue === undefined) {
+                    event.preventDefault();
+                    return;
+                  }
+                  const newPrecio = calculatePrecioUnitario(
+                    rowData.brent,
+                    newValue
+                  );
+                  updateItem(rowIndex, "convenio", newValue);
+                  updateItem(rowIndex, "precioUnitario", newPrecio);
+                }}
+              />
+
+              <Column
+                field="precioUnitario"
+                header="Precio Unitario"
+                body={(rowData: any) =>
+                  calculatePrecioUnitario(rowData.brent, rowData.convenio)
+                }
+              />
+              {/* <Column
+                field="brent"
+                header="Brent"
+                editor={(options) => (
+                  <InputNumber
+                    value={options.value}
+                    onValueChange={(e) => {
+                      updateItem(options.rowIndex, "brent", e.value);
+                      options.editorCallback!(e.value);
+                    }}
+                    // onKeyDown={(e) => e.stopPropagation()}
+                  />
+                )}
+                onCellEditComplete={(e) => {
+                  const {
+                    rowData,
+                    newValue,
+                    rowIndex,
+                    originalEvent: event,
+                  } = e;
+                  if (newValue === undefined) {
+                    event.preventDefault();
+                    return;
+                  }
+                  rowData.brent = newValue;
+                  rowData.precioUnitario = rowData.brent + rowData.convenio;
+                  const updated = [...items];
+                  updated[rowIndex] = rowData;
+                  setItems(updated);
+                  const newPrecio = newValue + (rowData.convenio || 0);
+                  updateItem(rowIndex, "precioUnitario", newPrecio);
+                }}
+              />
+
+              <Column
+                field="convenio"
+                header="Convenio"
+                editor={(options) => (
+                  <InputNumber
+                    value={options.value}
+                    onValueChange={(e) => {
+                      updateItem(options.rowIndex, "convenio", e.value);
+                      options.editorCallback!(e.value);
+                    }}
+                    // onKeyDown={(e) => e.stopPropagation()}
+                  />
+                )}
+                onCellEditComplete={(e) => {
+                  const {
+                    rowData,
+                    newValue,
+                    rowIndex,
+                    originalEvent: event,
+                  } = e;
+                  console.log(newValue);
+                  if (newValue === undefined) {
+                    event.preventDefault();
+                    return;
+                  }
+                  rowData.convenio = newValue;
+                  rowData.precioUnitario = rowData.brent + rowData.convenio;
+                  const updated = [...items];
+                  updated[rowIndex] = rowData;
+                  setItems(updated);
+                  const newPrecio = newValue + (rowData.convenio || 0);
+                  updateItem(rowIndex, "precioUnitario", newPrecio);
+                }}
+              />
+
+              <Column
+                field="precioUnitario"
+                header="Precio Unitario"
+                body={(rowData: any) => rowData.brent + rowData.convenio}
+              /> */}
+
               <Column
                 header="Total"
                 body={(rowData: any) =>
                   rowData.cantidad * rowData.precioUnitario
                 }
-                // footer="Total"
                 footer={() =>
                   items.reduce(
                     (
@@ -502,10 +678,23 @@ function ContratoForm({
                   )
                 }
               />
+
+              <Column
+                field="montoTransporte"
+                header="Monto Transporte"
+                editor={(options) => (
+                  <InputNumber
+                    value={options.value}
+                    onValueChange={(e) =>
+                      updateItem(options.rowIndex, "montoTransporte", e.value)
+                    }
+                  />
+                )}
+              />
+
               <Column
                 field="gravedadAPI"
                 header="Gravedad API"
-                // style={{ width: "20%" }}
                 editor={(options) => (
                   <InputNumber
                     value={options.value}
@@ -518,7 +707,6 @@ function ContratoForm({
               <Column
                 field="azufre"
                 header="Azufre"
-                // style={{ width: "20%" }}
                 editor={(options) => (
                   <InputNumber
                     value={options.value}
@@ -531,7 +719,6 @@ function ContratoForm({
               <Column
                 field="viscosidad"
                 header="Viscosidad"
-                // style={{ width: "20%" }}
                 editor={(options) => (
                   <InputNumber
                     value={options.value}
@@ -544,7 +731,6 @@ function ContratoForm({
               <Column
                 field="densidad"
                 header="Densidad"
-                // style={{ width: "20%" }}
                 editor={(options) => (
                   <InputNumber
                     value={options.value}
@@ -557,7 +743,6 @@ function ContratoForm({
               <Column
                 field="contenidoAgua"
                 header="Contenido de Agua"
-                // style={{ width: "20%" }}
                 editor={(options) => (
                   <InputNumber
                     value={options.value}
@@ -570,7 +755,6 @@ function ContratoForm({
               <Column
                 field="origen"
                 header="Origen"
-                // style={{ width: "20%" }}
                 editor={(options) => (
                   <InputText
                     value={options.value}
@@ -583,7 +767,6 @@ function ContratoForm({
               <Column
                 field="temperatura"
                 header="Temperatura"
-                // style={{ width: "20%" }}
                 editor={(options) => (
                   <InputNumber
                     value={options.value}
@@ -596,7 +779,6 @@ function ContratoForm({
               <Column
                 field="presion"
                 header="Presión"
-                // style={{ width: "20%" }}
                 editor={(options) => (
                   <InputNumber
                     value={options.value}
@@ -607,11 +789,7 @@ function ContratoForm({
                 )}
               />
 
-              <Column
-                body={actionBodyTemplate}
-                header="Acciones"
-                // style={{ width: "20%" }}
-              />
+              <Column body={actionBodyTemplate} header="Acciones" />
             </DataTable>
             <Button
               type="button"
@@ -644,6 +822,8 @@ function ContratoForm({
           <div className="col-12">
             <Button
               type="submit"
+              disabled={submitting} // Deshabilitar el botón mientras se envía
+              icon={submitting ? "pi pi-spinner pi-spin" : ""} // Mostrar ícono de carga
               label={contrato ? "Modificar contrato" : "Crear contrato"}
               className="w-auto mt-3"
             />

@@ -1,6 +1,6 @@
 "use client";
 
-import TorreDestilacionList from "@/components/torreDestilacionComponents/TorreDestilacionList";
+import TorreDestilacionList from "@/components/refineriaComponents/torreDestilacionComponents/TorreDestilacionList";
 
 function TorreDestilacion() {
   return (

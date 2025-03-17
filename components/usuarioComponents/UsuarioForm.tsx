@@ -28,6 +28,7 @@ const UsuarioForm = ({
 }: UsuarioFormProps) => {
   const toast = useRef<Toast | null>(null);
   const router = useRouter();
+  const [submitting, setSubmitting] = useState(false);
   const {
     register,
     handleSubmit,
@@ -60,6 +61,7 @@ const UsuarioForm = ({
     return index;
   };
   const onSubmit = async (data: FormData) => {
+    setSubmitting(true);
     try {
       if (usuario) {
         // Actualizar el usuario en el backend
@@ -270,6 +272,8 @@ const UsuarioForm = ({
               <div className="col-12">
                 <Button
                   type="submit"
+                  disabled={submitting} // Deshabilitar el botón mientras se envía
+                  icon={submitting ? "pi pi-spinner pi-spin" : ""} // Mostrar ícono de carga
                   label={usuario ? "Modificar Usuario" : "Crear Usuario"}
                   className="w-auto mt-3"
                 />

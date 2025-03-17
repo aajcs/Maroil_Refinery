@@ -1,6 +1,6 @@
 "use client";
 
-import ChequeoCalidadList from "@/components/chequeoCalidadComponents/ChequeoCalidadList";
+import ChequeoCalidadList from "@/components/refineriaComponents/chequeoCalidadComponents/ChequeoCalidadList";
 
 function ChequeoCalidad() {
   return (

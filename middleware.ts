@@ -98,7 +98,7 @@ export async function middleware(req: NextRequest) {
     nextUrl.pathname.startsWith(route.path)
   );
   if (route && !route.roles.includes(token?.role as string)) {
-    return NextResponse.redirect(new URL("/auth/access", nextUrl));
+    return NextResponse.redirect(new URL("/auth/accessasd", nextUrl));
   }
 
   return NextResponse.next();

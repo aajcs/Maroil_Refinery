@@ -17,7 +17,7 @@ const AppMenuRefineria = () => {
         {
           label: "Finanzas",
           icon: "pi pi-fw pi-image",
-          to: "/dashboard-sales",
+          to: "/refineria/dashboard-sales",
         },
       ],
     },
@@ -67,12 +67,12 @@ const AppMenuRefineria = () => {
           to: "/refineria/producto",
         },
         {
-          label: "ChequeoCalidad",
+          label: "Chequeo Calidad",
           icon: "pi pi-fw pi-plus",
           to: "/refineria/chequeo-calidad",
         },
         {
-          label: "ChequeoCantidad",
+          label: "Chequeo Cantidad",
           icon: "pi pi-fw pi-plus",
           to: "/refineria/chequeo-cantidad",
         },

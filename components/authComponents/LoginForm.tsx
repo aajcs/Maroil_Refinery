@@ -22,6 +22,7 @@ const LoginForm: Page = () => {
   const [error, setError] = useState("");
   const filledInput = layoutConfig.inputStyle === "filled";
   const { conectarSocket } = useSocket();
+  const [submitting, setSubmitting] = useState(false);
   const {
     register,
     handleSubmit,
@@ -31,6 +32,7 @@ const LoginForm: Page = () => {
   });
 
   const onSubmit = async (data: FormData) => {
+    setSubmitting(true);
     // console.log(data);
     const resAuth = await signIn("credentials", {
       redirect: false,
@@ -95,6 +97,8 @@ const LoginForm: Page = () => {
 
           <Button
             label="Iniciar Sesión"
+            disabled={submitting} // Deshabilitar el botón mientras se envía
+            icon={submitting ? "pi pi-spinner pi-spin" : ""} // Mostrar ícono de carga
             className="mb-4"
             type="submit"
           ></Button>

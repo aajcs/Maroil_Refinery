@@ -41,6 +41,7 @@ const ContactoForm = ({
   const { activeRefineria } = useRefineriaStore();
   const toast = useRef<Toast | null>(null);
 
+  const [submitting, setSubmitting] = useState(false);
   const {
     register,
     handleSubmit,
@@ -60,6 +61,7 @@ const ContactoForm = ({
   }, [contacto, setValue]);
 
   const onSubmit = async (data: FormData) => {
+    setSubmitting(true);
     try {
       if (contacto) {
         const updatedContacto = await updateContacto(contacto.id, {
@@ -89,6 +91,8 @@ const ContactoForm = ({
         "Error",
         error instanceof Error ? error.message : "Ocurrió un error inesperado"
       );
+    } finally {
+      setSubmitting(false); // Desactivar el estado de envío
     }
   };
 
@@ -249,6 +253,8 @@ const ContactoForm = ({
           <div className="col-12">
             <Button
               type="submit"
+              disabled={submitting} // Deshabilitar el botón mientras se envía
+              icon={submitting ? "pi pi-spinner pi-spin" : ""} // Mostrar ícono de carga
               label={contacto ? "Modificar contacto" : "Crear contacto"}
               className="w-auto mt-3"
             />
