@@ -595,7 +595,7 @@ const RecepcionForm = ({
             type="submit"
             disabled={submitting} // Deshabilitar el botón mientras se envía
             icon={submitting ? "pi pi-spinner pi-spin" : ""} // Mostrar ícono de carga
-            label={recepcion ? "Modificar Refinería" : "Crear Refinería"}
+            label={recepcion ? "Modificar Recepción" : "Crear Recepción"}
             className="w-auto mt-3"
           />
         </div>

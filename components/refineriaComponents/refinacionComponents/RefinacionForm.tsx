@@ -144,6 +144,7 @@ const RefinacionForm = ({
 
     if (sumaPorcentajes !== 100) {
       showToast("error", "Error", "La suma de los porcentajes debe ser 100%");
+      setSubmitting(false);
       return;
     }
 

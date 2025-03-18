@@ -71,7 +71,11 @@ function ContratoForm({
     control,
   } = useForm<FormData>({
     resolver: zodResolver(contratoSchema),
-    defaultValues: {},
+    defaultValues: {
+      condicionesPago: {
+        plazo: 0,
+      },
+    },
   });
 
   useEffect(() => {
