@@ -2,6 +2,7 @@ import React from "react";
 import { MathJax, MathJaxContext } from "better-react-mathjax";
 import { Contrato } from "@/libs/interfaces";
 import { formatDateSinAnoFH } from "@/utils/dateUtils";
+import ModeladoRefineriaContratosSalesCard from "./ModeladoRefineriaContratosSalesCard";
 
 interface Producto {
   producto: { id: string; nombre: string; color: string };
@@ -11,6 +12,8 @@ interface Producto {
   total: number;
   precioTransporte: number;
   totalTransporte: number;
+  brent: number;
+  convenio: number;
 }
 
 interface ModeladoRefineriaContratosSalesListProps {
@@ -22,6 +25,62 @@ const ModeladoRefineriaContratosSalesList = ({
   contratos,
   tipo,
 }: ModeladoRefineriaContratosSalesListProps) => {
+  const totalCantidad = contratos.reduce(
+    (acc, contrato) =>
+      acc +
+      contrato.productos.reduce((acc, item) => acc + (item.cantidad || 0), 0),
+    0
+  );
+  console.log("totalCantidad", totalCantidad);
+  const totalMontoTotal = contratos.reduce(
+    (acc, contrato) =>
+      acc +
+      contrato.productos.reduce((acc, item) => acc + (item.total || 0), 0),
+    0
+  );
+  console.log("totalMontoTotal", totalMontoTotal);
+  const totalMontoTransporte = contratos.reduce(
+    (acc, contrato) =>
+      acc +
+      contrato.productos.reduce(
+        (acc, item) => acc + (item.totalTransporte || 0),
+        0
+      ),
+    0
+  );
+  console.log("totalMontoTransporte", totalMontoTransporte);
+  const totalMontoPorBarril = contratos.reduce(
+    (acc, contrato) =>
+      acc +
+      contrato.productos.reduce(
+        (acc, item) => acc + (item.precioUnitario || 0),
+        0
+      ),
+    0
+  );
+  console.log("totalMontoPorBarril", totalMontoPorBarril);
+  const totalMontoPorBarrilTransporte = contratos.reduce(
+    (acc, contrato) =>
+      acc +
+      contrato.productos.reduce(
+        (acc, item) => acc + (item.precioTransporte || 0),
+        0
+      ),
+    0
+  );
+  console.log("totalMontoPorBarrilTransporte", totalMontoPorBarrilTransporte);
+  const totalMontoPorBarrilTotal = contratos.reduce(
+    (acc, contrato) =>
+      acc +
+      contrato.productos.reduce(
+        (acc, item) =>
+          acc + (item.precioUnitario || 0) + (item.precioTransporte || 0),
+        0
+      ),
+    0
+  );
+  console.log("totalMontoPorBarrilTotal", totalMontoPorBarrilTotal);
+
   return (
     <MathJaxContext>
       <div className="col-12">
@@ -32,168 +91,12 @@ const ModeladoRefineriaContratosSalesList = ({
             .map((contrato) => (
               <div
                 key={contrato.id}
-                className="col-12 md:col-6 lg:col-4 xl:col-3 p-2"
+                className="col-12 md:col-6 lg:col-4 xl:col-4 p-2"
               >
-                <div className="p-3 surface-card border-round shadow-2">
-                  <div className="flex justify-content-between align-items-start">
-                    <div className="flex flex-column">
-                      <span className="text-lg font-bold white-space-normal">
-                        {contrato.descripcion.toLocaleUpperCase()}
-                      </span>
-                      <span className="text-sm text-500 mt-1">
-                        {`(${contrato.idContacto.nombre})`}
-                      </span>
-                    </div>
-                    <div className="flex flex-column text-right">
-                      <span className="text-sm font-semibold">
-                        Nº: {contrato.numeroContrato}
-                      </span>
-                      <span className="text-xs text-green-500">
-                        Act-{formatDateSinAnoFH(contrato.updatedAt)}
-                      </span>
-                    </div>
-                  </div>
-                  <hr className="my-2" />
-                  <div className="text-sm">
-                    <span className="font-medium">Inicio:</span>{" "}
-                    {formatDateSinAnoFH(contrato.fechaInicio)}
-                    {" - "}
-                    <span className="font-medium">Fin:</span>{" "}
-                    {formatDateSinAnoFH(contrato.fechaFin)}
-                  </div>
-                  <hr className="my-2" />
-                  <div className="flex flex-column gap-2">
-                    {contrato.productos.map((item) => (
-                      <div
-                        key={item.producto.id}
-                        className="flex align-items-center gap-2"
-                      >
-                        <span className="font-bold min-w-8rem">
-                          {item.producto.nombre}
-                        </span>
-                        <div className="flex-grow-1">
-                          <div className="flex justify-content-between text-xs mt-1">
-                            <span>
-                              {item.cantidad.toLocaleString("de-DE")}Bbl
-                            </span>
-                            <span className="text-green-800">
-                              <MathJax>{`\\(${item.formula}\\)`}</MathJax>
-                            </span>
-                            <span className="text-red-800">
-                              {item.total.toLocaleString("de-DE", {
-                                style: "currency",
-                                currency: "USD",
-                              })}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  {tipo === "Compra" ? (
-                    <div className="flex flex-column gap-2">
-                      <div className="flex align-items-center gap-2">
-                        <span className="font-bold min-w-8rem">
-                          Cantidad de Barril{" "}
-                          {(() => {
-                            const totalCantidad = contrato.productos.reduce(
-                              (acc, item) => acc + (item.cantidad || 0),
-                              0
-                            );
-
-                            return `${totalCantidad.toLocaleString(
-                              "de-DE"
-                            )} Bbl`;
-                          })()}
-                        </span>
-                      </div>
-                      <div className="flex align-items-center gap-2">
-                        <span className="font-bold min-w-8rem">
-                          Monoto Total{" "}
-                          {(contrato.montoTotal || 0).toLocaleString("de-DE", {
-                            style: "currency",
-                            currency: "USD",
-                          })}
-                        </span>
-                      </div>
-                      <div className="flex align-items-center gap-2">
-                        <span className="font-bold min-w-8rem">
-                          Monoto Transporte{" "}
-                          {(contrato.montoTransporte || 0).toLocaleString(
-                            "de-DE",
-                            {
-                              style: "currency",
-                              currency: "USD",
-                            }
-                          )}
-                        </span>
-                      </div>
-                      <div className="flex align-items-center gap-2">
-                        <span className="font-bold min-w-8rem">
-                          Formula Brent-10(
-                          {(() => {
-                            const totalCantidad = contrato.productos.reduce(
-                              (acc, item) => acc + (item.cantidad || 0),
-                              0
-                            );
-                            const montoPorBarril =
-                              totalCantidad > 0
-                                ? (contrato.montoTotal ?? 0) / totalCantidad
-                                : 0;
-                            return montoPorBarril.toLocaleString("de-DE", {
-                              style: "currency",
-                              currency: "USD",
-                            });
-                          })()}
-                          )+ trans(
-                          {(() => {
-                            const totalCantidad = contrato.productos.reduce(
-                              (acc, item) => acc + (item.cantidad || 0),
-                              0
-                            );
-                            const montoPorBarril =
-                              totalCantidad > 0
-                                ? (contrato.montoTransporte ?? 0) /
-                                  totalCantidad
-                                : 0;
-                            return montoPorBarril.toLocaleString("de-DE", {
-                              style: "currency",
-                              currency: "USD",
-                            });
-                          })()}
-                          )
-                        </span>
-                      </div>
-                      <div className="flex align-items-center gap-2">
-                        <span className="font-bold min-w-8rem">
-                          Monto Por Barril{" "}
-                          {(() => {
-                            const totalCantidad = contrato.productos.reduce(
-                              (acc, item) => acc + (item.cantidad || 0),
-                              0
-                            );
-                            const montoPorBarril =
-                              totalCantidad > 0
-                                ? ((contrato.montoTransporte || 0) +
-                                    (contrato.montoTotal || 0)) /
-                                  totalCantidad
-                                : 0;
-                            return montoPorBarril.toLocaleString("de-DE", {
-                              style: "currency",
-                              currency: "USD",
-                            });
-                          })()}
-                        </span>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="flex flex-column gap-2">
-                      <div className="flex align-items-center gap-2">
-                        <h1>en construccion!!!✌🏻</h1>
-                      </div>
-                    </div>
-                  )}
-                </div>
+                <ModeladoRefineriaContratosSalesCard
+                  contrato={contrato}
+                  tipo={tipo}
+                />
               </div>
             ))}
         </div>

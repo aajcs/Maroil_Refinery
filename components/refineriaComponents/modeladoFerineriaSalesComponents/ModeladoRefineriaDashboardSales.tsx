@@ -18,17 +18,19 @@ const ModeladoRefineriaDashboardSales = () => {
   const recepcionesPorContrato = useMemo(() => {
     return contratos.map((contrato) => {
       const productos = contrato.idItems.map((item: any) => {
-        const formula = `Brent${item.brent}+(${item.convenio})`;
+        const formula = `Cantidad(${item.cantidad}) * [Brent(${item.brent}) + Conv(${item.convenio}) + Trans(${item.montoTransporte})]`;
         console.log(JSON.stringify(item, null, 2));
 
         return {
           producto: item.producto,
           cantidad: item.cantidad,
-          formula: formula,
+          brent: item.brent,
+          convenio: item.convenio,
+          precioTransporte: item.montoTransporte,
           precioUnitario: item.precioUnitario,
+          formula: formula,
           total: item.cantidad * item.precioUnitario,
-          precioTransporte: item.precioTransporte,
-          totalTransporte: item.cantidad * item.precioTransporte,
+          totalTransporte: item.cantidad * item.montoTransporte,
         };
       });
 
