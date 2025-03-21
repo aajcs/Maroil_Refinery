@@ -31,6 +31,7 @@ interface ProductoFormProps {
 }
 
 const estatusValues = ["true", "false"];
+const tipoMaterialValues = ["Materia Prima", "Derivado"];
 
 const ProductoForm = ({
   producto,
@@ -159,6 +160,24 @@ const ProductoForm = ({
             />
             {errors.color && (
               <small className="p-error">{errors.color.message}</small>
+            )}
+          </div>
+          <div className="field mb-4 col-12 md:col-6">
+            <label htmlFor="tipoMaterial" className="font-medium text-900">
+              Estado
+            </label>
+            <Dropdown
+              id="tipoMaterial"
+              value={watch("tipoMaterial")}
+              onChange={(e) => setValue("tipoMaterial", e.value)}
+              options={tipoMaterialValues}
+              placeholder="Seleccionar"
+              className={classNames("w-full", {
+                "p-invalid": errors.tipoMaterial,
+              })}
+            />
+            {errors.tipoMaterial && (
+              <small className="p-error">{errors.tipoMaterial.message}</small>
             )}
           </div>
 

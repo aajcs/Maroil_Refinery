@@ -151,24 +151,24 @@ const ContratoList = () => {
       <div className="orders-subtable">
         <h5>Items for {data.name}</h5>
         <DataTable value={data.idItems} responsiveLayout="scroll">
-          <Column field="producto.nombre" header="Producto" sortable />
-          <Column field="cantidad" header="Cantidad" sortable />
-          <Column field="precioUnitario" header="Precio Unitario" sortable />
+          <Column field="producto.nombre" header="Producto" />
+          <Column field="nombre" header="Tipo" />
+          <Column field="clasificacion" header="Clasificación" />
+          <Column field="gravedadAPI" header="Gravedad API" />
+          <Column field="azufre" header="Azufre" />
+
+          <Column field="contenidoAgua" header="Contenido de Agua" />
+          <Column field="flashPoint" header="Flash Point" />
+
+          <Column field="cantidad" header="Cantidad" />
+          <Column field="precioUnitario" header="Precio Unitario" />
           <Column
             header="Total"
             body={(rowData: any) => rowData.cantidad * rowData.precioUnitario}
           />
-          <Column field="brent" header="Brent" sortable />
-          <Column field="convenio" header="Convenio" sortable />
-          <Column field="montoTransporte" header="Monto Transporte" sortable />
-          <Column field="gravedadAPI" header="Gravedad API" sortable />
-          <Column field="azufre" header="Azufre" sortable />
-          <Column field="viscosidad" header="Viscosidad" sortable />
-          <Column field="densidad" header="Densidad" sortable />
-          <Column field="contenidoAgua" header="Contenido de Agua" sortable />
-          <Column field="origen" header="Origen" sortable />
-          <Column field="temperatura" header="Temperatura" sortable />
-          <Column field="presion" header="Presión" sortable />
+          <Column field="brent" header="Brent" />
+          <Column field="convenio" header="Convenio" />
+          <Column field="montoTransporte" header="Monto Transporte" />
         </DataTable>
       </div>
     );

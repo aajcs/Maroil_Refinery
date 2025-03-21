@@ -62,15 +62,13 @@ export interface ContratoItem {
   convenio?: number;
   montoTransporte?: number;
 
-  // Datos de calidad
-  gravedadAPI?: number;
-  azufre?: number;
-  viscosidad?: number;
-  densidad?: number;
-  contenidoAgua?: number;
-  origen?: string;
-  temperatura?: number;
-  presion?: number;
+  // Datos de calidad del producto
+  nombre: string; // El nombre del crudo es obligatorio
+  clasificacion?: string; // La clasificación es opcional
+  gravedadAPI?: number; // Gravedad API del producto (opcional, debe ser no negativa)
+  azufre?: number; // Porcentaje de azufre (opcional, debe ser no negativo)
+  contenidoAgua?: number; // Contenido de agua en porcentaje (opcional, debe ser no negativo)
+  flashPoint?: number; // Flashpoint del producto (opcional)
 
   // Estado y lógica de eliminado
   estado?: string; // "true" | "false" o como se maneje en tu app
@@ -235,7 +233,12 @@ export interface Producto {
     nombre: string;
     id: string;
   };
-
+  idTipoProducto: [
+    {
+      nombre: string;
+      id: string;
+    }
+  ];
   nombre: string;
   posicion: number;
   color: string;
@@ -361,4 +364,23 @@ export interface Derivado {
   };
   porcentaje: number;
   _id: string;
+}
+export interface TipoProducto {
+  _id: string;
+  idRefineria: {
+    nombre: string;
+    id: string;
+  };
+  idProducto: Producto[];
+  nombre: string;
+  clasificacion: string;
+  gravedadAPI: number;
+  azufre: number;
+  contenidoAgua: number;
+  flashPoint: number;
+  estado: string; // Puede ser "true" o "false", considera usar un boolean si es posible
+  eliminado: boolean;
+  createdAt: string;
+  updatedAt: string;
+  id: string;
 }

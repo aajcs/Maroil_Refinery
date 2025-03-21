@@ -9,62 +9,69 @@ import { InputText } from "primereact/inputtext";
 import { Toast } from "primereact/toast";
 import { Dialog } from "primereact/dialog";
 import { useRefineriaStore } from "@/store/refineriaStore";
-import ProductoForm from "./ProductoForm";
-import { Producto } from "@/libs/interfaces";
+import TipoProductoForm from "./TipoProductoForm";
 import { formatDateFH } from "@/utils/dateUtils";
-import { deleteProducto, getProductos } from "@/app/api/productoService";
 
-const ProductoList = () => {
+import { TipoProducto } from "@/libs/interfaces";
+import {
+  deleteTipoProducto,
+  getTipoProductos,
+} from "@/app/api/tipoProductoService";
+
+const TipoProductoList = () => {
   const { activeRefineria } = useRefineriaStore();
-  const [productos, setProductos] = useState<Producto[]>([]);
-  const [producto, setProducto] = useState<Producto | null>(null);
+  const [tipoProductos, setTipoProductos] = useState<TipoProducto[]>([]);
+  const [tipoProducto, setTipoProducto] = useState<TipoProducto | null>(null);
   const [filters, setFilters] = useState<DataTableFilterMeta>({});
   const [loading, setLoading] = useState(true);
   const [globalFilterValue, setGlobalFilterValue] = useState("");
   const [deleteProductDialog, setDeleteProductDialog] = useState(false);
-  const [productoFormDialog, setProductoFormDialog] = useState(false);
-  console.log(productos);
+  const [tipoProductoFormDialog, setTipoProductoFormDialog] = useState(false);
+
   const router = useRouter();
   const dt = useRef(null);
   const toast = useRef<Toast | null>(null);
 
   useEffect(() => {
-    fetchProductos();
+    fetchTipoProductos();
   }, [activeRefineria]);
 
-  const fetchProductos = async () => {
+  const fetchTipoProductos = async () => {
     try {
-      const productosDB = await getProductos();
-      if (productosDB && Array.isArray(productosDB.productos)) {
-        const filteredProductos = productosDB.productos.filter(
-          (producto: Producto) =>
-            producto.idRefineria.id === activeRefineria?.id
+      const tipoProductosDB = await getTipoProductos();
+      console.log(tipoProductosDB);
+      if (tipoProductosDB && Array.isArray(tipoProductosDB.tipoProductos)) {
+        const filteredTipoProductos = tipoProductosDB.tipoProductos.filter(
+          (tipoProducto: TipoProducto) =>
+            tipoProducto.idRefineria.id === activeRefineria?.id
         );
-        setProductos(filteredProductos);
+        setTipoProductos(filteredTipoProductos);
       } else {
-        console.error("La estructura de productosDB no es la esperada");
+        console.error("La estructura de tipoProductosDB no es la esperada");
       }
     } catch (error) {
-      console.error("Error al obtener los productos:", error);
+      console.error("Error al obtener los tipoProductos:", error);
     } finally {
       setLoading(false);
     }
   };
 
   const hideDeleteProductDialog = () => setDeleteProductDialog(false);
-  const hideProductoFormDialog = () => {
-    setProducto(null);
-    setProductoFormDialog(false);
+  const hideTipoProductoFormDialog = () => {
+    setTipoProducto(null);
+    setTipoProductoFormDialog(false);
   };
 
-  const handleDeleteProducto = async () => {
-    if (producto?.id) {
-      await deleteProducto(producto.id);
-      setProductos(productos.filter((val) => val.id !== producto.id));
+  const handleDeleteTipoProducto = async () => {
+    if (tipoProducto?.id) {
+      await deleteTipoProducto(tipoProducto.id);
+      setTipoProductos(
+        tipoProductos.filter((val) => val.id !== tipoProducto.id)
+      );
       toast.current?.show({
         severity: "success",
         summary: "Éxito",
-        detail: "Producto Eliminada",
+        detail: "TipoProducto Eliminada",
         life: 3000,
       });
     } else {
@@ -101,12 +108,12 @@ const ProductoList = () => {
         label="Agregar Nuevo"
         outlined
         className="w-full sm:w-auto flex-order-0 sm:flex-order-1"
-        onClick={() => setProductoFormDialog(true)}
+        onClick={() => setTipoProductoFormDialog(true)}
       />
     </div>
   );
 
-  const actionBodyTemplate = (rowData: Producto) => (
+  const actionBodyTemplate = (rowData: TipoProducto) => (
     <>
       <Button
         icon="pi pi-pencil"
@@ -114,8 +121,8 @@ const ProductoList = () => {
         severity="success"
         className="mr-2"
         onClick={() => {
-          setProducto(rowData);
-          setProductoFormDialog(true);
+          setTipoProducto(rowData);
+          setTipoProductoFormDialog(true);
         }}
       />
       <Button
@@ -123,7 +130,7 @@ const ProductoList = () => {
         severity="warning"
         rounded
         onClick={() => {
-          setProducto(rowData);
+          setTipoProducto(rowData);
           setDeleteProductDialog(true);
         }}
       />
@@ -142,7 +149,7 @@ const ProductoList = () => {
       <Toast ref={toast} />
       <DataTable
         ref={dt}
-        value={productos}
+        value={tipoProductos}
         header={renderHeader()}
         paginator
         rows={10}
@@ -151,49 +158,60 @@ const ProductoList = () => {
         rowsPerPageOptions={[10, 25, 50]}
         filters={filters}
         loading={loading}
-        emptyMessage="No hay productos disponibles"
+        emptyMessage="No hay tipoProductos disponibles"
       >
         <Column body={actionBodyTemplate} headerStyle={{ minWidth: "10rem" }} />
+        <Column field="idProducto.nombre" header="Producto" sortable />
         <Column field="nombre" header="Nombre" sortable />
-        <Column field="posicion" header="Posición" sortable />
         <Column
-          field="color"
-          header="Color"
-          body={(rowData: Producto) => (
-            <div className="flex items-center">
-              <div
-                className=" h-6 rounded-full mr-2"
-                style={{ backgroundColor: `#${rowData.color}` }}
-              >
-                <span>{rowData.color}</span>
-              </div>
-            </div>
-          )}
-        />
-
-        <Column field="tipoMaterial" header="Tipo de Material" sortable />
-        <Column
-          field="idTipoProducto"
-          header="Tipo de Producto"
-          body={(rowData: Producto) =>
-            rowData.idTipoProducto
-              ?.map((tipoProducto: { nombre: string }) => tipoProducto.nombre)
-              .join(", ") || "N/A"
-          }
+          field="clasificacion"
+          header="Clasificación"
           sortable
+          style={{ width: "20%" }}
         />
-
+        <Column
+          field="gravedadAPI"
+          header="Gravedad API"
+          sortable
+          style={{ width: "15%" }}
+          body={(rowData: TipoProducto) =>
+            rowData.gravedadAPI?.toFixed(2) || "N/A"
+          }
+        />
+        <Column
+          field="azufre"
+          header="Azufre (%)"
+          sortable
+          style={{ width: "15%" }}
+          body={(rowData: TipoProducto) => rowData.azufre?.toFixed(2) || "N/A"}
+        />
+        <Column
+          field="contenidoAgua"
+          header="Contenido de Agua (%)"
+          sortable
+          style={{ width: "20%" }}
+          body={(rowData: TipoProducto) =>
+            rowData.contenidoAgua?.toFixed(2) || "N/A"
+          }
+        />
+        <Column
+          field="flashPoint"
+          header="Flash Point"
+          sortable
+          style={{ width: "15%" }}
+          body={(rowData: TipoProducto) => rowData.flashPoint || "N/A"}
+        />
         <Column field="estado" header="Estado" sortable />
         <Column
           field="createdAt"
           header="Fecha de Creación"
-          body={(rowData: Producto) => formatDateFH(rowData.createdAt)}
+          body={(rowData: TipoProducto) => formatDateFH(rowData.createdAt)}
           sortable
         />
         <Column
           field="updatedAt"
           header="Última Actualización"
-          body={(rowData: Producto) => formatDateFH(rowData.updatedAt)}
+          body={(rowData: TipoProducto) => formatDateFH(rowData.updatedAt)}
           sortable
         />
       </DataTable>
@@ -215,7 +233,7 @@ const ProductoList = () => {
               label="Sí"
               icon="pi pi-check"
               text
-              onClick={handleDeleteProducto}
+              onClick={handleDeleteTipoProducto}
             />
           </>
         }
@@ -226,27 +244,27 @@ const ProductoList = () => {
             className="pi pi-exclamation-triangle mr-3"
             style={{ fontSize: "2rem" }}
           />
-          {producto && (
+          {tipoProducto && (
             <span>
-              ¿Estás seguro de que deseas eliminar <b>{producto.nombre}</b>?
+              ¿Estás seguro de que deseas eliminar <b>{tipoProducto.nombre}</b>?
             </span>
           )}
         </div>
       </Dialog>
 
       <Dialog
-        visible={productoFormDialog}
+        visible={tipoProductoFormDialog}
         style={{ width: "850px" }}
-        header={`${producto ? "Editar" : "Agregar"} Producto`}
+        header={`${tipoProducto ? "Editar" : "Agregar"} TipoProducto`}
         modal
-        onHide={hideProductoFormDialog}
+        onHide={hideTipoProductoFormDialog}
       >
-        <ProductoForm
-          producto={producto}
-          hideProductoFormDialog={hideProductoFormDialog}
-          productos={productos}
-          setProductos={setProductos}
-          setProducto={setProducto}
+        <TipoProductoForm
+          tipoProducto={tipoProducto}
+          hideTipoProductoFormDialog={hideTipoProductoFormDialog}
+          tipoProductos={tipoProductos}
+          setTipoProductos={setTipoProductos}
+          setTipoProducto={setTipoProducto}
           showToast={showToast}
         />
       </Dialog>
@@ -254,4 +272,4 @@ const ProductoList = () => {
   );
 };
 
-export default ProductoList;
+export default TipoProductoList;

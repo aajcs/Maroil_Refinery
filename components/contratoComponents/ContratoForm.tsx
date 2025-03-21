@@ -148,25 +148,16 @@ function ContratoForm({
       setSubmitting(false); // Desactivar el estado de envío
     }
   };
-
   const addItem = () => {
     setItems([
       ...items,
       {
-        producto: "",
-        cantidad: 0,
-        brent: 0,
-        convenio: 0,
-        precioUnitario: 0,
-        montoTransporte: 0,
-        gravedadAPI: 0,
-        azufre: 0,
-        viscosidad: 0,
-        densidad: 0,
-        contenido: 0,
-        origen: "",
-        temperatura: 0,
-        presion: 0,
+        nombre: "", // El nombre del crudo es obligatorio
+        // clasificacion: undefined, // La clasificación es opcional
+        gravedadAPI: 0, // Gravedad API del producto (opcional, debe ser no negativa)
+        azufre: 0, // Porcentaje de azufre (opcional, debe ser no negativo)
+        contenidoAgua: 0, // Contenido de agua en porcentaje (opcional, debe ser no negativo)
+        flashPoint: 0, // Flashpoint del producto (opcional)
       },
     ]);
   };
@@ -509,6 +500,80 @@ function ContratoForm({
                 }}
               />
               <Column
+                field="nombre"
+                header="Tipo"
+                editor={(options) => (
+                  <InputText
+                    value={options.value}
+                    onChange={(e) =>
+                      updateItem(options.rowIndex, "origen", e.target.value)
+                    }
+                  />
+                )}
+              />
+              <Column
+                field="clasificacion"
+                header="Clasificación"
+                editor={(options) => (
+                  <InputText
+                    value={options.value}
+                    onChange={(e) =>
+                      updateItem(options.rowIndex, "origen", e.target.value)
+                    }
+                  />
+                )}
+              />
+              <Column
+                field="gravedadAPI"
+                header="Gravedad API"
+                editor={(options) => (
+                  <InputNumber
+                    value={options.value}
+                    onValueChange={(e) =>
+                      updateItem(options.rowIndex, "gravedadAPI", e.value)
+                    }
+                  />
+                )}
+              />
+              <Column
+                field="azufre"
+                header="Azufre"
+                editor={(options) => (
+                  <InputNumber
+                    value={options.value}
+                    onValueChange={(e) =>
+                      updateItem(options.rowIndex, "azufre", e.value)
+                    }
+                  />
+                )}
+              />
+
+              <Column
+                field="contenidoAgua"
+                header="Contenido de Agua"
+                editor={(options) => (
+                  <InputNumber
+                    value={options.value}
+                    onValueChange={(e) =>
+                      updateItem(options.rowIndex, "contenidoAgua", e.value)
+                    }
+                  />
+                )}
+              />
+
+              <Column
+                field="flashPoint"
+                header="Flash Point"
+                editor={(options) => (
+                  <InputNumber
+                    value={options.value}
+                    onValueChange={(e) =>
+                      updateItem(options.rowIndex, "temperatura", e.value)
+                    }
+                  />
+                )}
+              />
+              <Column
                 field="cantidad"
                 header="Cantidad"
                 editor={(options) => (
@@ -691,103 +756,6 @@ function ContratoForm({
                     value={options.value}
                     onValueChange={(e) =>
                       updateItem(options.rowIndex, "montoTransporte", e.value)
-                    }
-                  />
-                )}
-              />
-
-              <Column
-                field="gravedadAPI"
-                header="Gravedad API"
-                editor={(options) => (
-                  <InputNumber
-                    value={options.value}
-                    onValueChange={(e) =>
-                      updateItem(options.rowIndex, "gravedadAPI", e.value)
-                    }
-                  />
-                )}
-              />
-              <Column
-                field="azufre"
-                header="Azufre"
-                editor={(options) => (
-                  <InputNumber
-                    value={options.value}
-                    onValueChange={(e) =>
-                      updateItem(options.rowIndex, "azufre", e.value)
-                    }
-                  />
-                )}
-              />
-              <Column
-                field="viscosidad"
-                header="Viscosidad"
-                editor={(options) => (
-                  <InputNumber
-                    value={options.value}
-                    onValueChange={(e) =>
-                      updateItem(options.rowIndex, "viscosidad", e.value)
-                    }
-                  />
-                )}
-              />
-              <Column
-                field="densidad"
-                header="Densidad"
-                editor={(options) => (
-                  <InputNumber
-                    value={options.value}
-                    onValueChange={(e) =>
-                      updateItem(options.rowIndex, "densidad", e.value)
-                    }
-                  />
-                )}
-              />
-              <Column
-                field="contenidoAgua"
-                header="Contenido de Agua"
-                editor={(options) => (
-                  <InputNumber
-                    value={options.value}
-                    onValueChange={(e) =>
-                      updateItem(options.rowIndex, "contenidoAgua", e.value)
-                    }
-                  />
-                )}
-              />
-              <Column
-                field="origen"
-                header="Origen"
-                editor={(options) => (
-                  <InputText
-                    value={options.value}
-                    onChange={(e) =>
-                      updateItem(options.rowIndex, "origen", e.target.value)
-                    }
-                  />
-                )}
-              />
-              <Column
-                field="temperatura"
-                header="Temperatura"
-                editor={(options) => (
-                  <InputNumber
-                    value={options.value}
-                    onValueChange={(e) =>
-                      updateItem(options.rowIndex, "temperatura", e.value)
-                    }
-                  />
-                )}
-              />
-              <Column
-                field="presion"
-                header="Presión"
-                editor={(options) => (
-                  <InputNumber
-                    value={options.value}
-                    onValueChange={(e) =>
-                      updateItem(options.rowIndex, "presion", e.value)
                     }
                   />
                 )}
