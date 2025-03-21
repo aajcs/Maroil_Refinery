@@ -7,6 +7,8 @@ import {
   Contrato,
   Refinacion,
   Producto,
+  TipoProducto,
+  Contacto,
 } from "@/libs/interfaces";
 import { getTanques } from "@/app/api/tanqueService";
 import { getTorresDestilacion } from "@/app/api/torreDestilacionService";
@@ -15,6 +17,8 @@ import { getRecepcions } from "@/app/api/recepcionService";
 import { getContratos } from "@/app/api/contratoService";
 import { getRefinacions } from "@/app/api/refinacionService";
 import { getProductos } from "@/app/api/productoService";
+import { getTipoProductos } from "@/app/api/tipoProductoService";
+import { getContactos } from "@/app/api/contactoService";
 
 export const useRefineryData = (
   activeRefineriaId: string,
@@ -30,6 +34,8 @@ export const useRefineryData = (
   const [loading, setLoading] = useState(true);
   const [refinacions, setRefinacions] = useState<Refinacion[]>([]);
   const [productos, setProductos] = useState<Producto[]>([]);
+  const [tipoProductos, setTipoProductos] = useState<TipoProducto[]>([]);
+  const [contactos, setContactos] = useState<Contacto[]>([]);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -42,6 +48,8 @@ export const useRefineryData = (
         contratosDB,
         refinacionDB,
         productosDB,
+        tipoProductosDB,
+        contactosDB,
       ] = await Promise.all([
         getTanques(),
         getTorresDestilacion(),
@@ -50,6 +58,8 @@ export const useRefineryData = (
         getContratos(),
         getRefinacions(),
         getProductos(),
+        getTipoProductos(),
+        getContactos(),
       ]);
 
       const filteredTanques =
@@ -96,6 +106,16 @@ export const useRefineryData = (
         productosDB?.productos?.filter(
           (producto: Producto) => producto.idRefineria?.id === activeRefineriaId
         ) || [];
+
+      const filterdTipoProductos =
+        tipoProductosDB?.tipoProductos?.filter(
+          (tipoProducto: TipoProducto) =>
+            tipoProducto.idRefineria?.id === activeRefineriaId
+        ) || [];
+      const filteredContactos =
+        contactosDB?.contactos?.filter(
+          (contacto: Contacto) => contacto.idRefineria?.id === activeRefineriaId
+        ) || [];
       setTanques(filteredTanques);
       setTorresDestilacion(filteredTorresDestilacion);
       setLineaRecepcions(filteredLineaRecepcions);
@@ -103,6 +123,8 @@ export const useRefineryData = (
       setContratos(filteredContratos);
       setRefinacions(filteredRefinacion);
       setProductos(filteredPorducto);
+      setTipoProductos(filterdTipoProductos);
+      setContactos(filteredContactos);
     } catch (error) {
       console.error("Error al obtener los datos:", error);
     } finally {
@@ -144,6 +166,8 @@ export const useRefineryData = (
     contratos,
     refinacions,
     productos,
+    tipoProductos,
+    contactos,
     loading,
   };
 };

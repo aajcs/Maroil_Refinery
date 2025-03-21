@@ -18,6 +18,7 @@ import { getContactos } from "@/app/api/contactoService";
 import { Calendar } from "primereact/calendar";
 import { Contacto } from "@/libs/interfaces";
 import { useRefineryData } from "@/hooks/useRefineryData";
+import { ProgressSpinner } from "primereact/progressspinner";
 
 type FormData = z.infer<typeof contratoSchema>;
 
@@ -56,11 +57,12 @@ function ContratoForm({
   showToast,
 }: ContratoFormProps) {
   const { activeRefineria } = useRefineriaStore();
-  const { productos } = useRefineryData(activeRefineria?.id || "");
+  const { productos, tipoProductos, contactos, loading } = useRefineryData(
+    activeRefineria?.id || ""
+  );
   const toast = useRef<Toast | null>(null);
   const [items, setItems] = useState(contrato?.idItems || []);
-  const [contactos, setContactos] = useState<Contacto[]>([]);
-  const [loading, setLoading] = useState(true);
+
   const [submitting, setSubmitting] = useState(false);
   const {
     register,
@@ -85,28 +87,7 @@ function ContratoForm({
       );
     }
   }, [contrato, setValue]);
-  useEffect(() => {
-    fetchContactos();
-  }, [contrato, setValue]);
 
-  const fetchContactos = async () => {
-    try {
-      const contactosDB = await getContactos();
-      if (contactosDB && Array.isArray(contactosDB.contactos)) {
-        const filteredContactos = contactosDB.contactos.filter(
-          (contacto: Contacto) =>
-            contacto.idRefineria.id === activeRefineria?.id
-        );
-        setContactos(filteredContactos);
-      } else {
-        console.error("La estructura de contactosDB no es la esperada");
-      }
-    } catch (error) {
-      console.error("Error al obtener los contactos:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
   const onSubmit = async (data: FormData) => {
     setSubmitting(true);
     try {
@@ -158,6 +139,11 @@ function ContratoForm({
         azufre: 0, // Porcentaje de azufre (opcional, debe ser no negativo)
         contenidoAgua: 0, // Contenido de agua en porcentaje (opcional, debe ser no negativo)
         flashPoint: 0, // Flashpoint del producto (opcional)
+        cantidad: 0, // Cantidad de producto (opcional, debe ser no negativa)
+        brent: 0, // Precio de Brent (opcional, debe ser no negativo)
+        convenio: 0, // Precio de convenio (opcional, debe ser no negativo)
+        precioUnitario: 0, // Precio unitario (opcional, debe ser no negativo)
+        montoTransporte: 0, // Monto de transporte (opcional, debe ser no negativo)
       },
     ]);
   };
@@ -218,6 +204,7 @@ function ContratoForm({
           //   "p-invalid": errors.idProducto?.nombre,
           // })}
         />
+
         {/* <Dropdown
           value={options.value}
           options={productos}
@@ -240,6 +227,79 @@ function ContratoForm({
       </>
     );
   };
+  const idTipoProductoEditor = (options: ColumnEditorOptions) => {
+    const onChange = (e: DropdownChangeEvent) => {
+      options.editorCallback!(e.value);
+      updateRowDataTipoProducto(options, e.value);
+    };
+
+    return (
+      <Dropdown
+        id="idTipoProducto.id"
+        value={options.value}
+        onChange={onChange}
+        options={tipoProductos.map((tipoProducto) => ({
+          label: tipoProducto.nombre,
+          value: {
+            id: tipoProducto.id,
+            _id: tipoProducto.id,
+            nombre: tipoProducto.nombre,
+          },
+        }))}
+        placeholder="Seleccionar un tipo producto"
+      />
+    );
+  };
+
+  const updateRowDataTipoProducto = (
+    options: ColumnEditorOptions,
+    tipoProductoValue: any
+  ) => {
+    const caracteristicasTipoProducto = tipoProductos.find(
+      (tipoProducto) => tipoProducto.id === tipoProductoValue?.id
+    );
+
+    // // Actualizar directamente el rowData
+    options.rowData.idTipoProducto = tipoProductoValue;
+    options.rowData.clasificacion =
+      caracteristicasTipoProducto?.clasificacion || "";
+    options.rowData.gravedadAPI = caracteristicasTipoProducto?.gravedadAPI || 0;
+    options.rowData.azufre = caracteristicasTipoProducto?.azufre || 0;
+    options.rowData.contenidoAgua =
+      caracteristicasTipoProducto?.contenidoAgua || 0;
+    options.rowData.flashPoint = caracteristicasTipoProducto?.flashPoint || 0;
+
+    setItems(() =>
+      items.map((item: any, index: number) => {
+        if (index === options.rowIndex) {
+          return {
+            ...item,
+            idTipoProducto: tipoProductoValue,
+            clasificacion: caracteristicasTipoProducto?.clasificacion || "",
+            gravedadAPI: caracteristicasTipoProducto?.gravedadAPI || 0,
+            azufre: caracteristicasTipoProducto?.azufre || 0,
+            contenidoAgua: caracteristicasTipoProducto?.contenidoAgua || 0,
+            flashPoint: caracteristicasTipoProducto?.flashPoint || 0,
+          };
+        }
+        return item;
+      })
+    );
+
+    // Actualizar el estado de items para que la tabla se re-renderice
+    // setItems((prevItems: any) => {
+    //   const newItems = [...prevItems];
+    //   newItems[options.rowIndex] = { ...options.rowData }; // Crear una nueva referencia para activar la re-renderización
+    //   return newItems;
+    // });
+  };
+  if (loading) {
+    return (
+      <div className="flex justify-content-center align-items-center h-screen">
+        <ProgressSpinner />
+      </div>
+    );
+  }
   console.log(watch());
   console.log(errors);
   return (
@@ -500,17 +560,27 @@ function ContratoForm({
                 }}
               />
               <Column
-                field="nombre"
-                header="Tipo"
-                editor={(options) => (
-                  <InputText
-                    value={options.value}
-                    onChange={(e) =>
-                      updateItem(options.rowIndex, "origen", e.target.value)
-                    }
-                  />
-                )}
+                field="idTipoProducto.nombre"
+                header="Tipo de Producto"
+                editor={(options) => idTipoProductoEditor(options)}
+                onCellEditComplete={(e) => {
+                  const {
+                    rowData,
+                    newValue,
+                    rowIndex,
+                    originalEvent: event,
+                  } = e;
+                  if (!newValue || !newValue.id) {
+                    event.preventDefault();
+                    return;
+                  }
+                  rowData.idTipoProducto = newValue;
+                  const updated = [...items];
+                  updated[rowIndex].idTipoProducto = newValue;
+                  setItems(updated);
+                }}
               />
+
               <Column
                 field="clasificacion"
                 header="Clasificación"
@@ -518,7 +588,11 @@ function ContratoForm({
                   <InputText
                     value={options.value}
                     onChange={(e) =>
-                      updateItem(options.rowIndex, "origen", e.target.value)
+                      updateItem(
+                        options.rowIndex,
+                        "clasificacion",
+                        e.target.value
+                      )
                     }
                   />
                 )}
@@ -568,7 +642,7 @@ function ContratoForm({
                   <InputNumber
                     value={options.value}
                     onValueChange={(e) =>
-                      updateItem(options.rowIndex, "temperatura", e.value)
+                      updateItem(options.rowIndex, "flashPoint", e.value)
                     }
                   />
                 )}

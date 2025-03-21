@@ -39,7 +39,6 @@ const TipoProductoList = () => {
   const fetchTipoProductos = async () => {
     try {
       const tipoProductosDB = await getTipoProductos();
-      console.log(tipoProductosDB);
       if (tipoProductosDB && Array.isArray(tipoProductosDB.tipoProductos)) {
         const filteredTipoProductos = tipoProductosDB.tipoProductos.filter(
           (tipoProducto: TipoProducto) =>

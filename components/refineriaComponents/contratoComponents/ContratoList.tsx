@@ -152,7 +152,7 @@ const ContratoList = () => {
         <h5>Items for {data.name}</h5>
         <DataTable value={data.idItems} responsiveLayout="scroll">
           <Column field="producto.nombre" header="Producto" />
-          <Column field="nombre" header="Tipo" />
+          <Column field="idTipoProducto.nombre" header="Tipo de Producto" />
           <Column field="clasificacion" header="Clasificación" />
           <Column field="gravedadAPI" header="Gravedad API" />
           <Column field="azufre" header="Azufre" />

@@ -183,6 +183,10 @@ export const contratoSchema = object({
         nombre: string().min(1, "El nombre del producto es obligatorio"),
         id: string().min(1, "El ID del producto es obligatorio"),
       }),
+      ipTipoProducto: object({
+        nombre: string().min(1, "El nombre del producto es obligatorio"),
+        id: string().min(1, "El ID del producto es obligatorio"),
+      }).optional(),
 
       cantidad: number().min(0, "La cantidad debe ser un número no negativo"),
       precioUnitario: number().optional(),
@@ -194,7 +198,6 @@ export const contratoSchema = object({
         .optional(),
 
       // Características del producto
-      nombre: string().min(1, "El nombre del crudo es obligatorio"),
       clasificacion: string()
         .min(1, "La clasificación es obligatoria")
         .optional(),
@@ -228,7 +231,10 @@ export const contratoSchema = object({
         nombre: string().min(1, "El nombre del producto es obligatorio"),
         id: string().min(1, "El ID del producto es obligatorio"),
       }),
-
+      ipTipoProducto: object({
+        nombre: string().min(1, "El nombre del producto es obligatorio"),
+        id: string().min(1, "El ID del producto es obligatorio"),
+      }),
       cantidad: number().min(0, "La cantidad debe ser un número no negativo"),
       precioUnitario: number().min(
         0,
@@ -246,7 +252,6 @@ export const contratoSchema = object({
         .optional(),
 
       // Características del producto
-      nombre: string().min(1, "El nombre del crudo es obligatorio"),
       clasificacion: string()
         .min(1, "La clasificación es obligatoria")
         .optional(),

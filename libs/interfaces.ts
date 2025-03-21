@@ -64,6 +64,7 @@ export interface ContratoItem {
 
   // Datos de calidad del producto
   nombre: string; // El nombre del crudo es obligatorio
+  idContratoItem?: string; // ID del contrato asociado
   clasificacion?: string; // La clasificación es opcional
   gravedadAPI?: number; // Gravedad API del producto (opcional, debe ser no negativa)
   azufre?: number; // Porcentaje de azufre (opcional, debe ser no negativo)
