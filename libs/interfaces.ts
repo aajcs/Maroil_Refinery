@@ -357,6 +357,87 @@ export interface Refinacion {
   };
   numeroRefinacion: number;
 }
+export interface RefinacionSalida {
+  idRefineria: {
+    nombre: string;
+    id: string;
+  };
+  idRefinacion: {
+    idTorre: {
+      _id: string;
+      nombre: string;
+      id: string;
+    };
+    idProducto: {
+      _id: string;
+      nombre: string;
+      id: string;
+    };
+    cantidadTotal: number;
+    derivado: Array<{
+      idProducto: {
+        _id: string;
+        nombre: string;
+        id: string;
+      };
+      porcentaje: number;
+      _id: string;
+    }>;
+    numeroRefinacion: number;
+    id: string;
+  };
+  idTanque: {
+    _id: string;
+    nombre: string;
+    id: string;
+  };
+  cantidadTotal: number;
+  descripcion: string;
+  idChequeoCalidad: Array<{
+    _id: string;
+    idProducto: {
+      _id: string;
+      nombre: string;
+      id: string;
+    };
+    idTanque: {
+      _id: string;
+      nombre: string;
+      id: string;
+    };
+    gravedadAPI: number;
+    azufre: number;
+    contenidoAgua: number;
+    id: string;
+  }>;
+  idChequeoCantidad: Array<{
+    idProducto: {
+      _id: string;
+      nombre: string;
+      id: string;
+    };
+    idTanque: {
+      _id: string;
+      nombre: string;
+      id: string;
+    };
+    id: string;
+  }>;
+  idProducto: {
+    _id: string;
+    nombre: string;
+    id: string;
+  };
+  fechaFin: string;
+  operador: string;
+  estadoRefinacionSalida: string;
+  eliminado: boolean;
+  estado: string;
+  createdAt: string;
+  updatedAt: string;
+  id: string;
+  numeroRefinacionSalida: number;
+}
 export interface Derivado {
   idProducto: {
     _id: string;

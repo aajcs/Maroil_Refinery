@@ -571,6 +571,110 @@ export const refinacionSchema = object({
   id: string().optional(),
 });
 
+export const refinacionSalidaSchema = object({
+  idRefinacion: object({
+    idTorre: object({
+      _id: string().min(1, "El _id de la torre es obligatorio"),
+      nombre: string().min(1, "El nombre de la torre es obligatorio"),
+      id: string().min(1, "El ID de la torre es obligatorio"),
+    }),
+    idProducto: object({
+      _id: string().min(1, "El _id del producto es obligatorio"),
+      nombre: string().min(1, "El nombre del producto es obligatorio"),
+      id: string().min(1, "El ID del producto es obligatorio"),
+    }),
+    cantidadTotal: number().min(0, "La cantidad total debe ser no negativa"),
+    derivado: array(
+      object({
+        idProducto: object({
+          _id: string().min(1, "El _id del producto derivado es obligatorio"),
+          nombre: string().min(
+            1,
+            "El nombre del producto derivado es obligatorio"
+          ),
+          id: string().min(1, "El ID del producto derivado es obligatorio"),
+        }),
+        porcentaje: number().min(0, "El porcentaje debe ser no negativo"),
+        _id: string().min(1, "El _id del derivado es obligatorio"),
+      })
+    ).optional(),
+    numeroRefinacion: number().min(
+      0,
+      "El número de refinación debe ser no negativo"
+    ),
+    id: string().min(1, "El ID de la refinación es obligatorio"),
+  }),
+  idTanque: object({
+    _id: string().min(1, "El _id del tanque es obligatorio"),
+    nombre: string().min(1, "El nombre del tanque es obligatorio"),
+    id: string().min(1, "El ID del tanque es obligatorio"),
+  }),
+  cantidadTotal: number().min(0, "La cantidad debe ser un número no negativo"),
+  descripcion: string().min(1, "La descripción es obligatoria"),
+  idChequeoCalidad: array(
+    object({
+      _id: string().min(1, "El _id del chequeo de calidad es obligatorio"),
+      idProducto: object({
+        _id: string().min(1, "El _id del producto es obligatorio"),
+        nombre: string().min(1, "El nombre del producto es obligatorio"),
+        id: string().min(1, "El ID del producto es obligatorio"),
+      }),
+      idTanque: object({
+        _id: string().min(1, "El _id del tanque es obligatorio"),
+        nombre: string().min(1, "El nombre del tanque es obligatorio"),
+        id: string().min(1, "El ID del tanque es obligatorio"),
+      }),
+      gravedadAPI: number().min(
+        0,
+        "La gravedad API debe ser un número no negativo"
+      ),
+      azufre: number().min(
+        0,
+        "El porcentaje de azufre debe ser un número no negativo"
+      ),
+      contenidoAgua: number().min(
+        0,
+        "El contenido de agua debe ser un número no negativo"
+      ),
+      id: string().min(1, "El ID del chequeo de calidad es obligatorio"),
+    })
+  ).optional(),
+  idChequeoCantidad: array(
+    object({
+      idProducto: object({
+        _id: string().min(1, "El _id del producto es obligatorio"),
+        nombre: string().min(1, "El nombre del producto es obligatorio"),
+        id: string().min(1, "El ID del producto es obligatorio"),
+      }),
+      idTanque: object({
+        _id: string().min(1, "El _id del tanque es obligatorio"),
+        nombre: string().min(1, "El nombre del tanque es obligatorio"),
+        id: string().min(1, "El ID del tanque es obligatorio"),
+      }),
+      id: string().min(1, "El ID del chequeo de cantidad es obligatorio"),
+    })
+  ).optional(),
+  idProducto: object({
+    _id: string().min(1, "El _id del producto es obligatorio"),
+    nombre: string().min(1, "El nombre del producto es obligatorio"),
+    id: string().min(1, "El ID del producto es obligatorio"),
+  }),
+  fechaFin: union([string(), date()]).refine(
+    (val) => val !== "",
+    "La fecha de fin es obligatoria"
+  ),
+  operador: string().min(1, "El nombre del operador es obligatorio"),
+  estadoRefinacionSalida: string().min(
+    1,
+    "El estado de la refinación es obligatorio"
+  ),
+  eliminado: boolean().default(false),
+  estado: string().min(1, "El estado es obligatorio"),
+  createdAt: union([string(), date()]).optional(),
+  updatedAt: union([string(), date()]).optional(),
+  id: string().optional(),
+});
+
 export const tipoProductoSchema = object({
   _id: string().optional(),
   idRefineria: object({
