@@ -252,7 +252,7 @@ function ContratoForm({
   };
 
   const updateRowDataTipoProducto = (
-    options: ColumnEditorOptions,
+    options: { rowData: any; rowIndex: number },
     tipoProductoValue: any
   ) => {
     const caracteristicasTipoProducto = tipoProductos.find(
@@ -563,21 +563,25 @@ function ContratoForm({
                 field="idTipoProducto.nombre"
                 header="Tipo de Producto"
                 editor={(options) => idTipoProductoEditor(options)}
+                // onCellEditComplete={(e) => {
+                //   const {
+                //     rowData,
+                //     newValue,
+                //     rowIndex,
+                //     originalEvent: event,
+                //   } = e;
+                //   if (!newValue || !newValue.id) {
+                //     event.preventDefault();
+                //     return;
+                //   }
+                //   rowData.idTipoProducto = newValue;
+                //   const updated = [...items];
+                //   updated[rowIndex].idTipoProducto = newValue;
+                //   setItems(updated);
+                // }}
                 onCellEditComplete={(e) => {
-                  const {
-                    rowData,
-                    newValue,
-                    rowIndex,
-                    originalEvent: event,
-                  } = e;
-                  if (!newValue || !newValue.id) {
-                    event.preventDefault();
-                    return;
-                  }
-                  rowData.idTipoProducto = newValue;
-                  const updated = [...items];
-                  updated[rowIndex].idTipoProducto = newValue;
-                  setItems(updated);
+                  const { newValue, rowData, rowIndex } = e;
+                  updateRowDataTipoProducto({ rowData, rowIndex }, newValue);
                 }}
               />
 
