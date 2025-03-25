@@ -6,6 +6,7 @@ import { useRefineriaStore } from "@/store/refineriaStore";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { useMemo } from "react";
 import ModeladoRefineriaContratosSalesList from "./ModeladoRefineriaContratosSalesList";
+import SimulatorPage from "@/components/SimulatorPage";
 
 const ModeladoRefineriaDashboardSales = () => {
   const { activeRefineria } = useRefineriaStore();
@@ -50,14 +51,15 @@ const ModeladoRefineriaDashboardSales = () => {
   }
   return (
     <>
-      <ModeladoRefineriaContratosSalesList
+      <SimulatorPage />
+      {/* <ModeladoRefineriaContratosSalesList
         contratos={recepcionesPorContrato}
         tipo="Compra"
       />
       <ModeladoRefineriaContratosSalesList
         contratos={recepcionesPorContrato}
         tipo="Venta"
-      />
+      /> */}
     </>
   );
 };
