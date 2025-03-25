@@ -169,7 +169,7 @@ const RecepcionForm = ({
     toast.current?.show({ severity, summary, detail, life: 3000 });
   };
 
-  // console.log(errors);
+  console.log(errors);
   // console.log(JSON.stringify(watch("idContrato"), null, 2));
   // console.log(watch("idContrato"));
   if (loading) {

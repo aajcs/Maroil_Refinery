@@ -356,6 +356,7 @@ export interface Refinacion {
     id: string;
   };
   numeroRefinacion: number;
+  idRefinacionSalida: RefinacionSalida[];
 }
 export interface RefinacionSalida {
   idRefineria: {

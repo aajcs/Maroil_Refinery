@@ -236,7 +236,7 @@ const RefinacionSalidaList = () => {
 
         <Column
           field="estadoRefinacionSalida"
-          header="Estado Refinación"
+          header="Estado Refinación Salida"
           sortable
         />
         <Column field="estado" header="Estado" sortable />

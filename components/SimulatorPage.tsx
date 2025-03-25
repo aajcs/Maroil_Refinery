@@ -9,6 +9,7 @@ import {
   CrudeToProductsResults,
   ProductsToCrudeResults,
   SimulationResults,
+  Product,
 } from "@/types/simulador";
 
 export default function Home() {
@@ -18,7 +19,13 @@ export default function Home() {
   const handleCalculate = async (data: {
     crudeType: string;
     crudeAmount?: number;
-    desiredProducts?: Record<string, number>;
+    desiredProducts?: Record<Product, number>;
+    productPrices?: Record<Product, number>;
+    crudeCosts?: {
+      purchasePrice: number;
+      transportCost: number;
+      operationalCost: number;
+    };
   }) => {
     setIsLoading(true);
 
@@ -30,32 +37,31 @@ export default function Home() {
         // Modo Crudo → Derivados
         const calculation = calculateDerivatives(
           data.crudeType,
-          data.crudeAmount!
+          data.crudeAmount!,
+          data.productPrices,
+          data.crudeCosts
         );
         setResults(calculation as CrudeToProductsResults);
       } else {
         // Modo Derivados → Crudo
         const calculation = calculateRequiredCrude(
           data.crudeType,
-          data.desiredProducts!
+          data.desiredProducts!,
+          data.productPrices,
+          data.crudeCosts
         );
-        setResults(
-          calculation || {
-            error:
-              "No se pudo realizar el cálculo con los parámetros ingresados",
-          }
-        );
+        setResults((calculation as SimulationResults) || null);
       }
     } catch (error) {
       console.error("Error en el cálculo:", error);
-      setResults({ error: "Ocurrió un error al realizar los cálculos" });
+      setResults(null); // Clear results on error
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className=" bg-gray-100 py-8 px-4">
+    <div className="bg-gray-100 py-8 px-4">
       <div className="max-w-6xl mx-auto">
         <h1 className="text-2xl font-bold mb-6 text-center">
           Simulador de Refinería - Análisis de Rentabilidad

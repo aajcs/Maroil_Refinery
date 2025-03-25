@@ -1,6 +1,9 @@
-import { useState } from "react";
-import { CrudeOption } from "@/types/simulador";
-import { getCrudeOptions } from "@/demo/service/simuladorService";
+import { useState, useEffect, useMemo } from "react";
+import { CrudeOption, Product } from "@/types/simulador";
+import {
+  getCrudeOptions,
+  productPrices as defaultProductPrices,
+} from "@/demo/service/simuladorService";
 
 interface DesiredProducts {
   gas: number;
@@ -15,6 +18,12 @@ interface SimulatorFormProps {
     crudeType: string;
     crudeAmount?: number;
     desiredProducts?: DesiredProducts;
+    productPrices?: Record<Product, number>;
+    crudeCosts?: {
+      purchasePrice: number;
+      transportCost: number;
+      operationalCost: number;
+    };
   }) => void;
   isLoading: boolean;
 }
@@ -35,8 +44,41 @@ export default function SimulatorForm({
     mgo4: 0,
     mgo6: 0,
   });
+  const [editableProductPrices, setEditableProductPrices] =
+    useState<Record<Product, number>>(defaultProductPrices);
+  const [editableCrudeCosts, setEditableCrudeCosts] = useState({
+    purchasePrice: 0,
+    transportCost: 0,
+    operationalCost: 0,
+  });
+  const [showAdvancedSettings, setShowAdvancedSettings] = useState(false);
 
-  const crudeOptions: CrudeOption[] = getCrudeOptions();
+  // Memoriza la lista de crudos una sola vez
+  const memoCrudeOptions = useMemo(() => getCrudeOptions(), []);
+
+  // Luego úsala
+  const [crudeOptions] = useState<CrudeOption[]>(memoCrudeOptions);
+
+  useEffect(() => {
+    const selected = crudeOptions.find((option) => option.value === crudeType);
+    if (selected) {
+      // Solo actualiza si cambian valores
+      setEditableCrudeCosts((prev) => {
+        if (
+          prev.purchasePrice !== selected.purchasePrice ||
+          prev.transportCost !== selected.transportCost ||
+          prev.operationalCost !== selected.operationalCost
+        ) {
+          return {
+            purchasePrice: selected.purchasePrice,
+            transportCost: selected.transportCost,
+            operationalCost: selected.operationalCost,
+          };
+        }
+        return prev;
+      });
+    }
+  }, [crudeType, crudeOptions]);
 
   const handleProductChange = (
     product: keyof DesiredProducts,
@@ -48,12 +90,39 @@ export default function SimulatorForm({
     }));
   };
 
+  const handleProductPriceChange = (product: Product, value: string) => {
+    setEditableProductPrices((prev) => ({
+      ...prev,
+      [product]: parseFloat(value) || 0,
+    }));
+  };
+
+  const handleCrudeCostChange = (
+    field: keyof typeof editableCrudeCosts,
+    value: string
+  ) => {
+    setEditableCrudeCosts((prev) => ({
+      ...prev,
+      [field]: parseFloat(value) || 0,
+    }));
+  };
+  console.log(editableCrudeCosts);
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (mode === "crudeToProducts") {
-      onCalculate({ crudeType, crudeAmount });
+      onCalculate({
+        crudeType,
+        crudeAmount,
+        productPrices: editableProductPrices,
+        crudeCosts: editableCrudeCosts,
+      });
     } else {
-      onCalculate({ crudeType, desiredProducts });
+      onCalculate({
+        crudeType,
+        desiredProducts,
+        productPrices: editableProductPrices,
+        crudeCosts: editableCrudeCosts,
+      });
     }
   };
 
@@ -112,17 +181,56 @@ export default function SimulatorForm({
 
         {selectedCrude && (
           <div className="mb-4 p-3 bg-gray-50 rounded">
-            <h4 className="font-semibold mb-1">
+            <h4 className="font-semibold mb-2">
               Información del crudo seleccionado:
             </h4>
-            <p>
-              <span className="font-medium">Precio compra:</span> $
-              {selectedCrude.api}/bbl
-            </p>
-            <p>
-              <span className="font-medium">Costo transporte:</span> $
-              {selectedCrude.sulfur}/bbl
-            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-2">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Precio compra ($/bbl):
+                </label>
+                <input
+                  type="number"
+                  value={editableCrudeCosts.purchasePrice}
+                  onChange={(e) =>
+                    handleCrudeCostChange("purchasePrice", e.target.value)
+                  }
+                  className="w-full p-2 border rounded"
+                  step="0.01"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Costo transporte ($/bbl):
+                </label>
+                <input
+                  type="number"
+                  value={editableCrudeCosts.transportCost}
+                  onChange={(e) =>
+                    handleCrudeCostChange("transportCost", e.target.value)
+                  }
+                  className="w-full p-2 border rounded"
+                  step="0.01"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Costo operacional ($/bbl):
+                </label>
+                <input
+                  type="number"
+                  value={editableCrudeCosts.operationalCost}
+                  onChange={(e) =>
+                    handleCrudeCostChange("operationalCost", e.target.value)
+                  }
+                  className="w-full p-2 border rounded"
+                  step="0.01"
+                />
+              </div>
+            </div>
           </div>
         )}
 
@@ -165,6 +273,46 @@ export default function SimulatorForm({
             </div>
           </div>
         )}
+
+        <div className="mb-4">
+          <button
+            type="button"
+            onClick={() => setShowAdvancedSettings(!showAdvancedSettings)}
+            className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+          >
+            {showAdvancedSettings ? "Ocultar" : "Mostrar"} configuración
+            avanzada
+          </button>
+
+          {showAdvancedSettings && (
+            <div className="mt-3 p-3 bg-gray-50 rounded">
+              <h4 className="font-semibold mb-2">
+                Precios de productos ($/bbl):
+              </h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                {(Object.keys(editableProductPrices) as Product[]).map(
+                  (product) => (
+                    <div key={product}>
+                      <label className="block text-sm font-medium text-gray-700 mb-1 capitalize">
+                        {product}:
+                      </label>
+                      <input
+                        type="number"
+                        value={editableProductPrices[product]}
+                        onChange={(e) =>
+                          handleProductPriceChange(product, e.target.value)
+                        }
+                        className="w-full p-2 border rounded"
+                        min="0"
+                        step="0.01"
+                      />
+                    </div>
+                  )
+                )}
+              </div>
+            </div>
+          )}
+        </div>
 
         <button
           type="submit"

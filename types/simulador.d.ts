@@ -73,4 +73,7 @@ export interface CrudeOption {
   label: string;
   api: number;
   sulfur: number;
+  purchasePrice: number;
+  transportCost: number;
+  operationalCost: number;
 }

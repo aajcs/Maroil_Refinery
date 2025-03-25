@@ -20,7 +20,7 @@ const ModeladoRefineriaLineaCarga = ({
 
   const hasAssociatedRecepcion = recepcions.some(
     (recepcion) =>
-      recepcion.idLinea.id === lineaRecepcion.id && recepcion.estado === "true"
+      recepcion.idLinea?.id === lineaRecepcion.id && recepcion.estado === "true"
   );
   useEffect(() => {
     setAnimationKey((prev) => prev + 1);

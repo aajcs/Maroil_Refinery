@@ -20,7 +20,7 @@ const ModeladoRefineriaTanque = ({
   const totalRecepcion = useMemo(() => {
     if (!tanque || !recepcions || tanque.capacidad <= 0) return 0;
     return recepcions
-      .filter((recepcion) => recepcion.idTanque.id === tanque.id)
+      .filter((recepcion) => recepcion.idTanque?.id === tanque.id)
       .reduce((sum, recepcion) => sum + recepcion.cantidadRecibida, 0);
   }, [tanque, recepcions]);
   const totalRefinacion = useMemo(() => {
@@ -68,7 +68,7 @@ const ModeladoRefineriaTanque = ({
     if (!recepcions || !tanque) return false;
     return recepcions.some(
       (recepcion) =>
-        recepcion.idTanque.id === tanque.id && recepcion.estado === "true"
+        recepcion.idTanque?.id === tanque.id && recepcion.estado === "true"
     );
   }, [recepcions, tanque]);
 

@@ -1,22 +1,36 @@
-import { crudeTypes, productPrices } from "@/demo/service/simuladorService";
+import {
+  crudeTypes,
+  defaultProductPrices,
+} from "@/demo/service/simuladorService";
 import {
   Product,
-  ProductYields,
-  CrudeDetails,
-  FinancialResults,
-  ProductionResults,
-  ProductsToCrudeResults,
-  SimulationResponse,
   CrudeToProductsResults,
+  ProductsToCrudeResults,
 } from "@/types/simulador";
 
-// Calcular derivados a partir del crudo
+// Calcular derivados a partir del crudo con precios y costos personalizados
 export function calculateDerivatives(
   crudeType: string,
-  crudeAmount: number
+  crudeAmount: number,
+  customProductPrices?: Record<Product, number>,
+  customCrudeCosts?: {
+    purchasePrice: number;
+    transportCost: number;
+    operationalCost: number;
+  }
 ): CrudeToProductsResults | { error: string } {
   const crude = crudeTypes[crudeType];
   if (!crude) return { error: "Tipo de crudo no válido" };
+
+  // Usar precios personalizados o los predeterminados
+  const productPrices = customProductPrices || defaultProductPrices;
+
+  // Usar costos personalizados o los del crudo seleccionado
+  const effectiveCosts = customCrudeCosts || {
+    purchasePrice: crude.purchasePrice,
+    transportCost: crude.transportCost,
+    operationalCost: crude.operationalCost,
+  };
 
   // Verificar que los rendimientos sumen ~100%
   const totalYield = Object.values(crude.yields).reduce(
@@ -40,7 +54,7 @@ export function calculateDerivatives(
     mgo6: crudeAmount * crude.yields.mgo6,
   };
 
-  // Calcular ingresos por ventas
+  // Calcular ingresos por ventas con los precios personalizados
   const productRevenues: Record<Product, number> = {
     gas: production.gas * productPrices.gas,
     naphtha: production.naphtha * productPrices.naphtha,
@@ -54,10 +68,10 @@ export function calculateDerivatives(
     0
   );
 
-  // Calcular costos
-  const totalPurchaseCost = crudeAmount * crude.purchasePrice;
-  const totalTransportCost = crudeAmount * crude.transportCost;
-  const totalOperationalCost = crudeAmount * crude.operationalCost;
+  // Calcular costos con los valores personalizados
+  const totalPurchaseCost = crudeAmount * effectiveCosts.purchasePrice;
+  const totalTransportCost = crudeAmount * effectiveCosts.transportCost;
+  const totalOperationalCost = crudeAmount * effectiveCosts.operationalCost;
   const totalCost =
     totalPurchaseCost + totalTransportCost + totalOperationalCost;
 
@@ -86,20 +100,36 @@ export function calculateDerivatives(
     crudeDetails: {
       sulfur: crude.sulfurContent,
       api: crude.api,
-      purchasePrice: crude.purchasePrice,
-      transportCost: crude.transportCost,
-      operationalCost: crude.operationalCost,
+      purchasePrice: effectiveCosts.purchasePrice,
+      transportCost: effectiveCosts.transportCost,
+      operationalCost: effectiveCosts.operationalCost,
     },
   };
 }
 
-// Calcular crudo necesario para obtener derivados deseados
+// Calcular crudo necesario para obtener derivados deseados con precios y costos personalizados
 export function calculateRequiredCrude(
   crudeType: string,
-  desiredProducts: Record<Product, number>
+  desiredProducts: Record<Product, number>,
+  customProductPrices?: Record<Product, number>,
+  customCrudeCosts?: {
+    purchasePrice: number;
+    transportCost: number;
+    operationalCost: number;
+  }
 ): ProductsToCrudeResults | { error: string } {
   const crude = crudeTypes[crudeType];
   if (!crude) return { error: "Tipo de crudo no válido" };
+
+  // Usar precios personalizados o los predeterminados
+  const productPrices = customProductPrices || defaultProductPrices;
+
+  // Usar costos personalizados o los del crudo seleccionado
+  const effectiveCosts = customCrudeCosts || {
+    purchasePrice: crude.purchasePrice,
+    transportCost: crude.transportCost,
+    operationalCost: crude.operationalCost,
+  };
 
   // Calcular crudo necesario
   let requiredCrude = 0;
@@ -149,7 +179,7 @@ export function calculateRequiredCrude(
     }
   });
 
-  // Calcular ingresos
+  // Calcular ingresos con precios personalizados
   const productRevenues: Record<Product, number> = {
     gas: 0,
     naphtha: 0,
@@ -177,10 +207,10 @@ export function calculateRequiredCrude(
     }
   });
 
-  // Calcular costos
-  const totalPurchaseCost = requiredCrude * crude.purchasePrice;
-  const totalTransportCost = requiredCrude * crude.transportCost;
-  const totalOperationalCost = requiredCrude * crude.operationalCost;
+  // Calcular costos con valores personalizados
+  const totalPurchaseCost = requiredCrude * effectiveCosts.purchasePrice;
+  const totalTransportCost = requiredCrude * effectiveCosts.transportCost;
+  const totalOperationalCost = requiredCrude * effectiveCosts.operationalCost;
   const totalCost =
     totalPurchaseCost + totalTransportCost + totalOperationalCost;
 
@@ -213,9 +243,9 @@ export function calculateRequiredCrude(
     crudeDetails: {
       sulfur: crude.sulfurContent,
       api: crude.api,
-      purchasePrice: crude.purchasePrice,
-      transportCost: crude.transportCost,
-      operationalCost: crude.operationalCost,
+      purchasePrice: effectiveCosts.purchasePrice,
+      transportCost: effectiveCosts.transportCost,
+      operationalCost: effectiveCosts.operationalCost,
     },
   };
 }

@@ -100,6 +100,7 @@ const ModeladoRefineriaDashboard = () => {
         <ModeladoRefineriaRecepcionesList recepciones={recepcions} />
         {refinacions.map((refinacion) => (
           <div key={refinacion.id} className="mb-2">
+            <pre>{JSON.stringify(refinacion, null, 2)}</pre>
             <div className="card p-3">
               <p>
                 <strong>Descripción:</strong> {refinacion.descripcion}
@@ -139,6 +140,25 @@ const ModeladoRefineriaDashboard = () => {
                     </p>
                     <p>
                       <strong>Porcentaje:</strong> {derivado.porcentaje}%
+                    </p>
+                  </li>
+                ))}
+              </ul>
+              <ul>
+                {refinacion.idRefinacionSalida.map((salida) => (
+                  <li key={salida.id}>
+                    <h1>salidas</h1>
+                    <p>
+                      <strong>Producto:</strong> {salida.idProducto.nombre}
+                    </p>
+                    <p>
+                      <strong>Cantidad:</strong> {salida.cantidadTotal}
+                    </p>
+                    <p>
+                      <strong>Descripción:</strong> {salida.descripcion}
+                    </p>
+                    <p>
+                      <strong>Tanque:</strong> {salida.idTanque.nombre}
                     </p>
                   </li>
                 ))}
@@ -189,7 +209,10 @@ const ModeladoRefineriaDashboard = () => {
             <div className="grid">
               {torresDestilacion.map((torre) => (
                 <div key={torre.id} className="col-12 md:col-6">
-                  <ModeladoRefineriaTorre torre={torre} />
+                  <ModeladoRefineriaTorre
+                    torre={torre}
+                    refinacions={refinacions}
+                  />
                   {/* <ModeladoRefineriaTorreSVG /> */}
                 </div>
               ))}

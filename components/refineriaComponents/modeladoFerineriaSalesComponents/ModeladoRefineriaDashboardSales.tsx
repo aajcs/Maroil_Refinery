@@ -52,14 +52,14 @@ const ModeladoRefineriaDashboardSales = () => {
   return (
     <>
       <SimulatorPage />
-      {/* <ModeladoRefineriaContratosSalesList
+      <ModeladoRefineriaContratosSalesList
         contratos={recepcionesPorContrato}
         tipo="Compra"
       />
       <ModeladoRefineriaContratosSalesList
         contratos={recepcionesPorContrato}
         tipo="Venta"
-      /> */}
+      />
     </>
   );
 };

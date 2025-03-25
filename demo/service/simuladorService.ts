@@ -14,15 +14,15 @@ export const crudeTypes: Record<string, CrudeTypeConfig> = {
   crude1: {
     name: "U liviano",
     yields: {
-      gas: 0.03,
-      naphtha: 0.3,
+      gas: 0.01,
+      naphtha: 0.09,
       kerosene: 0,
-      mgo4: 0.45,
-      mgo6: 0.22,
+      mgo4: 0.25,
+      mgo6: 0.65,
     },
-    purchasePrice: 77.3,
-    transportCost: 7.73,
-    operationalCost: 3.5,
+    purchasePrice: 60.31,
+    transportCost: 7.39,
+    operationalCost: 3,
     sulfurContent: 0.55,
     api: 21,
   },
@@ -90,11 +90,19 @@ export const crudeTypes: Record<string, CrudeTypeConfig> = {
 
 // Precios de los productos
 export const productPrices: Record<Product, number> = {
-  gas: 45,
-  naphtha: 72,
-  kerosene: 85,
-  mgo4: 78,
-  mgo6: 82,
+  gas: 0,
+  naphtha: 72.74 + 8,
+  kerosene: 0,
+  mgo4: 72.74 + 24 - 2.9 - 6.1,
+  mgo6: 72.74 + 6 - 2.9 - 6.1,
+};
+// Precios de los productos
+export const defaultProductPrices: Record<Product, number> = {
+  gas: 0,
+  naphtha: 72.74 + 8,
+  kerosene: 0,
+  mgo4: 72.74 + 24 - 2.9 - 6.1,
+  mgo6: 72.74 + 6 - 2.9 - 6.1,
 };
 
 // Obtener opciones de crudo para el selector
@@ -104,5 +112,8 @@ export function getCrudeOptions(): CrudeOption[] {
     label: crude.name,
     api: crude.api,
     sulfur: crude.sulfurContent,
+    purchasePrice: crude.purchasePrice,
+    transportCost: crude.transportCost,
+    operationalCost: crude.operationalCost,
   }));
 }

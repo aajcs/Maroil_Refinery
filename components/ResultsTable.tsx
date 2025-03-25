@@ -122,7 +122,7 @@ export default function ResultsTable({ results }: ResultsTableProps) {
                         {formatCurrency(
                           results.financials.productRevenues[
                             product as keyof typeof results.financials.productRevenues
-                          ] || 0
+                          ] / amount || 0
                         )}
                       </td>
                       <td className="p-2 border">

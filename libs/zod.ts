@@ -331,21 +331,18 @@ export const recepcionSchema = object({
           "La gravedad API debe ser un número no negativo"
         ),
         azufre: number().min(0, "El azufre debe ser un número no negativo"),
-        viscosidad: number().min(
-          0,
-          "La viscosidad debe ser un número no negativo"
-        ),
-        densidad: number().min(0, "La densidad debe ser un número no negativo"),
+
         contenidoAgua: number().min(
           0,
           "El contenido de agua debe ser un número no negativo"
         ),
-        origen: string().min(1, "El origen es obligatorio"),
-        temperatura: number().min(
+
+        clasificacion: string().min(1, "El origen es obligatorio"),
+
+        flashPoint: number().min(
           0,
-          "La temperatura debe ser un número no negativo"
+          "La presión debe ser un número no negativo"
         ),
-        presion: number().min(0, "La presión debe ser un número no negativo"),
       })
     ).optional(),
   }).optional(),
@@ -367,18 +364,16 @@ export const recepcionSchema = object({
       "La gravedad API debe ser un número no negativo"
     ),
     azufre: number().min(0, "El azufre debe ser un número no negativo"),
-    viscosidad: number().min(0, "La viscosidad debe ser un número no negativo"),
-    densidad: number().min(0, "La densidad debe ser un número no negativo"),
+
     contenidoAgua: number().min(
       0,
       "El contenido de agua debe ser un número no negativo"
     ),
-    origen: string().min(1, "El origen es obligatorio"),
-    temperatura: number().min(
+    clasificacion: string().min(1, "El origen es obligatorio"),
+    flashPoint: number().min(
       0,
       "La temperatura debe ser un número no negativo"
     ),
-    presion: number().min(0, "La presión debe ser un número no negativo"),
   }).optional(),
   idLinea: object({
     id: string().optional(),
@@ -400,6 +395,7 @@ export const recepcionSchema = object({
   updatedAt: union([string(), date()]).optional(),
   id: string().optional(),
 });
+
 export const productoSchema = object({
   idRefineria: object({
     id: string().optional(),
