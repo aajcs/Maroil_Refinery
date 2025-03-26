@@ -39,39 +39,79 @@ const ModeladoRefineriaTorre: React.FC<ModeladoRefineriaTorreProps> = ({
   const [refinacion, setRefinacion] = useState<Refinacion | null>(null);
 
   // Calcular datos de las secciones
+  interface DerivadoSection {
+    name: string;
+    idProducto: string;
+    operational: boolean;
+    bblPerHour: string;
+    porcentaje: number;
+    cantidad: string;
+  }
+
+  interface TorreData {
+    sections: DerivadoSection[];
+  }
+
   useEffect(() => {
     if (!torre?.material) return;
 
-    const sections = torre.material.map((material) => {
-      const refinacionFilter = refinacions?.filter(
-        (refinacion) => refinacion.idTorre.id === torre.id
-      );
+    const calculateDerivados = () => {
+      const now = new Date();
 
-      const derivado = refinacionFilter
-        ?.flatMap((refinacion) => refinacion.derivado)
-        .find((d) => d.idProducto.id === material.idProducto?.id);
+      return torre.material.map((material) => {
+        // 1. Filtrar refinaciones para esta torre
+        const refinacionesTorre =
+          refinacions?.filter(
+            (refinacion) => refinacion.idTorre.id === torre.id
+          ) || [];
 
-      const porcentaje = derivado?.porcentaje || 0;
-      const cantidadTotal =
-        refinacionFilter?.reduce(
-          (acc, refinacion) => acc + refinacion.cantidadTotal,
+        // 2. Encontrar el derivado correspondiente
+        const derivado = refinacionesTorre
+          .flatMap((refinacion) => refinacion.derivado || [])
+          .find((d) => d.idProducto.id === material.idProducto?.id);
+
+        const porcentaje = derivado?.porcentaje || 0;
+
+        // 3. Calcular cantidad refinada hasta ahora
+        const cantidadTotalRefinada = refinacionesTorre.reduce(
+          (acc, refinacion) => {
+            const { fechaInicio, fechaFin, cantidadTotal } = refinacion;
+            if (!fechaInicio || !fechaFin || !cantidadTotal) return acc;
+
+            const start = new Date(fechaInicio);
+            const end = new Date(fechaFin);
+
+            if (now < start) return acc;
+            if (now >= end) return acc + cantidadTotal;
+
+            const fraction =
+              (now.getTime() - start.getTime()) /
+              (end.getTime() - start.getTime());
+            return acc + cantidadTotal * fraction;
+          },
           0
-        ) || 0;
-      const cantidad =
-        cantidadTotal > 0
-          ? ((porcentaje / 100) * cantidadTotal).toFixed(2)
-          : "0.00";
+        );
 
-      return {
-        name: material.idProducto?.nombre,
-        idProducto: material.idProducto?.id,
-        operational: material.estadoMaterial === "True",
-        bblPerHour: 0,
-        porcentaje,
-        cantidad,
-      };
-    });
+        // 4. Calcular cantidad total esperada (sin considerar tiempo)
+        const cantidadTotalEsperada = refinacionesTorre.reduce(
+          (acc, refinacion) => acc + (refinacion.cantidadTotal || 0),
+          0
+        );
 
+        return {
+          name: material.idProducto?.nombre || "Desconocido",
+          idProducto: material.idProducto?.id || "",
+          operational: material.estadoMaterial === "True",
+          bblPerHour: parseFloat(
+            ((cantidadTotalRefinada * porcentaje) / 100).toFixed(2)
+          ),
+          porcentaje,
+          cantidad: ((cantidadTotalEsperada * porcentaje) / 100).toFixed(2),
+        };
+      });
+    };
+
+    const sections = calculateDerivados();
     setApiData({ sections });
 
     // Actualizar refinación principal
@@ -195,6 +235,14 @@ const ModeladoRefineriaTorre: React.FC<ModeladoRefineriaTorreProps> = ({
             fontSize="12"
           >
             {section.cantidad} bbl/h
+          </text>
+          <text
+            x={TOWER_X + TOWER_WIDTH + 35}
+            y={sectionY + sectionHeight / 2 + 40}
+            fill="black"
+            fontSize="12"
+          >
+            {section.bblPerHour} bbl/h
           </text>
         </g>
       );

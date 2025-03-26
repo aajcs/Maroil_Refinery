@@ -17,6 +17,28 @@ const ModeladoRefineriaTanque = ({
 }: ModeladoRefineriaTanqueProps) => {
   const [apiData, setApiData] = useState({ tankLevel: 0 });
 
+  // refinacions?.forEach((refinacions) => {
+  //   console.log("refinacions", refinacions);
+  // });
+
+  // refinacions
+  //   ?.map((refinacion) => refinacion.idRefinacionSalida)
+  //   .forEach((idRefinacionSalida) => {
+  //     console.log("idChequeoCidRefinacionSalidaantidad", idRefinacionSalida);
+  //   });
+
+  const ultimosChequeosPorRefinacion = refinacions
+    ?.filter((refinacion) => refinacion.idTanque?.id === tanque.id) // Filtrar por tanque
+    .map((refinacion) => {
+      if (!refinacion.idChequeoCantidad?.length) return null;
+
+      return refinacion.idChequeoCantidad.reduce((prev, current) => {
+        const fechaPrev = new Date(prev.fechaChequeo);
+        const fechaCurrent = new Date(current.fechaChequeo);
+        return fechaCurrent > fechaPrev ? current : prev;
+      });
+    });
+
   const totalRecepcion = useMemo(() => {
     if (!tanque || !recepcions || tanque.capacidad <= 0) return 0;
     return recepcions
@@ -54,23 +76,98 @@ const ModeladoRefineriaTanque = ({
         return acc + cantidadTotal * fraction;
       }, 0);
   }, [tanque, refinacions]);
+  const totalRefinacionSalida = useMemo(() => {
+    if (!tanque || !refinacions || tanque.capacidad <= 0) return 0;
+
+    const now = new Date();
+
+    return (
+      refinacions
+        // .filter((refinacion) => refinacion.idTanque?.id === tanque.id) // Filtrar refinaciones por tanque
+        .reduce((acc, refinacion) => {
+          const { fechaInicio, fechaFin, idRefinacionSalida } = refinacion;
+
+          if (!fechaInicio || !fechaFin || !idRefinacionSalida?.length) {
+            return acc;
+          }
+
+          const start = new Date(fechaInicio);
+          const end = new Date(fechaFin);
+
+          let cantidadSalida = 0;
+
+          // Calcular la cantidad refinada proporcional al tiempo transcurrido
+          if (now >= start && now <= end) {
+            const totalTime = end.getTime() - start.getTime();
+            const elapsed = now.getTime() - start.getTime();
+            const fraction = elapsed / totalTime;
+
+            cantidadSalida = idRefinacionSalida.reduce((sum, salida) => {
+              // console.log("Procesando salida:", salida);
+
+              if (salida.idTanque?.id === tanque.id) {
+                return sum + salida.cantidadTotal * fraction;
+              }
+              return sum;
+            }, 0);
+          } else if (now > end) {
+            // Si la fecha actual es después del fin, sumar toda la cantidad de salida
+            cantidadSalida = idRefinacionSalida.reduce((sum, salida) => {
+              // console.log("Procesando salida después del fin:", salida);
+              if (salida.idTanque?.id === tanque.id) {
+                return sum + salida.cantidadTotal;
+              }
+              return sum;
+            }, 0);
+          }
+
+          console.log("Cantidad salida acumulada:", cantidadSalida);
+          return acc + cantidadSalida;
+        }, 0)
+    );
+  }, [tanque, refinacions]);
+  // console.log("totalRefinacionSalida", totalRefinacionSalida);
   const tanqueLevel = useMemo(() => {
     if (tanque?.capacidad > 0) {
       return (
-        ((totalRecepcion - totalRefinacion) / tanque.capacidad) *
+        ((totalRecepcion + totalRefinacionSalida - totalRefinacion) /
+          tanque.capacidad) *
         100
       ).toFixed(2);
     }
     return "0.00";
-  }, [totalRecepcion, tanque]);
+  }, [totalRecepcion, totalRefinacionSalida, tanque]);
 
-  const isLoading = useMemo(() => {
+  const isLoadingRecepcion = useMemo(() => {
     if (!recepcions || !tanque) return false;
     return recepcions.some(
       (recepcion) =>
         recepcion.idTanque?.id === tanque.id && recepcion.estado === "true"
     );
   }, [recepcions, tanque]);
+
+  const isLoadingRefinacion = useMemo(() => {
+    if (!refinacions || !tanque) return false;
+
+    return refinacions.some((refinacion) => {
+      // Verificar si la refinación principal está activa
+      return (
+        refinacion.idTanque?.id === tanque.id && refinacion.estado === "true"
+      );
+    });
+  }, [refinacions, tanque]);
+
+  const isLoadingRefinacionSalida = useMemo(() => {
+    if (!refinacions || !tanque) return false;
+
+    return refinacions.some((refinacion) =>
+      refinacion.idRefinacionSalida?.some(
+        (salida) => salida.idTanque?.id === tanque.id
+        // &&
+        //   salida.estadoRefinacionSalida === "En Proceso"
+      )
+    );
+  }, [refinacions, tanque]);
 
   useEffect(() => {
     setApiData({ tankLevel: parseFloat(tanqueLevel) });
@@ -256,17 +353,26 @@ const ModeladoRefineriaTanque = ({
           );
         })}
         {/* ----------- TEXTO DEL NIVEL ----------- */}
-        <text x="120" y="320" fill="black" fontSize="18" fontWeight="bold">
+        <text x="120" y="320" fill="black" fontSize="14">
           Nivel: {apiData.tankLevel}%
         </text>
-        <text x="80" y="100" fill="black" fontSize="18" fontWeight="bold">
+        <text x="80" y="100" fill="black" fontSize="14">
           {tanque.nombre}
         </text>
-        <text x="80" y="120" fill="black" fontSize="18" fontWeight="bold">
+        <text x="80" y="120" fill="black" fontSize="14">
           {tanque.idProducto?.nombre} {/* Mostrar todos los materiales */}
         </text>
-        <text x="100" y="340" fontSize="18" fontWeight="bold">
-          Cantidad: {totalRecepcion - totalRefinacion} Bbl
+        <text x="70" y="340" fontSize="14">
+          Cantidad estimada:{" "}
+          {(totalRecepcion + totalRefinacionSalida - totalRefinacion).toFixed(
+            2
+          )}{" "}
+          Bbl
+        </text>
+        <text x="70" y="355" fontSize="14">
+          Cantidad chequo:{" "}
+          {ultimosChequeosPorRefinacion?.[0]?.cantidad || "No disponible"} Bbl
+          {/* Cantidad: {totalRecepcion - totalRefinacion} Bbl */}
         </text>
         {/* {isLoading && (
           <rect x="50" y="150" width="10" height="150" fill="rgb(255, 0, 0)">
@@ -279,7 +385,7 @@ const ModeladoRefineriaTanque = ({
             />
           </rect>
         )} */}
-        {isLoading ? (
+        {isLoadingRecepcion || isLoadingRefinacionSalida ? (
           <>
             <g transform="matrix(.25 0 0 0.306621 55 27.2831)">
               <g transform="matrix(.122101 0 0 0.122101-122.210883-91.867315)">
@@ -319,7 +425,9 @@ const ModeladoRefineriaTanque = ({
             <PocisionCerrada />
           </g>
         )}
-        {!isLoading ? (
+        {isLoadingRefinacion ? (
+          // (isLoadingRefinacion || isLoadingRecepcion) &&
+          // tanque.almacenamientoMateriaPrimaria ? (
           <>
             <g transform="matrix(.25 0 0 0.306621 270 280)">
               <g transform="matrix(.122101 0 0 0.122101-122.210883-91.867315)">

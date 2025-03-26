@@ -231,7 +231,10 @@ const ModeladoRefineriaDashboard = () => {
                 .filter((tanque) => !tanque.almacenamientoMateriaPrimaria)
                 .map((tanque) => (
                   <div key={tanque.id} className="mb-2">
-                    <ModeladoRefineriaTanque tanque={tanque} />
+                    <ModeladoRefineriaTanque
+                      tanque={tanque}
+                      refinacions={refinacions}
+                    />
                   </div>
                 ))}
             </div>

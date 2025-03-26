@@ -339,12 +339,14 @@ export interface Refinacion {
   idChequeoCantidad: {
     operador: string;
     id: string;
+    fechaChequeo: string;
+    cantidad: number;
   }[];
   derivado: Derivado[];
   fechaInicio: string;
   fechaFin: string;
   operador: string;
-  estado: boolean;
+  estado: string;
   eliminado: boolean;
   createdAt: string;
   updatedAt: string;
@@ -422,6 +424,12 @@ export interface RefinacionSalida {
       nombre: string;
       id: string;
     };
+    fechaChequeo: string;
+    cantidad: number;
+    estado: string;
+    eliminado: boolean;
+    createdAt: string;
+    updatedAt: string;
     id: string;
   }>;
   idProducto: {
