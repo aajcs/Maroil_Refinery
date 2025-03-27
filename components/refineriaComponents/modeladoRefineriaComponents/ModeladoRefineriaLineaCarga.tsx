@@ -59,7 +59,7 @@ const ModeladoRefineriaLineaCarga = ({
           {recepcions
             .filter(
               (recepcion: Recepcion) =>
-                recepcion.idLinea.id === lineaRecepcion.id
+                recepcion.idLinea?.id === lineaRecepcion.id
             )
             .map((recepcion: any, index: number) => (
               <g key={`${animationKey}-${index}`}>
