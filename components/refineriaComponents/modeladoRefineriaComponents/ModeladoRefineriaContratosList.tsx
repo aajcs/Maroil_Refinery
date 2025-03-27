@@ -27,7 +27,7 @@ const ModeladoRefineriaContratosList = ({
 }: ModeladoRefineriaContratosListProps) => {
   return (
     <div className="col-12">
-      <h1 className="text-2xl font-bold mb-3">Contratos</h1>
+      <h1 className="text-2xl font-bold mb-3">Contratos de compra de crudo</h1>
       <div className="grid">
         {contratos.map((contrato) => (
           <div

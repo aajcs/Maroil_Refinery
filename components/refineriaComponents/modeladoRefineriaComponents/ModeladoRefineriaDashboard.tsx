@@ -100,6 +100,10 @@ const ModeladoRefineriaDashboard = () => {
           contratos={recepcionesPorContrato}
           onShowDialog={showDialog}
         />
+        <ModeladoRefineriaContratosList
+          contratos={recepcionesPorContrato}
+          onShowDialog={showDialog}
+        />
         <ModeladoRefineriaRecepcionesList recepciones={recepcions} />
         <ModeladoRefineriaDespachosList despachos={despachos} />
         {refinacions.map((refinacion) => (
