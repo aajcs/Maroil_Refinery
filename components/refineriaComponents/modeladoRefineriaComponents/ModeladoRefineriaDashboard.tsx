@@ -47,14 +47,22 @@ const ModeladoRefineriaDashboard = () => {
     setVisible(false);
     setSelectedProduct(null);
   }, []);
-
+  const tanquesFiltradosOrdenados = useMemo(
+    () =>
+      (tanques || [])
+        .filter((tanque) => !tanque.almacenamientoMateriaPrimaria)
+        .sort(
+          (a, b) =>
+            (a.idProducto?.posicion || 0) - (b.idProducto?.posicion || 0)
+        ),
+    [tanques]
+  );
   // Agrupar recepciones por contrato y producto
   const recepcionesPorContrato = useMemo(() => {
     return contratos.map((contrato) => {
       const recepcionesContrato = recepcions.filter(
         (recepcion) => recepcion.idContrato.id === contrato.id
       );
-      console.log(recepcionesContrato);
       const productos = contrato.idItems.map((item: any) => {
         const recepcionesProducto = recepcionesContrato.filter(
           (recepcion) =>
@@ -235,17 +243,15 @@ const ModeladoRefineriaDashboard = () => {
               Almacenamiento de Productos
             </h1>
             <div className="grid">
-              {tanques
-                .filter((tanque) => !tanque.almacenamientoMateriaPrimaria)
-                .map((tanque) => (
-                  <div key={tanque.id} className="mb-2">
-                    <ModeladoRefineriaTanque
-                      tanque={tanque}
-                      despachos={despachos}
-                      refinacions={refinacions}
-                    />
-                  </div>
-                ))}
+              {tanquesFiltradosOrdenados.map((tanque) => (
+                <div key={tanque.id} className="mb-2">
+                  <ModeladoRefineriaTanque
+                    tanque={tanque}
+                    despachos={despachos}
+                    refinacions={refinacions}
+                  />
+                </div>
+              ))}
             </div>
           </div>
         </div>
