@@ -3,7 +3,6 @@
 import { useRefineriaStore } from "@/store/refineriaStore";
 import ModeladoRefineriaTanque from "./ModeladoRefineriaTanque";
 import ModeladoRefineriaTorre from "./ModeladoRefineriaTorre";
-import ModeladoRefineriaLineaDescarga from "./ModeladoRefineriaLineaDescarga";
 import { ProgressSpinner } from "primereact/progressspinner";
 import ModeladoRefineriaLineaCarga from "./ModeladoRefineriaLineaCarga";
 import { formatDateFH, formatDuration } from "@/utils/dateUtils";
@@ -15,6 +14,8 @@ import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import ModeladoRefineriaContratosList from "./ModeladoRefineriaContratosList";
 import ModeladoRefineriaRecepcionesList from "./ModeladoRefineriaRecepcionesList";
+import ModeladoRefineriaLineaDespacho from "./ModeladoRefineriaLineaDespacho";
+import ModeladoRefineriaDespachosList from "./ModeladoRefineriaDespachosList";
 
 const ModeladoRefineriaDashboard = () => {
   const { activeRefineria } = useRefineriaStore();
@@ -27,11 +28,13 @@ const ModeladoRefineriaDashboard = () => {
     contratos,
     loading,
     refinacions,
+    lineaDespachos,
+    despachos,
   } = useRefineryData(
     activeRefineria?.id || "",
     recepcionModificado || undefined // Pasa recepcionModificado como dependencia
   );
-
+  console.log(lineaDespachos);
   const [visible, setVisible] = useState<boolean>(false);
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
 
@@ -98,6 +101,7 @@ const ModeladoRefineriaDashboard = () => {
           onShowDialog={showDialog}
         />
         <ModeladoRefineriaRecepcionesList recepciones={recepcions} />
+        <ModeladoRefineriaDespachosList despachos={despachos} />
         {refinacions.map((refinacion) => (
           <div key={refinacion.id} className="mb-2">
             <pre>{JSON.stringify(refinacion, null, 2)}</pre>
@@ -171,7 +175,7 @@ const ModeladoRefineriaDashboard = () => {
           Modelado de Refinería
         </h1>
         <div className="col-12 md:col-6 lg:col-2">
-          <div className="card p-3">
+          <div className="card p-3 lg-h-fullScreen">
             <h1 className="text-2xl font-bold mb-3">Línea de Recepción</h1>
 
             {lineaRecepcions.map((lineaRecepcion) => (
@@ -186,7 +190,7 @@ const ModeladoRefineriaDashboard = () => {
         </div>
         {/* Almacenamiento Crudo */}
         <div className="col-12 md:col-6 lg:col-2">
-          <div className="card p-3">
+          <div className="card p-3 lg-h-fullScreen">
             <h1 className="text-2xl font-bold mb-3">Almacenamiento Crudo</h1>
             {tanques
               .filter((tanque) => tanque.almacenamientoMateriaPrimaria)
@@ -204,7 +208,7 @@ const ModeladoRefineriaDashboard = () => {
 
         {/* Torres de Procesamiento */}
         <div className="col-12 md:col-6 lg:col-3">
-          <div className="card p-3">
+          <div className="card p-3 lg-h-fullScreen">
             <h1 className="text-2xl font-bold mb-3">Torres de Procesamiento</h1>
             <div className="grid">
               {torresDestilacion.map((torre) => (
@@ -222,7 +226,7 @@ const ModeladoRefineriaDashboard = () => {
 
         {/* Almacenamiento de Productos */}
         <div className="col-12 md:col-6 lg:col-3">
-          <div className="card p-3">
+          <div className="card p-3 lg-h-fullScreen">
             <h1 className="text-2xl font-bold mb-3">
               Almacenamiento de Productos
             </h1>
@@ -233,6 +237,7 @@ const ModeladoRefineriaDashboard = () => {
                   <div key={tanque.id} className="mb-2">
                     <ModeladoRefineriaTanque
                       tanque={tanque}
+                      despachos={despachos}
                       refinacions={refinacions}
                     />
                   </div>
@@ -243,14 +248,14 @@ const ModeladoRefineriaDashboard = () => {
 
         {/* Línea de Despacho */}
         <div className="col-12 md:col-6 lg:col-2">
-          <div className="card p-3">
+          <div className="card p-3 lg-h-fullScreen">
             <h1 className="text-2xl font-bold mb-3">Línea de Despacho</h1>
 
-            {lineaRecepcions.map((lineaRecepcion) => (
-              <div key={lineaRecepcion.id} className="mb-2">
-                <ModeladoRefineriaLineaDescarga
-                  lineaRecepcion={lineaRecepcion}
-                  recepcions={recepcions}
+            {lineaDespachos.map((lineaDespacho) => (
+              <div key={lineaDespacho.id} className="mb-2">
+                <ModeladoRefineriaLineaDespacho
+                  lineaDespacho={lineaDespacho}
+                  despachos={despachos}
                 />
               </div>
             ))}

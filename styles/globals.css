@@ -76,3 +76,10 @@
     @apply tw-bg-background tw-text-foreground;
   }
 }
+/* s */
+
+@media (min-width: 1024px) {
+  .lg-h-fullScreen {
+    height: calc(100% - 5rem);
+  }
+}

@@ -1,9 +1,11 @@
 "use client";
 
+import LineaDespachoList from "@/components/refineriaComponents/lineaDespachoComponents/LineaDespachoList";
+
 function LineaDespacho() {
   return (
     <h1>
-      <span>LineaDespacho</span>
+      <LineaDespachoList />
     </h1>
   );
 }

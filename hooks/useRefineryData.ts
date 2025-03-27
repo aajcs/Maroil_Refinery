@@ -9,6 +9,8 @@ import {
   Producto,
   TipoProducto,
   Contacto,
+  LineaDespacho,
+  Despacho,
 } from "@/libs/interfaces";
 import { getTanques } from "@/app/api/tanqueService";
 import { getTorresDestilacion } from "@/app/api/torreDestilacionService";
@@ -19,6 +21,9 @@ import { getRefinacions } from "@/app/api/refinacionService";
 import { getProductos } from "@/app/api/productoService";
 import { getTipoProductos } from "@/app/api/tipoProductoService";
 import { getContactos } from "@/app/api/contactoService";
+import { getBrent } from "@/app/api/brentService";
+import { getLineaDespachos } from "@/app/api/lineaDespachoService";
+import { getDespachos } from "@/app/api/despachoService";
 
 export const useRefineryData = (
   activeRefineriaId: string,
@@ -29,13 +34,16 @@ export const useRefineryData = (
     TorreDestilacion[]
   >([]);
   const [lineaRecepcions, setLineaRecepcions] = useState<LineaRecepcion[]>([]);
+  const [lineaDespachos, setLineaDespachos] = useState<LineaDespacho[]>([]);
   const [recepcions, setRecepcions] = useState<Recepcion[]>([]);
+  const [despachos, setDespachos] = useState<Despacho[]>([]);
   const [contratos, setContratos] = useState<Contrato[]>([]);
   const [loading, setLoading] = useState(true);
   const [refinacions, setRefinacions] = useState<Refinacion[]>([]);
   const [productos, setProductos] = useState<Producto[]>([]);
   const [tipoProductos, setTipoProductos] = useState<TipoProducto[]>([]);
   const [contactos, setContactos] = useState<Contacto[]>([]);
+  const [brent, setBrent] = useState<any | null>(null);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -43,23 +51,29 @@ export const useRefineryData = (
       const [
         tanquesDB,
         torresDestilacionDB,
-        lineaRecepcionsDB,
+        lineaRecepcionDB,
+        lineaDespachoDB,
         recepcionsDB,
+        despachosDB,
         contratosDB,
         refinacionDB,
         productosDB,
         tipoProductosDB,
         contactosDB,
+        brent,
       ] = await Promise.all([
         getTanques(),
         getTorresDestilacion(),
         getLineaRecepcions(),
+        getLineaDespachos(),
         getRecepcions(),
+        getDespachos(),
         getContratos(),
         getRefinacions(),
         getProductos(),
         getTipoProductos(),
         getContactos(),
+        getBrent(),
       ]);
 
       const filteredTanques =
@@ -81,14 +95,23 @@ export const useRefineryData = (
             ),
           })) || [];
       const filteredLineaRecepcions =
-        lineaRecepcionsDB?.lineaCargas?.filter(
+        lineaRecepcionDB?.lineaCargas?.filter(
           (lineaRecepcion: LineaRecepcion) =>
             lineaRecepcion.idRefineria?.id === activeRefineriaId
+        ) || [];
+      const filteredLineaDespachos =
+        lineaDespachoDB?.lineaDespachos?.filter(
+          (lineaDespacho: LineaDespacho) =>
+            lineaDespacho.idRefineria?.id === activeRefineriaId
         ) || [];
       const filteredRecepcions =
         recepcionsDB?.recepcions?.filter(
           (recepcion: Recepcion) =>
             recepcion.idRefineria?.id === activeRefineriaId
+        ) || [];
+      const filteredDespachos =
+        despachosDB?.despachos?.filter(
+          (despacho: Despacho) => despacho.idRefineria?.id === activeRefineriaId
         ) || [];
 
       const filteredContratos =
@@ -119,12 +142,15 @@ export const useRefineryData = (
       setTanques(filteredTanques);
       setTorresDestilacion(filteredTorresDestilacion);
       setLineaRecepcions(filteredLineaRecepcions);
+      setLineaDespachos(filteredLineaDespachos);
       setRecepcions(filteredRecepcions);
+      setDespachos(filteredDespachos);
       setContratos(filteredContratos);
       setRefinacions(filteredRefinacion);
       setProductos(filteredPorducto);
       setTipoProductos(filterdTipoProductos);
       setContactos(filteredContactos);
+      setBrent(brent);
     } catch (error) {
       console.error("Error al obtener los datos:", error);
     } finally {
@@ -162,12 +188,15 @@ export const useRefineryData = (
     tanques,
     torresDestilacion,
     lineaRecepcions,
+    lineaDespachos,
     recepcions,
+    despachos,
     contratos,
     refinacions,
     productos,
     tipoProductos,
     contactos,
     loading,
+    brent,
   };
 };

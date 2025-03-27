@@ -1,5 +1,5 @@
 "use client";
-import { Recepcion, Refinacion, Tanque } from "@/libs/interfaces";
+import { Despacho, Recepcion, Refinacion, Tanque } from "@/libs/interfaces";
 import { useEffect, useState, useMemo } from "react";
 import { PocisionAbierta, PocisionCerrada } from "./ElementosLineaCarga";
 import { getFillColor } from "@/utils/getFillCollor";
@@ -8,12 +8,14 @@ interface ModeladoRefineriaTanqueProps {
   tanque: Tanque;
   recepcions?: Recepcion[];
   refinacions?: Refinacion[];
+  despachos?: Despacho[];
 }
 
 const ModeladoRefineriaTanque = ({
   tanque,
   recepcions,
   refinacions,
+  despachos,
 }: ModeladoRefineriaTanqueProps) => {
   const [apiData, setApiData] = useState({ tankLevel: 0 });
 
@@ -45,6 +47,12 @@ const ModeladoRefineriaTanque = ({
       .filter((recepcion) => recepcion.idTanque?.id === tanque.id)
       .reduce((sum, recepcion) => sum + recepcion.cantidadRecibida, 0);
   }, [tanque, recepcions]);
+  const totalDespacho = useMemo(() => {
+    if (!tanque || !despachos || tanque.capacidad <= 0) return 0;
+    return despachos
+      .filter((despacho) => despacho.idTanque?.id === tanque.id)
+      .reduce((sum, despacho) => sum + despacho.cantidadRecibida, 0);
+  }, [tanque, despachos]);
   const totalRefinacion = useMemo(() => {
     if (!tanque || !refinacions || tanque.capacidad <= 0) return 0;
 
@@ -130,7 +138,10 @@ const ModeladoRefineriaTanque = ({
   const tanqueLevel = useMemo(() => {
     if (tanque?.capacidad > 0) {
       return (
-        ((totalRecepcion + totalRefinacionSalida - totalRefinacion) /
+        ((totalRecepcion +
+          totalRefinacionSalida -
+          totalRefinacion -
+          totalDespacho) /
           tanque.capacidad) *
         100
       ).toFixed(2);
@@ -145,6 +156,15 @@ const ModeladoRefineriaTanque = ({
         recepcion.idTanque?.id === tanque.id && recepcion.estado === "true"
     );
   }, [recepcions, tanque]);
+
+  const isLoadingDespacho = useMemo(() => {
+    if (!despachos || !tanque) return false;
+
+    return despachos.some(
+      (despacho) =>
+        despacho.idTanque?.id === tanque.id && despacho.estado === "true"
+    );
+  }, [despachos, tanque]);
 
   const isLoadingRefinacion = useMemo(() => {
     if (!refinacions || !tanque) return false;
@@ -364,9 +384,12 @@ const ModeladoRefineriaTanque = ({
         </text>
         <text x="70" y="340" fontSize="14">
           Cantidad estimada:{" "}
-          {(totalRecepcion + totalRefinacionSalida - totalRefinacion).toFixed(
-            2
-          )}{" "}
+          {(
+            totalRecepcion +
+            totalRefinacionSalida -
+            totalRefinacion -
+            totalDespacho
+          ).toFixed(2)}{" "}
           Bbl
         </text>
         <text x="70" y="355" fontSize="14">
@@ -425,7 +448,7 @@ const ModeladoRefineriaTanque = ({
             <PocisionCerrada />
           </g>
         )}
-        {isLoadingRefinacion ? (
+        {isLoadingDespacho || isLoadingRefinacion ? (
           // (isLoadingRefinacion || isLoadingRecepcion) &&
           // tanque.almacenamientoMateriaPrimaria ? (
           <>

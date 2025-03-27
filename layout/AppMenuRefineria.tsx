@@ -62,6 +62,11 @@ const AppMenuRefineria = () => {
           to: "/refineria/recepcion",
         },
         {
+          label: "Despacho",
+          icon: "pi pi-fw pi-plus",
+          to: "/refineria/despacho",
+        },
+        {
           label: "Producto",
           icon: "pi pi-fw pi-plus",
           to: "/refineria/producto",

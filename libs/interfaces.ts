@@ -20,6 +20,19 @@ export interface LineaRecepcion {
     id: string | undefined;
   };
 }
+export interface LineaDespacho {
+  id: string;
+  nombre: string;
+  estado: boolean;
+  eliminado: boolean;
+  ubicacion: string;
+  material: string;
+  createdAt: string;
+  updatedAt: string;
+  idRefineria: {
+    id: string | undefined;
+  };
+}
 
 export interface Tanque {
   id: string;
@@ -164,6 +177,78 @@ export interface Recepcion {
     id: string;
   };
   idLinea: {
+    nombre: string;
+    id: string;
+  };
+  idRefineria: {
+    nombre: string;
+    id: string;
+  };
+  idTanque: {
+    nombre: string;
+    id: string;
+  };
+  cantidadRecibida: number;
+  cantidadEnviada: number;
+  fechaInicio: string;
+  fechaFin: string;
+  fechaDespacho: string;
+  idGuia: number;
+  placa: string;
+  nombreChofer: string;
+  apellidoChofer: string;
+  createdAt: string;
+  updatedAt: string;
+}
+export interface Despacho {
+  id: string;
+  estadoCarga: string;
+  estado: string;
+  eliminado: boolean;
+  idContrato: {
+    idItems: {
+      estado: boolean;
+      eliminado: boolean;
+      producto: {
+        nombre: string;
+        id: string;
+        color: string;
+      };
+      cantidad: number;
+      precioUnitario: number;
+      gravedadAPI: number;
+      azufre: number;
+      viscosidad: number;
+      densidad: number;
+      contenidoAgua: number;
+      origen: string;
+      temperatura: number;
+      presion: number;
+      idContrato: string;
+      id: string;
+    }[];
+    numeroContrato: string;
+    idRefineria: {
+      nombre: string;
+      id: string;
+    };
+    idContacto: {
+      nombre: string;
+      id: string;
+    };
+    id: string;
+  };
+  idContratoItems: {
+    producto: {
+      nombre: string;
+      id: string;
+      color: string;
+    };
+
+    cantidad: number;
+    id: string;
+  };
+  idLineaDespacho: {
     nombre: string;
     id: string;
   };
