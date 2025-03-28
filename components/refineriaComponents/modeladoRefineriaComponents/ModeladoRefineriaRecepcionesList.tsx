@@ -179,7 +179,7 @@ const ModeladoRefineriaRecepcionesList = ({
                     <div className="flex flex-column gap-2">
                       <div className="flex align-items-center gap-2">
                         <span className="font-bold min-w-8rem">
-                          {recepcion.idContratoItems.producto.nombre}
+                          {recepcion.idContratoItems?.producto.nombre}
                         </span>
                         <div className="flex-grow-1">
                           <ProgressBar
@@ -190,7 +190,7 @@ const ModeladoRefineriaRecepcionesList = ({
                             }
                             showValue={false}
                             style={{ minWidth: "10rem", height: "0.6rem" }}
-                            color={`#${recepcion.idContratoItems.producto.color}`}
+                            color={`#${recepcion.idContratoItems?.producto.color}`}
                           />
                           <div className="flex justify-content-between text-xs mt-1">
                             <span>

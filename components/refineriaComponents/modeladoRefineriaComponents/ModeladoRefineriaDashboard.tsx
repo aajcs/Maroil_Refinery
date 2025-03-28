@@ -66,7 +66,7 @@ const ModeladoRefineriaDashboard = () => {
       const productos = contrato.idItems.map((item: any) => {
         const recepcionesProducto = recepcionesContrato.filter(
           (recepcion) =>
-            recepcion.idContratoItems.producto.id === item.producto.id
+            recepcion.idContratoItems?.producto.id === item.producto.id
         );
 
         const cantidadRecibida = recepcionesProducto.reduce(
