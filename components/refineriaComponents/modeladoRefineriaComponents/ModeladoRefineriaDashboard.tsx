@@ -16,6 +16,8 @@ import ModeladoRefineriaContratosList from "./ModeladoRefineriaContratosList";
 import ModeladoRefineriaRecepcionesList from "./ModeladoRefineriaRecepcionesList";
 import ModeladoRefineriaLineaDespacho from "./ModeladoRefineriaLineaDespacho";
 import ModeladoRefineriaDespachosList from "./ModeladoRefineriaDespachosList";
+import { Contrato } from "@/libs/interfaces";
+import ModeladoRefineriaContratosVentaList from "./ModeladoRefineriaContratosVentaList";
 
 const ModeladoRefineriaDashboard = () => {
   const { activeRefineria } = useRefineriaStore();
@@ -34,18 +36,27 @@ const ModeladoRefineriaDashboard = () => {
     activeRefineria?.id || "",
     recepcionModificado || undefined // Pasa recepcionModificado como dependencia
   );
-  console.log(lineaDespachos);
   const [visible, setVisible] = useState<boolean>(false);
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const [visibleDespachos, setVisibleDespachos] = useState<boolean>(false);
+  const [selectedContratoVenta, setSelectedContratoVenta] = useState<any>(null);
 
   const showDialog = useCallback((product: any) => {
     setSelectedProduct(product);
     setVisible(true);
   }, []);
+  const onShowDialogDespachos = useCallback((contrato: any) => {
+    setSelectedContratoVenta(contrato);
+    setVisibleDespachos(true);
+  }, []);
 
   const hideDialog = useCallback(() => {
     setVisible(false);
     setSelectedProduct(null);
+  }, []);
+  const hideDialogDespacho = useCallback(() => {
+    setVisibleDespachos(false);
+    setSelectedContratoVenta(null);
   }, []);
   const tanquesFiltradosOrdenados = useMemo(
     () =>
@@ -73,16 +84,37 @@ const ModeladoRefineriaDashboard = () => {
           (total, recepcion) => total + recepcion.cantidadRecibida,
           0
         );
+
         const cantidadFaltante = item.cantidad - cantidadRecibida;
+
         const porcentaje = (cantidadRecibida / item.cantidad) * 100;
+
+        const despachosProducto = despachos.filter(
+          (despacho) =>
+            despacho.idContratoItems?.producto.id === item.producto.id
+        );
+
+        const cantidadDespachada = despachosProducto.reduce(
+          (total, despacho) => total + despacho.cantidadRecibida,
+          0
+        );
+
+        const porcentajeDespacho = (cantidadDespachada / item.cantidad) * 100;
+        const cantidadFaltanteDespacho = item.cantidad - cantidadDespachada;
 
         return {
           producto: item.producto,
           cantidad: item.cantidad,
+
+          recepciones: recepcionesProducto,
           cantidadRecibida,
           cantidadFaltante,
-          recepciones: recepcionesProducto,
           porcentaje,
+
+          despachos: despachosProducto,
+          cantidadDespachada,
+          cantidadFaltanteDespacho,
+          porcentajeDespacho,
         };
       });
 
@@ -108,9 +140,9 @@ const ModeladoRefineriaDashboard = () => {
           contratos={recepcionesPorContrato}
           onShowDialog={showDialog}
         />
-        <ModeladoRefineriaContratosList
+        <ModeladoRefineriaContratosVentaList
           contratos={recepcionesPorContrato}
-          onShowDialog={showDialog}
+          onShowDialogDespachos={onShowDialogDespachos}
         />
         <ModeladoRefineriaRecepcionesList recepciones={recepcions} />
         <ModeladoRefineriaDespachosList despachos={despachos} />
@@ -307,6 +339,96 @@ const ModeladoRefineriaDashboard = () => {
                   <div>
                     <strong>Cantidad Faltante:</strong>{" "}
                     {selectedProduct.cantidadFaltante.toLocaleString("de-DE")}{" "}
+                    Bbls
+                  </div>
+                </div>
+              }
+            >
+              <Column field="placa" header="Placa"></Column>
+              <Column
+                field="nombreChofer"
+                header="Chofer"
+                body={(rowData: any) =>
+                  rowData.nombreChofer + " " + rowData.apellidoChofer
+                }
+              ></Column>
+              <Column field="idGuia" header="Guía"></Column>
+              <Column field="idTanque.nombre" header="Tanque"></Column>
+              <Column
+                field="cantidadRecibida"
+                header="Cantidad Recibida"
+                body={(rowData: any) =>
+                  `${Number(rowData.cantidadRecibida).toLocaleString(
+                    "de-DE"
+                  )} Bbls`
+                }
+              ></Column>
+
+              <Column
+                field="fechaInicio"
+                header="Fecha Inicio"
+                body={(rowData: any) => formatDateFH(rowData.fechaInicio)}
+              ></Column>
+              <Column
+                field="fechaDespacho"
+                header="Fecha Despacho"
+                body={(rowData: any) => formatDateFH(rowData.fechaDespacho)}
+              ></Column>
+              <Column
+                field="fechaFin"
+                header="Fecha Fin"
+                body={(rowData: any) => formatDateFH(rowData.fechaFin)}
+              ></Column>
+              <Column
+                header="Tiempo de Carga"
+                body={(rowData: any) =>
+                  formatDuration(rowData.fechaInicio, rowData.fechaFin)
+                }
+              ></Column>
+            </DataTable>
+          </>
+        )}
+      </Dialog>
+      <Dialog
+        header="Detalles de Recepciones"
+        visible={visibleDespachos}
+        modal
+        onHide={hideDialogDespacho}
+        style={{ width: "80vw" }}
+        breakpoints={{
+          "960px": "75vw",
+          "641px": "100vw",
+        }}
+      >
+        {selectedContratoVenta && (
+          <>
+            <DataTable
+              value={selectedContratoVenta.despachos}
+              size="small"
+              tableStyle={{ minWidth: "50rem" }}
+              footer={
+                <div className="p-2 flex justify-content-between">
+                  <div>
+                    <strong>Producto:</strong>{" "}
+                    {selectedContratoVenta.producto.nombre}
+                  </div>
+                  <div>
+                    <strong>Cantidad:</strong>{" "}
+                    {selectedContratoVenta.cantidad.toLocaleString("de-DE")}{" "}
+                    Bbls
+                  </div>
+                  <div>
+                    <strong>Cantidad Recibida:</strong>{" "}
+                    {selectedContratoVenta.cantidadDespachada.toLocaleString(
+                      "de-DE"
+                    )}{" "}
+                    Bbls
+                  </div>
+                  <div>
+                    <strong>Cantidad Faltante:</strong>{" "}
+                    {selectedContratoVenta.cantidadFaltanteDespacho.toLocaleString(
+                      "de-DE"
+                    )}{" "}
                     Bbls
                   </div>
                 </div>

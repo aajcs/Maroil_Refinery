@@ -26,6 +26,11 @@ const ModeladoRefineriaLineaCarga = ({
     setAnimationKey((prev) => prev + 1);
   }, [hasAssociatedRecepcion]);
 
+  const tanqueRecetor = recepcions.find(
+    (recepcion) =>
+      recepcion.idLinea?.id === lineaRecepcion.id && recepcion.estado === "true"
+  );
+  console.log("tanqueRecetor", tanqueRecetor?.idTanque?.nombre);
   return (
     <svg
       id="eYfEaAlRzTb1"
@@ -85,6 +90,9 @@ const ModeladoRefineriaLineaCarga = ({
 
       <text x="0" y="10" fill="black" fontSize="12" fontWeight="bold">
         {lineaRecepcion.nombre}
+      </text>
+      <text x="160" y="150" fill="black" fontSize="12" fontWeight="bold">
+        {tanqueRecetor?.idTanque?.nombre}
       </text>
       {/* Botón verde titilando */}
       {hasAssociatedRecepcion ? (

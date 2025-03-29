@@ -159,13 +159,14 @@ const ModeladoRefineriaTanque = ({
 
   const isLoadingDespacho = useMemo(() => {
     if (!despachos || !tanque) return false;
+    console.log("para la validacion?");
 
     return despachos.some(
-      (despacho) =>
-        despacho.idTanque?.id === tanque.id && despacho.estado === "true"
+      (despacho) => despacho.idTanque?.id === tanque.id
+      // && despacho.estado === "true"
     );
   }, [despachos, tanque]);
-
+  console.log("object", isLoadingDespacho);
   const isLoadingRefinacion = useMemo(() => {
     if (!refinacions || !tanque) return false;
 
@@ -222,16 +223,16 @@ const ModeladoRefineriaTanque = ({
             <path d="M 50,100 A 100,40 0 0 1 250,100 L 250,250 A 100,40 0 0 1 50,250 Z" />
           </clipPath>
         </defs>
-
-        {/* ----------- RELLENO DINÁMICO CON CURVA INFERIOR ----------- */}
-        <path
-          d={fillPath}
-          fill={`url(#${gradientId})`}
-          clipPath="url(#tankClip)"
-          className="fill-animate"
-        />
-        {/* ----------- BARRA DE CARGA ----------- */}
-        {/* {isLoading && (
+        <g transform="matrix(0.8 0 0 0.8 0 0)">
+          {/* ----------- RELLENO DINÁMICO CON CURVA INFERIOR ----------- */}
+          <path
+            d={fillPath}
+            fill={`url(#${gradientId})`}
+            clipPath="url(#tankClip)"
+            className="fill-animate"
+          />
+          {/* ----------- BARRA DE CARGA ----------- */}
+          {/* {isLoading && (
           <rect
             x="50"
             y="150"
@@ -267,122 +268,150 @@ const ModeladoRefineriaTanque = ({
             />
           </rect>
         )} */}
-        {/* <g transform="matrix(.066237 0 0 0.066236 44.872293 39.087458)"> */}
+          {/* <g transform="matrix(.066237 0 0 0.066236 44.872293 39.087458)"> */}
 
-        {/* </g> */}
-        {/* ----------- CUERPO DEL TANQUE ----------- */}
-        {/* Elipse superior */}
-        <ellipse
-          cx="150"
-          cy="100"
-          rx="100"
-          ry="40"
-          fill="#ccc"
-          stroke="#888"
-          strokeWidth="2"
-        />
-        {/* Elipse inferior */}
-        <ellipse
-          cx="150"
-          cy="250"
-          rx="100"
-          ry="40"
-          fill="rgba(204, 204, 204, 0.5)"
-          stroke="#888"
-          strokeWidth="2"
-        />
-        {/* Contorno lateral */}
-        <path
-          d="M 50,100 
+          {/* </g> */}
+          {/* ----------- CUERPO DEL TANQUE ----------- */}
+          {/* Elipse superior */}
+          <ellipse
+            cx="150"
+            cy="100"
+            rx="100"
+            ry="40"
+            fill="#ccc"
+            stroke="#888"
+            strokeWidth="2"
+          />
+          {/* Elipse inferior */}
+          <ellipse
+            cx="150"
+            cy="250"
+            rx="100"
+            ry="40"
+            fill="rgba(204, 204, 204, 0.5)"
+            stroke="#888"
+            strokeWidth="2"
+          />
+          {/* Contorno lateral */}
+          <path
+            d="M 50,100 
              L 50,250
              M 250,100
              L 250,250"
-          stroke="#999"
-          strokeWidth="2"
-        />
-        {/* Líneas horizontales simulando costillas */}
-        {Array.from({ length: 8 }).map((_, i) => {
-          const yPos = 110 + i * ((240 - 110) / 7);
-          return (
-            <path
-              key={i}
-              d={`
+            stroke="#999"
+            strokeWidth="2"
+          />
+          {/* Líneas horizontales simulando costillas */}
+          {Array.from({ length: 8 }).map((_, i) => {
+            const yPos = 110 + i * ((240 - 110) / 7);
+            return (
+              <path
+                key={i}
+                d={`
                 M 50,${yPos} 
                 A 100,40 0 0 0 250,${yPos}
               `}
-              fill="none"
-              stroke="#bbb"
-              strokeWidth="1"
-            />
-          );
-        })}
-        {/* ----------- PLATAFORMA / PASARELA ----------- */}
-        <rect
-          x="230"
-          y="85"
-          width="40"
-          height="10"
-          fill="#ccc"
-          stroke="#666"
-          strokeWidth="1"
-        />
-        <line
-          x1="230"
-          y1="85"
-          x2="270"
-          y2="85"
-          stroke="#f2a13e"
-          strokeWidth="2"
-        />
-        <line
-          x1="230"
-          y1="85"
-          x2="230"
-          y2="95"
-          stroke="#f2a13e"
-          strokeWidth="2"
-        />
-        <line
-          x1="270"
-          y1="85"
-          x2="270"
-          y2="95"
-          stroke="#f2a13e"
-          strokeWidth="2"
-        />
-        {/* ----------- ESCALERA LATERAL ----------- */}
-        <path
-          d="M 270,95 L 270,250
+                fill="none"
+                stroke="#bbb"
+                strokeWidth="1"
+              />
+            );
+          })}
+          {/* ----------- PLATAFORMA / PASARELA ----------- */}
+          <rect
+            x="230"
+            y="85"
+            width="40"
+            height="10"
+            fill="#ccc"
+            stroke="#666"
+            strokeWidth="1"
+          />
+          <line
+            x1="230"
+            y1="85"
+            x2="270"
+            y2="85"
+            stroke="#f2a13e"
+            strokeWidth="2"
+          />
+          <line
+            x1="230"
+            y1="85"
+            x2="230"
+            y2="95"
+            stroke="#f2a13e"
+            strokeWidth="2"
+          />
+          <line
+            x1="270"
+            y1="85"
+            x2="270"
+            y2="95"
+            stroke="#f2a13e"
+            strokeWidth="2"
+          />
+          {/* ----------- ESCALERA LATERAL ----------- */}
+          <path
+            d="M 270,95 L 270,250
              M 260,95 L 260,250
             "
-          stroke="#f2a13e"
-          strokeWidth="3"
-        />
-        {Array.from({ length: 10 }).map((_, i) => {
-          const stepY = 100 + i * ((250 - 100) / 9);
-          return (
-            <line
-              key={i}
-              x1="260"
-              y1={stepY}
-              x2="270"
-              y2={stepY}
-              stroke="#f2a13e"
-              strokeWidth="2"
-            />
-          );
-        })}
+            stroke="#f2a13e"
+            strokeWidth="3"
+          />
+          {Array.from({ length: 10 }).map((_, i) => {
+            const stepY = 100 + i * ((250 - 100) / 9);
+            return (
+              <line
+                key={i}
+                x1="260"
+                y1={stepY}
+                x2="270"
+                y2={stepY}
+                stroke="#f2a13e"
+                strokeWidth="2"
+              />
+            );
+          })}
+        </g>
         {/* ----------- TEXTO DEL NIVEL ----------- */}
-        <text x="120" y="320" fill="black" fontSize="14">
-          Nivel: {apiData.tankLevel}%
-        </text>
-        <text x="80" y="100" fill="black" fontSize="14">
+        <g>
+          {/* Fondo para el texto */}
+          <rect
+            x="80"
+            y="135"
+            width="100"
+            height="20"
+            fill="white"
+            opacity="0.8"
+            rx="5"
+            ry="5"
+          />
+
+          {/* Texto del nivel */}
+          <text
+            x="90"
+            y="150"
+            fill={
+              apiData.tankLevel > 90
+                ? "red" // Rojo si el nivel es mayor al 90%
+                : apiData.tankLevel < 20
+                ? "green" // Verde si el nivel es menor al 20%
+                : "black" // Negro para niveles entre 20% y 90%
+            }
+            fontSize="14"
+            fontWeight="bold"
+          >
+            Nivel: {apiData.tankLevel}%
+          </text>
+        </g>
+        <text x="90" y="70" fill="black" fontSize="14">
           {tanque.nombre}
         </text>
-        <text x="80" y="120" fill="black" fontSize="14">
+        <text x="90" y="90" fill="black" fontSize="14">
           {tanque.idProducto?.nombre} {/* Mostrar todos los materiales */}
         </text>
-        <text x="70" y="340" fontSize="14">
+        <text x="10" y="260" fontSize="18">
           Cantidad estimada:{" "}
           {(
             totalRecepcion +
@@ -392,7 +421,7 @@ const ModeladoRefineriaTanque = ({
           ).toFixed(2)}{" "}
           Bbl
         </text>
-        <text x="70" y="355" fontSize="14">
+        <text x="10" y="280" fontSize="18">
           Cantidad chequo:{" "}
           {ultimosChequeosPorRefinacion?.[0]?.cantidad || "No disponible"} Bbl
           {/* Cantidad: {totalRecepcion - totalRefinacion} Bbl */}
@@ -486,7 +515,7 @@ const ModeladoRefineriaTanque = ({
             </g>
           </>
         ) : (
-          <g transform="matrix(.075615 0 0 .075615 140 150)">
+          <g transform="matrix(.075615 0 0 .075615 120 70)">
             <PocisionCerrada />
           </g>
         )}

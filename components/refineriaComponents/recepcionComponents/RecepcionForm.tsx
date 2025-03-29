@@ -19,6 +19,8 @@ import { getTanques } from "@/app/api/tanqueService";
 import { getContratos } from "@/app/api/contratoService";
 import { RadioButton } from "primereact/radiobutton";
 import { ProgressSpinner } from "primereact/progressspinner";
+import { truncateText } from "@/utils/funcionesUtiles";
+import { Steps } from "primereact/steps";
 
 type FormData = z.infer<typeof recepcionSchema>;
 
@@ -31,9 +33,25 @@ interface RecepcionFormProps {
 }
 
 const estatusValues = ["true", "false"];
+
+// Estados de Recepción (Flujo principal)
+const estadoRecepcionOptions = [
+  { label: "Programado", value: "PROGRAMADO" }, // Cuando está agendado
+  { label: "En Tránsito", value: "EN_TRANSITO" }, // Reemplaza "En Recepción" para cuando viene en camino
+  { label: "En Refineria", value: "EN_REFINERIA" }, // Cuando llega físicamente
+  { label: "Descargando", value: "DESCARGANDO" }, // Estado activo de descarga
+  { label: "Descarga Completa", value: "COMPLETADO" }, // Finalización exitosa
+  { label: "Rechazado", value: "RECHAZADO" }, // Si no cumple requisitos
+  { label: "Cancelado", value: "CANCELADO" }, // Si no se presenta
+];
+
+// Estados de Carga/Descarga (Detalle operativo)
 const estadoCargaOptions = [
-  { label: "EN_TRANSITO", value: "EN_TRANSITO" },
-  { label: "ENTREGADO", value: "ENTREGADO" },
+  { label: "Pendiente Muestreo", value: "PENDIENTE_MUESTREO" }, // Antes de iniciar
+  { label: "Muestreo Aprobado", value: "MUESTREO_APROBADO" }, // Permite descarga
+  { label: "En Proceso", value: "EN_PROCESO" }, // Descarga activa
+  { label: "Pausado", value: "PAUSADO" }, // Interrupciones
+  { label: "Finalizado", value: "FINALIZADO" }, // Fin del proceso
 ];
 
 const RecepcionForm = ({
@@ -124,9 +142,9 @@ const RecepcionForm = ({
         const updatedRecepcion = await updateRecepcion(recepcion.id, {
           ...data,
           idContrato: data.idContrato?.id,
-          idLinea: data.idLinea?.id,
+          idLinea: data.idLinea?.id || null,
           idContratoItems: data.idContratoItems?.id,
-          idTanque: data.idTanque?.id,
+          idTanque: data.idTanque?.id || null,
           idRefineria: activeRefineria?.id,
         });
         const updatedRecepcions = recepcions.map((t) =>
@@ -140,8 +158,8 @@ const RecepcionForm = ({
         const newRecepcion = await createRecepcion({
           ...data,
           idContrato: data.idContrato?.id,
-          idLinea: data.idLinea?.id,
-          idTanque: data.idTanque?.id,
+          idLinea: data.idLinea?.id || null,
+          idTanque: data.idTanque?.id || null,
           idContratoItems: data.idContratoItems?.id,
           idRefineria: activeRefineria?.id,
         });
@@ -168,7 +186,8 @@ const RecepcionForm = ({
   ) => {
     toast.current?.show({ severity, summary, detail, life: 3000 });
   };
-
+  const estadoRecepcion = watch("estadoRecepcion");
+  const estadoCarga = watch("estadoCarga");
   console.log(errors);
   // console.log(JSON.stringify(watch("idContrato"), null, 2));
   // console.log(watch("idContrato"));
@@ -213,6 +232,7 @@ const RecepcionForm = ({
   return (
     <div>
       <Toast ref={toast} />
+
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="grid formgrid p-fluid">
           {/* Campo: ID de la Guía */}
@@ -292,27 +312,29 @@ const RecepcionForm = ({
             <label htmlFor="idContacto.nombre" className="font-medium text-900">
               Número de Contrato
             </label>
-            <Dropdown
-              id="idContrato.id"
-              value={watch("idContrato")}
-              onChange={(e) => {
-                setValue("idContrato", e.value);
-              }}
-              options={contratos.map((contrato) => ({
-                label: contrato.numeroContrato,
-                value: {
-                  id: contrato.id,
-                  idItems: contrato.idItems,
-                  numeroContrato: contrato.numeroContrato,
-                  _id: contrato.id,
-                },
-              }))}
-              // options={contratos}
-              // optionLabel="numeroContrato"
-              placeholder="Seleccionar un proveedor"
-              className={classNames("w-full", {
-                "p-invalid": errors.idContrato?.numeroContrato,
-              })}
+            <Controller
+              name="idContrato"
+              control={control}
+              render={({ field, fieldState }) => (
+                <Dropdown
+                  id="idContrato.id"
+                  value={field.value}
+                  onChange={(e) => field.onChange(e.value)}
+                  options={contratos.map((contrato) => ({
+                    label: `${contrato.numeroContrato} - ${truncateText(
+                      contrato.descripcion || "Sin descripción",
+                      30
+                    )}`, // Formato: "N123 - Descripción..."
+                    value: { ...contrato }, // 👈 ¡Envía el objeto completo!
+                  }))}
+                  placeholder="Seleccionar un proveedor"
+                  className={classNames("w-full", {
+                    "p-invalid": fieldState.error,
+                  })}
+                  showClear
+                  filter
+                />
+              )}
             />
             {errors.idContrato?.numeroContrato && (
               <small className="p-error">
@@ -416,24 +438,34 @@ const RecepcionForm = ({
             >
               Nombre de la Línea
             </label>
-            <Dropdown
-              id="idLinea.id"
-              value={watch("idLinea")}
-              // {...register("idLinea.id")}
-              onChange={(e) => {
-                setValue("idLinea", e.value);
-              }}
-              options={lineaRecepcions.map((lineaRecepcion) => ({
-                label: lineaRecepcion.nombre,
-                value: {
-                  id: lineaRecepcion.id,
-                  nombre: lineaRecepcion.nombre,
-                },
-              }))}
-              placeholder="Seleccionar un proveedor"
-              className={classNames("w-full", {
-                "p-invalid": errors.idLinea?.nombre,
-              })}
+            <Controller
+              name="idLinea"
+              control={control}
+              render={({ field, fieldState }) => (
+                <Dropdown
+                  id="idLinea.id"
+                  value={field.value}
+                  onChange={(e) => {
+                    field.onChange(e.value); // Actualiza el valor seleccionado
+                    if (!e.value) {
+                      field.onChange(null); // Limpia el valor en el formulario
+                    }
+                  }}
+                  options={lineaRecepcions.map((lineaRecepcion) => ({
+                    label: lineaRecepcion.nombre,
+                    value: {
+                      id: lineaRecepcion.id,
+                      nombre: lineaRecepcion.nombre,
+                    },
+                  }))}
+                  placeholder="Seleccionar una línea"
+                  className={classNames("w-full", {
+                    "p-invalid": fieldState.error,
+                  })}
+                  showClear
+                  filter
+                />
+              )}
             />
             {errors.idLinea?.nombre && (
               <small className="p-error">{errors.idLinea.nombre.message}</small>
@@ -448,31 +480,60 @@ const RecepcionForm = ({
             >
               Nombre del Tanque
             </label>
-            <Dropdown
-              id="idTanque.id"
-              value={watch("idTanque")}
-              // {...register("idTanque.id")}
-              onChange={(e) => {
-                setValue("idTanque", e.value);
+            <Controller
+              name="idTanque"
+              control={control}
+              render={({ field, fieldState }) => {
+                // Obtener el producto seleccionado en idContratoItems
+                const selectedProducto = watch("idContratoItems")?.producto;
+
+                // Filtrar los tanques que almacenan el producto seleccionado
+                const filteredTanques = tanques.filter(
+                  (tanque) => tanque.idProducto?.id === selectedProducto?.id
+                );
+                // Condición para inhabilitar el campo
+                const isDisabled =
+                  estadoRecepcion !== "EN_PROCESO" &&
+                  estadoCarga !== "EN_PROCESO";
+
+                return (
+                  <>
+                    <Dropdown
+                      id="idTanque.id"
+                      value={field.value}
+                      onChange={(e) => {
+                        field.onChange(e.value); // Actualiza el valor seleccionado
+                        if (!e.value) {
+                          field.onChange(null); // Limpia el valor en el formulario
+                        }
+                      }}
+                      options={filteredTanques.map((tanque) => ({
+                        label: `${tanque.nombre} - ${
+                          tanque.idProducto?.nombre || "Sin producto"
+                        } (${tanque.almacenamiento || 0} Bbl)`,
+                        value: {
+                          id: tanque.id,
+                          nombre: tanque.nombre,
+                          _id: tanque.id,
+                        },
+                      }))}
+                      placeholder="Seleccionar un tanque"
+                      className={classNames("w-full", {
+                        "p-invalid": fieldState.error,
+                      })}
+                      showClear
+                      filter
+                      disabled={isDisabled} // Inhabilitar el campo si no está en proceso
+                    />
+                    {fieldState.error && (
+                      <small className="p-error">
+                        {fieldState.error.message}
+                      </small>
+                    )}
+                  </>
+                );
               }}
-              options={tanques.map((tanque) => ({
-                label: tanque.nombre,
-                value: {
-                  id: tanque.id,
-                  nombre: tanque.nombre,
-                  _id: tanque.id,
-                },
-              }))}
-              placeholder="Seleccionar un proveedor"
-              className={classNames("w-full", {
-                "p-invalid": errors.idTanque?.nombre,
-              })}
             />
-            {errors.idTanque?.nombre && (
-              <small className="p-error">
-                {errors.idTanque.nombre.message}
-              </small>
-            )}
           </div>
 
           {/* Campo: Estado de carga*/}
@@ -480,15 +541,21 @@ const RecepcionForm = ({
             <label htmlFor="estadoEntrega" className="font-medium text-900">
               Estado de Carga
             </label>
-            <Dropdown
-              id="estadoCarga"
-              value={watch("estadoCarga")}
-              {...register("estadoCarga")}
-              options={estadoCargaOptions}
-              placeholder="Seleccionar estado de entrega"
-              className={classNames("w-full", {
-                "p-invalid": errors.estadoCarga,
-              })}
+            <Controller
+              name="estadoCarga"
+              control={control}
+              render={({ field, fieldState }) => (
+                <Dropdown
+                  id="estadoCarga"
+                  value={field.value}
+                  onChange={(e) => field.onChange(e.value)}
+                  options={estadoCargaOptions}
+                  placeholder="Seleccionar estado de entrega"
+                  className={classNames("w-full", {
+                    "p-invalid": fieldState.error,
+                  })}
+                />
+              )}
             />
             {errors.estadoCarga && (
               <small className="p-error">{errors.estadoCarga.message}</small>
@@ -572,21 +639,189 @@ const RecepcionForm = ({
               <small className="p-error">{errors.fechaFin.message}</small>
             )}
           </div>
+          {/* Campo: Fecha Inicio Receocion */}
+          <div className="field mb-4 col-12 sm:col-6 lg:4">
+            <label
+              htmlFor="fechaInicioRecepcion"
+              className="font-medium text-900"
+            >
+              Fecha Inicio Recepción
+            </label>
+            <Calendar
+              id="fechaInicioRecepcion"
+              value={
+                watch("fechaInicioRecepcion")
+                  ? new Date(watch("fechaInicioRecepcion") as string | Date)
+                  : undefined
+              }
+              {...register("fechaInicioRecepcion")}
+              showTime
+              hourFormat="24"
+              className={classNames("w-full", {
+                "p-invalid": errors.fechaInicioRecepcion,
+              })}
+              locale="es"
+            />
+            {errors.fechaInicioRecepcion && (
+              <small className="p-error">
+                {errors.fechaInicioRecepcion.message}
+              </small>
+            )}
+          </div>
+          {/* Campo: Fecha Fin Recepcion */}
+          <div className="field mb-4 col-12 sm:col-6 lg:4">
+            <label htmlFor="fechaFinRecepcion" className="font-medium text-900">
+              Fecha Fin Recepción
+            </label>
+            <Calendar
+              id="fechaFinRecepcion"
+              value={
+                watch("fechaFinRecepcion")
+                  ? new Date(watch("fechaFinRecepcion") as string | Date)
+                  : undefined
+              }
+              {...register("fechaFinRecepcion")}
+              showTime
+              hourFormat="24"
+              className={classNames("w-full", {
+                "p-invalid": errors.fechaFinRecepcion,
+              })}
+              locale="es"
+            />
+            {errors.fechaFinRecepcion && (
+              <small className="p-error">
+                {errors.fechaFinRecepcion.message}
+              </small>
+            )}
+          </div>
+          {/* Campo: Fecha Salida */}
+          <div className="field mb-4 col-12 sm:col-6 lg:4">
+            <label htmlFor="fechaSalida" className="font-medium text-900">
+              Fecha Salida
+            </label>
+            <Calendar
+              id="fechaSalida"
+              value={
+                watch("fechaSalida")
+                  ? new Date(watch("fechaSalida") as string | Date)
+                  : undefined
+              }
+              {...register("fechaSalida")}
+              showTime
+              hourFormat="24"
+              className={classNames("w-full", {
+                "p-invalid": errors.fechaSalida,
+              })}
+              locale="es"
+            />
+            {errors.fechaSalida && (
+              <small className="p-error">{errors.fechaSalida.message}</small>
+            )}
+          </div>
+          {/* Campo: Fecha Llegada */}
+          <div className="field mb-4 col-12 sm:col-6 lg:4">
+            <label htmlFor="fechaLlegada" className="font-medium text-900">
+              {" "}
+              Fecha Llegada{" "}
+            </label>
+            <Calendar
+              id="fechaLlegada"
+              value={
+                watch("fechaLlegada")
+                  ? new Date(watch("fechaLlegada") as string | Date)
+                  : undefined
+              }
+              {...register("fechaLlegada")}
+              showTime
+              hourFormat="24"
+              className={classNames("w-full", {
+                "p-invalid": errors.fechaLlegada,
+              })}
+              locale="es"
+            />
+            {errors.fechaLlegada && (
+              <small className="p-error">{errors.fechaLlegada.message}</small>
+            )}
+          </div>
+          {/* Campo: Estado de la Recepción */}
+          <div className="field mb-4 col-12 sm:col-6 lg:4">
+            <label htmlFor="estadoRecepcion" className="font-medium text-900">
+              Estado de la Recepción
+            </label>
+            <Controller
+              name="estadoRecepcion"
+              control={control}
+              render={({ field, fieldState }) => (
+                <Dropdown
+                  id="estadoRecepcion"
+                  value={field.value}
+                  onChange={(e) => field.onChange(e.value)}
+                  options={estadoRecepcionOptions}
+                  placeholder="Seleccionar estado de la recepción"
+                  className={classNames("w-full", {
+                    "p-invalid": fieldState.error,
+                  })}
+                />
+              )}
+            />
+            {errors.estadoRecepcion && (
+              <small className="p-error">
+                {errors.estadoRecepcion.message}
+              </small>
+            )}
+          </div>
           {/* Campo: Estado */}
           <div className="field mb-4 col-12 sm:col-6 lg:col-4">
             <label htmlFor="estado" className="font-medium text-900">
               Estado
             </label>
-            <Dropdown
-              id="estado"
-              value={watch("estado")}
-              {...register("estado")}
-              options={estatusValues}
-              placeholder="Seleccionar estado"
-              className={classNames("w-full", { "p-invalid": errors.estado })}
+            <Controller
+              name="estado"
+              control={control}
+              render={({ field, fieldState }) => (
+                <Dropdown
+                  id="estado"
+                  value={field.value}
+                  onChange={(e) => field.onChange(e.value)}
+                  options={estatusValues.map((value) => ({
+                    label: value === "true" ? "Activo" : "Inactivo", // Etiquetas personalizadas
+                    value,
+                  }))}
+                  placeholder="Seleccionar estado"
+                  className={classNames("w-full", {
+                    "p-invalid": fieldState.error,
+                  })}
+                />
+              )}
             />
             {errors.estado && (
               <small className="p-error">{errors.estado.message}</small>
+            )}
+          </div>
+          <div className="field mb-4 col-12">
+            <label htmlFor="estadoRecepcion" className="font-medium text-900">
+              Estado de la Recepción
+            </label>
+            <Steps
+              model={estadoRecepcionOptions.map((option) => ({
+                label: option.label,
+                command: () => {
+                  setValue("estadoRecepcion", option.value); // Actualiza el valor en el formulario
+                },
+              }))}
+              activeIndex={estadoRecepcionOptions.findIndex(
+                (option) => option.value === watch("estadoRecepcion")
+              )} // Marca el estado actual como activo
+              onSelect={(e) => {
+                const selectedOption = estadoRecepcionOptions[e.index];
+                setValue("estadoRecepcion", selectedOption.value); // Actualiza el valor seleccionado
+              }}
+              readOnly={false} // Permite seleccionar pasos
+            />
+            {errors.estadoRecepcion && (
+              <small className="p-error">
+                {errors.estadoRecepcion.message}
+              </small>
             )}
           </div>
         </div>

@@ -131,6 +131,7 @@ export interface Contrato {
 export interface Recepcion {
   id: string;
   estadoCarga: string;
+  estadoRecepcion: string;
   estado: string;
   eliminado: boolean;
   idContrato: {
@@ -187,12 +188,17 @@ export interface Recepcion {
   idTanque: {
     nombre: string;
     id: string;
-  };
+  } | null;
+
   cantidadRecibida: number;
   cantidadEnviada: number;
   fechaInicio: string;
   fechaFin: string;
   fechaDespacho: string;
+  fechaInicioRecepcion: string;
+  fechaFinRecepcion: string;
+  fechaSalida: string;
+  fechaLlegada: string;
   idGuia: number;
   placa: string;
   nombreChofer: string;

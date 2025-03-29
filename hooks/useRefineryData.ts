@@ -60,7 +60,7 @@ export const useRefineryData = (
         productosDB,
         tipoProductosDB,
         contactosDB,
-        brent,
+        // brent,
       ] = await Promise.all([
         getTanques(),
         getTorresDestilacion(),
@@ -73,7 +73,7 @@ export const useRefineryData = (
         getProductos(),
         getTipoProductos(),
         getContactos(),
-        getBrent(),
+        // getBrent(),
       ]);
 
       const filteredTanques =

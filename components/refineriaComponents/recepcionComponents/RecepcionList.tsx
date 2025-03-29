@@ -188,6 +188,31 @@ const RecepcionList = () => {
           header="Fecha de Fin"
           body={(rowData: Recepcion) => formatDateFH(rowData.fechaFin)}
         />
+
+        <Column
+          field="fechaInicioRecepcion"
+          header="Fecha de Fin"
+          body={(rowData: Recepcion) =>
+            formatDateFH(rowData.fechaInicioRecepcion)
+          }
+        />
+        <Column
+          field="fechaFinRecepcion"
+          header="Fecha de Fin"
+          body={(rowData: Recepcion) => formatDateFH(rowData.fechaFinRecepcion)}
+        />
+        <Column
+          field="fechaSalida"
+          header="Fecha de Fin"
+          body={(rowData: Recepcion) => formatDateFH(rowData.fechaSalida)}
+        />
+        <Column
+          field="fechaLlegada"
+          header="Fecha de Fin"
+          body={(rowData: Recepcion) => formatDateFH(rowData.fechaLlegada)}
+        />
+
+        <Column field="estadoRecepcion" header="Estado de la Recepcion" />
         <Column field="estadoCarga" header="Estado de la Carga" />
         <Column field="estado" header="Estado" />
         <Column

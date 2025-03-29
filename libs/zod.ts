@@ -300,6 +300,7 @@ export const contratoSchema = object({
 
 export const recepcionSchema = object({
   estadoCarga: string().min(1, "El estado de carga es obligatorio"),
+  estadoRecepcion: string().min(1, "El estado de recepción es obligatorio"),
   estado: string().min(1, "El estado es obligatorio"),
   eliminado: boolean().default(false),
   cantidadEnviada: number().min(
@@ -312,6 +313,10 @@ export const recepcionSchema = object({
   ),
   fechaInicio: union([string(), date()]).optional(),
   fechaFin: union([string(), date()]).optional(),
+  fechaInicioRecepcion: union([string(), date()]).optional(),
+  fechaFinRecepcion: union([string(), date()]).optional(),
+  fechaSalida: union([string(), date()]).optional(),
+  fechaLlegada: union([string(), date()]).optional(),
   idContrato: object({
     numeroContrato: string().min(1, "El estado es obligatorio").optional(),
     id: string().optional(),
@@ -390,11 +395,15 @@ export const recepcionSchema = object({
   idLinea: object({
     id: string().optional(),
     nombre: string().min(1, "El nombre de la línea es obligatorio"),
-  }).optional(),
+  })
+    .optional()
+    .nullable(),
   idTanque: object({
     id: string().optional(),
     nombre: string().min(1, "El nombre del tanque es obligatorio"),
-  }).optional(),
+  })
+    .optional()
+    .nullable(),
   idGuia: number().min(0, "El ID de la guía debe ser un número no negativo"),
   idRefineria: object({
     id: string().optional(),
@@ -406,6 +415,25 @@ export const recepcionSchema = object({
   createdAt: union([string(), date()]).optional(),
   updatedAt: union([string(), date()]).optional(),
   id: string().optional(),
+}).superRefine((data, ctx) => {
+  // // Validación condicional: fechaLlegada es obligatoria si estadoRecepcion es "EN_REFINERIA"
+  // if (data.estadoRecepcion === "EN_REFINERIA" && !data.fechaLlegada) {
+  //   ctx.addIssue({
+  //     path: ["fechaLlegada"],
+  //     code: "custom",
+  //     message: "La fecha de llegada es obligatoria cuando está en refinería",
+  //   });
+  // }
+
+  // Validación condicional: idTanque es obligatorio si estadoCarga es "EN_PROCESO"
+  if (data.estadoCarga === "EN_PROCESO" && !data.idTanque) {
+    ctx.addIssue({
+      path: ["idTanque"],
+      code: "custom",
+      message:
+        "Debe seleccionar un tanque si el estado de carga está en proceso",
+    });
+  }
 });
 
 export const despachoSchema = object({
@@ -504,7 +532,10 @@ export const despachoSchema = object({
   idTanque: object({
     id: string().optional(),
     nombre: string().min(1, "El nombre del tanque es obligatorio"),
-  }).optional(),
+    null: boolean().optional(),
+  })
+    .optional()
+    .nullable(),
   idGuia: number().min(0, "El ID de la guía debe ser un número no negativo"),
   idRefineria: object({
     id: string().optional(),

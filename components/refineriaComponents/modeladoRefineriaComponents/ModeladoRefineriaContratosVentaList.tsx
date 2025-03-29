@@ -9,31 +9,28 @@ import { Contrato } from "@/libs/interfaces";
 interface Producto {
   producto: { id: string; nombre: string; color: string };
   cantidad: number;
-  cantidadRecibida: number;
-  cantidadFaltante: number;
-  porcentaje: number;
+  cantidadDespachada: number;
+  cantidadFaltanteDespacho: number;
+  porcentajeDespacho: number;
 }
 
-interface ModeladoRefineriaContratosListProps {
+interface ModeladoRefineriaContratosVentaListProps {
   contratos: Array<Contrato & { productos: Producto[] }>;
   onShowDialog?: (product: Producto) => void;
-  onShowDialogDespachos?: (contrato: Contrato) => void;
+  onShowDialogDespachos?: (contrato: Producto) => void;
 }
 
-const ModeladoRefineriaContratosList = ({
+const ModeladoRefineriaContratosVentaList = ({
   contratos,
   onShowDialog,
   onShowDialogDespachos,
-}: ModeladoRefineriaContratosListProps) => {
+}: ModeladoRefineriaContratosVentaListProps) => {
   return (
     <div className="col-12">
-      <h1 className="text-2xl font-bold mb-3">
-        Contratos de venta de derivado
-      </h1>
+      <h1 className="text-2xl font-bold mb-3">Contratos de compra de crudo</h1>
       <div className="grid">
         {contratos
-          .filter((contrato) => contrato.tipoContrato === "Compra") // Filtrar por tipoContrato
-
+          .filter((contrato) => contrato.tipoContrato === "Venta") // Filtrar por tipoContrato
           .map((contrato) => (
             <div
               key={contrato.id}
@@ -78,7 +75,7 @@ const ModeladoRefineriaContratosList = ({
                       </span>
                       <div className="flex-grow-1">
                         <ProgressBar
-                          value={item.porcentaje}
+                          value={item.porcentajeDespacho}
                           showValue={false}
                           // className="h-1rem"
                           style={{ minWidth: "10rem", height: "0.6rem" }}
@@ -89,17 +86,21 @@ const ModeladoRefineriaContratosList = ({
                             {item.cantidad.toLocaleString("de-DE")}Bbl
                           </span>
                           <span className="text-green-800">
-                            {item.cantidadRecibida.toLocaleString("de-DE")}Bbl
+                            {item.cantidadDespachada.toLocaleString("de-DE")}Bbl
                           </span>
                           <span className="text-red-800">
-                            {item.cantidadFaltante.toLocaleString("de-DE")}Bbl
+                            {item.cantidadFaltanteDespacho.toLocaleString(
+                              "de-DE"
+                            )}
+                            Bbl
                           </span>
                         </div>
                       </div>
-                      {onShowDialog && (
+
+                      {onShowDialogDespachos && (
                         <Button
                           icon="pi pi-search"
-                          onClick={() => onShowDialog(item)}
+                          onClick={() => onShowDialogDespachos(item)}
                           className="p-button-sm p-button-text p-button-rounded"
                           tooltip="Mostrar todas las Recepciones"
                           tooltipOptions={{ position: "top" }}
@@ -116,4 +117,4 @@ const ModeladoRefineriaContratosList = ({
   );
 };
 
-export default ModeladoRefineriaContratosList;
+export default ModeladoRefineriaContratosVentaList;
