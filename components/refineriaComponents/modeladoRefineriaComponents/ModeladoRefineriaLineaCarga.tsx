@@ -104,16 +104,6 @@ const ModeladoRefineriaLineaCarga = ({
           <Tuberia />
         </g>
 
-        {hasAssociatedRecepcion ? (
-          <g transform="matrix(-.045615 0 0-.045615 236.787253 212.815595">
-            <PocisionAbierta />
-          </g>
-        ) : (
-          <g transform="matrix(-.045615 0 0-.045615 236.755662 212.77328">
-            <PocisionCerrada />
-          </g>
-        )}
-
         {hasAssociatedRecepcion && (
           <g>
             {recepcions
@@ -190,6 +180,16 @@ const ModeladoRefineriaLineaCarga = ({
               repeatCount="indefinite"
             />
           </circle>
+        )}
+
+        {hasAssociatedRecepcion ? (
+          <g transform="matrix(-.045615 0 0-.045615 236.787253 212.815595)">
+            <PocisionAbierta />
+          </g>
+        ) : (
+          <g transform="matrix(-.045615 0 0-.045615 236.755662 212.77328)">
+            <PocisionCerrada />
+          </g>
         )}
       </svg>
 

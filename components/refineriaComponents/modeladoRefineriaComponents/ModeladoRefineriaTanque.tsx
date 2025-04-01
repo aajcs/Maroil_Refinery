@@ -205,9 +205,9 @@ const ModeladoRefineriaTanque = ({
   return (
     <>
       <svg
-        width="200"
+        width="180"
         height="230"
-        viewBox="0 50 300 300"
+        viewBox="0 50 250 250"
         // className="card m-0 p-0"
       >
         {/* ----------- GRADIENTE Y CLIP-PATH PARA EL TANQUE ----------- */}
@@ -220,7 +220,7 @@ const ModeladoRefineriaTanque = ({
             <path d="M 50,100 A 100,40 0 0 1 250,100 L 250,250 A 100,40 0 0 1 50,250 Z" />
           </clipPath>
         </defs>
-        <g transform="matrix(0.8 0 0 0.8 0 0)">
+        <g transform="matrix(0.5 0 0 0.5 60 0)">
           {/* ----------- RELLENO DINÁMICO CON CURVA INFERIOR ----------- */}
           <path
             d={fillPath}
@@ -372,8 +372,8 @@ const ModeladoRefineriaTanque = ({
           })}
         </g>
         {/* ----------- TEXTO DEL NIVEL ----------- */}
-        <g>
-          {/* Fondo para el texto */}
+        {/* <g>
+          Fondo para el texto
           <rect
             x="80"
             y="135"
@@ -385,7 +385,7 @@ const ModeladoRefineriaTanque = ({
             ry="5"
           />
 
-          {/* Texto del nivel */}
+          Texto del nivel
           <text
             x="90"
             y="150"
@@ -401,14 +401,102 @@ const ModeladoRefineriaTanque = ({
           >
             Nivel: {apiData.tankLevel}%
           </text>
-        </g>
-        <text x="90" y="70" fill="black" fontSize="14">
-          {tanque.nombre}
+        </g> */}
+        {/* <text x="90" y="70" fill="black" fontSize="14">
+          {tanque.nombre} {tanque.idProducto?.nombre}
         </text>
         <text x="90" y="90" fill="black" fontSize="14">
-          {tanque.idProducto?.nombre} {/* Mostrar todos los materiales */}
-        </text>
-        <text x="10" y="260" fontSize="18">
+          {tanque.idProducto?.nombre} 
+        </text> */}
+        <g transform="translate(0, 150)">
+          {/* Fondo con borde y sombra */}
+          <rect
+            x="5"
+            y="5"
+            width="240"
+            height="130"
+            rx="8"
+            fill="#f8f9fa"
+            stroke="#dee2e6"
+            stroke-width="1.5"
+            filter="url(#shadow)"
+          />
+
+          {/* Contenido */}
+          <g font-family="Segoe UI, Arial, sans-serif">
+            {/* Título */}
+            <text x="15" y="30" fill="#2d3436" fontSize="20" font-weight="600">
+              <tspan>{tanque.nombre}</tspan>
+              <tspan x="110" y="30" fill="#6c757d" fontSize="16">
+                {tanque.idProducto?.nombre}
+              </tspan>
+            </text>
+
+            {/* Línea divisoria */}
+            <path d="M15 40 L225 40" stroke="#ced4da" stroke-width="1" />
+
+            {/* Detalles */}
+            <g fontSize="16" fill="#495057">
+              {/* Capacidad */}
+              <text x="15" y="65" font-weight="500">
+                Capacidad:
+              </text>
+              <text x="180" y="65" text-anchor="end" fill="#2d3436">
+                {tanque.capacidad.toLocaleString()} bls
+              </text>
+
+              {/* Nivel */}
+              <text x="15" y="85" font-weight="500">
+                Nivel:
+              </text>
+              <text x="180" y="85" text-anchor="end" fill="#2d3436">
+                {apiData.tankLevel}%
+              </text>
+
+              {/* Cantidad */}
+              <text x="15" y="105" font-weight="500">
+                Cantidad:
+              </text>
+              <text x="180" y="105" text-anchor="end" fill="#2d3436">
+                {(
+                  totalRecepcion +
+                  totalRefinacionSalida -
+                  totalRefinacion -
+                  totalDespacho
+                ).toLocaleString(undefined, { maximumFractionDigits: 2 })}{" "}
+                Bbl
+              </text>
+
+              {/* Temperatura */}
+              <text x="15" y="125" font-weight="500">
+                Temperatura:
+              </text>
+              <text
+                x="180"
+                y="125"
+                text-anchor="end"
+                fill="#6c757d"
+                font-style="italic"
+              >
+                {/* Puedes reemplazar con el dato real cuando lo tengas */}
+                N/A
+              </text>
+            </g>
+          </g>
+        </g>
+
+        {/* Definición de sombra (agregar en <defs>) */}
+        <defs>
+          <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow
+              dx="2"
+              dy="2"
+              stdDeviation="2"
+              flood-color="rgba(0,0,0,0.1)"
+            />
+          </filter>
+        </defs>
+        {/* <text x="10" y="280" fontSize="18">
           Cantidad estimada:{" "}
           {(
             totalRecepcion +
@@ -418,11 +506,11 @@ const ModeladoRefineriaTanque = ({
           ).toFixed(2)}{" "}
           Bbl
         </text>
-        <text x="10" y="280" fontSize="18">
+        <text x="10" y="300" fontSize="18">
           Cantidad chequo:{" "}
           {ultimosChequeosPorRefinacion?.[0]?.cantidad || "No disponible"} Bbl
-          {/* Cantidad: {totalRecepcion - totalRefinacion} Bbl */}
-        </text>
+          Cantidad: {totalRecepcion - totalRefinacion} Bbl
+        </text> */}
         {/* {isLoading && (
           <rect x="50" y="150" width="10" height="150" fill="rgb(255, 0, 0)">
             <animate
@@ -512,7 +600,7 @@ const ModeladoRefineriaTanque = ({
             </g>
           </>
         ) : (
-          <g transform="matrix(.075615 0 0 .075615 120 70)">
+          <g transform="matrix(.075615 0 0 .075615 100 -20)">
             <PocisionCerrada />
           </g>
         )}
