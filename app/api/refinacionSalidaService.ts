@@ -9,8 +9,6 @@ export const getRefinacionSalidas = async () => {
   return response.data;
 };
 export const createRefinacionSalida = async (data: any) => {
-  console.log("data", data);
-
   const response = await apiClient.post("/refinacionSalida", data);
   return response.data;
 };

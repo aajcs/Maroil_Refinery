@@ -125,6 +125,16 @@ const ModeladoRefineriaDashboard = () => {
     });
   }, [contratos, recepcions]);
 
+  const recepcionesEnTransito = useMemo(
+    () => recepcions.filter((r) => r.estadoRecepcion === "EN_TRANSITO"),
+    [recepcions]
+  );
+
+  const recepcionesEnRefineria = useMemo(
+    () => recepcions.filter((r) => r.estadoRecepcion === "EN_REFINERIA"),
+    [recepcions]
+  );
+
   if (loading) {
     return (
       <div className="flex justify-content-center align-items-center h-screen">
@@ -144,9 +154,20 @@ const ModeladoRefineriaDashboard = () => {
           contratos={recepcionesPorContrato}
           onShowDialogDespachos={onShowDialogDespachos}
         />
-        <ModeladoRefineriaRecepcionesList recepciones={recepcions} />
+        <div className="col-12 md:col-6 lg:col-12">
+          <h1 className="text-2xl font-bold mb-3">Recepciones en transito</h1>
+          <ModeladoRefineriaRecepcionesList
+            recepciones={recepcionesEnTransito}
+          />
+        </div>
+        <div className="col-12 md:col-6 lg:col-12">
+          <h1 className="text-2xl font-bold mb-3">Recepciones en refineria</h1>
+          <ModeladoRefineriaRecepcionesList
+            recepciones={recepcionesEnRefineria}
+          />
+        </div>
         <ModeladoRefineriaDespachosList despachos={despachos} />
-        {refinacions.map((refinacion) => (
+        {/* {refinacions.map((refinacion) => (
           <div key={refinacion.id} className="mb-2">
             <pre>{JSON.stringify(refinacion, null, 2)}</pre>
             <div className="card p-3">
@@ -213,7 +234,7 @@ const ModeladoRefineriaDashboard = () => {
               </ul>
             </div>
           </div>
-        ))}
+        ))} */}
         {/* Línea de recepción */}
         <h1 className="text-2xl font-bold mb-3 col-12">
           Modelado de Refinería

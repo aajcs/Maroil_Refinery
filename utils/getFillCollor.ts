@@ -7,6 +7,5 @@ const materialColors: Record<string, string> = {
 };
 
 export const getFillColor = (material: string): string => {
-  console.log(material);
   return materialColors[material.toLowerCase()] || "#cccccc";
 };

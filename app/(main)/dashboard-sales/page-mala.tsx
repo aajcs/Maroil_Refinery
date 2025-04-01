@@ -27,7 +27,6 @@ const DashboardSales = () => {
       const recepcionesContrato = recepcions.filter(
         (recepcion) => recepcion.idContrato.id === contrato.id
       );
-      console.log(recepcionesContrato);
       const productos = contrato.idItems.map((item: any) => {
         const recepcionesProducto = recepcionesContrato.filter(
           (recepcion) =>

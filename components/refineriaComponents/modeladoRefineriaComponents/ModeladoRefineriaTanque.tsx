@@ -129,7 +129,6 @@ const ModeladoRefineriaTanque = ({
             }, 0);
           }
 
-          console.log("Cantidad salida acumulada:", cantidadSalida);
           return acc + cantidadSalida;
         }, 0)
     );
@@ -159,14 +158,12 @@ const ModeladoRefineriaTanque = ({
 
   const isLoadingDespacho = useMemo(() => {
     if (!despachos || !tanque) return false;
-    console.log("para la validacion?");
 
     return despachos.some(
       (despacho) => despacho.idTanque?.id === tanque.id
       // && despacho.estado === "true"
     );
   }, [despachos, tanque]);
-  console.log("object", isLoadingDespacho);
   const isLoadingRefinacion = useMemo(() => {
     if (!refinacions || !tanque) return false;
 

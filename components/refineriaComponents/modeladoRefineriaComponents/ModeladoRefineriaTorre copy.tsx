@@ -43,7 +43,6 @@ const ModeladoRefineriaTorre = (
     }),
   });
   const [refinacion, setRefinacion] = useState<Refinacion | null>(null);
-  console.log(refinacions);
 
   useEffect(() => {
     const refinacionFilter = refinacions?.filter(
@@ -61,8 +60,6 @@ const ModeladoRefineriaTorre = (
         ).toFixed(2), // Calcula la cantidad
       })),
     }));
-
-    console.log("Cantidades de derivados:", derivadoCantidades);
   }, [torre, refinacions]);
 
   const totalRefinacion = useMemo(() => {

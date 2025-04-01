@@ -156,7 +156,6 @@ const RefinacionSalidaForm = ({
   //   porcentaje: 0, // Inicialmente el porcentaje es 0
   // }));
   // setDerivados(productosTorre || []);
-  console.log(watch());
 
   return (
     <div>

@@ -19,7 +19,6 @@ const ChequeoCalidadListCort = ({
   chequeoCalidad,
 }: ChequeoCalidadListCortProps) => {
   const dt = useRef(null);
-  console.log(chequeoCalidad);
   const [chequeoCalidadCardDialog, setChequeoCalidadCardDialog] =
     useState(false);
   const [chequeoCalidadCard, setChequeoCalidadCard] =
@@ -31,7 +30,6 @@ const ChequeoCalidadListCort = ({
       // severity="success"
       className="mr-2"
       onClick={() => {
-        console.log(rowData);
         setChequeoCalidadCardDialog(true);
         setChequeoCalidadCard(rowData);
         // setSubTablaDialog("ChequeoCalidad");

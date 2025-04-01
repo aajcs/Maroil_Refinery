@@ -162,8 +162,6 @@ const RefinacionSalidaList = () => {
         // severity="success"
         className="mr-2"
         onClick={() => {
-          console.log(rowData[sudTabla]);
-          console.log(sudTabla);
           setSubTablaDialog(true);
           setSubTablaInfo(rowData[sudTabla]);
           setSelectSubTabla(sudTabla);

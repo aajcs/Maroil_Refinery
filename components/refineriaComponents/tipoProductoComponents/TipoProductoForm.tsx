@@ -124,7 +124,6 @@ const TipoProductoForm = ({
       </div>
     );
   }
-  console.log(errors);
   return (
     <div>
       <Toast ref={toast} />

@@ -118,7 +118,6 @@ const DespachoForm = ({
   }, [fetchData]);
   const onSubmit = async (data: FormData) => {
     setSubmitting(true);
-    console.log(data);
     try {
       if (despacho) {
         const updatedDespacho = await updateDespacho(despacho.id, {
@@ -169,9 +168,6 @@ const DespachoForm = ({
     toast.current?.show({ severity, summary, detail, life: 3000 });
   };
 
-  console.log(errors);
-  // console.log(JSON.stringify(watch("idContrato"), null, 2));
-  // console.log(watch("idContrato"));
   if (loading) {
     return (
       <div
@@ -209,7 +205,6 @@ const DespachoForm = ({
       />
     </div>
   );
-  console.log(watch("idContrato"));
   return (
     <div>
       <Toast ref={toast} />

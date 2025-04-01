@@ -92,7 +92,6 @@ function ContratoForm({
     setSubmitting(true);
     try {
       data.items = items;
-      console.log("data", data);
       if (contrato) {
         const updatedContrato = await updateContrato(contrato.id, {
           ...data,
@@ -112,9 +111,7 @@ function ContratoForm({
           idRefineria: activeRefineria.id,
           idContacto: data.idContacto.id,
         });
-        console.log("nuevoContrato", newContrato);
         setContratos([...contratos, newContrato]);
-        console.log(contratos);
         showToast("success", "Éxito", "Contrato creado");
       }
       hideContratoFormDialog();
@@ -176,7 +173,6 @@ function ContratoForm({
     return (brent || 0) + (convenio || 0);
   };
   const productoEditor = (options: ColumnEditorOptions) => {
-    console.log(options);
     const onChange = (e: DropdownChangeEvent) => {
       options.editorCallback!(e.value);
     };
@@ -300,8 +296,6 @@ function ContratoForm({
       </div>
     );
   }
-  console.log(watch());
-  console.log(errors);
   return (
     <div>
       <Toast ref={toast} />
@@ -789,7 +783,6 @@ function ContratoForm({
                     rowIndex,
                     originalEvent: event,
                   } = e;
-                  console.log(newValue);
                   if (newValue === undefined) {
                     event.preventDefault();
                     return;

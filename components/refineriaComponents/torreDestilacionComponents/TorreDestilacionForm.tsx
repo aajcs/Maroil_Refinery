@@ -46,7 +46,6 @@ const TorreDestilacionForm = ({
   const [selectedMaterials, setSelectedMaterials] = useState<Material[]>([]);
   const [productos, setProductos] = useState<Producto[]>([]);
   const [loading, setLoading] = useState(true);
-  console.log(torreDestilacion);
   const [submitting, setSubmitting] = useState(false);
   const {
     register,
@@ -216,7 +215,6 @@ const TorreDestilacionForm = ({
     const updatedMaterials = selectedMaterials.filter((_, i) => i !== index);
     setSelectedMaterials(updatedMaterials);
   };
-  console.log(errors);
   return (
     <div>
       <Toast ref={toast} />

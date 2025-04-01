@@ -9,8 +9,6 @@ export const getChequeoCantidads = async () => {
   return response.data;
 };
 export const createChequeoCantidad = async (data: any) => {
-  console.log("data", data);
-
   const response = await apiClient.post("/chequeoCantidad", data);
   return response.data;
 };

@@ -90,7 +90,6 @@ const TanqueForm = ({
 
   const onSubmit = async (data: FormData) => {
     setSubmitting(true);
-    console.log(data);
     try {
       if (tanque) {
         const updatedTorre = await updateTanque(tanque.id, {
@@ -127,7 +126,6 @@ const TanqueForm = ({
     }
   };
 
-  console.log(errors);
   return (
     <div>
       <Toast ref={toast} />

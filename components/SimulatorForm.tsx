@@ -106,7 +106,6 @@ export default function SimulatorForm({
       [field]: parseFloat(value) || 0,
     }));
   };
-  console.log(editableCrudeCosts);
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (mode === "crudeToProducts") {

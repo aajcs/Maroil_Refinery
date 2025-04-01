@@ -22,8 +22,8 @@ interface RepecionFormRecepcionProps {
   ) => boolean;
   estadoRecepcion: string;
   estadoRecepcionOptions: { label: string; value: string }[];
-  validarCamposRequeridos: (estadoDestino: string) => boolean;
-  getValidTransitions: (currentState: string) => string[];
+  validarCamposRequeridosRecepcion: (estadoDestino: string) => boolean;
+  getValidTransitionsRecepcion: (currentState: string) => string[];
   contratos: any[];
   truncateText: (text: string, maxLength: number) => string;
   register: any;
@@ -37,12 +37,13 @@ export const RepecionFormRecepcion = ({
   isFieldEnabledRecepcion,
   estadoRecepcion,
   estadoRecepcionOptions,
-  validarCamposRequeridos,
-  getValidTransitions,
+  validarCamposRequeridosRecepcion,
+  getValidTransitionsRecepcion,
   contratos,
   truncateText,
   register,
 }: RepecionFormRecepcionProps) => {
+  console.log(watch("idContrato"));
   return (
     <div className="card p-fluid surface-50 p-2 border-round shadow-2">
       {/* Sección Estado Recepción */}
@@ -64,9 +65,9 @@ export const RepecionFormRecepcion = ({
                       label: option.label,
                       command: () => {
                         const validTransitions =
-                          getValidTransitions(estadoRecepcion);
+                          getValidTransitionsRecepcion(estadoRecepcion);
                         if (validTransitions.includes(option.value)) {
-                          if (validarCamposRequeridos(option.value)) {
+                          if (validarCamposRequeridosRecepcion(option.value)) {
                             field.onChange(option.value);
                           }
                         } else {
@@ -150,7 +151,12 @@ export const RepecionFormRecepcion = ({
                         contrato.descripcion || "Sin descripción",
                         30
                       )}`,
-                      value: { ...contrato },
+                      value: {
+                        id: contrato.id,
+                        numeroContrato: contrato.numeroContrato,
+                        idItems: contrato.idItems,
+                        _id: contrato._id,
+                      },
                     }))}
                     placeholder="Seleccionar un proveedor"
                     className={classNames("w-full", {
@@ -496,9 +502,9 @@ export const RepecionFormRecepcion = ({
 //                   label: option.label,
 //                   command: () => {
 //                     const validTransitions =
-//                       getValidTransitions(estadoRecepcion);
+//                       getValidTransitionsRecepcion(estadoRecepcion);
 //                     if (validTransitions.includes(option.value)) {
-//                       if (validarCamposRequeridos(option.value)) {
+//                       if (validarCamposRequeridosRecepcion(option.value)) {
 //                         field.onChange(option.value);
 //                       }
 //                     } else {

@@ -9,8 +9,6 @@ export const getDespachos = async () => {
   return response.data;
 };
 export const createDespacho = async (data: any) => {
-  console.log("data", data);
-
   const response = await apiClient.post("/despacho", data);
   return response.data;
 };

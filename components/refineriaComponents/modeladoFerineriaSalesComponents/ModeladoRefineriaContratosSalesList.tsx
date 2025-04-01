@@ -31,14 +31,12 @@ const ModeladoRefineriaContratosSalesList = ({
       contrato.productos.reduce((acc, item) => acc + (item.cantidad || 0), 0),
     0
   );
-  console.log("totalCantidad", totalCantidad);
   const totalMontoTotal = contratos.reduce(
     (acc, contrato) =>
       acc +
       contrato.productos.reduce((acc, item) => acc + (item.total || 0), 0),
     0
   );
-  console.log("totalMontoTotal", totalMontoTotal);
   const totalMontoTransporte = contratos.reduce(
     (acc, contrato) =>
       acc +
@@ -48,7 +46,6 @@ const ModeladoRefineriaContratosSalesList = ({
       ),
     0
   );
-  console.log("totalMontoTransporte", totalMontoTransporte);
   const totalMontoPorBarril = contratos.reduce(
     (acc, contrato) =>
       acc +
@@ -58,7 +55,6 @@ const ModeladoRefineriaContratosSalesList = ({
       ),
     0
   );
-  console.log("totalMontoPorBarril", totalMontoPorBarril);
   const totalMontoPorBarrilTransporte = contratos.reduce(
     (acc, contrato) =>
       acc +
@@ -68,7 +64,6 @@ const ModeladoRefineriaContratosSalesList = ({
       ),
     0
   );
-  console.log("totalMontoPorBarrilTransporte", totalMontoPorBarrilTransporte);
   const totalMontoPorBarrilTotal = contratos.reduce(
     (acc, contrato) =>
       acc +
@@ -79,7 +74,6 @@ const ModeladoRefineriaContratosSalesList = ({
       ),
     0
   );
-  console.log("totalMontoPorBarrilTotal", totalMontoPorBarrilTotal);
 
   return (
     <MathJaxContext>

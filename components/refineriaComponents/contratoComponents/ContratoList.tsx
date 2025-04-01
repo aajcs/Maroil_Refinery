@@ -43,7 +43,6 @@ const ContratoList = () => {
     try {
       const contratosDB = await getContratos();
       if (contratosDB && Array.isArray(contratosDB.contratos)) {
-        console.log(contratosDB);
         const filteredContratos = contratosDB.contratos.filter(
           (contrato: Contrato) =>
             contrato.idRefineria.id === activeRefineria?.id

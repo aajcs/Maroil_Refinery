@@ -10,7 +10,6 @@ const ChequeoCalidadCard = ({
   chequeoCalidad,
   hideChequeoCalidadCardDialog,
 }: ChequeoCalidadCardProps) => {
-  console.log(chequeoCalidad);
   return (
     <div className="text-white">
       <p>

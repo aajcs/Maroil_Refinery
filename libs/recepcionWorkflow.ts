@@ -158,7 +158,6 @@ export const fieldRulesRecepcion: {
     fechaSalida: false,
     fechaLlegada: true,
     idTanque: true,
-    cantidadRecibida: false,
   },
 
   COMPLETADO: {
@@ -171,7 +170,8 @@ export const fieldRulesRecepcion: {
     fechaSalida: false,
     fechaLlegada: false,
     idTanque: false,
-    cantidadRecibida: false,
+    fechaFinRecepcion: true,
+    cantidadRecibida: true,
   },
 };
 
@@ -181,11 +181,11 @@ export const fieldRulesCarga: {
 } = {
   PENDIENTE_MUESTREO: {
     estadoCarga: true,
-    cantidadRecibida: true,
     idLinea: false,
     idTanque: false,
     fechaInicioRecepcion: true,
     fechaFinRecepcion: true,
+    cantidadRecibida: true,
   },
   MUESTREO_APROBADO: {
     estadoCarga: true,
@@ -213,16 +213,16 @@ export const fieldRulesCarga: {
   },
   FINALIZADO: {
     estadoCarga: true,
-    cantidadRecibida: true,
+    cantidadRecibida: false,
     idLinea: true,
     idTanque: true,
     fechaInicioRecepcion: true,
-    fechaFinRecepcion: true,
+    fechaFinRecepcion: false,
   },
 };
 
 // Definir transiciones de estado válidas
-export const estadoTransiciones: {
+export const estadoTransicionesRecepcion: {
   [key in EstadoRecepcion]?: EstadoRecepcion[];
 } = {
   PROGRAMADO: ["EN_TRANSITO", "CANCELADO", "PROGRAMADO"],
@@ -235,16 +235,53 @@ export const estadoTransiciones: {
 };
 
 // Definir campos requeridos para cada estado
-export const estadoValidaciones: {
+export const estadoValidacionesRecepcion: {
   [key in EstadoRecepcion]?: string[];
 } = {
   EN_TRANSITO: ["idContrato", "idContratoItems", "cantidadEnviada"],
-  EN_REFINERIA: ["idGuia", "placa", "nombreChofer"],
-  COMPLETADO: ["cantidadRecibida"],
+  EN_REFINERIA: [
+    "idGuia",
+    "placa",
+    "nombreChofer",
+    "fechaSalida",
+    "fechaLlegada",
+  ],
+  COMPLETADO: ["cantidadRecibida", "fechaFinRecepcion"],
+};
+
+export const estadoTransicionesCarga: {
+  [key in EstadoCarga]?: EstadoCarga[];
+} = {
+  PENDIENTE_MUESTREO: ["MUESTREO_APROBADO", "PENDIENTE_MUESTREO", "RECHAZADO"],
+  MUESTREO_APROBADO: [
+    "PENDIENTE_MUESTREO",
+    "EN_PROCESO",
+    "MUESTREO_APROBADO",
+    "RECHAZADO",
+  ],
+  EN_PROCESO: ["MUESTREO_APROBADO", "FINALIZADO", "EN_PROCESO", "RECHAZADO"],
+  // PAUSADO: ["EN_PROCESO", "FINALIZADO", "PAUSADO"],
+  FINALIZADO: ["EN_PROCESO", "FINALIZADO"],
+  RECHAZADO: [
+    "PENDIENTE_MUESTREO",
+    "MUESTREO_APROBADO",
+    "EN_PROCESO",
+    "RECHAZADO",
+  ],
+};
+
+export const estadoValidacionesCarga: {
+  [key in EstadoCarga]?: string[];
+} = {
+  // PENDIENTE_MUESTREO: ["fechaInicioRecepcion", "fechaFinRecepcion"],
+  // MUESTREO_APROBADO: ["fechaInicioRecepcion", "fechaFinRecepcion"],
+  EN_PROCESO: ["idLinea", "idTanque"],
+  PAUSADO: ["idLinea", "idTanque", "fechaInicioRecepcion"],
+  FINALIZADO: ["idLinea", "idTanque", "fechaInicioRecepcion"],
 };
 
 // Opciones para los dropdowns de estado
-// export const estadoRecepcionOptions = Object.keys(estadoTransiciones).map(
+// export const estadoRecepcionOptions = Object.keys(estadoTransicionesRecepcion).map(
 //   (estado) =>
 //     ({
 //       label: estado,
@@ -260,8 +297,14 @@ export const estadoValidaciones: {
 //     } as { label: string; value: EstadoCarga })
 // );
 
-export const getValidTransitions = (
+export const getValidTransitionsRecepcion = (
   currentState: EstadoRecepcion
 ): EstadoRecepcion[] => {
-  return estadoTransiciones[currentState] || [];
+  return estadoTransicionesRecepcion[currentState] || [];
+};
+
+export const getValidTransitionsCarga = (
+  currentState: EstadoCarga
+): EstadoCarga[] => {
+  return estadoTransicionesCarga[currentState] || [];
 };

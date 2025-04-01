@@ -21,7 +21,6 @@ const ModeladoRefineriaDashboardSales = () => {
     return contratos.map((contrato) => {
       const productos = contrato.idItems.map((item: any) => {
         const formula = `Cantidad(${item.cantidad}) * [Brent(${item.brent}) + Conv(${item.convenio}) + Trans(${item.montoTransporte})]`;
-        console.log(JSON.stringify(item, null, 2));
 
         return {
           producto: item.producto,

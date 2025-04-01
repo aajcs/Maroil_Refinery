@@ -10,7 +10,6 @@ const ChequeoCantidadCard = ({
   chequeoCantidad,
   hideChequeoCantidadCardDialog,
 }: ChequeoCantidadCardProps) => {
-  console.log(chequeoCantidad);
   return (
     <div className="text-white">
       <p>

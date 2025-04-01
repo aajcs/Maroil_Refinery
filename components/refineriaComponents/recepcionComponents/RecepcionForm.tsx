@@ -1,8 +1,7 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { classNames } from "primereact/utils";
 import { recepcionSchema } from "@/libs/zod";
@@ -13,7 +12,6 @@ import { InputNumber } from "primereact/inputnumber";
 
 import { Calendar } from "primereact/calendar";
 
-import { RadioButton } from "primereact/radiobutton";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { truncateText } from "@/utils/funcionesUtiles";
 import { Steps } from "primereact/steps";
@@ -22,12 +20,14 @@ import { useRefineryData } from "@/hooks/useRefineryData";
 import {
   fieldRulesCarga,
   fieldRulesRecepcion,
-  getValidTransitions,
-  estadoValidaciones,
+  getValidTransitionsRecepcion,
   EstadoRecepcion,
   estadoCargaOptions,
   estadoRecepcionOptions,
   EstadoCarga,
+  estadoValidacionesRecepcion,
+  estadoValidacionesCarga,
+  getValidTransitionsCarga,
 } from "@/libs/recepcionWorkflow";
 import { RepecionFormRecepcion } from "./RepecionFormRecepcion";
 import { ProgressBar } from "primereact/progressbar";
@@ -49,8 +49,6 @@ interface RecepcionFormProps {
     detail: string
   ) => void;
 }
-
-const estatusValues = ["true", "false"];
 
 const RecepcionForm = ({
   recepcion,
@@ -137,10 +135,11 @@ const RecepcionForm = ({
   // console.log(watch("idContrato"));
   const contrato = watch("idContrato");
 
-  const validarCamposRequeridos = (estadoDestino: string): boolean => {
+  const validarCamposRequeridosRecepcion = (estadoDestino: string): boolean => {
     const camposRequeridos =
-      estadoValidaciones[estadoDestino as keyof typeof estadoValidaciones] ||
-      [];
+      estadoValidacionesRecepcion[
+        estadoDestino as keyof typeof estadoValidacionesRecepcion
+      ] || [];
     let isValid = true;
 
     for (const campo of camposRequeridos) {
@@ -170,6 +169,32 @@ const RecepcionForm = ({
     return isValid;
   };
 
+  const validarCamposRequeridosCarga = (estadoDestino: string): boolean => {
+    const camposRequeridos =
+      estadoValidacionesCarga[
+        estadoDestino as keyof typeof estadoValidacionesCarga
+      ] || [];
+    let isValid = true;
+    for (const campo of camposRequeridos) {
+      const valor = watch(campo as keyof FormData);
+      if (!valor || (typeof valor === "number" && valor <= 0)) {
+        isValid = false;
+        setError(campo as keyof FormData, {
+          type: "required",
+          message: `El campo "${campo}" es obligatorio para cambiar a ${estadoDestino}`,
+        });
+        showToast(
+          "warn",
+          "Transición no válida",
+          `El campo "${campo}" es obligatorio para cambiar a ${estadoDestino}`
+        );
+      } else {
+        clearErrors(campo as keyof FormData);
+      }
+    }
+    return isValid;
+  };
+
   const isFieldEnabledRecepcion = (
     fieldName: string,
     estadoRecepcion: EstadoRecepcion
@@ -184,32 +209,6 @@ const RecepcionForm = ({
     return fieldRulesCarga[estadoCarga]?.[fieldName] ?? false;
   };
 
-  const footerTemplate = () => (
-    <div className="flex justify-content-between">
-      <Button
-        label="Aceptar"
-        onClick={() => calendarRef.current?.hide()}
-        className="p-button-text"
-      />
-      <Button
-        label="Hoy"
-        onClick={() => {
-          const today = new Date();
-          setValue("fechaInicio", today); // Establece la fecha actual
-          calendarRef.current?.hide(); // Cierra el calendario
-        }}
-        className="p-button-text p-button-sm"
-      />
-      <Button
-        label="Limpiar"
-        onClick={() => {
-          setValue("fechaInicio", ""); // Limpia la fecha
-          calendarRef.current?.hide(); // Cierra el calendario
-        }}
-        className="p-button-text p-button-sm"
-      />
-    </div>
-  );
   return (
     <Dialog
       visible={recepcionFormDialog}
@@ -257,15 +256,20 @@ const RecepcionForm = ({
               }
               estadoRecepcion={estadoRecepcion || "PROGRAMADO"}
               estadoRecepcionOptions={estadoRecepcionOptions}
-              validarCamposRequeridos={validarCamposRequeridos}
-              getValidTransitions={
-                getValidTransitions as (currentState: string) => string[]
+              validarCamposRequeridosRecepcion={
+                validarCamposRequeridosRecepcion
+              }
+              getValidTransitionsRecepcion={
+                getValidTransitionsRecepcion as (
+                  currentState: string
+                ) => string[]
               }
               contratos={contratos}
               truncateText={truncateText}
               register={register}
             />
-            {watch("estadoRecepcion") === "EN_REFINERIA" ? (
+            {watch("estadoRecepcion") === "EN_REFINERIA" ||
+            watch("estadoRecepcion") === "COMPLETADO" ? (
               <div className="card p-fluid surface-50 p-2 border-round shadow-2">
                 {/* Header del Proceso */}
                 <div className="mb-2 text-center md:text-left">
@@ -284,7 +288,27 @@ const RecepcionForm = ({
                           <Steps
                             model={estadoCargaOptions.map((option) => ({
                               label: option.label,
-                              command: () => field.onChange(option.value),
+                              command: () => {
+                                const validTransitions =
+                                  getValidTransitionsCarga(estadoCarga);
+                                if (
+                                  validTransitions.includes(
+                                    option.value as EstadoCarga
+                                  )
+                                ) {
+                                  if (
+                                    validarCamposRequeridosCarga(option.value)
+                                  ) {
+                                    field.onChange(option.value);
+                                  }
+                                } else {
+                                  showToast(
+                                    "warn",
+                                    "Transición no válida",
+                                    `No puedes cambiar a ${option.label} desde ${estadoCarga}`
+                                  );
+                                }
+                              },
                             }))}
                             activeIndex={estadoCargaOptions.findIndex(
                               (option) => option.value === field.value
@@ -329,18 +353,46 @@ const RecepcionForm = ({
                       <Controller
                         name="idLinea"
                         control={control}
-                        render={({ field }) => (
-                          <Dropdown
-                            value={field.value}
-                            onChange={(e) => field.onChange(e.value)}
-                            options={lineaRecepcions}
-                            optionLabel="nombre"
-                            placeholder="Seleccionar línea"
-                            className="w-full"
-                            showClear
-                            filter
-                          />
-                        )}
+                        render={({ field }) => {
+                          watch("idLinea");
+                          const filteredLineas = !watch("idLinea")
+                            ? lineaRecepcions.filter(
+                                (lineaRecepcion) =>
+                                  !recepcions.some(
+                                    (recepcion) =>
+                                      recepcion.idLinea?.id ===
+                                        lineaRecepcion.id &&
+                                      recepcion.estadoRecepcion ===
+                                        "EN_REFINERIA" &&
+                                      recepcion.estadoCarga === "EN_PROCESO"
+                                  )
+                              )
+                            : lineaRecepcions;
+                          const isDisabled = isFieldEnabledCarga(
+                            "idLinea",
+                            estadoCarga
+                          );
+
+                          return (
+                            <Dropdown
+                              value={field.value}
+                              onChange={(e) => field.onChange(e.value)}
+                              options={filteredLineas.map((lineaRecepcion) => ({
+                                label: lineaRecepcion.nombre,
+                                value: {
+                                  id: lineaRecepcion.id,
+                                  nombre: lineaRecepcion.nombre,
+                                },
+                              }))}
+                              // optionLabel="nombre"
+                              placeholder="Seleccionar línea"
+                              className="w-full"
+                              showClear
+                              filter
+                              disabled={isDisabled}
+                            />
+                          );
+                        }}
                       />
                       {errors.idLinea && (
                         <small className="p-error block mt-2 flex align-items-center">
@@ -370,7 +422,7 @@ const RecepcionForm = ({
                           );
                           const isDisabled = isFieldEnabledCarga(
                             "idTanque",
-                            estadoCarga as EstadoCarga
+                            estadoCarga
                           );
 
                           return (
@@ -385,6 +437,7 @@ const RecepcionForm = ({
                                   value: {
                                     id: tanque.id,
                                     nombre: tanque.nombre,
+                                    _id: tanque.id,
                                   },
                                 }))}
                                 placeholder="Seleccionar tanque"
@@ -491,10 +544,16 @@ const RecepcionForm = ({
                               control={control}
                               setValue={setValue}
                               calendarRef={calendarRef}
-                              isFieldEnabled={isFieldEnabledCarga(
-                                "fechaFinRecepcion",
-                                estadoCarga as EstadoCarga
-                              )}
+                              isFieldEnabled={
+                                isFieldEnabledCarga(
+                                  "fechaFinRecepcion",
+                                  estadoCarga as EstadoCarga
+                                ) ||
+                                isFieldEnabledRecepcion(
+                                  "cantidadRecibida",
+                                  estadoRecepcion as EstadoRecepcion
+                                )
+                              }
                               value={field.value ? new Date(field.value) : null}
                               onChange={field.onChange}
                             />
@@ -561,6 +620,16 @@ const RecepcionForm = ({
                             className="w-full"
                             inputClassName="w-full"
                             suffix=" Bbl"
+                            disabled={
+                              isFieldEnabledCarga(
+                                "cantidadRecibida",
+                                estadoCarga as EstadoCarga
+                              ) ||
+                              isFieldEnabledRecepcion(
+                                "cantidadRecibida",
+                                estadoRecepcion as EstadoRecepcion
+                              )
+                            }
                           />
                         )}
                       />

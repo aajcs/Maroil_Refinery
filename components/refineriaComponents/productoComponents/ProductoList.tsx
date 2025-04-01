@@ -23,7 +23,6 @@ const ProductoList = () => {
   const [globalFilterValue, setGlobalFilterValue] = useState("");
   const [deleteProductDialog, setDeleteProductDialog] = useState(false);
   const [productoFormDialog, setProductoFormDialog] = useState(false);
-  console.log(productos);
   const router = useRouter();
   const dt = useRef(null);
   const toast = useRef<Toast | null>(null);

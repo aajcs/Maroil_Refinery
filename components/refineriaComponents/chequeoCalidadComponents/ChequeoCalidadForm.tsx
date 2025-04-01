@@ -140,7 +140,6 @@ const ChequeoCalidadForm = ({
   }, [fetchData]);
   const onSubmit = async (data: FormData) => {
     setSubmitting(true);
-    console.log(data);
     try {
       if (chequeoCalidad) {
         const updatedChequeoCalidad = await updateChequeoCalidad(

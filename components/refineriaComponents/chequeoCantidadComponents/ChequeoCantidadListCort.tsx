@@ -15,7 +15,6 @@ const ChequeoCantidadListCort = ({
   chequeoCantidad,
 }: ChequeoCantidadListCortProps) => {
   const dt = useRef(null);
-  console.log(chequeoCantidad);
 
   return (
     <div className="">

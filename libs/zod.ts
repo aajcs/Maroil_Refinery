@@ -589,6 +589,34 @@ export const recepcionSchema = object({
       message: "Debe seleccionar un tanque si el estado de carga es EN_PROCESO",
     });
   }
+  if (data.estadoCarga === "EN_PROCESO") {
+    if (!data.fechaInicioRecepcion) {
+      ctx.addIssue({
+        path: ["fechaInicioRecepcion"],
+        code: "custom",
+        message:
+          "Debe colocar una fecha de inicio de recepción si el estado de carga es EN_PROCESO",
+      });
+    }
+  }
+  if (data.estadoCarga === "FINALIZADO") {
+    if (!data.fechaFinRecepcion) {
+      ctx.addIssue({
+        path: ["fechaFinRecepcion"],
+        code: "custom",
+        message:
+          "Debe colocar una fecha de fin de recepción si el estado de carga es FINALIZADO",
+      });
+    }
+    if (!data.cantidadRecibida) {
+      ctx.addIssue({
+        path: ["cantidadRecibida"],
+        code: "custom",
+        message:
+          "Debe colocar una cantidad recibida si el estado de carga es FINALIZADO",
+      });
+    }
+  }
 });
 
 export const despachoSchema = object({

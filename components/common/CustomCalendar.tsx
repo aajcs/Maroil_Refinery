@@ -71,7 +71,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
       locale={locale}
       footerTemplate={FooterTemplate}
       ref={calendarRef}
-      disabled={!isFieldEnabled}
+      disabled={isFieldEnabled}
       dateFormat="dd/mm/yy"
       showIcon
       icon="pi pi-calendar"
