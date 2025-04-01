@@ -186,37 +186,26 @@ const RecepcionList = () => {
         <Column field="idLinea.nombre" header="Nombre de la Línea" sortable />
         <Column field="idTanque.nombre" header="ID del Tanque" sortable />
         <Column
-          field="fechaInicio"
-          header="Fecha de Inicio"
-          body={(rowData: Recepcion) => formatDateFH(rowData.fechaInicio)}
+          field="fechaSalida"
+          header="Fecha de Salida"
+          body={(rowData: Recepcion) => formatDateFH(rowData.fechaSalida)}
         />
         <Column
-          field="fechaFin"
-          header="Fecha de Fin"
-          body={(rowData: Recepcion) => formatDateFH(rowData.fechaFin)}
+          field="fechaLlegada"
+          header="Fecha de Llegada"
+          body={(rowData: Recepcion) => formatDateFH(rowData.fechaLlegada)}
         />
-
         <Column
           field="fechaInicioRecepcion"
-          header="Fecha de Fin"
+          header="Fecha de Inicio de Descarga"
           body={(rowData: Recepcion) =>
             formatDateFH(rowData.fechaInicioRecepcion)
           }
         />
         <Column
           field="fechaFinRecepcion"
-          header="Fecha de Fin"
+          header="Fecha de Fin de Descarga"
           body={(rowData: Recepcion) => formatDateFH(rowData.fechaFinRecepcion)}
-        />
-        <Column
-          field="fechaSalida"
-          header="Fecha de Fin"
-          body={(rowData: Recepcion) => formatDateFH(rowData.fechaSalida)}
-        />
-        <Column
-          field="fechaLlegada"
-          header="Fecha de Fin"
-          body={(rowData: Recepcion) => formatDateFH(rowData.fechaLlegada)}
         />
 
         <Column field="estadoRecepcion" header="Estado de la Recepcion" />
@@ -269,23 +258,17 @@ const RecepcionList = () => {
           )}
         </div>
       </Dialog>
-
-      <Dialog
-        visible={recepcionFormDialog}
-        style={{ width: "70vw" }}
-        header={`${recepcion ? "Editar" : "Agregar"} Recepción`}
-        modal
-        onHide={hideRecepcionFormDialog}
-      >
+      {recepcionFormDialog && (
         <RecepcionForm
           recepcion={recepcion}
+          recepcionFormDialog={recepcionFormDialog}
           hideRecepcionFormDialog={hideRecepcionFormDialog}
           recepcions={recepcions}
           setRecepcions={setRecepcions}
           setRecepcion={setRecepcion}
           showToast={showToast}
         />
-      </Dialog>
+      )}
     </div>
   );
 };

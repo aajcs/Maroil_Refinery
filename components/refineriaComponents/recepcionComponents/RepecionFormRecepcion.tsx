@@ -128,7 +128,7 @@ export const RepecionFormRecepcion = ({
       </div>
 
       {/* Campos del Formulario */}
-      <div className="grid formgrid [row-gap:0.5rem] [column-gap:0] ">
+      <div className="grid formgrid row-gap-2 ">
         {/* Fila 1 */}
         <div className="col-12 lg:col-4">
           <div className="p-3 bg-white border-round shadow-1">
@@ -454,6 +454,17 @@ export const RepecionFormRecepcion = ({
 
         {/* Sección Chequeo Calidad */}
         <div className="col-12 mt-2">
+          <div className="p-2 bg-blue-100 border-round-lg flex align-items-center surface-help">
+            <i className="pi pi-info-circle text-2xl text-primary mr-3"></i>
+            <span className="text-700">
+              Control de Calidad y Cantidad
+              <br />
+              <strong>Nota:</strong> Realizar mediciones de API, azufre y
+              contenido de agua antes de confirmar la recepción
+            </span>
+          </div>
+        </div>
+        {/* <div className="col-12 mt-2">
           <div className="p-2 bg-blue-100 border-round flex align-items-center surface-help">
             <i className="pi pi-check-circle text-2xl text-primary mr-3"></i>
             <div>
@@ -464,7 +475,7 @@ export const RepecionFormRecepcion = ({
               </p>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );
