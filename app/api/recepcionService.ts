@@ -10,8 +10,8 @@ export const getRecepcions = async () => {
 };
 export const createRecepcion = async (data: any) => {
   console.log("data", data);
-
   const response = await apiClient.post("/recepcion", data);
+  console.log("response", response);
   return response.data;
 };
 export const updateRecepcion = async (id: string, data: any) => {

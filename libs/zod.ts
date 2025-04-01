@@ -299,18 +299,17 @@ export const contratoSchema = object({
 });
 
 export const recepcionSchema = object({
-  estadoCarga: string().min(1, "El estado de carga es obligatorio"),
-  estadoRecepcion: string().min(1, "El estado de recepción es obligatorio"),
-  estado: string().min(1, "El estado es obligatorio"),
+  estadoCarga: string().min(1, "El estado de carga es obligatorio").optional(),
+  estadoRecepcion: string()
+    .min(1, "El estado de recepción es obligatorio")
+    .optional(),
   eliminado: boolean().default(false),
-  cantidadEnviada: number().min(
-    0,
-    "La cantidad enviada debe ser un número no negativo"
-  ),
-  cantidadRecibida: number().min(
-    0,
-    "La cantidad recibida debe ser un número no negativo"
-  ),
+  cantidadEnviada: number()
+    .min(0, "La cantidad enviada debe ser un número no negativo")
+    .optional(),
+  cantidadRecibida: number()
+    .min(0, "La cantidad recibida debe ser un número no negativo")
+    .optional(),
   fechaInicio: union([string(), date()]).optional(),
   fechaFin: union([string(), date()]).optional(),
   fechaInicioRecepcion: union([string(), date()]).optional(),
@@ -404,34 +403,190 @@ export const recepcionSchema = object({
   })
     .optional()
     .nullable(),
-  idGuia: number().min(0, "El ID de la guía debe ser un número no negativo"),
+  idGuia: number()
+    .min(0, "El ID de la guía debe ser un número no negativo")
+    .optional(),
   idRefineria: object({
     id: string().optional(),
     nombre: string().min(1, "El nombre de la refinería es obligatorio"),
   }).optional(),
-  placa: string().min(1, "La placa es obligatoria"),
-  nombreChofer: string().min(1, "El nombre del chofer es obligatorio"),
-  apellidoChofer: string().min(1, "El apellido del chofer es obligatorio"),
+  placa: string()
+    // .min(1, "La placa es obligatoria")
+    .optional(),
+  nombreChofer: string()
+    // .min(1, "El nombre del chofer es obligatorio")
+    .optional(),
+
   createdAt: union([string(), date()]).optional(),
   updatedAt: union([string(), date()]).optional(),
   id: string().optional(),
 }).superRefine((data, ctx) => {
-  // // Validación condicional: fechaLlegada es obligatoria si estadoRecepcion es "EN_REFINERIA"
-  // if (data.estadoRecepcion === "EN_REFINERIA" && !data.fechaLlegada) {
-  //   ctx.addIssue({
-  //     path: ["fechaLlegada"],
-  //     code: "custom",
-  //     message: "La fecha de llegada es obligatoria cuando está en refinería",
-  //   });
-  // }
+  // Validaciones basadas en el estado de recepción
+  if (data.estadoRecepcion === "PROGRAMADO") {
+    if (!data.idContrato) {
+      ctx.addIssue({
+        path: ["idContrato"],
+        code: "custom",
+        message: "Debe seleccionar un contrato si el estado es PROGRAMADO",
+      });
+    }
+    if (!data.idContratoItems) {
+      ctx.addIssue({
+        path: ["idContratoItems"],
+        code: "custom",
+        message: "Debe seleccionar un contrato si el estado es PROGRAMADO",
+      });
+    }
+    if (!data.cantidadEnviada) {
+      ctx.addIssue({
+        path: ["cantidadEnviada"],
+        code: "custom",
+        message:
+          "La cantidad enviada es obligatoria si el estado es PROGRAMADO",
+      });
+    }
+    // if (!data.idLinea) {
+    //   ctx.addIssue({
+    //     path: ["idLinea"],
+    //     code: "custom",
+    //     message: "Debe seleccionar una línea si el estado es PROGRAMADO",
+    //   });
+    // }
+    // if (!data.idTanque) {
+    //   ctx.addIssue({
+    //     path: ["idTanque"],
+    //     code: "custom",
+    //     message: "Debe seleccionar un tanque si el estado es PROGRAMADO",
+    //   });
+    // }
+    // if (!data.idGuia) {
+    //   ctx.addIssue({
+    //     path: ["idGuia"],
+    //     code: "custom",
+    //     message: "Debe seleccionar una guía si el estado es PROGRAMADO",
+    //   });
+    // }
+    // if (!data.idRefineria) {
+    //   ctx.addIssue({
+    //     path: ["idRefineria"],
+    //     code: "custom",
+    //     message: "Debe seleccionar una refinería si el estado es PROGRAMADO",
+    //   });
+    // }
+    // if (!data.placa) {
+    //   ctx.addIssue({
+    //     path: ["placa"],
+    //     code: "custom",
+    //     message: "Debe ingresar una placa si el estado es PROGRAMADO",
+    //   });
+    // }
+    // if (!data.nombreChofer) {
+    //   ctx.addIssue({
+    //     path: ["nombreChofer"],
+    //     code: "custom",
+    //     message: "Debe ingresar un nombre de chofer si el estado es PROGRAMADO",
+    //   });
+    // }
+    // if (!data.apellidoChofer) {
+    //   ctx.addIssue({
+    //     path: ["apellidoChofer"],
+    //     code: "custom",
+    //     message:
+    //       "Debe ingresar un apellido de chofer si el estado es PROGRAMADO",
+    //   });
+    // }
+    // if (!data.fechaInicio) {
+    //   ctx.addIssue({
+    //     path: ["fechaInicio"],
+    //     code: "custom",
+    //     message: "Debe ingresar una fecha de inicio si el estado es PROGRAMADO",
+    //   });
+    // }
+    // if (!data.fechaFin) {
+    //   ctx.addIssue({
+    //     path: ["fechaFin"],
+    //     code: "custom",
+    //     message: "Debe ingresar una fecha de fin si el estado es PROGRAMADO",
+    //   });
+    // }
+  }
+  if (data.estadoRecepcion === "EN_TRANSITO") {
+    if (!data.idContrato) {
+      ctx.addIssue({
+        path: ["idContrato"],
+        code: "custom",
+        message: "Debe seleccionar un contrato si el estado es en transito",
+      });
+    }
+    if (!data.idContratoItems) {
+      ctx.addIssue({
+        path: ["idContratoItems"],
+        code: "custom",
+        message: "Debe seleccionar un contrato si el estado es en transito",
+      });
+    }
+    if (!data.cantidadEnviada) {
+      ctx.addIssue({
+        path: ["cantidadEnviada"],
+        code: "custom",
+        message:
+          "La cantidad enviada es obligatoria si el estado es en transito",
+      });
+    }
+    if (!data.idGuia) {
+      ctx.addIssue({
+        path: ["idGuia"],
+        code: "custom",
+        message: "Debe seleccionar una guía si el estado es en transito",
+      });
+    }
+    if (!data.placa) {
+      ctx.addIssue({
+        path: ["placa"],
+        code: "custom",
+        message: "Debe ingresar una placa si el estado es en transito",
+      });
+    }
+    if (!data.nombreChofer) {
+      ctx.addIssue({
+        path: ["nombreChofer"],
+        code: "custom",
+        message:
+          "Debe ingresar un nombre de chofer si el estado es en transito",
+      });
+    }
+    if (!data.fechaSalida) {
+      ctx.addIssue({
+        path: ["fechaSalida"],
+        code: "custom",
+        message:
+          "Debe ingresar una fecha de salida si el estado es en transito",
+      });
+    }
+    if (!data.fechaLlegada) {
+      ctx.addIssue({
+        path: ["fechaLlegada"],
+        code: "custom",
+        message:
+          "Debe ingresar una fecha de llegada si el estado es en transito",
+      });
+    }
+  }
 
-  // Validación condicional: idTanque es obligatorio si estadoCarga es "EN_PROCESO"
+  if (data.estadoRecepcion === "EN_REFINERIA" && !data.fechaLlegada) {
+    ctx.addIssue({
+      path: ["fechaLlegada"],
+      code: "custom",
+      message: "La fecha de llegada es obligatoria cuando está en refinería",
+    });
+  }
+
+  // Validaciones basadas en el estado de carga
   if (data.estadoCarga === "EN_PROCESO" && !data.idTanque) {
     ctx.addIssue({
       path: ["idTanque"],
       code: "custom",
-      message:
-        "Debe seleccionar un tanque si el estado de carga está en proceso",
+      message: "Debe seleccionar un tanque si el estado de carga es EN_PROCESO",
     });
   }
 });

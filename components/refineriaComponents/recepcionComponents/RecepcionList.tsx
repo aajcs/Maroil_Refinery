@@ -9,10 +9,10 @@ import { InputText } from "primereact/inputtext";
 import { Toast } from "primereact/toast";
 import { Dialog } from "primereact/dialog";
 import { useRefineriaStore } from "@/store/refineriaStore";
-import RecepcionForm from "./RecepcionForm";
 import { deleteRecepcion, getRecepcions } from "@/app/api/recepcionService";
 import { Recepcion } from "@/libs/interfaces";
 import { formatDateFH } from "@/utils/dateUtils";
+import RecepcionForm from "./RecepcionForm";
 
 const RecepcionList = () => {
   const { activeRefineria } = useRefineriaStore();
@@ -129,6 +129,13 @@ const RecepcionList = () => {
       />
     </>
   );
+  const showToast = (
+    severity: "success" | "error" | "warn",
+    summary: string,
+    detail: string
+  ) => {
+    toast.current?.show({ severity, summary, detail, life: 3000 });
+  };
 
   return (
     <div className="card">
@@ -265,7 +272,7 @@ const RecepcionList = () => {
 
       <Dialog
         visible={recepcionFormDialog}
-        style={{ width: "50vw" }}
+        style={{ width: "70vw" }}
         header={`${recepcion ? "Editar" : "Agregar"} Recepción`}
         modal
         onHide={hideRecepcionFormDialog}
@@ -276,6 +283,7 @@ const RecepcionList = () => {
           recepcions={recepcions}
           setRecepcions={setRecepcions}
           setRecepcion={setRecepcion}
+          showToast={showToast}
         />
       </Dialog>
     </div>
