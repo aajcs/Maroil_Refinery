@@ -209,7 +209,7 @@ const ModeladoRefineriaTorre: React.FC<ModeladoRefineriaTorreProps> = ({
             y={sectionY + sectionHeight / 2 + 10}
           />
 
-          <text
+          {/* <text
             x={TOWER_X + TOWER_WIDTH + 35}
             y={sectionY + sectionHeight / 2 - 5}
             fill="black"
@@ -243,7 +243,87 @@ const ModeladoRefineriaTorre: React.FC<ModeladoRefineriaTorreProps> = ({
             fontSize="12"
           >
             {section.bblPerHour} bbl/h
-          </text>
+          </text> */}
+          <g
+            transform={`translate(${TOWER_X + TOWER_WIDTH + 35}, ${
+              sectionY + sectionHeight / 2
+            })`}
+          >
+            {/* Fondo aumentado con sombra suave */}
+            <rect
+              x="-10"
+              y="-30"
+              width="160"
+              height="90"
+              rx="6"
+              fill="#ffffff"
+              stroke="#e0e0e0"
+              stroke-width="1.2"
+              filter="url(#shadow-light)"
+            />
+
+            {/* Contenido */}
+            <g font-family="Segoe UI, sans-serif">
+              {/* Título de la sección */}
+              <text
+                x="0"
+                y="-10"
+                fill="#1a1a1a"
+                fontSize="16"
+                fontWeight="700"
+                text-decoration="underline"
+              >
+                {section.name || "Sección sin nombre"}
+              </text>
+
+              {/* Línea divisoria más visible */}
+              <path d="M0 -3 L140 -3" stroke="#e0e0e0" stroke-width="1" />
+
+              {/* Contenedor de datos técnicos */}
+              <g transform="translate(0, 10)" fontSize="14" fill="#4a4a4a">
+                {/* Fila de rendimientos */}
+                <g transform="translate(0, 0)">
+                  <text font-weight="600">
+                    <tspan fill="#6c757d" dx="2">
+                      Diseño:{" "}
+                    </tspan>
+                    <tspan
+                      // fill={isOperational ? "#28a745" : "#dc3545"}
+                      fontWeight="700"
+                    >
+                      {section.porcentaje}%
+                    </tspan>
+                  </text>
+                </g>
+
+                <g transform="translate(0, 18)">
+                  <text font-weight="600">
+                    <tspan fill="#6c757d" dx="2">
+                      Real:{" "}
+                    </tspan>
+                    <tspan
+                      // fill={isOperational ? "#28a745" : "#dc3545"}
+                      fontWeight="700"
+                    >
+                      no lo tengo%
+                    </tspan>
+                  </text>
+                </g>
+
+                {/* Fila de cantidades */}
+                <g transform="translate(0, 36)">
+                  <text>
+                    <tspan fill="#6c757d" font-weight="600" dx="2">
+                      Cantidad:{" "}
+                    </tspan>
+                    <tspan fill="#1a1a1a" font-weight="600">
+                      {section.cantidad.toLocaleString()} bpd
+                    </tspan>
+                  </text>
+                </g>
+              </g>
+            </g>
+          </g>
         </g>
       );
     });
@@ -251,9 +331,9 @@ const ModeladoRefineriaTorre: React.FC<ModeladoRefineriaTorreProps> = ({
 
   return (
     <svg
-      width="200"
+      width="300"
       height="400"
-      viewBox="100 100 300 300"
+      viewBox="100 100 400 300"
       xmlns="http://www.w3.org/2000/svg"
       shapeRendering="geometricPrecision"
       textRendering="geometricPrecision"
