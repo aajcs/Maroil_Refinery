@@ -595,7 +595,7 @@ const ModeladoRefineriaTanque = ({
                 repeatCount="indefinite"
               />
             </g>
-            <g transform="matrix(.075615 0 0 .075615 140 150)">
+            <g transform="matrix(.075615 0 0 .075615 100 -20)">
               <PocisionAbierta />
             </g>
           </>

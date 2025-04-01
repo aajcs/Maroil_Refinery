@@ -1,5 +1,6 @@
 // Tipos para los productos y sus rendimientos
 export type Product = "gas" | "naphtha" | "kerosene" | "mgo4" | "mgo6";
+
 export type ProductYields = Record<Product, number>;
 
 // Tipo para la información financiera de un producto

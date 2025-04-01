@@ -2,7 +2,7 @@ import axios from "axios";
 
 const apiOilDerivate = axios.create({
   baseURL: "https://oil.sygem.net",
-  timeout: 5000, // Tiempo de espera en milisegundos
+  // timeout: 5000, // Tiempo de espera en milisegundos
   headers: {
     "Content-Type": "application/json", // Tipo de contenido
     Accept: "application/json", // Aceptar JSON como respuesta

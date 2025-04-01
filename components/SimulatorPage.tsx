@@ -66,7 +66,6 @@ export default function Home() {
         <h1 className="text-2xl font-bold mb-6 text-center">
           Simulador de Refinería - Análisis de Rentabilidad
         </h1>
-
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Formulario */}
           <div className="lg:col-span-1">
