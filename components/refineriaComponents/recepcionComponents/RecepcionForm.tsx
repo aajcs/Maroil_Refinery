@@ -620,6 +620,7 @@ const RecepcionForm = ({
                             className="w-full"
                             inputClassName="w-full"
                             suffix=" Bbl"
+                            locale="es"
                             disabled={
                               isFieldEnabledCarga(
                                 "cantidadRecibida",

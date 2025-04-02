@@ -254,7 +254,7 @@ const TipoProductoList = () => {
       <Dialog
         visible={tipoProductoFormDialog}
         style={{ width: "850px" }}
-        header={`${tipoProducto ? "Editar" : "Agregar"} TipoProducto`}
+        header={`${tipoProducto ? "Editar" : "Agregar"} Tipo de Producto`}
         modal
         onHide={hideTipoProductoFormDialog}
       >

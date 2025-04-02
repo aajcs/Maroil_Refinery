@@ -27,7 +27,7 @@ const ModeladoRefineriaContratosVentaList = ({
 }: ModeladoRefineriaContratosVentaListProps) => {
   return (
     <div className="col-12">
-      <h1 className="text-2xl font-bold mb-3">Contratos de compra de crudo</h1>
+      <h1 className="text-2xl font-bold mb-3">Contratos de venta de crudo</h1>
       <div className="grid">
         {contratos
           .filter((contrato) => contrato.tipoContrato === "Venta") // Filtrar por tipoContrato

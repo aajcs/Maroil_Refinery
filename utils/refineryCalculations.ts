@@ -221,6 +221,7 @@ export function calculateRequiredCrude(
 
   return {
     crudeType: crude.name,
+    crudeAmount: requiredCrude,
     requiredCrude,
     production: {
       exact: exactProduction,

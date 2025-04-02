@@ -234,7 +234,7 @@ export const RepecionFormRecepcion = ({
           <div className="p-3 bg-white border-round shadow-1">
             <label className="block font-medium text-900 mb-2 flex align-items-center">
               <i className="pi pi-arrow-right text-primary mr-2"></i>
-              Cantidad Enviada
+              Cantidad Esperada
             </label>
             <Controller
               name="cantidadEnviada"

@@ -152,7 +152,11 @@ const ModeladoRefineriaTanque = ({
     if (!recepcions || !tanque) return false;
     return recepcions.some(
       (recepcion) =>
-        recepcion.idTanque?.id === tanque.id && recepcion.estado === "true"
+        recepcion.idTanque?.id === tanque.id &&
+        recepcion.estadoRecepcion === "EN_REFINERIA" &&
+        (recepcion.estadoCarga === "EN_PROCESO" ||
+          recepcion.estadoCarga === "PENDIENTE_MUESTREO" ||
+          recepcion.estadoCarga === "MUESTREO_APROBADO")
     );
   }, [recepcions, tanque]);
 

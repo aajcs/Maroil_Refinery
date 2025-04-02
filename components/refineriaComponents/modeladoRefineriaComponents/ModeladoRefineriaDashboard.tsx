@@ -241,7 +241,7 @@ const ModeladoRefineriaDashboard = () => {
         </h1>
         <div className="col-12 md:col-6 lg:col-2">
           <div className="card p-3 lg-h-fullScreen">
-            <h1 className="text-2xl font-bold mb-3">Línea de Recepción</h1>
+            <h1 className="text-2xl font-bold mb-3">Recepción de tractomula</h1>
 
             {lineaRecepcions.map((lineaRecepcion) => (
               <div key={lineaRecepcion.id} className="mb-2">

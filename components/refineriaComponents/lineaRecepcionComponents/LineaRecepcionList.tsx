@@ -237,7 +237,9 @@ const LineaRecepcionList = () => {
       <Dialog
         visible={lineaRecepcionFormDialog}
         style={{ width: "850px" }}
-        header={`${lineaRecepcion ? "Editar" : "Agregar"} Línea de Recepción.
+        header={`${
+          lineaRecepcion ? "Editar" : "Agregar"
+        } Recepción de tractomula.
 `}
         modal
         onHide={hideLineaRecepcionFormDialog}

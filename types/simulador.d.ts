@@ -46,6 +46,7 @@ export interface ProductionResults {
 export type SimulationMode = "crudeToProducts" | "productsToCrude";
 
 export interface SimulationResults {
+  crudeAmount: number;
   crudeType: string;
   crudeDetails: CrudeDetails;
   financials: FinancialResults;

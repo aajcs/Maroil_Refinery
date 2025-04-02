@@ -28,7 +28,7 @@ const ModeladoRefineriaContratosList = ({
   return (
     <div className="col-12">
       <h1 className="text-2xl font-bold mb-3">
-        Contratos de venta de derivado
+        Contratos de compra de derivado
       </h1>
       <div className="grid">
         {contratos

@@ -250,7 +250,7 @@ const DespachoList = () => {
       <Dialog
         visible={despachoFormDialog}
         style={{ width: "50vw" }}
-        header={`${despacho ? "Editar" : "Agregar"} Recepción`}
+        header={`${despacho ? "Editar" : "Agregar"} Despacho`}
         modal
         onHide={hideDespachoFormDialog}
       >

@@ -344,6 +344,17 @@ const AppMenu = () => {
         },
       ],
     },
+    {
+      label: "Simulador - Análisis de Rentabilidad",
+      icon: "pi pi-fw pi-chart-line",
+      items: [
+        {
+          label: "Lista",
+          icon: "pi pi-fw pi-chart-line",
+          to: "/simulacion",
+        },
+      ],
+    },
     // {
     //   label: "Hierarchy",
     //   icon: "pi pi-fw pi-align-left",

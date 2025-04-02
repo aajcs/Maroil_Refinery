@@ -96,14 +96,14 @@ export const crudeTypes: Record<string, CrudeTypeConfig> = {
 //   mgo4: 72.74 + 24 - 2.9 - 6.1,
 //   mgo6: 72.74 + 6 - 2.9 - 6.1,
 // };
-// // Precios de los productos
-// export const defaultProductPrices: Record<Product, number> = {
-//   gas: 0,
-//   naphtha: 72.74 + 8,
-//   kerosene: 0,
-//   mgo4: 72.74 + 24 - 2.9 - 6.1,
-//   mgo6: 72.74 + 6 - 2.9 - 6.1,
-// };
+// Precios de los productos
+export const defaultProductPrices: Record<Product, number> = {
+  gas: 0,
+  naphtha: 72.74 + 8,
+  kerosene: 0,
+  mgo4: 72.74 + 24 - 2.9 - 6.1,
+  mgo6: 72.74 + 6 - 2.9 - 6.1,
+};
 
 // Obtener opciones de crudo para el selector
 export function getCrudeOptions(): CrudeOption[] {

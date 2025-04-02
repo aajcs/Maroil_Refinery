@@ -52,7 +52,7 @@ export const torreDestilacionSchema = object({
   nombre: string().min(1, "El nombre es obligatorio"),
   estado: string().min(1, "El estado es obligatorio"),
   eliminado: boolean().default(false),
-  ubicacion: string().min(1, "La ubicación es obligatoria"),
+  ubicacion: string().min(1, "La ubicación es obligatoria").optional(),
   material: array(
     object({
       estadoMaterial: string(),
@@ -77,7 +77,7 @@ export const tanqueSchema = object({
   nombre: string().min(1, "El nombre es obligatorio"),
   estado: string().min(1, "El estado es obligatorio"),
   eliminado: boolean().default(false),
-  ubicacion: string().min(1, "La ubicación es obligatoria"),
+  ubicacion: string().min(1, "La ubicación es obligatoria").optional(),
   idProducto: object({
     _id: string().min(1, "El ID del producto es obligatorio").optional(),
     nombre: string().min(1, "El nombre del producto es obligatorio"),
@@ -100,7 +100,7 @@ export const lineaRecepcionSchema = object({
   nombre: string().min(1, "El nombre es obligatorio"),
   estado: string().min(1, "El estado es obligatorio"),
   eliminado: boolean().default(false),
-  ubicacion: string().min(1, "La ubicación es obligatoria"),
+  ubicacion: string().min(1, "La ubicación es obligatoria").optional(),
   createdAt: string().optional(),
   updatedAt: string().optional(),
   idRefineria: object({
