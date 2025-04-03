@@ -184,6 +184,13 @@ const RefineriaList = () => {
           style={{ width: "25%" }}
         ></Column>
         <Column
+          field="procesamientoDia"
+          header="Procesamiento por día"
+          sortable
+          headerClassName="white-space-nowrap"
+          style={{ width: "25%" }}
+        ></Column>
+        <Column
           field="ubicacion"
           header="Ubicación"
           sortable

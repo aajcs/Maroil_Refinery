@@ -176,46 +176,26 @@ const TorreDestilacionList = () => {
         filters={filters}
         loading={loading}
         emptyMessage="No hay torres de destilación disponibles"
+        className="p-datatable-sm"
       >
         <Column body={actionBodyTemplate} headerStyle={{ minWidth: "10rem" }} />
-        <Column
-          field="nombre"
-          header="Nombre"
-          sortable
-          style={{ width: "25%" }}
-        />
-        <Column
-          field="ubicacion"
-          header="Ubicación"
-          sortable
-          style={{ width: "25%" }}
-        />
+        <Column field="nombre" header="Nombre" />
+        <Column field="ubicacion" header="Ubicación" />
         <Column
           field="material"
           header="Material"
-          sortable
-          style={{ width: "25%" }}
           body={materialBodyTemplate}
         />
-        <Column
-          field="estado"
-          header="Estado"
-          sortable
-          style={{ width: "25%" }}
-        />
+        <Column field="estado" header="Estado" />
         <Column
           field="createdAt"
           header="Fecha de Creación"
           body={(rowData: TorreDestilacion) => formatDateFH(rowData.createdAt)}
-          sortable
-          style={{ width: "25%" }}
         />
         <Column
           field="updatedAt"
           header="Última Actualización"
           body={(rowData: TorreDestilacion) => formatDateFH(rowData.updatedAt)}
-          sortable
-          style={{ width: "25%" }}
         />
       </DataTable>
 

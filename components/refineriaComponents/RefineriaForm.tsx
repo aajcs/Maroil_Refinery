@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { InputText } from "primereact/inputtext";
@@ -11,6 +11,7 @@ import { createRefineria, updateRefineria } from "@/app/api/refineriaService";
 import { Toast } from "primereact/toast";
 import { Dropdown } from "primereact/dropdown";
 import { useRouter } from "next/navigation";
+import { InputNumber } from "primereact/inputnumber";
 
 type FormData = z.infer<typeof refineriaSchema>;
 
@@ -36,6 +37,7 @@ const RefineriaForm = ({
     formState: { errors },
     setValue,
     watch,
+    control,
   } = useForm<FormData>({
     resolver: zodResolver(refineriaSchema),
   });
@@ -213,7 +215,37 @@ const RefineriaForm = ({
                   <small className="p-error">{errors.eliminado.message}</small>
                 )}
               </div> */}
-
+              {/* Fila 2 */}
+              <div className="col-12 md:col-6 lg:col-6">
+                <label className="block font-medium text-900 mb-2 flex align-items-center">
+                  Cantida de Procesamiento por Día
+                </label>
+                <Controller
+                  name="procesamientoDia"
+                  control={control}
+                  defaultValue={0} // Valor inicial
+                  render={({ field, fieldState }) => (
+                    <>
+                      <InputNumber
+                        id="procesamientoDia"
+                        value={field.value}
+                        onValueChange={(e) => field.onChange(e.value ?? 0)}
+                        className={classNames("w-full", {
+                          "p-invalid": fieldState.error,
+                        })}
+                        min={0}
+                        locale="es"
+                      />
+                      {fieldState.error && (
+                        <small className="p-error block mt-2 flex align-items-center">
+                          <i className="pi pi-exclamation-circle mr-2"></i>
+                          {fieldState.error.message}
+                        </small>
+                      )}
+                    </>
+                  )}
+                />
+              </div>
               <div className="field mb-4 col-12">
                 <label htmlFor="ubicacion" className="font-medium text-900">
                   Ubicación

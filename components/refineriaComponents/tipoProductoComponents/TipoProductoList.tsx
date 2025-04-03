@@ -17,6 +17,7 @@ import {
   deleteTipoProducto,
   getTipoProductos,
 } from "@/app/api/tipoProductoService";
+import { Accordion, AccordionTab } from "primereact/accordion";
 
 const TipoProductoList = () => {
   const { activeRefineria } = useRefineriaStore();
@@ -143,6 +144,59 @@ const TipoProductoList = () => {
   ) => {
     toast.current?.show({ severity, summary, detail, life: 3000 });
   };
+  const rendimientoBodyTemplate = (rowData: TipoProducto) => {
+    return (
+      <Accordion>
+        <AccordionTab
+          key={rowData.id}
+          header={`Rendimientos (${rowData.rendimientos?.length || 0})`}
+        >
+          {Array.isArray(rowData.rendimientos) &&
+            rowData.rendimientos.map((rendimiento, index) => (
+              <div
+                className="p-3 mb-2 border-round shadow-1 text-sm text-gray-800 flex align-items-center gap-4"
+                style={{
+                  backgroundColor: `#${rendimiento.idProducto?.color}20`,
+                }}
+              >
+                <span className="font-bold text-primary">
+                  {rendimiento.idProducto?.nombre || "Producto Desconocido"}
+                </span>
+                <div className="flex gap-4">
+                  <div className="flex align-items-center gap-2">
+                    <i className="pi pi-dollar text-green-500"></i>
+                    <span>
+                      <strong>Transporte:</strong>{" "}
+                      {rendimiento.transporte || "N/A"}
+                    </span>
+                  </div>
+                  <div className="flex align-items-center gap-2">
+                    <i className="pi pi-dollar text-green-500"></i>
+                    <span>
+                      <strong>Bunker:</strong> {rendimiento.bunker || "N/A"}
+                    </span>
+                  </div>
+                  <div className="flex align-items-center gap-2">
+                    <i className="pi pi-dollar text-green-500"></i>
+                    <span>
+                      <strong>Costo Venta:</strong>{" "}
+                      {rendimiento.costoVenta || "N/A"}
+                    </span>
+                  </div>
+                  <div className="flex align-items-center gap-2">
+                    <i className="pi pi-percentage text-purple-500"></i>
+                    <span>
+                      <strong>Porcentaje:</strong>{" "}
+                      {rendimiento.porcentaje || "N/A"}%
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))}
+        </AccordionTab>
+      </Accordion>
+    );
+  };
   return (
     <div className="card">
       <Toast ref={toast} />
@@ -160,19 +214,20 @@ const TipoProductoList = () => {
         emptyMessage="No hay tipoProductos disponibles"
       >
         <Column body={actionBodyTemplate} headerStyle={{ minWidth: "10rem" }} />
-        <Column field="idProducto.nombre" header="Producto" sortable />
-        <Column field="nombre" header="Nombre" sortable />
+        <Column field="idProducto.nombre" header="Producto" />
+        <Column field="nombre" header="Nombre" />
+        <Column field="clasificacion" header="Clasificación" />
+        <Column field="costoOperacional" header="Costo Operacional" />
+        <Column field="transporte" header="Costo de Transporte" />
         <Column
-          field="clasificacion"
-          header="Clasificación"
-          sortable
-          style={{ width: "20%" }}
+          field="rendimiento"
+          header="Rendimiento"
+          body={rendimientoBodyTemplate}
         />
+        <Column field="convenio" header="Convenio para el Precio de Compra" />
         <Column
           field="gravedadAPI"
           header="Gravedad API"
-          sortable
-          style={{ width: "15%" }}
           body={(rowData: TipoProducto) =>
             rowData.gravedadAPI?.toFixed(2) || "N/A"
           }
@@ -180,15 +235,11 @@ const TipoProductoList = () => {
         <Column
           field="azufre"
           header="Azufre (%)"
-          sortable
-          style={{ width: "15%" }}
           body={(rowData: TipoProducto) => rowData.azufre?.toFixed(2) || "N/A"}
         />
         <Column
           field="contenidoAgua"
           header="Contenido de Agua (%)"
-          sortable
-          style={{ width: "20%" }}
           body={(rowData: TipoProducto) =>
             rowData.contenidoAgua?.toFixed(2) || "N/A"
           }
@@ -196,22 +247,18 @@ const TipoProductoList = () => {
         <Column
           field="flashPoint"
           header="Flash Point"
-          sortable
-          style={{ width: "15%" }}
           body={(rowData: TipoProducto) => rowData.flashPoint || "N/A"}
         />
-        <Column field="estado" header="Estado" sortable />
+        <Column field="estado" header="Estado" />
         <Column
           field="createdAt"
           header="Fecha de Creación"
           body={(rowData: TipoProducto) => formatDateFH(rowData.createdAt)}
-          sortable
         />
         <Column
           field="updatedAt"
           header="Última Actualización"
           body={(rowData: TipoProducto) => formatDateFH(rowData.updatedAt)}
-          sortable
         />
       </DataTable>
 

@@ -78,4 +78,6 @@ export interface CrudeOption {
   purchasePrice: number;
   transportCost: number;
   operationalCost: number;
+  gravedadAPI: number;
+  azufre: number;
 }
