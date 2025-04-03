@@ -5,7 +5,6 @@ import { z } from "zod";
 
 import { classNames } from "primereact/utils";
 import { CrudeOption, Product } from "@/types/simulador";
-import { getCrudeOptions } from "@/demo/service/simuladorService";
 import { getRefinerias } from "@/app/api/refineriaService";
 import { useRefineryPrecios } from "@/hooks/useRefineryPrecios";
 import { useRefineryData } from "@/hooks/useRefineryData";
@@ -21,53 +20,89 @@ import { InputNumber } from "primereact/inputnumber";
 type SimulationMode = "crudeToProducts" | "productsToCrude";
 const products: Product[] = ["gas", "naphtha", "kerosene", "mgo4", "mgo6"];
 
-const formSchema = z
-  .object({
-    mode: z.enum(["crudeToProducts", "productsToCrude"]),
-    crudeType: z.object({
-      id: z.string(),
-      nombre: z.string(),
-      gravedadAPI: z.number().optional(),
-      azufre: z.number().optional(),
-      rendimiento: z.number().optional(),
-      color: z.string().optional(),
-    }),
+const formSchema = z.object({
+  mode: z.enum(["crudeToProducts", "productsToCrude"]),
+  crudeType: z.object({
+    id: z.string(),
+    nombre: z.string(),
+    gravedadAPI: z.number().optional(),
+    azufre: z.number().optional(),
+    rendimiento: z.number().optional(),
+    color: z.string().optional(),
+    clasificacion: z.string().optional(),
+    contenidoAgua: z.number().optional(),
+    convenio: z.number().optional(),
+    costoOperacional: z.number().optional(),
+    flashPoint: z.number().optional(),
+    transporte: z.number().optional(),
+    idProducto: z
+      .object({
+        id: z.string(),
+        nombre: z.string(),
+        color: z.string().optional(),
+        _id: z.string(),
+      })
+      .optional(),
+    idRefineria: z
+      .object({
+        id: z.string(),
+        nombre: z.string(),
+        _id: z.string(),
+        procesamientoDia: z.number().optional(),
+      })
+      .optional(),
+    rendimientos: z
+      .array(
+        z.object({
+          idProducto: z
+            .object({
+              id: z.string(),
+              nombre: z.string(),
+              color: z.string().optional(),
+            })
+            .optional(),
+          transporte: z.number().optional(),
+          bunker: z.number().optional(),
+          costoVenta: z.number().optional(),
+          porcentaje: z.number().optional(),
+        })
+      )
+      .optional(),
+    eliminado: z.boolean().optional(),
+    createdAt: z.string().optional(),
+    updatedAt: z.string().optional(),
+    _id: z.string(),
+  }),
 
-    crudeAmount: z.number().min(1).optional(),
-    desiredProducts: z.record(
+  crudeAmount: z.number().min(1).optional(),
+  desiredProducts: z
+    .record(
       z.enum(["gas", "naphtha", "kerosene", "mgo4", "mgo6"]),
       z.number().min(0)
-    ),
-    productPrices: z.record(
-      z.enum(["gas", "naphtha", "kerosene", "mgo4", "mgo6"]),
-      z.number().min(0)
-    ),
-    crudeCosts: z.object({
-      purchasePrice: z.number().min(0),
-      transportCost: z.number().min(0),
-      operationalCost: z.number().min(0),
-    }),
-    idRefineria: z.object({
-      id: z.string(),
-      nombre: z.string(),
-      _id: z.string(),
-    }),
-  })
-  .refine(
-    (data) =>
-      data.mode === "crudeToProducts"
-        ? data.crudeAmount !== undefined
-        : Object.values(data.desiredProducts).some((v) => v > 0),
-    {
-      message: "Debe ingresar cantidad de crudo o al menos un producto deseado",
-      path: ["crudeAmount"],
-    }
-  );
+    )
+    .optional(),
+
+  idRefineria: z.object({
+    id: z.string(),
+    nombre: z.string(),
+    _id: z.string(),
+  }),
+});
+// .refine(
+//   (data) =>
+//     data.mode === "crudeToProducts"
+//       ? data.crudeAmount !== undefined
+//       : Object.values(data.desiredProducts).some((v) => v > 0),
+//   {
+//     message: "Debe ingresar cantidad de crudo o al menos un producto deseado",
+//     path: ["crudeAmount"],
+//   }
+// );
 
 type FormValues = z.infer<typeof formSchema>;
 
 interface SimulatorFormProps {
-  onCalculate: (data: FormValues) => void;
+  onCalculate: (data: any) => void;
   isLoading: boolean;
 }
 
@@ -85,9 +120,6 @@ export default function SimulatorForm({
   } = useRefineryData(refineria?.id || "");
   const [refinerias, setRefinerias] = useState<any[]>([]);
   const [tipoProducto, setTipoProducto] = useState<TipoProducto>();
-  const [showAdvanced, setShowAdvanced] = useState(false);
-
-  const crudeOptions = useMemo(() => getCrudeOptions(), []);
 
   // Form configuration
   const {
@@ -98,15 +130,18 @@ export default function SimulatorForm({
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: getDefaultValues(),
+    defaultValues: {
+      mode: "crudeToProducts",
+      crudeAmount: refineria?.procesamientoDia || 1000,
+    },
   });
-  console.log("errors", errors);
+  console.log(errors);
   // Watchers
   const mode = watch("mode");
   const crudeType = watch("crudeType");
-  const selectedCrude = crudeOptions.find(
-    (option) => option.value === crudeType
-  );
+  // const selectedCrude = crudeOptions.find(
+  //   (option) => option.value === crudeType
+  // );
 
   // Efectos
   // useEffect(() => {
@@ -140,9 +175,9 @@ export default function SimulatorForm({
   // }, [oilDerivate]);
 
   // Handlers
-  const onSubmit = (data: FormValues) => {
+  const onSubmit = (data: any) => {
     console.log("data", data);
-    // onCalculate(processFormData(data));
+    onCalculate(data);
   };
 
   // Render helpers
@@ -218,14 +253,17 @@ export default function SimulatorForm({
       <Accordion>
         {tipoProducto && (
           <AccordionTab header={`Costos del crudo (${tipoProducto.nombre})`}>
-            <CrudeCostsPanel tipoProducto={tipoProducto} />
+            <CrudeCostsPanel tipoProducto={tipoProducto} control={control} />
           </AccordionTab>
         )}
         {tipoProducto && (
           <AccordionTab
             header={`Rendimientos (${tipoProducto.rendimientos?.length || 0})`}
           >
-            <YieldDetails rendimientos={tipoProducto.rendimientos} />
+            <YieldDetails
+              rendimientos={tipoProducto.rendimientos}
+              control={control}
+            />
           </AccordionTab>
         )}
       </Accordion>
@@ -275,11 +313,16 @@ export default function SimulatorForm({
         control={control}
         render={({ field }) => (
           <InputNumber
-            {...field}
             value={field.value}
             onValueChange={(e) => field.onChange(e.value)}
             min={0}
             className="w-full"
+            mode="decimal"
+            locale="es"
+            placeholder="Ingrese cantidad de crudo"
+            inputClassName={classNames({ "p-invalid": errors.crudeAmount })} // Añadir clase de error si hay un error
+            tooltip="Cantidad de crudo en barriles (bbl)"
+            tooltipOptions={{ position: "top" }}
           />
         )}
       />
@@ -354,7 +397,13 @@ const LoadingSpinner = () => (
   </div>
 );
 
-const CrudeCostsPanel = ({ tipoProducto }) => (
+const CrudeCostsPanel = ({
+  tipoProducto,
+  control,
+}: {
+  tipoProducto: TipoProducto;
+  control: any;
+}) => (
   <div
     className="p-3 mb-2 border-round shadow-1 text-sm text-gray-800 flex align-items-center gap-4"
     style={{ backgroundColor: `#${tipoProducto.idProducto?.color}20` }}
@@ -363,56 +412,70 @@ const CrudeCostsPanel = ({ tipoProducto }) => (
       {tipoProducto.idProducto?.nombre || "Producto Desconocido"}
     </span>
     <div className="flex gap-4">
-      {/* Transporte */}
+      {/* Costo Compra */}
       <div className="flex align-items-center gap-2">
         <i className="pi pi-dollar text-green-500"></i>
         <span>
-          <strong>costo Operacional:</strong>{" "}
-          <InputNumber
-            value={tipoProducto.costoOperacional || 0}
-            onValueChange={(e) =>
-              handleRendimientoChange(index, "costoOperacional", e.value)
-            }
-            mode="currency"
-            currency="USD"
-            locale="en-US"
-            className="w-20"
+          <strong>Convenio Compra:</strong>{" "}
+          <Controller
+            name={`crudeType.convenio`}
+            control={control}
+            defaultValue={tipoProducto.convenio || 0}
+            render={({ field }) => (
+              <InputNumber
+                value={field.value} // Asegúrate de que el valor sea controlado
+                onValueChange={(e) => field.onChange(e.value)}
+                mode="currency"
+                currency="USD"
+                locale="es"
+                className="w-20"
+              />
+            )}
           />
         </span>
       </div>
+      {/* Transporte */}
 
       {/* Bunker */}
       <div className="flex align-items-center gap-2">
         <i className="pi pi-dollar text-green-500"></i>
         <span>
           <strong>Transporte:</strong>{" "}
-          <InputNumber
-            value={tipoProducto.transporte || 0}
-            onValueChange={(e) =>
-              handleRendimientoChange(index, "transporte", e.value)
-            }
-            mode="currency"
-            currency="USD"
-            locale="en-US"
-            className="w-20"
+          <Controller
+            name={`crudeType.transporte`}
+            control={control}
+            defaultValue={tipoProducto.transporte || 0}
+            render={({ field }) => (
+              <InputNumber
+                value={field.value} // Asegúrate de que el valor sea controlado
+                onValueChange={(e) => field.onChange(e.value)}
+                mode="currency"
+                currency="USD"
+                locale="es"
+                className="w-20"
+              />
+            )}
           />
         </span>
       </div>
-
-      {/* Costo Venta */}
       <div className="flex align-items-center gap-2">
         <i className="pi pi-dollar text-green-500"></i>
         <span>
-          <strong>Convenio Venta:</strong>{" "}
-          <InputNumber
-            value={tipoProducto.convenio || 0}
-            onValueChange={(e) =>
-              handleRendimientoChange(index, "convenio", e.value)
-            }
-            mode="currency"
-            currency="USD"
-            locale="en-US"
-            className="w-20"
+          <strong>Costo Operacional:</strong>{" "}
+          <Controller
+            name={`crudeType.costoOperacional`}
+            control={control}
+            defaultValue={tipoProducto.costoOperacional || 0}
+            render={({ field }) => (
+              <InputNumber
+                value={field.value} // Asegúrate de que el valor sea controlado
+                onValueChange={(e) => field.onChange(e.value)}
+                mode="currency"
+                currency="USD"
+                locale="es"
+                className="w-20"
+              />
+            )}
           />
         </span>
       </div>
@@ -420,7 +483,19 @@ const CrudeCostsPanel = ({ tipoProducto }) => (
   </div>
 );
 
-const YieldDetails = ({ rendimientos }) => (
+const YieldDetails = ({
+  rendimientos,
+  control,
+}: {
+  rendimientos: Array<{
+    idProducto?: { nombre?: string; color?: string };
+    costoVenta?: number;
+    transporte?: number;
+    bunker?: number;
+    porcentaje?: number;
+  }>;
+  control: any;
+}) => (
   <>
     {rendimientos?.map((rendimiento, index) => (
       <div
@@ -432,20 +507,47 @@ const YieldDetails = ({ rendimientos }) => (
           {rendimiento.idProducto?.nombre || "Producto Desconocido"}
         </span>
         <div className="flex gap-4">
+          {/* Costo Venta */}
+          <div className="flex align-items-center gap-2">
+            <i className="pi pi-dollar text-green-500"></i>
+            <span>
+              <strong>Costo Venta:</strong>{" "}
+              <Controller
+                name={`crudeType.rendimientos.${index}.costoVenta`}
+                control={control}
+                defaultValue={rendimiento.costoVenta || 0}
+                render={({ field }) => (
+                  <InputNumber
+                    value={field.value} // Asegúrate de que el valor sea controlado
+                    onValueChange={(e) => field.onChange(e.value)}
+                    mode="currency"
+                    currency="USD"
+                    locale="es"
+                    className="w-20"
+                  />
+                )}
+              />
+            </span>
+          </div>
           {/* Transporte */}
           <div className="flex align-items-center gap-2">
             <i className="pi pi-dollar text-green-500"></i>
             <span>
               <strong>Transporte:</strong>{" "}
-              <InputNumber
-                value={rendimiento.transporte || 0}
-                onValueChange={(e) =>
-                  handleRendimientoChange(index, "transporte", e.value)
-                }
-                mode="currency"
-                currency="USD"
-                locale="en-US"
-                className="w-20"
+              <Controller
+                name={`crudeType.rendimientos.${index}.transporte`}
+                control={control}
+                defaultValue={rendimiento.transporte || 0}
+                render={({ field }) => (
+                  <InputNumber
+                    value={field.value} // Asegúrate de que el valor sea controlado
+                    onValueChange={(e) => field.onChange(e.value)}
+                    mode="currency"
+                    currency="USD"
+                    locale="es"
+                    className="w-20"
+                  />
+                )}
               />
             </span>
           </div>
@@ -455,33 +557,20 @@ const YieldDetails = ({ rendimientos }) => (
             <i className="pi pi-dollar text-green-500"></i>
             <span>
               <strong>Bunker:</strong>{" "}
-              <InputNumber
-                value={rendimiento.bunker || 0}
-                onValueChange={(e) =>
-                  handleRendimientoChange(index, "bunker", e.value)
-                }
-                mode="currency"
-                currency="USD"
-                locale="en-US"
-                className="w-20"
-              />
-            </span>
-          </div>
-
-          {/* Costo Venta */}
-          <div className="flex align-items-center gap-2">
-            <i className="pi pi-dollar text-green-500"></i>
-            <span>
-              <strong>Costo Venta:</strong>{" "}
-              <InputNumber
-                value={rendimiento.costoVenta || 0}
-                onValueChange={(e) =>
-                  handleRendimientoChange(index, "costoVenta", e.value)
-                }
-                mode="currency"
-                currency="USD"
-                locale="en-US"
-                className="w-20"
+              <Controller
+                name={`crudeType.rendimientos.${index}.bunker`}
+                control={control}
+                defaultValue={rendimiento.bunker || 0}
+                render={({ field }) => (
+                  <InputNumber
+                    value={field.value} // Asegúrate de que el valor sea controlado
+                    onValueChange={(e) => field.onChange(e.value)}
+                    mode="currency"
+                    currency="USD"
+                    locale="es"
+                    className="w-20"
+                  />
+                )}
               />
             </span>
           </div>
@@ -491,13 +580,18 @@ const YieldDetails = ({ rendimientos }) => (
             <i className="pi pi-percentage text-purple-500"></i>
             <span>
               <strong>Porcentaje:</strong>{" "}
-              <InputNumber
-                value={rendimiento.porcentaje || 0}
-                onValueChange={(e) =>
-                  handleRendimientoChange(index, "porcentaje", e.value)
-                }
-                suffix="%"
-                className="w-20"
+              <Controller
+                name={`crudeType.rendimientos.${index}.porcentaje`}
+                control={control}
+                defaultValue={rendimiento.porcentaje || 0}
+                render={({ field }) => (
+                  <InputNumber
+                    value={field.value} // Asegúrate de que el valor sea controlado
+                    onValueChange={(e) => field.onChange(e.value)}
+                    suffix="%"
+                    className="w-20"
+                  />
+                )}
               />
             </span>
           </div>
@@ -507,31 +601,31 @@ const YieldDetails = ({ rendimientos }) => (
   </>
 );
 
-// Funciones de apoyo
-const getDefaultValues = () => ({
-  mode: "crudeToProducts",
-  crudeType: "crude1",
-  crudeAmount: 1000,
-  desiredProducts: products.reduce(
-    (acc, product) => ({ ...acc, [product]: 0 }),
-    {} as Record<Product, number>
-  ),
-  productPrices: products.reduce(
-    (acc, product) => ({ ...acc, [product]: 0 }),
-    {} as Record<Product, number>
-  ),
-  crudeCosts: {
-    purchasePrice: 0,
-    transportCost: 0,
-    operationalCost: 0,
-  },
-});
+// // Funciones de apoyo
+// const getDefaultValues = () => ({
+//   mode: "crudeToProducts",
+//   crudeType: "",
+//   crudeAmount: 1000,
+//   desiredProducts: products.reduce(
+//     (acc, product) => ({ ...acc, [product]: 0 }),
+//     {} as Record<Product, number>
+//   ),
+//   productPrices: products.reduce(
+//     (acc, product) => ({ ...acc, [product]: 0 }),
+//     {} as Record<Product, number>
+//   ),
+//   crudeCosts: {
+//     purchasePrice: 0,
+//     transportCost: 0,
+//     operationalCost: 0,
+//   },
+// });
 
-const processFormData = (data: FormValues) => ({
-  ...data,
-  crudeCosts: {
-    purchasePrice: data.crudeCosts.purchasePrice + brent,
-    transportCost: data.crudeCosts.transportCost,
-    operationalCost: data.crudeCosts.operationalCost,
-  },
-});
+// const processFormData = (data: FormValues) => ({
+//   ...data,
+//   crudeCosts: {
+//     purchasePrice: data.crudeCosts.purchasePrice + brent,
+//     transportCost: data.crudeCosts.transportCost,
+//     operationalCost: data.crudeCosts.operationalCost,
+//   },
+// });

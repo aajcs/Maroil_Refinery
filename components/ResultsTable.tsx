@@ -121,6 +121,12 @@ export default function ResultsTable({ results }: ResultsTableProps) {
                 bbl
               </p>
             </div>
+            <div className="col-span-2 md:col-span-3 text-center font-semibold text-lg text-blue-700 bg-blue-50 p-2 rounded-lg">
+              <p>
+                <strong>Cantidad (días):</strong>{" "}
+                {formatNumber(crudeToProductsResults.crudeAmountDays)} días
+              </p>
+            </div>
           </div>
         </Panel>
 
@@ -132,19 +138,39 @@ export default function ResultsTable({ results }: ResultsTableProps) {
           <DataTable
             value={Object.entries(crudeToProductsResults.production)
               .filter(([, amount]) => amount > 0)
-              .map(([product, amount]) => ({
-                product,
-                amount,
-                unitPrice:
+              .map(([product, amount]) => {
+                const unitPrice =
                   results.financials.productRevenues[
                     product as keyof typeof results.financials.productRevenues
-                  ] / amount || 0,
-                revenue:
+                  ] / amount || 0;
+                const bunker =
+                  results.financials.productBunkerCosts[
+                    product as keyof typeof results.financials.productBunkerCosts
+                  ] / amount || 0;
+                const transporte =
+                  results.financials.productTransportCosts[
+                    product as keyof typeof results.financials.productTransportCosts
+                  ] / amount || 0;
+                const revenue =
                   results.financials.productRevenues[
                     product as keyof typeof results.financials.productRevenues
-                  ],
-                yield: (amount / crudeToProductsResults.crudeAmount) * 100,
-              }))}
+                  ] +
+                  results.financials.productBunkerCosts[
+                    product as keyof typeof results.financials.productBunkerCosts
+                  ] +
+                  results.financials.productTransportCosts[
+                    product as keyof typeof results.financials.productTransportCosts
+                  ];
+                return {
+                  product,
+                  amount,
+                  unitPrice,
+                  bunker,
+                  transporte,
+                  revenue,
+                  yield: (amount / crudeToProductsResults.crudeAmount) * 100,
+                };
+              })}
             className="p-datatable-sm"
           >
             <Column field="product" header="Producto" />
@@ -157,6 +183,16 @@ export default function ResultsTable({ results }: ResultsTableProps) {
               field="unitPrice"
               header="Precio unitario"
               body={(rowData) => formatCurrency(rowData.unitPrice)}
+            />
+            <Column
+              field="bunker"
+              header="Precio Bunker"
+              body={(rowData) => formatCurrency(rowData.bunker)}
+            />
+            <Column
+              field="transporte"
+              header="Precio Transporte"
+              body={(rowData) => formatCurrency(rowData.transporte)}
             />
             <Column
               field="revenue"
@@ -179,7 +215,15 @@ export default function ResultsTable({ results }: ResultsTableProps) {
             <div>
               <Card title="Ingresos Totales" className="mr-4">
                 <div className="text-xl text-green-600">
-                  {formatCurrency(results.financials.totalRevenue)}
+                  {formatCurrency(results.financials.totalIngresos)}
+                  <p className="text-sm text-gray-600 mt-1">
+                    {formatCurrency(
+                      results.financials.totalIngresos /
+                        ((results as CrudeToProductsResults).crudeAmount ||
+                          (results as ProductsToCrudeResults).requiredCrude)
+                    )}{" "}
+                    por barril de crudo
+                  </p>
                 </div>
                 <details className="mt-1 text-sm">
                   <summary className="cursor-pointer">
@@ -193,6 +237,14 @@ export default function ResultsTable({ results }: ResultsTableProps) {
                         </li>
                       )
                     )}
+                    <li>
+                      Transporte:
+                      {formatCurrency(results.financials.totalTransportCosts)}
+                    </li>
+                    <li>
+                      Bunker:{" "}
+                      {formatCurrency(results.financials.totalBunkerCosts)}
+                    </li>
                   </ul>
                 </details>
               </Card>
@@ -201,6 +253,14 @@ export default function ResultsTable({ results }: ResultsTableProps) {
               <Card title="Costos Totales" className="">
                 <div className="text-xl text-red-600">
                   {formatCurrency(results.financials.costs.total)}
+                  <p className="text-sm text-gray-600 mt-1">
+                    {formatCurrency(
+                      results.financials.totalRevenue /
+                        ((results as CrudeToProductsResults).crudeAmount ||
+                          (results as ProductsToCrudeResults).requiredCrude)
+                    )}{" "}
+                    por barril de crudo
+                  </p>
                 </div>
                 <details className="mt-1 text-sm">
                   <summary className="cursor-pointer">

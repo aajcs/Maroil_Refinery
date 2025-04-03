@@ -29,7 +29,12 @@ export interface CrudeDetails {
 // Tipo para los resultados financieros
 export interface FinancialResults {
   productRevenues: Record<Product, number>;
+  productTransportCosts: Record<Product, number>;
+  productBunkerCosts: Record<Product, number>;
   totalRevenue: number;
+  totalTransportCosts: number;
+  totalBunkerCosts: number;
+  totalIngresos: number;
   costs: CostBreakdown;
   grossProfit: number;
   profitMargin: number;
@@ -56,6 +61,7 @@ export interface SimulationResults {
 
 export interface CrudeToProductsResults extends SimulationResults {
   crudeAmount: number;
+  crudeAmountDays: number;
   production: Record<Product, number>;
 }
 

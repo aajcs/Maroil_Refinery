@@ -552,8 +552,9 @@ export interface TipoProducto {
   idRefineria: {
     id: string;
     nombre: string;
+    procesamientoDia: number;
   }; // Relación con la refinería
-  idProducto: Producto[]; // Relación con el modelo Producto
+  idProducto: Producto; // Relación con el modelo Producto
   nombre: string; // Nombre del producto
   clasificacion: string;
   gravedadAPI: number; // Gravedad API del producto

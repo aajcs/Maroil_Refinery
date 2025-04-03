@@ -5,7 +5,7 @@ import { ProgressSpinner } from "primereact/progressspinner";
 import { Card } from "primereact/card";
 import {
   calculateDerivatives,
-  calculateRequiredCrude,
+  // calculateRequiredCrude,
 } from "../utils/refineryCalculations";
 import {
   CrudeToProductsResults,
@@ -16,6 +16,7 @@ import {
 import { useRefineryPrecios } from "@/hooks/useRefineryPrecios";
 import { Tag } from "primereact/tag";
 import { getRefinerias } from "@/app/api/refineriaService";
+import { TipoProducto } from "@/libs/interfaces";
 
 export default function Home() {
   const { loading, brent, oilDerivate } = useRefineryPrecios();
@@ -25,14 +26,8 @@ export default function Home() {
 
   const handleCalculate = async (data: {
     mode: "crudeToProducts" | "productsToCrude";
-    crudeType: string;
+    crudeType: TipoProducto & { estado: string };
     desiredProducts: Partial<Record<Product, number>>;
-    productPrices: Partial<Record<Product, number>>;
-    crudeCosts: {
-      purchasePrice: number;
-      transportCost: number;
-      operationalCost: number;
-    };
     crudeAmount?: number;
   }) => {
     setIsLoading(true);
@@ -43,30 +38,30 @@ export default function Home() {
       if ("crudeAmount" in data) {
         const calculation = calculateDerivatives(
           data.crudeType,
-          data.crudeAmount!,
-          data.productPrices as Record<Product, number>,
-          data.crudeCosts
+          data.crudeAmount!
         );
+        console.log("calculation", calculation);
         setResults(calculation as CrudeToProductsResults);
-      } else {
-        const calculation = calculateRequiredCrude(
-          data.crudeType,
-          Object.fromEntries(
-            Object.entries(data.desiredProducts!).map(([key, value]) => [
-              key,
-              value ?? 0,
-            ])
-          ) as Record<Product, number>,
-          Object.fromEntries(
-            Object.entries(data.productPrices).map(([key, value]) => [
-              key,
-              value ?? 0,
-            ])
-          ) as Record<Product, number>,
-          data.crudeCosts
-        );
-        setResults((calculation as SimulationResults) || null);
       }
+      // else {
+      //   const calculation = calculateRequiredCrude(
+      //     data.crudeType,
+      //     Object.fromEntries(
+      //       Object.entries(data.desiredProducts!).map(([key, value]) => [
+      //         key,
+      //         value ?? 0,
+      //       ])
+      //     ) as Record<Product, number>,
+      //     Object.fromEntries(
+      //       Object.entries(data.productPrices).map(([key, value]) => [
+      //         key,
+      //         value ?? 0,
+      //       ])
+      //     ) as Record<Product, number>,
+      //     data.crudeCosts
+      //   );
+      //   setResults((calculation as SimulationResults) || null);
+      // }
     } catch (error) {
       console.error("Error en el cálculo:", error);
       setResults(null);

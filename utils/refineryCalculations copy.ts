@@ -1,130 +1,111 @@
-import { TipoProducto } from "@/libs/interfaces";
-import {
-  Product,
-  CrudeToProductsResults,
-  ProductsToCrudeResults,
-} from "@/types/simulador";
+// import {
+//   crudeTypes,
+//   defaultProductPrices,
+// } from "@/demo/service/simuladorService";
+// import {
+//   Product,
+//   CrudeToProductsResults,
+//   ProductsToCrudeResults,
+// } from "@/types/simulador";
 
-// Calcular derivados a partir del crudo con precios y costos personalizados
-export function calculateDerivatives(
-  crudeType: TipoProducto,
-  crudeAmount: number
-): CrudeToProductsResults | { error: string } {
-  // Usar precios personalizados o los predeterminados
-  const productPrices = crudeType.rendimientos.map((rendimiento) => {
-    return {
-      nombre: rendimiento.idProducto.nombre,
-      precio: rendimiento.costoVenta,
-    };
-  });
-  // Usar costos personalizados o los del crudo seleccionado
-  const effectiveCosts = {
-    purchasePrice: crudeType.convenio || 0,
-    transportCost: crudeType.transporte || 0,
+// // Calcular derivados a partir del crudo con precios y costos personalizados
+// export function calculateDerivatives(
+//   crudeType: string,
+//   crudeAmount: number,
+//   customProductPrices?: Record<Product, number>,
+//   customCrudeCosts?: {
+//     purchasePrice: number;
+//     transportCost: number;
+//     operationalCost: number;
+//   }
+// ): CrudeToProductsResults | { error: string } {
+//   const crude = crudeTypes[crudeType];
+//   if (!crude) return { error: "Tipo de crudo no válido" };
 
-    operationalCost: crudeType.costoOperacional || 0,
-  };
+//   // Usar precios personalizados o los predeterminados
+//   const productPrices = customProductPrices || defaultProductPrices;
 
-  // Verificar que los rendimientos sumen ~100%
-  const totalYield = crudeType.rendimientos.reduce(
-    (sum, rendimiento) => sum + (rendimiento.porcentaje || 0),
-    0
-  );
-  if (Math.abs(totalYield - 1) > 0.01) {
-    console.warn(
-      `Los rendimientos para ${crudeType.nombre} no suman 100% (suman ${(
-        totalYield * 100
-      ).toFixed(1)}%)`
-    );
-  }
+//   // Usar costos personalizados o los del crudo seleccionado
+//   const effectiveCosts = customCrudeCosts || {
+//     purchasePrice: crude.purchasePrice,
+//     transportCost: crude.transportCost,
+//     operationalCost: crude.operationalCost,
+//   };
 
-  // Calcular producción
-  const production: Record<string, number> = {};
-  crudeType.rendimientos.forEach((rendimiento) => {
-    production[rendimiento.idProducto.nombre] =
-      crudeAmount * ((rendimiento.porcentaje || 0) / 100);
-  });
+//   // Verificar que los rendimientos sumen ~100%
+//   const totalYield = Object.values(crude.yields).reduce(
+//     (sum, yieldVal) => sum + yieldVal,
+//     0
+//   );
+//   if (Math.abs(totalYield - 1) > 0.01) {
+//     console.warn(
+//       `Los rendimientos para ${crude.name} no suman 100% (suman ${(
+//         totalYield * 100
+//       ).toFixed(1)}%)`
+//     );
+//   }
 
-  // Calcular ingresos por ventas con los precios personalizados
+//   // Calcular producción
+//   const production: Record<Product, number> = {
+//     gas: crudeAmount * crude.yields.gas,
+//     naphtha: crudeAmount * crude.yields.naphtha,
+//     kerosene: crudeAmount * crude.yields.kerosene,
+//     mgo4: crudeAmount * crude.yields.mgo4,
+//     mgo6: crudeAmount * crude.yields.mgo6,
+//   };
 
-  const productRevenues: Record<string, number> = {};
-  crudeType.rendimientos.forEach((rendimiento) => {
-    const productName = rendimiento.idProducto.nombre;
-    productRevenues[productName] =
-      production[productName] * (rendimiento.costoVenta || 0);
-  });
+//   // Calcular ingresos por ventas con los precios personalizados
+//   const productRevenues: Record<Product, number> = {
+//     gas: production.gas * productPrices.gas,
+//     naphtha: production.naphtha * productPrices.naphtha,
+//     kerosene: production.kerosene * productPrices.kerosene,
+//     mgo4: production.mgo4 * productPrices.mgo4,
+//     mgo6: production.mgo6 * productPrices.mgo6,
+//   };
 
-  const productTransportCosts: Record<string, number> = {};
-  crudeType.rendimientos.forEach((rendimiento) => {
-    const productName = rendimiento.idProducto.nombre;
-    productTransportCosts[productName] =
-      production[productName] * (rendimiento.transporte || 0);
-  });
+//   const totalRevenue = Object.values(productRevenues).reduce(
+//     (sum, revenue) => sum + revenue,
+//     0
+//   );
 
-  const productBunkerCosts: Record<string, number> = {};
-  crudeType.rendimientos.forEach((rendimiento) => {
-    const productName = rendimiento.idProducto.nombre;
-    productBunkerCosts[productName] =
-      production[productName] * (rendimiento.bunker || 0);
-  });
+//   // Calcular costos con los valores personalizados
+//   const totalPurchaseCost = crudeAmount * effectiveCosts.purchasePrice;
+//   const totalTransportCost = crudeAmount * effectiveCosts.transportCost;
+//   const totalOperationalCost = crudeAmount * effectiveCosts.operationalCost;
+//   const totalCost =
+//     totalPurchaseCost + totalTransportCost + totalOperationalCost;
 
-  const totalRevenue = Object.values(productRevenues).reduce(
-    (sum, revenue) => sum + revenue,
-    0
-  );
-  const totalTransportCosts = Object.values(productTransportCosts).reduce(
-    (sum, cost) => sum + cost,
-    0
-  );
-  const totalBunkerCosts = Object.values(productBunkerCosts).reduce(
-    (sum, cost) => sum + cost,
-    0
-  );
-  // Calcular costos con los valores personalizados
-  const totalPurchaseCost = crudeAmount * effectiveCosts.purchasePrice;
-  const totalTransportCost = crudeAmount * effectiveCosts.transportCost;
-  const totalOperationalCost = crudeAmount * effectiveCosts.operationalCost;
-  const totalCost =
-    totalPurchaseCost + totalTransportCost + totalOperationalCost;
-  const totalIngresos = totalRevenue + totalTransportCosts + totalBunkerCosts;
+//   // Calcular margen
+//   const grossProfit = totalRevenue - totalCost;
+//   const profitMargin =
+//     totalRevenue !== 0 ? (grossProfit / totalRevenue) * 100 : 0;
 
-  // Calcular margen
-  const grossProfit = totalIngresos - totalCost;
-  const profitMargin =
-    totalIngresos !== 0 ? (grossProfit / totalIngresos) * 100 : 0;
-
-  return {
-    crudeType: crudeType.nombre,
-    crudeAmount,
-    crudeAmountDays: crudeAmount / crudeType.idRefineria.procesamientoDia,
-    production,
-    financials: {
-      productRevenues,
-      productTransportCosts,
-      productBunkerCosts,
-      totalRevenue,
-      totalTransportCosts,
-      totalBunkerCosts,
-      totalIngresos,
-      costs: {
-        purchase: totalPurchaseCost,
-        transport: totalTransportCost,
-        operational: totalOperationalCost,
-        total: totalCost,
-      },
-      grossProfit,
-      profitMargin,
-      costPerBarrel: totalCost / crudeAmount,
-    },
-    crudeDetails: {
-      sulfur: crudeType.azufre,
-      api: crudeType.gravedadAPI,
-      purchasePrice: effectiveCosts.purchasePrice,
-      transportCost: effectiveCosts.transportCost,
-      operationalCost: effectiveCosts.operationalCost,
-    },
-  };
-}
+//   return {
+//     crudeType: crude.name,
+//     crudeAmount,
+//     production,
+//     financials: {
+//       productRevenues,
+//       totalRevenue,
+//       costs: {
+//         purchase: totalPurchaseCost,
+//         transport: totalTransportCost,
+//         operational: totalOperationalCost,
+//         total: totalCost,
+//       },
+//       grossProfit,
+//       profitMargin,
+//       costPerBarrel: totalCost / crudeAmount,
+//     },
+//     crudeDetails: {
+//       sulfur: crude.sulfurContent,
+//       api: crude.api,
+//       purchasePrice: effectiveCosts.purchasePrice,
+//       transportCost: effectiveCosts.transportCost,
+//       operationalCost: effectiveCosts.operationalCost,
+//     },
+//   };
+// }
 
 // // Calcular crudo necesario para obtener derivados deseados con precios y costos personalizados
 // export function calculateRequiredCrude(
