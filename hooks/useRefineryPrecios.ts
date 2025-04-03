@@ -21,8 +21,8 @@ export const useRefineryPrecios = () => {
         gas: 0,
         naphtha: getOilDerivateData.nafta,
         kerosene: 0,
-        mgo4: getOilDerivateData.fo4,
-        mgo6: getOilDerivateData.fo6,
+        fo4: getOilDerivateData.fo4,
+        fo6: getOilDerivateData.fo6,
       };
       // Guardamos únicamente el 'price'
       setBrent(Number(brentData.price));
