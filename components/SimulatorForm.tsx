@@ -369,17 +369,19 @@ export default function SimulatorForm({
   if (loading) return <LoadingSpinner />;
 
   return (
-    <div className="card p-fluid">
-      <h2 className="text-2xl font-bold mb-4">Simulador de Refinería</h2>
+    <div className=" p-fluid p-2">
+      <h2 className="text-2xl font-bold text-primary mb-4">
+        Resultados de la simulación
+      </h2>
 
-      <div className="grid">
+      <div className="grid card">
         {/* {renderBrentPrice()} */}
         {renderRefinerySelector()}
         {renderCrudeTypeSelector()}
         {renderCrudeDetails()}
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="-m-2 card">
         {renderSimulationModeToggle()}
         {renderInputSection()}
 

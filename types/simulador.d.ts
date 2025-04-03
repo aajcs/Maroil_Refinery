@@ -63,6 +63,7 @@ export interface CrudeToProductsResults extends SimulationResults {
   crudeAmount: number;
   crudeAmountDays: number;
   production: Record<Product, number>;
+  warning: string | undefined;
 }
 
 export interface ProductsToCrudeResults extends SimulationResults {

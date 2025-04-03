@@ -30,12 +30,11 @@ export function calculateDerivatives(
     (sum, rendimiento) => sum + (rendimiento.porcentaje || 0),
     0
   );
+  let warning: string | undefined;
   if (Math.abs(totalYield - 1) > 0.01) {
-    console.warn(
-      `Los rendimientos para ${crudeType.nombre} no suman 100% (suman ${(
-        totalYield * 100
-      ).toFixed(1)}%)`
-    );
+    warning = `Los rendimientos para ${
+      crudeType.nombre
+    } no suman 100% (suman ${(totalYield * 100).toFixed(1)}%)`;
   }
 
   // Calcular producción
@@ -123,6 +122,7 @@ export function calculateDerivatives(
       transportCost: effectiveCosts.transportCost,
       operationalCost: effectiveCosts.operationalCost,
     },
+    warning,
   };
 }
 

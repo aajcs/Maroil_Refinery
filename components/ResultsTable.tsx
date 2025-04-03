@@ -64,7 +64,7 @@ export default function ResultsTable({ results }: ResultsTableProps) {
   const productsToCrudeResults = results as ProductsToCrudeResults;
 
   return (
-    <div className="p-4">
+    <div className="p-2">
       <div ref={pdfRef}>
         <h2 className="text-2xl font-bold text-primary mb-4">
           Resultados de la simulación
