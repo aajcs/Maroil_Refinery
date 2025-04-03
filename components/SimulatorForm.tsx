@@ -177,7 +177,14 @@ export default function SimulatorForm({
   // Handlers
   const onSubmit = (data: any) => {
     console.log("data", data);
-    onCalculate(data);
+
+    onCalculate({
+      ...data,
+      crudeType: {
+        ...data.crudeType,
+        convenio: crudeType.convenio + brent,
+      },
+    });
   };
 
   // Render helpers
