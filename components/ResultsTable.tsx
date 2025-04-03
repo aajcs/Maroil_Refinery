@@ -255,7 +255,7 @@ export default function ResultsTable({ results }: ResultsTableProps) {
                   {formatCurrency(results.financials.costs.total)}
                   <p className="text-sm text-gray-600 mt-1">
                     {formatCurrency(
-                      results.financials.totalRevenue /
+                      results.financials.costs.total /
                         ((results as CrudeToProductsResults).crudeAmount ||
                           (results as ProductsToCrudeResults).requiredCrude)
                     )}{" "}
