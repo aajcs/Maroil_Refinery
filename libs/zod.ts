@@ -392,7 +392,7 @@ export const recepcionSchema = object({
       "La temperatura debe ser un número no negativo"
     ),
   }).optional(),
-  idLineaDespacho: object({
+  idLinea: object({
     id: string().optional(),
     nombre: string().min(1, "El nombre de la línea es obligatorio"),
   })
@@ -446,9 +446,9 @@ export const recepcionSchema = object({
           "La cantidad enviada es obligatoria si el estado es PROGRAMADO",
       });
     }
-    // if (!data.idLineaDespacho) {
+    // if (!data.idLinea) {
     //   ctx.addIssue({
-    //     path: ["idLineaDespacho"],
+    //     path: ["idLinea"],
     //     code: "custom",
     //     message: "Debe seleccionar una línea si el estado es PROGRAMADO",
     //   });
@@ -709,7 +709,7 @@ export const recepcionSchema = object({
 //       "La temperatura debe ser un número no negativo"
 //     ),
 //   }).optional(),
-//   idLineaDespachoDespacho: object({
+//   idLineaDespacho: object({
 //     id: string().optional(),
 //     nombre: string().min(1, "El nombre de la línea es obligatorio"),
 //   }).optional(),
@@ -880,9 +880,9 @@ export const despachoSchema = object({
           "La cantidad enviada es obligatoria si el estado es PROGRAMADO",
       });
     }
-    // if (!data.idLineaDespacho) {
+    // if (!data.idLinea) {
     //   ctx.addIssue({
-    //     path: ["idLineaDespacho"],
+    //     path: ["idLinea"],
     //     code: "custom",
     //     message: "Debe seleccionar una línea si el estado es PROGRAMADO",
     //   });
