@@ -38,29 +38,26 @@ const DashboardRefinerias = () => {
       {Array.isArray(refinerias) && refinerias.length > 0 ? (
         refinerias.map((refineria) => (
           <div
-            className="col-12 lg:col-6 xl:col-3 clickable"
+            className="col-12 md:col-6 lg:col-4 xl:col-3 p-2 clickable"
             key={refineria.id}
             onClick={() => handleDivClick(refineria)}
           >
-            <div className="card p-0 overflow-hidden flex flex-column">
-              <div className="flex align-items-center p-3">
+            <div className="card h-full flex flex-column surface-card hover:surface-hover transition-colors transition-duration-300">
+              <div className="flex flex-column md:flex-row align-items-center p-3">
                 <img
                   src={refineria.img}
                   alt={refineria.nombre}
-                  width={100}
-                  height={100}
-                  // className="w-40 h-40 object-cover rounded-lg"
+                  className="w-10rem h-10rem object-cover mb-3 md:mb-0 md:mr-3 shadow-4"
                 />
-                {/* <i className="pi pi-users text-6xl text-blue-500"></i> */}
-                <div className="ml-3">
-                  <span className="text-primary block white-space-nowrap">
+                <div className="text-center md:text-left">
+                  <span className="block text-sm text-500 font-semibold">
                     {refineria.ubicacion}
                   </span>
-                  <span className="text-primary block text-4xl font-bold">
+                  <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-2 text-900">
                     {refineria.nombre}
-                  </span>
-                  <span className="text-primary block white-space-nowrap">
-                    {refineria.nit}
+                  </h2>
+                  <span className="block text-sm text-600">
+                    NIT: {refineria.nit}
                   </span>
                 </div>
               </div>
@@ -68,7 +65,9 @@ const DashboardRefinerias = () => {
           </div>
         ))
       ) : (
-        <p className="text-gray-600">No hay refinerías disponibles</p>
+        <div className="col-12 text-center p-4">
+          <p className="text-500 italic">No hay refinerías disponibles</p>
+        </div>
       )}
     </div>
   );

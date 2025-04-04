@@ -209,6 +209,7 @@ export interface Recepcion {
 export interface Despacho {
   id: string;
   estadoCarga: string;
+  estadoDespacho: string;
   estado: string;
   eliminado: boolean;
   idContrato: {
@@ -265,12 +266,17 @@ export interface Despacho {
   idTanque: {
     nombre: string;
     id: string;
-  };
+  } | null;
+
   cantidadRecibida: number;
   cantidadEnviada: number;
   fechaInicio: string;
   fechaFin: string;
   fechaDespacho: string;
+  fechaInicioDespacho: string;
+  fechaFinDespacho: string;
+  fechaSalida: string;
+  fechaLlegada: string;
   idGuia: number;
   placa: string;
   nombreChofer: string;

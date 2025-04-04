@@ -9,10 +9,10 @@ import { InputText } from "primereact/inputtext";
 import { Toast } from "primereact/toast";
 import { Dialog } from "primereact/dialog";
 import { useRefineriaStore } from "@/store/refineriaStore";
-import { deleteDespacho, getDespachos } from "@/app/api/despachoService";
+import DespachoForm from "./DespachoForm";
 import { Despacho } from "@/libs/interfaces";
 import { formatDateFH } from "@/utils/dateUtils";
-import DespachoForm from "./DespachoForm";
+import { deleteDespacho, getDespachos } from "@/app/api/despachoService";
 
 const DespachoList = () => {
   const { activeRefineria } = useRefineriaStore();
@@ -129,13 +129,6 @@ const DespachoList = () => {
       />
     </>
   );
-  const showToast = (
-    severity: "success" | "error" | "warn",
-    summary: string,
-    detail: string
-  ) => {
-    toast.current?.show({ severity, summary, detail, life: 3000 });
-  };
 
   return (
     <div className="card">
@@ -155,6 +148,11 @@ const DespachoList = () => {
         emptyMessage="No hay despachos disponibles"
       >
         <Column body={actionBodyTemplate} />
+        <Column
+          field="numeroDespacho"
+          header="Número de Chequeo de Cantidad"
+          sortable
+        />
         <Column field="idGuia" header="ID de la Guía" sortable />
         <Column field="placa" header="Placa" />
         <Column field="nombreChofer" header="Nombre del Chofer" sortable />
@@ -190,29 +188,15 @@ const DespachoList = () => {
         />
         <Column field="idTanque.nombre" header="ID del Tanque" sortable />
         <Column
-          field="fechaSalida"
-          header="Fecha de Salida"
-          body={(rowData: Despacho) => formatDateFH(rowData.fechaSalida)}
+          field="fechaInicio"
+          header="Fecha de Inicio"
+          body={(rowData: Despacho) => formatDateFH(rowData.fechaInicio)}
         />
         <Column
-          field="fechaLlegada"
-          header="Fecha de Llegada"
-          body={(rowData: Despacho) => formatDateFH(rowData.fechaLlegada)}
+          field="fechaFin"
+          header="Fecha de Fin"
+          body={(rowData: Despacho) => formatDateFH(rowData.fechaFin)}
         />
-        <Column
-          field="fechaInicioDespacho"
-          header="Fecha de Inicio de Descarga"
-          body={(rowData: Despacho) =>
-            formatDateFH(rowData.fechaInicioDespacho)
-          }
-        />
-        <Column
-          field="fechaFinDespacho"
-          header="Fecha de Fin de Descarga"
-          body={(rowData: Despacho) => formatDateFH(rowData.fechaFinDespacho)}
-        />
-
-        <Column field="estadoDespacho" header="Estado de la Despacho" />
         <Column field="estadoCarga" header="Estado de la Carga" />
         <Column field="estado" header="Estado" />
         <Column
@@ -262,17 +246,22 @@ const DespachoList = () => {
           )}
         </div>
       </Dialog>
-      {despachoFormDialog && (
+
+      <Dialog
+        visible={despachoFormDialog}
+        style={{ width: "50vw" }}
+        header={`${despacho ? "Editar" : "Agregar"} Despacho`}
+        modal
+        onHide={hideDespachoFormDialog}
+      >
         <DespachoForm
           despacho={despacho}
-          despachoFormDialog={despachoFormDialog}
           hideDespachoFormDialog={hideDespachoFormDialog}
           despachos={despachos}
           setDespachos={setDespachos}
           setDespacho={setDespacho}
-          showToast={showToast}
         />
-      )}
+      </Dialog>
     </div>
   );
 };
