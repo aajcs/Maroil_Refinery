@@ -79,13 +79,14 @@ const RecepcionForm = ({
     resolver: zodResolver(recepcionSchema),
     defaultValues: {
       idGuia: 0,
-      cantidadEnviada: 0,
+      cantidadEnviada: 250,
       cantidadRecibida: 0,
       estadoRecepcion: "PROGRAMADO", // Default initial state
       estadoCarga: "PENDIENTE_MUESTREO", // Default initial state for carga
+      fechaInicioRecepcion: new Date(),
+      fechaFinRecepcion: new Date(),
     },
   });
-
   useEffect(() => {
     if (recepcion) {
       Object.keys(recepcion).forEach((key) =>
@@ -498,6 +499,7 @@ const RecepcionForm = ({
                         /> */}
                       <Controller
                         name="fechaInicioRecepcion"
+                        defaultValue={new Date()}
                         control={control}
                         render={({ field, fieldState }) => (
                           <>
