@@ -47,17 +47,20 @@ const DashboardRefinerias = () => {
                 <img
                   src={refineria.img}
                   alt={refineria.nombre}
-                  className="w-10rem h-10rem object-cover mb-3 md:mb-0 md:mr-3 shadow-4"
+                  width={100}
+                  height={100}
+                  // className="w-40 h-40 object-cover rounded-lg"
+                  // className="w-10rem h-10rem object-cover mb-3 md:mb-0 md:mr-3 shadow-4"
                 />
-                <div className="text-center md:text-left">
-                  <span className="block text-sm text-500 font-semibold">
+                <div className="ml-3">
+                  <span className="text-primary block white-space-nowrap">
                     {refineria.ubicacion}
                   </span>
-                  <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-2 text-900">
+                  <span className="text-primary block text-4xl font-bold">
                     {refineria.nombre}
-                  </h2>
-                  <span className="block text-sm text-600">
-                    NIT: {refineria.nit}
+                  </span>
+                  <span className="text-primary block white-space-nowrap">
+                    {refineria.nit}
                   </span>
                 </div>
               </div>

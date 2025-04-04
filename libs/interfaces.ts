@@ -348,42 +348,43 @@ export interface Producto {
 }
 
 export interface ChequeoCalidad {
+  aplicar: {
+    tipo: string;
+    idReferencia: {
+      idGuia?: number;
+      _id?: string;
+      nombre?: string;
+      id: string;
+      [key: string]: any;
+    };
+  };
+  _id: string;
   idRefineria: {
+    _id: string;
     nombre: string;
     id: string;
   };
   idProducto: {
+    _id: string;
     nombre: string;
     id: string;
   };
-  idTanque: {
-    nombre: string;
-    id: string;
-  };
-  idTorre: {
-    nombre: string;
-    id: string;
-  };
-  idRefinacion: {
-    id: string;
-    descripcion: string;
-  };
-  operador: string;
   fechaChequeo: string;
   gravedadAPI: number;
   azufre: number;
-  viscosidad: number;
-  densidad: number;
   contenidoAgua: number;
-  contenidoPlomo: string;
-  octanaje: string;
-  temperatura: number;
+  puntoDeInflamacion: number;
+  cetano: number;
+  idOperador: {
+    nombre: string;
+    id: string;
+  };
   estado: string;
   eliminado: boolean;
   createdAt: string;
   updatedAt: string;
-  id: string;
   numeroChequeoCalidad: number;
+  id: string;
 }
 
 export interface ChequeoCantidad {

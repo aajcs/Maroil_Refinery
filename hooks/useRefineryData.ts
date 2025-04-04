@@ -24,6 +24,7 @@ import { getContactos } from "@/app/api/contactoService";
 import { getBrent } from "@/app/api/brentService";
 import { getLineaDespachos } from "@/app/api/lineaDespachoService";
 import { getDespachos } from "@/app/api/despachoService";
+import { getOperadors } from "@/app/api/operadorService";
 
 export const useRefineryData = (
   activeRefineriaId: string,
@@ -44,6 +45,7 @@ export const useRefineryData = (
   const [tipoProductos, setTipoProductos] = useState<TipoProducto[]>([]);
   const [contactos, setContactos] = useState<Contacto[]>([]);
   const [brent, setBrent] = useState<any | null>(null);
+  const [operadors, setOperadors] = useState<any>([]);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -60,6 +62,7 @@ export const useRefineryData = (
         productosDB,
         tipoProductosDB,
         contactosDB,
+        operadorDB,
         // brent,
       ] = await Promise.all([
         getTanques(),
@@ -73,6 +76,7 @@ export const useRefineryData = (
         getProductos(),
         getTipoProductos(),
         getContactos(),
+        getOperadors(),
         // getBrent(),
       ]);
 
@@ -139,6 +143,12 @@ export const useRefineryData = (
         contactosDB?.contactos?.filter(
           (contacto: Contacto) => contacto.idRefineria?.id === activeRefineriaId
         ) || [];
+
+      const filteredOperador =
+        operadorDB?.operadors?.filter(
+          (operador: any) => operador.idRefineria?.id === activeRefineriaId
+        ) || [];
+
       setTanques(filteredTanques);
       setTorresDestilacion(filteredTorresDestilacion);
       setLineaRecepcions(filteredLineaRecepcions);
@@ -150,6 +160,7 @@ export const useRefineryData = (
       setProductos(filteredPorducto);
       setTipoProductos(filterdTipoProductos);
       setContactos(filteredContactos);
+      setOperadors(filteredOperador);
       setBrent(brent);
     } catch (error) {
       console.error("Error al obtener los datos:", error);
@@ -197,6 +208,6 @@ export const useRefineryData = (
     tipoProductos,
     contactos,
     loading,
-    brent,
+    operadors,
   };
 };

@@ -166,42 +166,44 @@ const ChequeoCalidadList = () => {
         rowsPerPageOptions={[10, 25, 50]}
         filters={filters}
         loading={loading}
-        emptyMessage="No hay chequeoCalidads disponibles"
+        emptyMessage="No hay chequeos de calidad disponibles"
       >
         <Column body={actionBodyTemplate} />
         <Column
           field="numeroChequeoCalidad"
-          header="Número de Chequeo de Calidad"
+          header="Número de Chequeo"
           sortable
         />
-        <Column field="idRefineria.nombre" header="Nombre de la Refinería" />
-        <Column field="idProducto.nombre" header="Nombre del Producto" />
-        <Column field="idTanque.nombre" header="Nombre del Tanque" />
-        <Column field="idTorre.nombre" header="Nombre de la Torre" />
-        <Column field="operador" header="Operador" />
+        <Column field="idRefineria.nombre" header="Refinería" sortable />
+        <Column field="idProducto.nombre" header="Producto" sortable />
+        <Column field="idOperador.nombre" header="Operador" sortable />
         <Column
           field="fechaChequeo"
           header="Fecha de Chequeo"
           body={(rowData: ChequeoCalidad) => formatDateFH(rowData.fechaChequeo)}
+          sortable
         />
-        <Column field="gravedadAPI" header="Gravedad API" />
-        <Column field="azufre" header="Azufre" />
-        <Column field="viscosidad" header="Viscosidad" />
-        <Column field="densidad" header="Densidad" />
-        <Column field="contenidoAgua" header="Contenido de Agua" />
-        <Column field="contenidoPlomo" header="Contenido de Plomo" />
-        <Column field="octanaje" header="Octanaje" />
-        <Column field="temperatura" header="Temperatura" />
-        <Column field="estado" header="Estado" />
+        <Column field="gravedadAPI" header="Gravedad API" sortable />
+        <Column field="azufre" header="Azufre (%)" sortable />
+        <Column field="contenidoAgua" header="Agua (%)" sortable />
+        <Column
+          field="puntoDeInflamacion"
+          header="Punto Inflamación"
+          sortable
+        />
+        <Column field="cetano" header="Índice Cetano" sortable />
+        <Column field="estado" header="Estado" sortable />
         <Column
           field="createdAt"
-          header="Fecha de Creación"
+          header="Creado en"
           body={(rowData: ChequeoCalidad) => formatDateFH(rowData.createdAt)}
+          sortable
         />
         <Column
           field="updatedAt"
           header="Última Actualización"
           body={(rowData: ChequeoCalidad) => formatDateFH(rowData.updatedAt)}
+          sortable
         />
       </DataTable>
 

@@ -1,4 +1,4 @@
-import { array, boolean, date, number, object, string, union } from "zod";
+import { array, boolean, date, number, object, string, union, z } from "zod";
 
 export const loginSchema = object({
   correo: string().email("Correo inválido"),
@@ -1070,54 +1070,69 @@ export const productoSchema = object({
   id: string().optional(),
 });
 
-export const chequeoCalidadSchema = object({
-  idRefineria: object({
-    nombre: string().min(1, "El nombre de la refinería es obligatorio"),
-    id: string().min(1, "El ID de la refinería es obligatorio"),
-  }).optional(),
-  idProducto: object({
-    nombre: string().min(1, "El nombre del producto es obligatorio"),
-    id: string().min(1, "El ID del producto es obligatorio"),
+export const chequeoCalidadSchema = z.object({
+  aplicar: z.object({
+    tipo: z.enum(["Recepcion", "Tanque", "Despacho"], {
+      errorMap: () => ({ message: "Tipo de aplicación inválido" }),
+    }),
+    idReferencia: z.discriminatedUnion("tipo", [
+      z.object({
+        tipo: z.literal("Recepcion"),
+        idGuia: z.number().min(1, "El ID de guía debe ser positivo"),
+        id: z.string().min(1, "El ID de referencia es obligatorio"),
+      }),
+      z.object({
+        tipo: z.literal("Tanque"),
+        id: z.string().min(1, "El ID de referencia es obligatorio"),
+        nombre: z.string().min(1, "El nombre de referencia es obligatorio"),
+      }),
+      z.object({
+        tipo: z.literal("Despacho"),
+        idGuia: z.number().min(1, "El ID de guía debe ser positivo"),
+        id: z.string().min(1, "El ID de referencia es obligatorio"),
+      }),
+    ]),
   }),
-  idTanque: object({
-    nombre: string().min(1, "El nombre del tanque es obligatorio"),
-    id: string().min(1, "El ID del tanque es obligatorio"),
+  idRefineria: z.object({
+    _id: z.string().optional(),
+    nombre: z.string().min(1, "El nombre de la refinería es obligatorio"),
+    id: z.string().min(1, "El ID de la refinería es obligatorio"),
   }),
-  idTorre: object({
-    nombre: string().min(1, "El nombre de la torre es obligatorio"),
-    id: string().min(1, "El ID de la torre es obligatorio"),
+  idProducto: z.object({
+    _id: z.string().optional(),
+    nombre: z.string().min(1, "El nombre del producto es obligatorio"),
+    id: z.string().min(1, "El ID del producto es obligatorio"),
   }),
-  idRefinacion: object({
-    id: string().min(1, "El ID de la refinación es obligatorio"),
-    descripcion: string().min(
-      1,
-      "La descripción de la refinación es obligatoria"
-    ),
+  fechaChequeo: z.coerce.date({
+    required_error: "La fecha de chequeo es obligatoria",
+    invalid_type_error: "Formato de fecha inválido",
   }),
-  operador: string().min(1, "El nombre del operador es obligatorio"),
-  fechaChequeo: union([string(), date()]).refine(
-    (val) => val !== "",
-    "La fecha de chequeo es obligatoria"
-  ),
-  gravedadAPI: number().min(
-    0,
-    "La gravedad API debe ser un número no negativo"
-  ),
-  azufre: number().min(0, "El azufre debe ser un número no negativo"),
-  viscosidad: number().min(0, "La viscosidad debe ser un número no negativo"),
-  densidad: number().min(0, "La densidad debe ser un número no negativo"),
-  contenidoAgua: number().min(
-    0,
-    "El contenido de agua debe ser un número no negativo"
-  ),
-  contenidoPlomo: string().min(1, "El contenido de plomo es obligatorio"),
-  octanaje: string().min(1, "El octanaje es obligatorio"),
-  temperatura: number().min(0, "La temperatura debe ser un número no negativo"),
-  estado: string().min(1, "El estado es obligatorio"),
-  eliminado: boolean().default(false),
-  createdAt: union([string(), date()]).optional(),
-  updatedAt: union([string(), date()]).optional(),
-  id: string().optional(),
+  gravedadAPI: z
+    .number()
+    .min(0, "La gravedad API debe ser un número no negativo"),
+  azufre: z.number().min(0, "El azufre debe ser un número no negativo"),
+  contenidoAgua: z
+    .number()
+    .min(0, "El contenido de agua debe ser un número no negativo"),
+  puntoDeInflamacion: z
+    .number()
+    .min(0, "El punto de inflamación debe ser un número no negativo"),
+  cetano: z.number().min(0, "El índice cetano debe ser un número no negativo"),
+  idOperador: z.object({
+    nombre: z.string().min(1, "El nombre del operador es obligatorio"),
+    id: z.string().min(1, "El ID del operador es obligatorio"),
+  }),
+  estado: z
+    .union([z.literal("true"), z.literal("false")])
+    .transform((val) => val === "true"),
+  eliminado: z.boolean().default(false),
+  numeroChequeoCalidad: z
+    .number()
+    .int()
+    .positive("El número de chequeo debe ser positivo"),
+  createdAt: z.coerce.date().optional(),
+  updatedAt: z.coerce.date().optional(),
+  id: z.string().optional(),
 });
 
 export const chequeoCantidadSchema = object({
