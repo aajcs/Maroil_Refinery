@@ -30,7 +30,7 @@ interface ChequeoCalidadFormProps {
   setChequeoCalidads: (chequeoCalidads: any[]) => void;
   setChequeoCalidad: (chequeoCalidad: any) => void;
   showToast: (
-    severity: "success" | "error",
+    severity: "success" | "error" | "info",
     summary: string,
     detail: string
   ) => void;

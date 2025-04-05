@@ -140,7 +140,7 @@ const ChequeoCalidadList = () => {
   );
 
   const showToast = (
-    severity: "success" | "error",
+    severity: "success" | "error" | "info" | "warn",
     summary: string,
     detail: string
   ) => {
