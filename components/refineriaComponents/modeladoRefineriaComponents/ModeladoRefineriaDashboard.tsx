@@ -19,6 +19,9 @@ import ModeladoRefineriaDespachosList from "./ModeladoRefineriaDespachosList";
 import { Contrato } from "@/libs/interfaces";
 import ModeladoRefineriaContratosVentaList from "./ModeladoRefineriaContratosVentaList";
 
+import { TabPanel, TabView } from "primereact/tabview";
+import { InputSwitch } from "primereact/inputswitch";
+
 const ModeladoRefineriaDashboard = () => {
   const { activeRefineria } = useRefineriaStore();
   const { recepcionModificado } = useSocket(); // Obtén recepcionModificado desde el socket
@@ -40,6 +43,7 @@ const ModeladoRefineriaDashboard = () => {
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [visibleDespachos, setVisibleDespachos] = useState<boolean>(false);
   const [selectedContratoVenta, setSelectedContratoVenta] = useState<any>(null);
+  const [checked, setChecked] = useState(false); // Estado para el InputSwitch
 
   const showDialog = useCallback((product: any) => {
     setSelectedProduct(product);
@@ -144,101 +148,56 @@ const ModeladoRefineriaDashboard = () => {
   }
 
   return (
-    <div className="p-4">
-      <div className="grid">
-        <ModeladoRefineriaContratosList
-          contratos={recepcionesPorContrato}
-          onShowDialog={showDialog}
-        />
-        <ModeladoRefineriaContratosVentaList
-          contratos={recepcionesPorContrato}
-          onShowDialogDespachos={onShowDialogDespachos}
-        />
-        <div className="col-12 md:col-6 lg:col-12">
-          <h1 className="text-2xl font-bold mb-3">Recepciones en transito</h1>
-          <ModeladoRefineriaRecepcionesList
-            recepciones={recepcionesEnTransito}
-          />
-        </div>
-        <div className="col-12 md:col-6 lg:col-12">
-          <h1 className="text-2xl font-bold mb-3">Recepciones en refineria</h1>
-          <ModeladoRefineriaRecepcionesList
-            recepciones={recepcionesEnRefineria}
-          />
-        </div>
-        <ModeladoRefineriaDespachosList despachos={despachos} />
-        {/* {refinacions.map((refinacion) => (
-          <div key={refinacion.id} className="mb-2">
-            <pre>{JSON.stringify(refinacion, null, 2)}</pre>
-            <div className="card p-3">
-              <p>
-                <strong>Descripción:</strong> {refinacion.descripcion}
-              </p>
-              <p>
-                <strong>Fecha de Inicio:</strong>{" "}
-                {new Date(refinacion.fechaInicio).toLocaleString()}
-              </p>
-              <p>
-                <strong>Fecha de Fin:</strong>{" "}
-                {new Date(refinacion.fechaFin).toLocaleString()}
-              </p>
-              <p>
-                <strong>Estado:</strong> {refinacion.estadoRefinacion}
-              </p>
-              <p>
-                <strong>Operador:</strong> {refinacion.operador}
-              </p>
-              <p>
-                <strong>Tanque:</strong> {refinacion.idTanque.nombre}
-              </p>
-              <p>
-                <strong>Torre:</strong> {refinacion.idTorre.nombre}
-              </p>
-              <p>
-                <strong>Producto:</strong> {refinacion.idProducto.nombre}
-              </p>
-              <p>
-                <strong>Cantidad Total:</strong> {refinacion.cantidadTotal}
-              </p>
-              <h3 className="text-lg font-bold mt-3">Derivados:</h3>
-              <ul>
-                {refinacion.derivado.map((derivado) => (
-                  <li key={derivado._id}>
-                    <p>
-                      <strong>Producto:</strong> {derivado.idProducto.nombre}
-                    </p>
-                    <p>
-                      <strong>Porcentaje:</strong> {derivado.porcentaje}%
-                    </p>
-                  </li>
-                ))}
-              </ul>
-              <ul>
-                {refinacion.idRefinacionSalida.map((salida) => (
-                  <li key={salida.id}>
-                    <h1>salidas</h1>
-                    <p>
-                      <strong>Producto:</strong> {salida.idProducto.nombre}
-                    </p>
-                    <p>
-                      <strong>Cantidad:</strong> {salida.cantidadTotal}
-                    </p>
-                    <p>
-                      <strong>Descripción:</strong> {salida.descripcion}
-                    </p>
-                    <p>
-                      <strong>Tanque:</strong> {salida.idTanque.nombre}
-                    </p>
-                  </li>
-                ))}
-              </ul>
+    <div className="">
+      <div className="flex flex-wrap ">
+        <TabView className="w-full">
+          <TabPanel header="Compras de Crudos" leftIcon="pi pi-wallet mr-2">
+            <ModeladoRefineriaContratosList
+              contratos={recepcionesPorContrato}
+              onShowDialog={showDialog}
+            />
+          </TabPanel>
+          <TabPanel
+            header="Ventas de Productos"
+            leftIcon="pi pi-briefcase mr-2"
+          >
+            <ModeladoRefineriaContratosVentaList
+              contratos={recepcionesPorContrato}
+              onShowDialogDespachos={onShowDialogDespachos}
+            />
+          </TabPanel>
+          <TabPanel header="Recepciones" leftIcon="pi pi-truck mr-2">
+            <div>
+              {/* Switch para alternar entre recepciones */}
+              <div className="flex align-items-center gap-3 mb-3">
+                <span>Mostrar Recepciones en Tránsito</span>
+                <InputSwitch
+                  checked={checked}
+                  onChange={(e) => setChecked(e.value)}
+                />
+                <span>Mostrar Recepciones en Refinería</span>
+              </div>
+
+              {/* Mostrar el componente según el estado del switch */}
+              {checked ? (
+                <ModeladoRefineriaRecepcionesList
+                  recepciones={recepcionesEnRefineria}
+                />
+              ) : (
+                <ModeladoRefineriaRecepcionesList
+                  recepciones={recepcionesEnTransito}
+                />
+              )}
             </div>
-          </div>
-        ))} */}
+          </TabPanel>
+
+          <TabPanel header="Despacho" leftIcon="pi pi-truck mr-2">
+            <ModeladoRefineriaDespachosList despachos={despachos} />
+          </TabPanel>
+        </TabView>
+
         {/* Línea de recepción */}
-        <h1 className="text-2xl font-bold mb-3 col-12">
-          Modelado de Refinería
-        </h1>
+
         <div className="col-12 md:col-6 lg:col-2">
           <div className="card p-3 lg-h-fullScreen">
             <h1 className="text-2xl font-bold mb-3">Recepción de tractomula</h1>
@@ -324,6 +283,75 @@ const ModeladoRefineriaDashboard = () => {
             ))}
           </div>
         </div>
+
+        {/* {refinacions.map((refinacion) => (
+          <div key={refinacion.id} className="mb-2">
+            <pre>{JSON.stringify(refinacion, null, 2)}</pre>
+            <div className="card p-3">
+              <p>
+                <strong>Descripción:</strong> {refinacion.descripcion}
+              </p>
+              <p>
+                <strong>Fecha de Inicio:</strong>{" "}
+                {new Date(refinacion.fechaInicio).toLocaleString()}
+              </p>
+              <p>
+                <strong>Fecha de Fin:</strong>{" "}
+                {new Date(refinacion.fechaFin).toLocaleString()}
+              </p>
+              <p>
+                <strong>Estado:</strong> {refinacion.estadoRefinacion}
+              </p>
+              <p>
+                <strong>Operador:</strong> {refinacion.operador}
+              </p>
+              <p>
+                <strong>Tanque:</strong> {refinacion.idTanque.nombre}
+              </p>
+              <p>
+                <strong>Torre:</strong> {refinacion.idTorre.nombre}
+              </p>
+              <p>
+                <strong>Producto:</strong> {refinacion.idProducto.nombre}
+              </p>
+              <p>
+                <strong>Cantidad Total:</strong> {refinacion.cantidadTotal}
+              </p>
+              <h3 className="text-lg font-bold mt-3">Derivados:</h3>
+              <ul>
+                {refinacion.derivado.map((derivado) => (
+                  <li key={derivado._id}>
+                    <p>
+                      <strong>Producto:</strong> {derivado.idProducto.nombre}
+                    </p>
+                    <p>
+                      <strong>Porcentaje:</strong> {derivado.porcentaje}%
+                    </p>
+                  </li>
+                ))}
+              </ul>
+              <ul>
+                {refinacion.idRefinacionSalida.map((salida) => (
+                  <li key={salida.id}>
+                    <h1>salidas</h1>
+                    <p>
+                      <strong>Producto:</strong> {salida.idProducto.nombre}
+                    </p>
+                    <p>
+                      <strong>Cantidad:</strong> {salida.cantidadTotal}
+                    </p>
+                    <p>
+                      <strong>Descripción:</strong> {salida.descripcion}
+                    </p>
+                    <p>
+                      <strong>Tanque:</strong> {salida.idTanque.nombre}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        ))} */}
       </div>
 
       <Dialog

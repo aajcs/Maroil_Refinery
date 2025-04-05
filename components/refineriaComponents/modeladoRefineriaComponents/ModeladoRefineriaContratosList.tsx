@@ -26,10 +26,7 @@ const ModeladoRefineriaContratosList = ({
   onShowDialogDespachos,
 }: ModeladoRefineriaContratosListProps) => {
   return (
-    <div className="col-12">
-      <h1 className="text-2xl font-bold mb-3">
-        Contratos de compra de derivado
-      </h1>
+    <div className="">
       <div className="grid">
         {contratos
           .filter((contrato) => contrato.tipoContrato === "Compra") // Filtrar por tipoContrato
