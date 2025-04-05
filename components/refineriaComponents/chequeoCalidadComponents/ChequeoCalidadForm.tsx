@@ -121,7 +121,17 @@ const ChequeoCalidadForm = ({
         setValue(key as keyof FormData, chequeoCalidad[key])
       );
     }
-  }, [chequeoCalidad, setValue]);
+    if (onDuplicate && chequeoCalidad) {
+      // Establecer valores predeterminados para el modo duplicado
+      setValue("azufre", 0); // Cambiar el valor de azufre
+      setValue("contenidoAgua", 0); // Cambiar el valor de contenido de agua
+
+      setValue("gravedadAPI", 0); // Cambiar el valor de gravedad API
+      setValue("puntoDeInflamacion", 0); // Cambiar el valor de punto de inflamación
+      setValue("cetano", 0); // Cambiar el valor de cetano
+      setValue("fechaChequeo", new Date()); // Cambiar la fecha de chequeo
+    }
+  }, [chequeoCalidad, onDuplicate, setValue]);
 
   // console.log(errors);
   // console.log(JSON.stringify(watch("idContrato"), null, 2));
@@ -140,7 +150,7 @@ const ChequeoCalidadForm = ({
   const onSubmit = async (data: FormData) => {
     setSubmitting(true);
     try {
-      const payload = {
+      let payload = {
         ...data,
         idRefineria: activeRefineria?.id,
         idProducto: data.idProducto?.id,
@@ -150,9 +160,16 @@ const ChequeoCalidadForm = ({
           idReferencia:
             data.aplicar.idReferencia.id || data.aplicar.idReferencia,
         },
-        // aplicar: data.aplicar, // Mantenemos esta estructura si es necesaria
       };
-      if (chequeoCalidad) {
+
+      if (onDuplicate) {
+        // Si es un duplicado, eliminamos identificadores únicos
+        delete payload.id; // Eliminar el identificador único
+        delete payload.numeroChequeoCalidad; // Si hay un número único, también eliminarlo
+        showToast("info", "Duplicado", "Se está creando un duplicado");
+      }
+
+      if (chequeoCalidad && !onDuplicate) {
         // Actualización
         const updatedChequeoCalidad = await updateChequeoCalidad(
           chequeoCalidad.id,
@@ -165,14 +182,20 @@ const ChequeoCalidadForm = ({
         setChequeoCalidads(updatedChequeoCalidads);
         showToast("success", "Éxito", "Control de calidad actualizado");
       } else {
-        // Creación
+        // Creación o Duplicado
         if (!payload.idRefineria) {
           throw new Error("Debe seleccionar una refinería");
         }
 
         const newChequeoCalidad = await createChequeoCalidad(payload);
         setChequeoCalidads([...chequeoCalidads, newChequeoCalidad]);
-        showToast("success", "Éxito", "Control de calidad creado");
+        showToast(
+          "success",
+          "Éxito",
+          onDuplicate
+            ? "Duplicado creado exitosamente"
+            : "Control de calidad creado"
+        );
       }
 
       hideChequeoCalidadFormDialog();
@@ -185,6 +208,9 @@ const ChequeoCalidadForm = ({
       );
     } finally {
       setSubmitting(false);
+      if (onDuplicate && setOnDuplicate) {
+        setOnDuplicate(false); // Restablecer el estado de duplicado
+      }
     }
   };
   console.log("errors", errors);

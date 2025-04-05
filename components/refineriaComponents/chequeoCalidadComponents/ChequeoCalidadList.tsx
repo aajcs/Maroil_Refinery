@@ -65,6 +65,7 @@ const ChequeoCalidadList = () => {
   const hideDeleteProductDialog = () => setDeleteProductDialog(false);
   const hideChequeoCalidadFormDialog = () => {
     setChequeoCalidad(null);
+    setOnDuplicate(false);
     setChequeoCalidadFormDialog(false);
   };
 
@@ -132,7 +133,8 @@ const ChequeoCalidadList = () => {
       }}
       onDuplicate={(data) => {
         setChequeoCalidad(data);
-        setDeleteProductDialog(true);
+        setOnDuplicate(true);
+        setChequeoCalidadFormDialog(true);
       }}
     />
   );
@@ -181,11 +183,11 @@ const ChequeoCalidadList = () => {
             // Renderizar según el tipo de referencia
             switch (rowData.aplicar?.tipo) {
               case "Recepcion":
-                return `Recepción - ID Guía: ${referencia.idGuia}`;
+                return `ID Guía: ${referencia.idGuia}`;
               case "Tanque":
-                return `Tanque - Nombre: ${referencia.nombre}`;
+                return `Nombre: ${referencia.nombre}`;
               case "Despacho":
-                return `Despacho - ID Guía: ${referencia.idGuia}`;
+                return `ID Guía: ${referencia.idGuia}`;
               default:
                 return "Tipo Desconocido";
             }
