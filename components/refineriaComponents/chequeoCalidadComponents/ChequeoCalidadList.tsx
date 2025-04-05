@@ -31,7 +31,7 @@ const ChequeoCalidadList = () => {
   const [deleteProductDialog, setDeleteProductDialog] = useState(false);
   const [chequeoCalidadFormDialog, setChequeoCalidadFormDialog] =
     useState(false);
-  const [onCopy, setOnCopy] = useState(false);
+  const [onDuplicate, setOnDuplicate] = useState(false);
   const dt = useRef(null);
   const toast = useRef<Toast | null>(null);
 
@@ -130,7 +130,7 @@ const ChequeoCalidadList = () => {
         setChequeoCalidad(data);
         setDeleteProductDialog(true);
       }}
-      onCopy={(data) => {
+      onDuplicate={(data) => {
         setChequeoCalidad(data);
         setDeleteProductDialog(true);
       }}
@@ -168,7 +168,29 @@ const ChequeoCalidadList = () => {
           header="Número de Chequeo"
           sortable
         />
-        <Column field="idRefineria.nombre" header="Refinería" sortable />
+        <Column field="aplicar.tipo" header="Operacion" sortable />
+        <Column
+          header="Referencia"
+          body={(rowData: ChequeoCalidad) => {
+            const referencia = rowData.aplicar?.idReferencia;
+
+            if (!referencia) {
+              return "Sin Referencia";
+            }
+
+            // Renderizar según el tipo de referencia
+            switch (rowData.aplicar?.tipo) {
+              case "Recepcion":
+                return `Recepción - ID Guía: ${referencia.idGuia}`;
+              case "Tanque":
+                return `Tanque - Nombre: ${referencia.nombre}`;
+              case "Despacho":
+                return `Despacho - ID Guía: ${referencia.idGuia}`;
+              default:
+                return "Tipo Desconocido";
+            }
+          }}
+        />
         <Column field="idProducto.nombre" header="Producto" sortable />
         <Column field="idOperador.nombre" header="Operador" sortable />
         <Column
@@ -252,8 +274,8 @@ const ChequeoCalidadList = () => {
             setChequeoCalidads={setChequeoCalidads}
             setChequeoCalidad={setChequeoCalidad}
             showToast={showToast}
-            onCopy={onCopy}
-            setOnCopy={setOnCopy}
+            onDuplicate={onDuplicate}
+            setOnDuplicate={setOnDuplicate}
           />
         )}
       >

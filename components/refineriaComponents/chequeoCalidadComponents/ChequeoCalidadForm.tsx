@@ -34,8 +34,8 @@ interface ChequeoCalidadFormProps {
     summary: string,
     detail: string
   ) => void;
-  onCopy?: boolean;
-  setOnCopy?: (onCopy: boolean) => void;
+  onDuplicate?: boolean;
+  setOnDuplicate?: (onDuplicate: boolean) => void;
 }
 
 const ChequeoCalidadForm = ({
@@ -44,8 +44,8 @@ const ChequeoCalidadForm = ({
   chequeoCalidads,
   setChequeoCalidads,
   showToast,
-  onCopy,
-  setOnCopy,
+  onDuplicate,
+  setOnDuplicate,
 }: ChequeoCalidadFormProps) => {
   const { activeRefineria } = useRefineriaStore();
   const { productos, operadors, tanques, recepcions, despachos, loading } =
@@ -83,7 +83,11 @@ const ChequeoCalidadForm = ({
       setDynamicOptions(
         tanques.map((tanque) => ({
           label: tanque.nombre,
-          value: tanque.id,
+          value: {
+            id: tanque.id,
+            nombre: tanque.nombre,
+            _id: tanque.id,
+          },
         }))
       );
     } else if (tipo === "Recepcion") {
@@ -183,6 +187,8 @@ const ChequeoCalidadForm = ({
       setSubmitting(false);
     }
   };
+  console.log("errors", errors);
+  console.log("watch", watch());
   return (
     <div>
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -568,12 +574,15 @@ const ChequeoCalidadForm = ({
               disabled={submitting}
               icon={submitting ? "pi pi-spinner pi-spin" : ""}
               label={
-                chequeoCalidad
+                onDuplicate
+                  ? "Crear Duplicado"
+                  : chequeoCalidad
                   ? "Actualizar Chequeo de Calidad"
                   : "Crear Chequeo de Calidad"
               }
               className="w-auto"
             />
+
             <Button
               type="button"
               label="Salir"

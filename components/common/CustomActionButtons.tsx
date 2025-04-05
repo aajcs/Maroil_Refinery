@@ -5,14 +5,14 @@ interface CustomActionButtonsProps<T> {
   rowData: T; // Datos de la fila
   onEdit?: (rowData: T) => void; // Acción para editar
   onDelete?: (rowData: T) => void; // Acción para eliminar
-  onCopy?: (rowData: T) => void; // Acción para copiar
+  onDuplicate?: (rowData: T) => void; // Acción para copiar
 }
 
 const CustomActionButtons = <T,>({
   rowData,
   onEdit,
   onDelete,
-  onCopy,
+  onDuplicate,
 }: CustomActionButtonsProps<T>) => {
   return (
     <div className="flex gap-1  flex-column justify-content-center align-items-center sm:flex-row ">
@@ -45,7 +45,7 @@ const CustomActionButtons = <T,>({
       )}
 
       {/* Botón de Copiar */}
-      {onCopy && (
+      {onDuplicate && (
         <Button
           icon="pi pi-copy"
           rounded
@@ -55,7 +55,7 @@ const CustomActionButtons = <T,>({
           tooltip="Copiar Información"
           tooltipOptions={{ position: "top" }}
           onClick={() => {
-            onCopy(rowData);
+            onDuplicate(rowData);
           }}
         />
       )}
