@@ -1,12 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { classNames } from "primereact/utils";
 import { chequeoCalidadSchema } from "@/libs/zod";
-import { Toast } from "primereact/toast";
 import { Dropdown } from "primereact/dropdown";
 import { useRefineriaStore } from "@/store/refineriaStore";
 import {
@@ -133,9 +131,6 @@ const ChequeoCalidadForm = ({
     }
   }, [chequeoCalidad, onDuplicate, setValue]);
 
-  // console.log(errors);
-  // console.log(JSON.stringify(watch("idContrato"), null, 2));
-  // console.log(watch("idContrato"));
   if (loading) {
     return (
       <div
@@ -143,7 +138,6 @@ const ChequeoCalidadForm = ({
         style={{ height: "300px" }}
       >
         <ProgressSpinner />
-        {/* <p className="ml-3">Cargando datos...</p> */}
       </div>
     );
   }

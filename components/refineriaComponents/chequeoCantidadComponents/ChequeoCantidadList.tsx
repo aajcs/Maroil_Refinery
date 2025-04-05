@@ -17,6 +17,7 @@ import {
   deleteChequeoCantidad,
   getChequeoCantidads,
 } from "@/app/api/chequeoCantidadService";
+import CustomActionButtons from "@/components/common/CustomActionButtons";
 
 const ChequeoCantidadList = () => {
   const { activeRefineria } = useRefineriaStore();
@@ -31,8 +32,7 @@ const ChequeoCantidadList = () => {
   const [deleteProductDialog, setDeleteProductDialog] = useState(false);
   const [chequeoCantidadFormDialog, setChequeoCantidadFormDialog] =
     useState(false);
-
-  const router = useRouter();
+  const [onDuplicate, setOnDuplicate] = useState(false);
   const dt = useRef(null);
   const toast = useRef<Toast | null>(null);
 
@@ -66,6 +66,7 @@ const ChequeoCantidadList = () => {
   const hideDeleteProductDialog = () => setDeleteProductDialog(false);
   const hideChequeoCantidadFormDialog = () => {
     setChequeoCantidad(null);
+    setOnDuplicate(false);
     setChequeoCantidadFormDialog(false);
   };
 
@@ -121,31 +122,26 @@ const ChequeoCantidadList = () => {
   );
 
   const actionBodyTemplate = (rowData: ChequeoCantidad) => (
-    <>
-      <Button
-        icon="pi pi-pencil"
-        rounded
-        severity="success"
-        className="mr-2"
-        onClick={() => {
-          setChequeoCantidad(rowData);
-          setChequeoCantidadFormDialog(true);
-        }}
-      />
-      <Button
-        icon="pi pi-trash"
-        severity="warning"
-        rounded
-        onClick={() => {
-          setChequeoCantidad(rowData);
-          setDeleteProductDialog(true);
-        }}
-      />
-    </>
+    <CustomActionButtons
+      rowData={rowData}
+      onEdit={(data) => {
+        setChequeoCantidad(data);
+        setChequeoCantidadFormDialog(true);
+      }}
+      onDelete={(data) => {
+        setChequeoCantidad(data);
+        setDeleteProductDialog(true);
+      }}
+      onDuplicate={(data) => {
+        setChequeoCantidad(data);
+        setOnDuplicate(true);
+        setChequeoCantidadFormDialog(true);
+      }}
+    />
   );
 
   const showToast = (
-    severity: "success" | "error",
+    severity: "success" | "error" | "info" | "warn",
     summary: string,
     detail: string
   ) => {
@@ -167,38 +163,62 @@ const ChequeoCantidadList = () => {
         rowsPerPageOptions={[10, 25, 50]}
         filters={filters}
         loading={loading}
-        emptyMessage="No hay chequeoCantidads disponibles"
+        emptyMessage="No hay chequeos de calidad disponibles"
       >
         <Column body={actionBodyTemplate} />
         <Column
           field="numeroChequeoCantidad"
-          header="Número de Chequeo de Cantidad"
+          header="Número de Chequeo"
           sortable
         />
-        <Column field="idProducto.nombre" header="Nombre del Producto" />
-        <Column field="idTanque.nombre" header="Nombre del Tanque" />
-        <Column field="idTorre.nombre" header="Nombre de la Torre" />
-        <Column field="operador" header="Operador" />
+        <Column field="aplicar.tipo" header="Operacion" sortable />
+        <Column
+          header="Referencia"
+          body={(rowData: ChequeoCantidad) => {
+            const referencia = rowData.aplicar?.idReferencia;
+
+            if (!referencia) {
+              return "Sin Referencia";
+            }
+
+            // Renderizar según el tipo de referencia
+            switch (rowData.aplicar?.tipo) {
+              case "Recepcion":
+                return `ID Guía: ${referencia.idGuia}`;
+              case "Tanque":
+                return `Nombre: ${referencia.nombre}`;
+              case "Despacho":
+                return `ID Guía: ${referencia.idGuia}`;
+              default:
+                return "Tipo Desconocido";
+            }
+          }}
+        />
+        <Column field="idProducto.nombre" header="Producto" sortable />
+        <Column field="idOperador.nombre" header="Operador" sortable />
         <Column
           field="fechaChequeo"
           header="Fecha de Chequeo"
           body={(rowData: ChequeoCantidad) =>
             formatDateFH(rowData.fechaChequeo)
           }
+          sortable
         />
-        <Column field="cantidad" header="Cantidad" />
+        <Column field="cantidad" header="Cantidad" sortable />
 
-        <Column field="estado" header="Estado" />
-        <Column
+        <Column field="estado" header="Estado" sortable />
+        {/* <Column
           field="createdAt"
-          header="Fecha de Creación"
+          header="Creado en"
           body={(rowData: ChequeoCantidad) => formatDateFH(rowData.createdAt)}
+          sortable
         />
         <Column
           field="updatedAt"
           header="Última Actualización"
           body={(rowData: ChequeoCantidad) => formatDateFH(rowData.updatedAt)}
-        />
+          sortable
+        /> */}
       </DataTable>
 
       <Dialog
@@ -231,9 +251,8 @@ const ChequeoCantidadList = () => {
           />
           {chequeoCantidad && (
             <span>
-              ¿Estás seguro de que deseas eliminar el chequeo de cantidad con el
-              número de chequeo de cantidad{" "}
-              <b>{chequeoCantidad.numeroChequeoCantidad}</b>?
+              ¿Estás seguro de que deseas eliminar el chequeo de calidad con el
+              número de chequeo <b>{chequeoCantidad.numeroChequeoCantidad}</b>?
             </span>
           )}
         </div>
@@ -241,19 +260,31 @@ const ChequeoCantidadList = () => {
 
       <Dialog
         visible={chequeoCantidadFormDialog}
-        style={{ width: "50vw" }}
+        style={{ width: "70vw" }}
         header={`${chequeoCantidad ? "Editar" : "Agregar"} Chequeo de Cantidad`}
         modal
         onHide={hideChequeoCantidadFormDialog}
+        content={() => (
+          <ChequeoCantidadForm
+            chequeoCantidad={chequeoCantidad}
+            hideChequeoCantidadFormDialog={hideChequeoCantidadFormDialog}
+            chequeoCantidads={chequeoCantidads}
+            setChequeoCantidads={setChequeoCantidads}
+            setChequeoCantidad={setChequeoCantidad}
+            showToast={showToast}
+            onDuplicate={onDuplicate}
+            setOnDuplicate={setOnDuplicate}
+          />
+        )}
       >
-        <ChequeoCantidadForm
+        {/* <ChequeoCantidadForm
           chequeoCantidad={chequeoCantidad}
           hideChequeoCantidadFormDialog={hideChequeoCantidadFormDialog}
           chequeoCantidads={chequeoCantidads}
           setChequeoCantidads={setChequeoCantidads}
           setChequeoCantidad={setChequeoCantidad}
           showToast={showToast}
-        />
+        /> */}
       </Dialog>
     </div>
   );

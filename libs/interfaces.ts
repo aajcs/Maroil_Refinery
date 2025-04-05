@@ -388,31 +388,39 @@ export interface ChequeoCalidad {
 }
 
 export interface ChequeoCantidad {
+  aplicar: {
+    tipo: string;
+    idReferencia: {
+      idGuia?: number;
+      _id?: string;
+      nombre?: string;
+      id: string;
+      [key: string]: any;
+    };
+  };
+  _id: string;
   idRefineria: {
+    _id: string;
     nombre: string;
     id: string;
   };
   idProducto: {
-    nombre: string;
-    id: string;
-  } | null;
-  idTanque: {
+    _id: string;
     nombre: string;
     id: string;
   };
-  idTorre: {
-    nombre: string;
-    id: string;
-  };
-  operador: string;
   fechaChequeo: string;
   cantidad: number;
+  idOperador: {
+    nombre: string;
+    id: string;
+  };
   estado: string;
   eliminado: boolean;
   createdAt: string;
   updatedAt: string;
-  id: string;
   numeroChequeoCantidad: number;
+  id: string;
 }
 
 export interface Refinacion {

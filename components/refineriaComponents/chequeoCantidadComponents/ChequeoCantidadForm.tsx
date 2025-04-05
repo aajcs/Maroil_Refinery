@@ -1,13 +1,11 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { classNames } from "primereact/utils";
 import { chequeoCantidadSchema } from "@/libs/zod";
-import { Toast } from "primereact/toast";
-import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
+import { Dropdown } from "primereact/dropdown";
 import { useRefineriaStore } from "@/store/refineriaStore";
 import {
   createChequeoCantidad,
@@ -16,21 +14,10 @@ import {
 import { InputNumber } from "primereact/inputnumber";
 
 import { Calendar } from "primereact/calendar";
-import {
-  Contrato,
-  Producto,
-  Refinacion,
-  Tanque,
-  TorreDestilacion,
-} from "@/libs/interfaces";
-import { getTanques } from "@/app/api/tanqueService";
+
 import { ProgressSpinner } from "primereact/progressspinner";
-import { getProductos } from "@/app/api/productoService";
-import {
-  getTorreDestilacion,
-  getTorresDestilacion,
-} from "@/app/api/torreDestilacionService";
-import { getRefinacions } from "@/app/api/refinacionService";
+
+import { useRefineryData } from "@/hooks/useRefineryData";
 
 type FormData = z.infer<typeof chequeoCantidadSchema>;
 
@@ -41,13 +28,13 @@ interface ChequeoCantidadFormProps {
   setChequeoCantidads: (chequeoCantidads: any[]) => void;
   setChequeoCantidad: (chequeoCantidad: any) => void;
   showToast: (
-    severity: "success" | "error",
+    severity: "success" | "error" | "info",
     summary: string,
     detail: string
   ) => void;
+  onDuplicate?: boolean;
+  setOnDuplicate?: (onDuplicate: boolean) => void;
 }
-
-const estatusValues = ["true", "false"];
 
 const ChequeoCantidadForm = ({
   chequeoCantidad,
@@ -55,21 +42,18 @@ const ChequeoCantidadForm = ({
   chequeoCantidads,
   setChequeoCantidads,
   showToast,
+  onDuplicate,
+  setOnDuplicate,
 }: ChequeoCantidadFormProps) => {
   const { activeRefineria } = useRefineriaStore();
-  const toast = useRef<Toast | null>(null);
-  const [productos, setProductos] = useState<Producto[]>([]);
+  const { productos, operadors, tanques, recepcions, despachos, loading } =
+    useRefineryData(activeRefineria?.id || "");
 
-  const [tanques, setTanques] = useState<Tanque[]>([]);
-  const [torresDestilacion, setTorresDestilacion] = useState<
-    TorreDestilacion[]
-  >([]);
-  const [refinacions, setRefinacions] = useState<Refinacion[]>([]);
-
-  const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [dynamicOptions, setDynamicOptions] = useState<
+    { label: string; value: any }[]
+  >([]);
   const {
-    register,
     handleSubmit,
     formState: { errors },
     setValue,
@@ -78,115 +62,67 @@ const ChequeoCantidadForm = ({
   } = useForm<FormData>({
     resolver: zodResolver(chequeoCantidadSchema),
     defaultValues: {
+      aplicar: {
+        tipo: "Recepcion",
+      },
       cantidad: 0,
+      estado: "aprobado",
+      fechaChequeo: new Date(),
     },
   });
-
+  // Actualizar las opciones dinámicas según la selección de "Aplicar a"
+  useEffect(() => {
+    const { tipo } = watch("aplicar");
+    if (tipo === "Tanque") {
+      setDynamicOptions(
+        tanques.map((tanque) => ({
+          label: tanque.nombre,
+          value: {
+            id: tanque.id,
+            nombre: tanque.nombre,
+            _id: tanque.id,
+          },
+        }))
+      );
+    } else if (tipo === "Recepcion") {
+      setDynamicOptions(
+        recepcions.map((recepcion) => ({
+          label: `Recepción - ${recepcion.idGuia}`,
+          value: {
+            id: recepcion.id,
+            idGuia: recepcion.idGuia,
+          },
+        }))
+      );
+    } else if (tipo === "Despacho") {
+      setDynamicOptions(
+        despachos.map((despacho) => ({
+          label: `Despacho - ${despacho.idGuia}`,
+          value: {
+            id: despacho.id,
+            idGuia: despacho.idGuia,
+            _id: despacho.id,
+          },
+        }))
+      );
+    } else {
+      setDynamicOptions([]);
+    }
+  }, [watch("aplicar.tipo"), tanques, recepcions, despachos]);
   useEffect(() => {
     if (chequeoCantidad) {
       Object.keys(chequeoCantidad).forEach((key) =>
         setValue(key as keyof FormData, chequeoCantidad[key])
       );
     }
-  }, [chequeoCantidad, setValue]);
-  const fetchData = useCallback(async () => {
-    try {
-      const [refinacionsDB, productosDB, tanquesDB, torresDestilacionDB] =
-        await Promise.all([
-          getRefinacions(),
-          getProductos(),
-          getTanques(),
-          getTorresDestilacion(),
-        ]);
-      if (refinacionsDB && Array.isArray(refinacionsDB.refinacions)) {
-        const filteredRefinacions = refinacionsDB.refinacions.filter(
-          (refinacion: Refinacion) =>
-            refinacion.idRefineria.id === activeRefineria?.id
-        );
-        setRefinacions(filteredRefinacions);
-      }
-      if (productosDB && Array.isArray(productosDB.productos)) {
-        const filteredProductos = productosDB.productos.filter(
-          (producto: Producto) =>
-            producto.idRefineria.id === activeRefineria?.id
-        );
-        setProductos(filteredProductos);
-      }
-      if (tanquesDB && Array.isArray(tanquesDB.tanques)) {
-        const filteredTanques = tanquesDB.tanques.filter(
-          (tanque: Tanque) => tanque.idRefineria.id === activeRefineria?.id
-        );
-        setTanques(filteredTanques);
-      }
-      if (torresDestilacionDB && Array.isArray(torresDestilacionDB.torres)) {
-        const filteredTorresDestilacion = torresDestilacionDB.torres.filter(
-          (torre: TorreDestilacion) =>
-            torre.idRefineria.id === activeRefineria?.id
-        );
-        setTorresDestilacion(filteredTorresDestilacion);
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    } finally {
-      setLoading(false);
+    if (onDuplicate && chequeoCantidad) {
+      // Establecer valores predeterminados para el modo duplicado
+      setValue("cantidad", 0); // Cambiar el valor de azufre
+
+      setValue("fechaChequeo", new Date()); // Cambiar la fecha de chequeo
     }
-  }, [activeRefineria]);
+  }, [chequeoCantidad, onDuplicate, setValue]);
 
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
-  const onSubmit = async (data: FormData) => {
-    setSubmitting(true);
-    console.log(data);
-    try {
-      if (chequeoCantidad) {
-        const updatedChequeoCantidad = await updateChequeoCantidad(
-          chequeoCantidad.id,
-          {
-            ...data,
-            idProducto: data.idProducto?.id,
-            idTanque: data.idTanque?.id,
-            idTorre: data.idTorre?.id,
-            idRefinacion: data.idRefinacion?.id,
-            idRefineria: activeRefineria?.id,
-          }
-        );
-        const updatedChequeoCantidads = chequeoCantidads.map((t) =>
-          t.id === updatedChequeoCantidad.id ? updatedChequeoCantidad : t
-        );
-        setChequeoCantidads(updatedChequeoCantidads);
-        showToast("success", "Éxito", "ChequeoCantidad actualizado");
-      } else {
-        if (!activeRefineria)
-          throw new Error("No se ha seleccionado una refinería");
-        const newChequeoCantidad = await createChequeoCantidad({
-          ...data,
-
-          idProducto: data.idProducto?.id,
-          idTanque: data.idTanque?.id,
-          idTorre: data.idTorre?.id,
-          idRefinacion: data.idRefinacion?.id,
-          idRefineria: activeRefineria?.id,
-        });
-        setChequeoCantidads([...chequeoCantidads, newChequeoCantidad]);
-        showToast("success", "Éxito", "ChequeoCantidad creado");
-      }
-      hideChequeoCantidadFormDialog();
-    } catch (error) {
-      console.error("Error al crear/modificar chequeoCantidad:", error);
-      showToast(
-        "error",
-        "Error",
-        error instanceof Error ? error.message : "Ocurrió un error inesperado"
-      );
-    } finally {
-      setSubmitting(false); // Desactivar el estado de envío
-    }
-  };
-
-  // console.log(errors);
-  // console.log(JSON.stringify(watch("idContrato"), null, 2));
-  // console.log(watch("idContrato"));
   if (loading) {
     return (
       <div
@@ -194,250 +130,357 @@ const ChequeoCantidadForm = ({
         style={{ height: "300px" }}
       >
         <ProgressSpinner />
-        {/* <p className="ml-3">Cargando datos...</p> */}
       </div>
     );
   }
+  const onSubmit = async (data: FormData) => {
+    setSubmitting(true);
+    try {
+      let payload = {
+        ...data,
+        idRefineria: activeRefineria?.id,
+        idProducto: data.idProducto?.id,
+        idOperador: data.idOperador?.id,
+        aplicar: {
+          tipo: data.aplicar.tipo,
+          idReferencia:
+            data.aplicar.idReferencia.id || data.aplicar.idReferencia,
+        },
+      };
+
+      if (onDuplicate) {
+        // Si es un duplicado, eliminamos identificadores únicos
+        delete payload.id; // Eliminar el identificador único
+        delete payload.numeroChequeoCantidad; // Si hay un número único, también eliminarlo
+        showToast("info", "Duplicado", "Se está creando un duplicado");
+      }
+
+      if (chequeoCantidad && !onDuplicate) {
+        // Actualización
+        const updatedChequeoCantidad = await updateChequeoCantidad(
+          chequeoCantidad.id,
+          payload
+        );
+
+        const updatedChequeoCantidads = chequeoCantidads.map((t) =>
+          t.id === updatedChequeoCantidad.id ? updatedChequeoCantidad : t
+        );
+        setChequeoCantidads(updatedChequeoCantidads);
+        showToast("success", "Éxito", "Control de calidad actualizado");
+      } else {
+        // Creación o Duplicado
+        if (!payload.idRefineria) {
+          throw new Error("Debe seleccionar una refinería");
+        }
+
+        const newChequeoCantidad = await createChequeoCantidad(payload);
+        setChequeoCantidads([...chequeoCantidads, newChequeoCantidad]);
+        showToast(
+          "success",
+          "Éxito",
+          onDuplicate
+            ? "Duplicado creado exitosamente"
+            : "Control de calidad creado"
+        );
+      }
+
+      hideChequeoCantidadFormDialog();
+    } catch (error) {
+      console.error("Error en operación de calidad:", error);
+      showToast(
+        "error",
+        "Error",
+        error instanceof Error ? error.message : "Error desconocido"
+      );
+    } finally {
+      setSubmitting(false);
+      if (onDuplicate && setOnDuplicate) {
+        setOnDuplicate(false); // Restablecer el estado de duplicado
+      }
+    }
+  };
+  console.log("errors", errors);
+  console.log("watch", watch());
   return (
     <div>
-      <Toast ref={toast} />
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="grid formgrid p-fluid">
-          {/* Campo: Refinacion */}
-          <div className="field mb-4 col-12 sm:col-6 lg:4">
-            <label htmlFor="idRefinacion" className="font-medium text-900">
-              Refinación
-            </label>
-            <Dropdown
-              id="idRefinacion.id"
-              value={watch("idRefinacion")}
-              // {...register("idRefinacion.id")}
-              onChange={(e) => {
-                setValue("idRefinacion", e.value);
-              }}
-              options={refinacions.map((refinacion) => ({
-                label: refinacion.descripcion,
-                value: {
-                  id: refinacion.id,
-                  descripcion: refinacion.descripcion,
-                },
-              }))}
-              placeholder="Seleccionar una refinacion"
-              className={classNames("w-full", {
-                "p-invalid": errors.idRefinacion?.descripcion,
-              })}
-            />
-            {errors.idRefinacion?.descripcion && (
-              <small className="p-error">
-                {errors.idRefinacion.descripcion.message}
-              </small>
-            )}
+        <div className="card  p-fluid surface-50 p-3  border-round shadow-2">
+          {/* Header del Formulario */}
+          <div className="mb-2 text-center md:text-left">
+            <div className="border-bottom-2 border-primary pb-2">
+              <h2 className="text-2xl font-bold text-900 mb-2 flex align-items-center justify-content-center md:justify-content-start">
+                <i className="pi pi-check-circle mr-3 text-primary text-3xl"></i>
+                Chequeo de Cantidad
+              </h2>
+            </div>
           </div>
 
-          {/* Campo: Nombre del Producto */}
-
-          <div className="field mb-4 col-12 sm:col-6 lg:col-4">
-            <label
-              htmlFor="id_contacto.nombre"
-              className="font-medium text-900"
-            >
-              Nombre del Producto
-            </label>
-            <Dropdown
-              id="idProducto.id"
-              value={watch("idProducto")}
-              // {...register("idProducto.id")}
-              onChange={(e) => {
-                setValue("idProducto", e.value);
-              }}
-              options={productos.map((producto) => ({
-                label: producto.nombre,
-                value: {
-                  id: producto.id,
-                  _id: producto.id,
-                  nombre: producto.nombre,
-                },
-              }))}
-              placeholder="Seleccionar un producto"
-              className={classNames("w-full", {
-                "p-invalid": errors.idProducto?.nombre,
-              })}
-            />
-            {errors.idProducto?.nombre && (
-              <small className="p-error">
-                {errors.idProducto.nombre.message}
-              </small>
-            )}
-          </div>
-
-          {/* Campo: Nombre del Tanque */}
-          <div className="field mb-4 col-12 sm:col-6 lg:col-4">
-            <label
-              htmlFor="id_contacto.nombre"
-              className="font-medium text-900"
-            >
-              Nombre del Tanque
-            </label>
-            <Dropdown
-              id="idTanque.id"
-              value={watch("idTanque")}
-              // {...register("idTanque.id")}
-              onChange={(e) => {
-                setValue("idTanque", e.value);
-              }}
-              options={tanques.map((tanque) => ({
-                label: tanque.nombre,
-                value: {
-                  id: tanque.id,
-                  nombre: tanque.nombre,
-                  _id: tanque.id,
-                },
-              }))}
-              placeholder="Seleccionar un proveedor"
-              className={classNames("w-full", {
-                "p-invalid": errors.idTanque?.nombre,
-              })}
-            />
-            {errors.idTanque?.nombre && (
-              <small className="p-error">
-                {errors.idTanque.nombre.message}
-              </small>
-            )}
-          </div>
-
-          {/* Campo: Nombre de la Torre */}
-          <div className="field mb-4 col-12 sm:col-6 lg:col-4">
-            <label
-              htmlFor="id_contacto.nombre"
-              className="font-medium text-900"
-            >
-              Nombre de Torre
-            </label>
-            <Dropdown
-              id="idTorre.id"
-              value={watch("idTorre")}
-              // {...register("idTorre.id")}
-              onChange={(e) => {
-                setValue("idTorre", e.value);
-              }}
-              options={torresDestilacion.map((torre) => ({
-                label: torre.nombre,
-                value: {
-                  id: torre.id,
-                  nombre: torre.nombre,
-                  _id: torre.id,
-                },
-              }))}
-              placeholder="Seleccionar un torre"
-              className={classNames("w-full", {
-                "p-invalid": errors.idTorre?.nombre,
-              })}
-            />
-            {errors.idTorre?.nombre && (
-              <small className="p-error">{errors.idTorre.nombre.message}</small>
-            )}
-          </div>
-
-          {/* Campo: Operador */}
-          <div className="field mb-4 col-12 sm:col-6 lg:col-4">
-            <label htmlFor="operador" className="font-medium text-900">
-              Operador
-            </label>
-            <InputText
-              id="operador"
-              value={watch("operador")}
-              {...register("operador")}
-              className={classNames("w-full", {
-                "p-invalid": errors.operador,
-              })}
-            />
-            {errors.operador && (
-              <small className="p-error">{errors.operador.message}</small>
-            )}
-          </div>
-          {/* Campo: Fecha de Chequeo */}
-          <div className="field mb-4 col-12 sm:col-6 lg:col-4">
-            <label htmlFor="fechaChequeo" className="font-medium text-900">
-              Fecha de Chequeo
-            </label>
-            <Calendar
-              id="fechaChequeo"
-              value={
-                watch("fechaChequeo")
-                  ? new Date(watch("fechaChequeo") as string | Date)
-                  : undefined
-              }
-              {...register("fechaChequeo")}
-              showTime
-              hourFormat="24"
-              className={classNames("w-full", {
-                "p-invalid": errors.fechaChequeo,
-              })}
-              locale="es"
-            />
-            {errors.fechaChequeo && (
-              <small className="p-error">{errors.fechaChequeo.message}</small>
-            )}
-          </div>
-          {/* Campo: Cantidad*/}
-          <div className="field mb-4 col-12 sm:col-6 lg:col-4">
-            <label htmlFor="cantidad" className="font-medium text-900">
-              Cantidad
-            </label>
-            <Controller
-              name="cantidad"
-              control={control}
-              render={({ field }) => (
-                <InputNumber
-                  id="cantidad"
-                  value={field.value}
-                  onValueChange={(e) => field.onChange(e.value)}
-                  className={classNames("w-full", {
-                    "p-invalid": errors.cantidad,
-                  })}
-                  min={0}
-                  locale="es"
+          {/* Cuerpo del Formulario */}
+          <div className="grid formgrid row-gap-2">
+            {/* Campo: Aplicar a */}
+            <div className="col-12 md:col-6 lg:col-4 xl:col-3">
+              <div className="p-2 bg-white border-round shadow-1 surface-card">
+                <label className="block font-medium text-900 mb-3 flex align-items-center">
+                  <i className="pi pi-tag mr-2 text-primary"></i>
+                  Aplicar a
+                </label>
+                <Controller
+                  name="aplicar.tipo"
+                  control={control}
+                  rules={{ required: "Debe seleccionar una opción" }}
+                  render={({ field }) => (
+                    <Dropdown
+                      value={field.value}
+                      onChange={(e) => field.onChange(e.value)}
+                      options={[
+                        { label: "Tanque", value: "Tanque" },
+                        { label: "Recepción", value: "Recepcion" },
+                        { label: "Despacho", value: "Despacho" },
+                      ]}
+                      placeholder="Seleccionar aplicación"
+                      className={classNames("w-full", {
+                        "p-invalid": errors.aplicar,
+                      })}
+                    />
+                  )}
                 />
-              )}
-            />
-            {errors.cantidad && (
-              <small className="p-error">{errors.cantidad.message}</small>
+                {errors.aplicar && (
+                  <small className="p-error block mt-2 flex align-items-center">
+                    <i className="pi pi-exclamation-circle mr-2"></i>
+                    {errors.aplicar.message}
+                  </small>
+                )}
+              </div>
+            </div>
+            {/* Campo: Referencia dinámica */}
+            {watch("aplicar.tipo") && (
+              <div className="col-12 md:col-6 lg:col-4 xl:col-3 xl:col-3">
+                <div className="p-2 bg-white border-round shadow-1 surface-card">
+                  <label className="block font-medium text-900 mb-3 flex align-items-center">
+                    <i className="pi pi-list mr-2 text-primary"></i>
+                    Seleccionar {watch("aplicar.tipo")}
+                  </label>
+                  <Controller
+                    name="aplicar.idReferencia"
+                    control={control}
+                    rules={{
+                      required: `Debe seleccionar un ${watch("aplicar.tipo")}`,
+                    }}
+                    render={({ field }) => (
+                      <Dropdown
+                        value={field.value}
+                        onChange={(e) => field.onChange(e.value)}
+                        options={dynamicOptions} // Opciones dinámicas según el tipo seleccionado
+                        placeholder={`Seleccionar ${watch("aplicar.tipo")}`}
+                        className={classNames("w-full", {
+                          "p-invalid": errors.aplicar?.idReferencia,
+                        })}
+                        showClear
+                        filter
+                      />
+                    )}
+                  />
+                  {errors.aplicar?.idReferencia && (
+                    <small className="p-error block mt-2 flex align-items-center">
+                      <i className="pi pi-exclamation-circle mr-2"></i>
+                      {errors.aplicar.idReferencia.message}
+                    </small>
+                  )}
+                </div>
+              </div>
             )}
+            {/* Campo: Producto */}
+            <div className="col-12 md:col-6 lg:col-4 xl:col-3">
+              <div className="p-2 bg-white border-round shadow-1 surface-card">
+                <label className="block font-medium text-900 mb-3 flex align-items-center">
+                  <i className="pi pi-box mr-2 text-primary"></i>
+                  Producto
+                </label>
+                <Controller
+                  name="idProducto"
+                  control={control}
+                  render={({ field }) => (
+                    <Dropdown
+                      value={field.value}
+                      onChange={(e) => field.onChange(e.value)}
+                      options={productos.map((producto) => ({
+                        label: producto.nombre,
+                        value: {
+                          id: producto.id,
+                          nombre: producto.nombre,
+                          _id: producto.id,
+                        },
+                      }))}
+                      placeholder="Seleccionar producto"
+                      className="w-full"
+                      showClear
+                      filter
+                    />
+                  )}
+                />
+                {errors.idProducto?.nombre && (
+                  <small className="p-error block mt-2 flex align-items-center">
+                    <i className="pi pi-exclamation-circle mr-2"></i>
+                    {errors.idProducto.nombre.message}
+                  </small>
+                )}
+              </div>
+            </div>
+
+            {/* Campo: Operador */}
+            <div className="col-12 md:col-6 lg:col-4 xl:col-3">
+              <div className="p-2 bg-white border-round shadow-1 surface-card">
+                <label className="block font-medium text-900 mb-3 flex align-items-center">
+                  <i className="pi pi-user mr-2 text-primary"></i>
+                  Operador
+                </label>
+                <Controller
+                  name="idOperador"
+                  control={control}
+                  render={({ field }) => (
+                    <Dropdown
+                      value={field.value}
+                      onChange={(e) => field.onChange(e.value)}
+                      options={operadors.map((operador: any) => ({
+                        label: operador.nombre,
+                        value: {
+                          id: operador.id,
+                          nombre: operador.nombre,
+                        },
+                      }))}
+                      placeholder="Seleccionar operador"
+                      className="w-full"
+                      showClear
+                      filter
+                    />
+                  )}
+                />
+                {errors.idOperador?.nombre && (
+                  <small className="p-error block mt-2 flex align-items-center">
+                    <i className="pi pi-exclamation-circle mr-2"></i>
+                    {errors.idOperador.nombre.message}
+                  </small>
+                )}
+              </div>
+            </div>
+
+            {/* Campo: Fecha de Chequeo */}
+            <div className="col-12 md:col-6 lg:col-4 xl:col-3">
+              <div className="p-2 bg-white border-round shadow-1 surface-card">
+                <label className="block font-medium text-900 mb-3 flex align-items-center">
+                  <i className="pi pi-calendar mr-2 text-primary"></i>
+                  Fecha de Chequeo
+                </label>
+                <Controller
+                  name="fechaChequeo"
+                  control={control}
+                  render={({ field }) => (
+                    <Calendar
+                      value={field.value ? new Date(field.value) : null}
+                      onChange={(e) => field.onChange(e.value)}
+                      showTime
+                      hourFormat="24"
+                      className="w-full"
+                      locale="es"
+                    />
+                  )}
+                />
+                {errors.fechaChequeo && (
+                  <small className="p-error block mt-2 flex align-items-center">
+                    <i className="pi pi-exclamation-circle mr-2"></i>
+                    {errors.fechaChequeo.message}
+                  </small>
+                )}
+              </div>
+            </div>
+
+            {/* Campo: Cantidad */}
+            <div className="col-12 md:col-6 lg:col-4 xl:col-3">
+              <div className="p-2 bg-white border-round shadow-1 surface-card">
+                <label className="block font-medium text-900 mb-3 flex align-items-center">
+                  <i className="pi pi-chart-scatter mr-2 text-primary"></i>
+                  Cantidad
+                </label>
+                <Controller
+                  name="cantidad"
+                  control={control}
+                  render={({ field }) => (
+                    <InputNumber
+                      value={field.value}
+                      onValueChange={(e) => field.onChange(e.value)}
+                      min={0}
+                      max={100}
+                      className="w-full"
+                      locale="es"
+                    />
+                  )}
+                />
+                {errors.cantidad && (
+                  <small className="p-error block mt-2 flex align-items-center">
+                    <i className="pi pi-exclamation-circle mr-2"></i>
+                    {errors.cantidad.message}
+                  </small>
+                )}
+              </div>
+            </div>
+
+            {/* Campo: Estado */}
+            <div className="col-12 md:col-6 lg:col-4 xl:col-3">
+              <div className="p-2 bg-white border-round shadow-1 surface-card">
+                <label className="block font-medium text-900 mb-3 flex align-items-center">
+                  <i className="pi pi-info-circle mr-2 text-primary"></i>
+                  Estado
+                </label>
+                <Controller
+                  name="estado"
+                  control={control}
+                  render={({ field }) => (
+                    <Dropdown
+                      value={field.value}
+                      onChange={(e) => field.onChange(e.value)}
+                      options={[
+                        { label: "Aprobado", value: "aprobado" },
+                        { label: "Rechazado", value: "rechazado" },
+                      ]}
+                      placeholder="Seleccionar estado"
+                      className="w-full"
+                    />
+                  )}
+                />
+                {errors.estado && (
+                  <small className="p-error block mt-2 flex align-items-center">
+                    <i className="pi pi-exclamation-circle mr-2"></i>
+                    {errors.estado.message}
+                  </small>
+                )}
+              </div>
+            </div>
           </div>
 
-          {/* Campo: Estado */}
-          <div className="field mb-4 col-12 sm:col-6 lg:col-4">
-            <label htmlFor="estado" className="font-medium text-900">
-              Estado
-            </label>
-            <Dropdown
-              id="estado"
-              value={watch("estado")}
-              {...register("estado")}
-              options={estatusValues.map((value) => ({
-                label: value,
-                value,
-              }))}
-              placeholder="Seleccionar estado"
-              className={classNames("w-full", { "p-invalid": errors.estado })}
+          {/* Botón de Envío */}
+          <div className="col-12 flex justify-content-between align-items-center mt-3">
+            <Button
+              type="submit"
+              disabled={submitting}
+              icon={submitting ? "pi pi-spinner pi-spin" : ""}
+              label={
+                onDuplicate
+                  ? "Crear Duplicado"
+                  : chequeoCantidad
+                  ? "Actualizar Chequeo de Cantidad"
+                  : "Crear Chequeo de Cantidad"
+              }
+              className="w-auto"
             />
-            {errors.estado && (
-              <small className="p-error">{errors.estado.message}</small>
-            )}
+
+            <Button
+              type="button"
+              label="Salir"
+              onClick={() => hideChequeoCantidadFormDialog()}
+              className="w-auto"
+              severity="danger"
+            />
           </div>
-        </div>
-        <div className="col-12">
-          <Button
-            type="submit"
-            disabled={submitting} // Deshabilitar el botón mientras se envía
-            icon={submitting ? "pi pi-spinner pi-spin" : ""} // Mostrar ícono de carga
-            label={
-              chequeoCantidad
-                ? "Modificar Chequeo de Cantidad"
-                : "Crear Chequeo de Cantidad"
-            }
-            className="w-auto mt-3"
-          />
         </div>
       </form>
     </div>

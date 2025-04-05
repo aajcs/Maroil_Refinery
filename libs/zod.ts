@@ -1133,41 +1133,57 @@ export const chequeoCalidadSchema = z.object({
   id: z.string().optional(),
 });
 
-export const chequeoCantidadSchema = object({
-  idRefineria: object({
-    nombre: string().min(1, "El nombre de la refinería es obligatorio"),
-    id: string().min(1, "El ID de la refinería es obligatorio"),
-  }).optional(),
-  idProducto: object({
-    nombre: string().min(1, "El nombre del producto es obligatorio"),
-    id: string().min(1, "El ID del producto es obligatorio"),
-  }).nullable(),
-  idTanque: object({
-    nombre: string().min(1, "El nombre del tanque es obligatorio"),
-    id: string().min(1, "El ID del tanque es obligatorio"),
+export const chequeoCantidadSchema = z.object({
+  aplicar: z.object({
+    tipo: z.enum(["Recepcion", "Tanque", "Despacho"], {
+      errorMap: () => ({ message: "Tipo de aplicación inválido" }),
+    }),
+    idReferencia: z.union([
+      z
+        .object({
+          id: z.string().min(1, "El ID de referencia es obligatorio"),
+          idGuia: z.number().min(1, "El ID de guía debe ser positivo"),
+        })
+        .refine((data) => data.id && data.idGuia, {
+          message: "Datos incompletos para Recepcion o Despacho",
+        }),
+      z.object({
+        id: z.string().min(1, "El ID de referencia es obligatorio"),
+        nombre: z.string().min(1, "El nombre de referencia es obligatorio"),
+      }),
+    ]),
   }),
-  idTorre: object({
-    nombre: string().min(1, "La ubicación de la torre es obligatoria"),
-    id: string().min(1, "El ID de la torre es obligatorio"),
+  idRefineria: z
+    .object({
+      _id: z.string().optional(),
+      nombre: z.string().min(1, "El nombre de la refinería es obligatorio"),
+      id: z.string().min(1, "El ID de la refinería es obligatorio"),
+    })
+    .optional(),
+  idProducto: z.object({
+    _id: z.string().optional(),
+    nombre: z.string().min(1, "El nombre del producto es obligatorio"),
+    id: z.string().min(1, "El ID del producto es obligatorio"),
   }),
-  idRefinacion: object({
-    id: string().min(1, "El ID de la refinación es obligatorio"),
-    descripcion: string().min(
-      1,
-      "La descripción de la refinación es obligatoria"
-    ),
+  fechaChequeo: z.coerce.date({
+    required_error: "La fecha de chequeo es obligatoria",
+    invalid_type_error: "Formato de fecha inválido",
   }),
-  operador: string().min(1, "El nombre del operador es obligatorio"),
-  fechaChequeo: union([string(), date()]).refine(
-    (val) => val !== "",
-    "La fecha de chequeo es obligatoria"
-  ),
-  cantidad: number().min(0, "La cantidad debe ser un número no negativo"),
+  cantidad: z.number().min(0, "La cantidad debe ser un número no negativo"),
+  idOperador: z.object({
+    nombre: z.string().min(1, "El nombre del operador es obligatorio"),
+    id: z.string().min(1, "El ID del operador es obligatorio"),
+  }),
   estado: string().min(1, "El estado es obligatorio"),
-  eliminado: boolean().default(false),
-  createdAt: union([string(), date()]).optional(),
-  updatedAt: union([string(), date()]).optional(),
-  id: string().optional(),
+  eliminado: z.boolean().default(false),
+  numeroChequeoCantidad: z
+    .number()
+    .int()
+    .positive("El número de chequeo debe ser positivo")
+    .optional(),
+  createdAt: z.coerce.date().optional(),
+  updatedAt: z.coerce.date().optional(),
+  id: z.string().optional(),
 });
 
 export const refinacionSchema = object({
