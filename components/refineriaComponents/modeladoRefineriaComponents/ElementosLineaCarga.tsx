@@ -13467,6 +13467,88 @@ export const PocisionCerrada: React.FC = () => {
     </>
   );
 };
+export const ValvulaCerrada: React.FC = () => {
+  return (
+    <>
+      <path
+        d="M60.007644,89.996745l-.123999,20.087874L79.971518,100L60.007644,89.996745Z"
+        transform="matrix(-1.000002 0 0 1.000002 159.883785-.0002)"
+        fill="#f00"
+        stroke="#3f5787"
+        strokeWidth={0.5}
+      />
+      <path
+        d="M60.007644,89.996745l-.123999,20.087874L79.971518,100L60.007644,89.996745Z"
+        transform="matrix(.999997 0 0 0.999997 0.000213 0.0003)"
+        fill="#f00"
+        stroke="#3f5787"
+        strokeWidth={0.5}
+      />
+      <path
+        d=""
+        transform="matrix(.999997 0 0 0.999997 0.000149 0.0003)"
+        fill="none"
+        stroke="#3f5787"
+        strokeWidth={0.5}
+      />
+      <path
+        d="M49.963707,100.040682h9.919941"
+        transform="matrix(.999997 0 0 0.999997 0.000166 0.0003)"
+        fill="none"
+        stroke="#3f5787"
+        strokeWidth={0.5}
+      />
+      <path
+        d="M99.876001,100h9.855332"
+        transform="matrix(.999997 0 0 0.999997 0.000314 0.0003)"
+        fill="none"
+        stroke="#3f5787"
+        strokeWidth={0.5}
+      />
+    </>
+  );
+};
+export const ValvulaAbierda: React.FC = () => {
+  return (
+    <>
+      <path
+        d="M60.007644,89.996745l-.123999,20.087874L79.971518,100L60.007644,89.996745Z"
+        transform="matrix(-1.000002 0 0 1.000002 159.883785-.0002)"
+        fill="#00ff0b"
+        stroke="#3f5787"
+        strokeWidth={0.5}
+      />
+      <path
+        d="M60.007644,89.996745l-.123999,20.087874L79.971518,100L60.007644,89.996745Z"
+        transform="matrix(.999997 0 0 0.999997 0.000213 0.0003)"
+        fill="#00ff0b"
+        stroke="#3f5787"
+        strokeWidth={0.5}
+      />
+      <path
+        d=""
+        transform="matrix(.999997 0 0 0.999997 0.000149 0.0003)"
+        fill="none"
+        stroke="#3f5787"
+        strokeWidth={0.5}
+      />
+      <path
+        d="M49.963707,100.040682h9.919941"
+        transform="matrix(.999997 0 0 0.999997 0.000166 0.0003)"
+        fill="none"
+        stroke="#3f5787"
+        strokeWidth={0.5}
+      />
+      <path
+        d="M99.876001,100h9.855332"
+        transform="matrix(.999997 0 0 0.999997 0.000314 0.0003)"
+        fill="none"
+        stroke="#3f5787"
+        strokeWidth={0.5}
+      />
+    </>
+  );
+};
 export const PocisionCerradaDespacho: React.FC = () => {
   return (
     <>

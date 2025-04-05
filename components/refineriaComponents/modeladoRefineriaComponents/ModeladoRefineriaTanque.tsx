@@ -1,7 +1,12 @@
 "use client";
 import { Despacho, Recepcion, Refinacion, Tanque } from "@/libs/interfaces";
 import { useEffect, useState, useMemo } from "react";
-import { PocisionAbierta, PocisionCerrada } from "./ElementosLineaCarga";
+import {
+  PocisionAbierta,
+  PocisionCerrada,
+  ValvulaAbierda,
+  ValvulaCerrada,
+} from "./ElementosLineaCarga";
 import { getFillColor } from "@/utils/getFillCollor";
 
 interface ModeladoRefineriaTanqueProps {
@@ -431,7 +436,13 @@ const ModeladoRefineriaTanque = ({
             {/* Título */}
             <text x="15" y="30" fill="#2d3436" fontSize="20" font-weight="600">
               <tspan>{tanque.nombre}</tspan>
-              <tspan x="110" y="30" fill="#6c757d" fontSize="16">
+              <tspan
+                x="110"
+                y="30"
+                fill="#2d3436"
+                fontSize="20"
+                font-weight="600"
+              >
                 {tanque.idProducto?.nombre}
               </tspan>
             </text>
@@ -440,12 +451,19 @@ const ModeladoRefineriaTanque = ({
             <path d="M15 40 L225 40" stroke="#ced4da" stroke-width="1" />
 
             {/* Detalles */}
-            <g fontSize="16" fill="#495057">
+            <g fontSize="17" fill="#495057">
               {/* Capacidad */}
               <text x="15" y="65" font-weight="500">
-                Capacidad:
+                Capacidad Diseño:
               </text>
-              <text x="180" y="65" text-anchor="end" fill="#2d3436">
+              <text
+                x="240"
+                y="65"
+                fontSize="18"
+                text-anchor="end"
+                fill="#2d3436"
+                font-weight="600"
+              >
                 {tanque.capacidad.toLocaleString()} bls
               </text>
 
@@ -453,7 +471,14 @@ const ModeladoRefineriaTanque = ({
               <text x="15" y="85" font-weight="500">
                 Nivel:
               </text>
-              <text x="180" y="85" text-anchor="end" fill="#2d3436">
+              <text
+                x="240"
+                y="85"
+                fontSize="18"
+                text-anchor="end"
+                fill="#2d3436"
+                font-weight="600"
+              >
                 {apiData.tankLevel}%
               </text>
 
@@ -461,7 +486,14 @@ const ModeladoRefineriaTanque = ({
               <text x="15" y="105" font-weight="500">
                 Cantidad:
               </text>
-              <text x="180" y="105" text-anchor="end" fill="#2d3436">
+              <text
+                x="240"
+                y="105"
+                fontSize="18"
+                text-anchor="end"
+                fill="#2d3436"
+                font-weight="600"
+              >
                 {(
                   totalRecepcion +
                   totalRefinacionSalida -
@@ -476,11 +508,13 @@ const ModeladoRefineriaTanque = ({
                 Temperatura:
               </text>
               <text
-                x="180"
+                x="240"
                 y="125"
+                fontSize="18"
                 text-anchor="end"
                 fill="#6c757d"
                 font-style="italic"
+                font-weight="600"
               >
                 {/* Puedes reemplazar con el dato real cuando lo tengas */}
                 N/A
@@ -557,13 +591,19 @@ const ModeladoRefineriaTanque = ({
                 repeatCount="indefinite"
               />
             </g>
-            <g transform="matrix(.075615 0 0 .075615 -80 -98)">
-              <PocisionAbierta />
+            <g transform="translate(-30, 20)">
+              <ValvulaAbierda />
             </g>
+            {/* <g transform="matrix(.075615 0 0 .075615 -80 -98)">
+              <PocisionAbierta />
+            </g> */}
           </>
         ) : (
-          <g transform="matrix(.075615 0 0 .075615 -80 -98)">
-            <PocisionCerrada />
+          // <g transform="matrix(.075615 0 0 .075615 -80 -98)">
+          //   <PocisionCerrada />
+          // </g>
+          <g transform="translate(-30, 20)">
+            <ValvulaCerrada />
           </g>
         )}
         {isLoadingDespacho || isLoadingRefinacion ? (
@@ -599,13 +639,19 @@ const ModeladoRefineriaTanque = ({
                 repeatCount="indefinite"
               />
             </g>
-            <g transform="matrix(.075615 0 0 .075615 100 -20)">
+            {/* <g transform="matrix(.075615 0 0 .075615 100 -20)">
               <PocisionAbierta />
+            </g> */}
+            <g transform="translate(140, 20)">
+              <ValvulaAbierda />
             </g>
           </>
         ) : (
-          <g transform="matrix(.075615 0 0 .075615 100 -20)">
-            <PocisionCerrada />
+          // <g transform="matrix(.075615 0 0 .075615 100 -20)">
+          //   <PocisionCerrada />
+          // </g>
+          <g transform="translate(140, 20)">
+            <ValvulaCerrada />
           </g>
         )}
       </svg>

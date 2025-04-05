@@ -320,7 +320,14 @@ const RecepcionForm = ({
                         )}
                       />
                     </div>
-
+                    <h1>
+                      Numero de Chequeo de Calidad:{" "}
+                      {recepcion.idChequeoCalidad?.numeroChequeoCalidad}
+                    </h1>
+                    <h1>
+                      Numero de Chequeo de Cantidad:{" "}
+                      {recepcion.idChequeoCantidad?.numeroChequeoCantidad}
+                    </h1>
                     {/* Dropdown Mobile */}
                     <div className="lg:hidden mt-3">
                       <Controller

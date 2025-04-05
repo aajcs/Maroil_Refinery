@@ -6,6 +6,8 @@ import {
   PocisionAbierta,
   PocisionCerrada,
   Tuberia,
+  ValvulaAbierda,
+  ValvulaCerrada,
 } from "./ElementosLineaCarga";
 import { LineaRecepcion, Recepcion } from "@/libs/interfaces";
 import ModeladoRefineriaRecepcionesList from "./ModeladoRefineriaRecepcionesList";
@@ -183,12 +185,18 @@ const ModeladoRefineriaLineaCarga = ({
         )}
 
         {hasAssociatedRecepcion ? (
-          <g transform="matrix(-.045615 0 0-.045615 236.787253 212.815595)">
-            <PocisionAbierta />
+          // <g transform="matrix(-.045615 0 0-.045615 236.787253 212.815595)">
+          //   <PocisionAbierta />
+          // </g>
+          <g transform="translate(110, 48)scale(0.8) ">
+            <ValvulaAbierda />
           </g>
         ) : (
-          <g transform="matrix(-.045615 0 0-.045615 236.755662 212.77328)">
-            <PocisionCerrada />
+          // <g transform="matrix(-.045615 0 0-.045615 236.755662 212.77328)">
+          //   <PocisionCerrada />
+          // </g>
+          <g transform="translate(110, 48) scale(0.8)">
+            <ValvulaCerrada />
           </g>
         )}
       </svg>

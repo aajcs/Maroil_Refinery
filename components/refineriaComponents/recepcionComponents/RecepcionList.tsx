@@ -18,6 +18,7 @@ const RecepcionList = () => {
   const { activeRefineria } = useRefineriaStore();
   const [recepcions, setRecepcions] = useState<Recepcion[]>([]);
   const [recepcion, setRecepcion] = useState<Recepcion | null>(null);
+
   const [filters, setFilters] = useState<DataTableFilterMeta>({});
   const [loading, setLoading] = useState(true);
   const [globalFilterValue, setGlobalFilterValue] = useState("");

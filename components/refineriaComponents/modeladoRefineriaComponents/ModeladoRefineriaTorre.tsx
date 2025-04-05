@@ -206,7 +206,7 @@ const ModeladoRefineriaTorre: React.FC<ModeladoRefineriaTorreProps> = ({
 
           <ModeladoRefineriaTuberiaMaterial
             x={TOWER_X + TOWER_WIDTH + 35}
-            y={sectionY + sectionHeight / 2 + 10}
+            y={sectionY + sectionHeight / 2 + 100}
           />
 
           {/* <text
@@ -246,7 +246,7 @@ const ModeladoRefineriaTorre: React.FC<ModeladoRefineriaTorreProps> = ({
           </text> */}
           <g
             transform={`translate(${TOWER_X + TOWER_WIDTH + 35}, ${
-              sectionY + sectionHeight / 2
+              sectionY + sectionHeight / 2 + -15
             })`}
           >
             {/* Fondo aumentado con sombra suave */}
