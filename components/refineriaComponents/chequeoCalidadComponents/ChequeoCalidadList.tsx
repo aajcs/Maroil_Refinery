@@ -17,6 +17,7 @@ import {
   deleteChequeoCalidad,
   getChequeoCalidads,
 } from "@/app/api/chequeoCalidadService";
+import CustomActionButtons from "@/components/common/CustomActionButtons";
 
 const ChequeoCalidadList = () => {
   const { activeRefineria } = useRefineriaStore();
@@ -30,7 +31,7 @@ const ChequeoCalidadList = () => {
   const [deleteProductDialog, setDeleteProductDialog] = useState(false);
   const [chequeoCalidadFormDialog, setChequeoCalidadFormDialog] =
     useState(false);
-
+  const [onCopy, setOnCopy] = useState(false);
   const dt = useRef(null);
   const toast = useRef<Toast | null>(null);
 
@@ -119,27 +120,21 @@ const ChequeoCalidadList = () => {
   );
 
   const actionBodyTemplate = (rowData: ChequeoCalidad) => (
-    <>
-      <Button
-        icon="pi pi-pencil"
-        rounded
-        severity="success"
-        className="mr-2"
-        onClick={() => {
-          setChequeoCalidad(rowData);
-          setChequeoCalidadFormDialog(true);
-        }}
-      />
-      <Button
-        icon="pi pi-trash"
-        severity="warning"
-        rounded
-        onClick={() => {
-          setChequeoCalidad(rowData);
-          setDeleteProductDialog(true);
-        }}
-      />
-    </>
+    <CustomActionButtons
+      rowData={rowData}
+      onEdit={(data) => {
+        setChequeoCalidad(data);
+        setChequeoCalidadFormDialog(true);
+      }}
+      onDelete={(data) => {
+        setChequeoCalidad(data);
+        setDeleteProductDialog(true);
+      }}
+      onCopy={(data) => {
+        setChequeoCalidad(data);
+        setDeleteProductDialog(true);
+      }}
+    />
   );
 
   const showToast = (
@@ -192,7 +187,7 @@ const ChequeoCalidadList = () => {
         />
         <Column field="cetano" header="Índice Cetano" sortable />
         <Column field="estado" header="Estado" sortable />
-        <Column
+        {/* <Column
           field="createdAt"
           header="Creado en"
           body={(rowData: ChequeoCalidad) => formatDateFH(rowData.createdAt)}
@@ -203,7 +198,7 @@ const ChequeoCalidadList = () => {
           header="Última Actualización"
           body={(rowData: ChequeoCalidad) => formatDateFH(rowData.updatedAt)}
           sortable
-        />
+        /> */}
       </DataTable>
 
       <Dialog
@@ -257,6 +252,8 @@ const ChequeoCalidadList = () => {
             setChequeoCalidads={setChequeoCalidads}
             setChequeoCalidad={setChequeoCalidad}
             showToast={showToast}
+            onCopy={onCopy}
+            setOnCopy={setOnCopy}
           />
         )}
       >

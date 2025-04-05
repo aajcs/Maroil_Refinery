@@ -10,11 +10,10 @@ import ModeladoRefineriaContratosSalesList from "./ModeladoRefineriaContratosSal
 const ModeladoRefineriaDashboardSales = () => {
   const { activeRefineria } = useRefineriaStore();
   const { recepcionModificado } = useSocket(); // Obtén recepcionModificado desde el socket
-  const { recepcions, contratos, loading, brent } = useRefineryData(
+  const { recepcions, contratos, loading } = useRefineryData(
     activeRefineria?.id || "",
     recepcionModificado || undefined // Pasa recepcionModificado como dependencia
   );
-  console.log("brent", brent);
   // Agrupar recepciones por contrato y producto
   const recepcionesPorContrato = useMemo(() => {
     return contratos.map((contrato) => {

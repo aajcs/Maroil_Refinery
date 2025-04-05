@@ -34,6 +34,8 @@ interface ChequeoCalidadFormProps {
     summary: string,
     detail: string
   ) => void;
+  onCopy?: boolean;
+  setOnCopy?: (onCopy: boolean) => void;
 }
 
 const ChequeoCalidadForm = ({
@@ -42,6 +44,8 @@ const ChequeoCalidadForm = ({
   chequeoCalidads,
   setChequeoCalidads,
   showToast,
+  onCopy,
+  setOnCopy,
 }: ChequeoCalidadFormProps) => {
   const { activeRefineria } = useRefineriaStore();
   const { productos, operadors, tanques, recepcions, despachos, loading } =
@@ -196,7 +200,7 @@ const ChequeoCalidadForm = ({
           {/* Cuerpo del Formulario */}
           <div className="grid formgrid row-gap-2">
             {/* Campo: Aplicar a */}
-            <div className="col-12 md:col-6 lg:col-4">
+            <div className="col-12 md:col-6 lg:col-4 xl:col-3">
               <div className="p-2 bg-white border-round shadow-1 surface-card">
                 <label className="block font-medium text-900 mb-3 flex align-items-center">
                   <i className="pi pi-tag mr-2 text-primary"></i>
@@ -232,7 +236,7 @@ const ChequeoCalidadForm = ({
             </div>
             {/* Campo: Referencia dinámica */}
             {watch("aplicar.tipo") && (
-              <div className="col-12 md:col-6 lg:col-4">
+              <div className="col-12 md:col-6 lg:col-4 xl:col-3 xl:col-3">
                 <div className="p-2 bg-white border-round shadow-1 surface-card">
                   <label className="block font-medium text-900 mb-3 flex align-items-center">
                     <i className="pi pi-list mr-2 text-primary"></i>
@@ -268,7 +272,7 @@ const ChequeoCalidadForm = ({
               </div>
             )}
             {/* Campo: Producto */}
-            <div className="col-12 md:col-6 lg:col-4">
+            <div className="col-12 md:col-6 lg:col-4 xl:col-3">
               <div className="p-2 bg-white border-round shadow-1 surface-card">
                 <label className="block font-medium text-900 mb-3 flex align-items-center">
                   <i className="pi pi-box mr-2 text-primary"></i>
@@ -306,7 +310,7 @@ const ChequeoCalidadForm = ({
             </div>
 
             {/* Campo: Operador */}
-            <div className="col-12 md:col-6 lg:col-4">
+            <div className="col-12 md:col-6 lg:col-4 xl:col-3">
               <div className="p-2 bg-white border-round shadow-1 surface-card">
                 <label className="block font-medium text-900 mb-3 flex align-items-center">
                   <i className="pi pi-user mr-2 text-primary"></i>
@@ -343,7 +347,7 @@ const ChequeoCalidadForm = ({
             </div>
 
             {/* Campo: Fecha de Chequeo */}
-            <div className="col-12 md:col-6 lg:col-4">
+            <div className="col-12 md:col-6 lg:col-4 xl:col-3">
               <div className="p-2 bg-white border-round shadow-1 surface-card">
                 <label className="block font-medium text-900 mb-3 flex align-items-center">
                   <i className="pi pi-calendar mr-2 text-primary"></i>
@@ -373,7 +377,7 @@ const ChequeoCalidadForm = ({
             </div>
 
             {/* Campo: Gravedad API */}
-            <div className="col-12 md:col-6 lg:col-4">
+            <div className="col-12 md:col-6 lg:col-4 xl:col-3">
               <div className="p-2 bg-white border-round shadow-1 surface-card">
                 <label className="block font-medium text-900 mb-3 flex align-items-center">
                   <i className="pi pi-chart-line mr-2 text-primary"></i>
@@ -403,7 +407,7 @@ const ChequeoCalidadForm = ({
             </div>
 
             {/* Campo: Azufre */}
-            <div className="col-12 md:col-6 lg:col-4">
+            <div className="col-12 md:col-6 lg:col-4 xl:col-3">
               <div className="p-2 bg-white border-round shadow-1 surface-card">
                 <label className="block font-medium text-900 mb-3 flex align-items-center">
                   <i className="pi pi-percentage mr-2 text-primary"></i>
@@ -434,7 +438,7 @@ const ChequeoCalidadForm = ({
             </div>
 
             {/* Campo: Contenido de Agua */}
-            <div className="col-12 md:col-6 lg:col-4">
+            <div className="col-12 md:col-6 lg:col-4 xl:col-3">
               <div className="p-2 bg-white border-round shadow-1 surface-card">
                 <label className="block font-medium text-900 mb-3 flex align-items-center">
                   <i className="pi pi-water mr-2 text-primary"></i>
@@ -465,7 +469,7 @@ const ChequeoCalidadForm = ({
             </div>
 
             {/* Campo: Punto de Inflamación */}
-            <div className="col-12 md:col-6 lg:col-4">
+            <div className="col-12 md:col-6 lg:col-4 xl:col-3">
               <div className="p-2 bg-white border-round shadow-1 surface-card">
                 <label className="block font-medium text-900 mb-3 flex align-items-center">
                   <i className="pi pi-fire mr-2 text-primary"></i>
@@ -495,7 +499,7 @@ const ChequeoCalidadForm = ({
             </div>
 
             {/* Campo: Índice Cetano */}
-            <div className="col-12 md:col-6 lg:col-4">
+            <div className="col-12 md:col-6 lg:col-4 xl:col-3">
               <div className="p-2 bg-white border-round shadow-1 surface-card">
                 <label className="block font-medium text-900 mb-3 flex align-items-center">
                   <i className="pi pi-star mr-2 text-primary"></i>
@@ -525,7 +529,7 @@ const ChequeoCalidadForm = ({
             </div>
 
             {/* Campo: Estado */}
-            <div className="col-12 md:col-6 lg:col-4">
+            <div className="col-12 md:col-6 lg:col-4 xl:col-3">
               <div className="p-2 bg-white border-round shadow-1 surface-card">
                 <label className="block font-medium text-900 mb-3 flex align-items-center">
                   <i className="pi pi-info-circle mr-2 text-primary"></i>
@@ -571,6 +575,7 @@ const ChequeoCalidadForm = ({
               className="w-auto"
             />
             <Button
+              type="button"
               label="Salir"
               onClick={() => hideChequeoCalidadFormDialog()}
               className="w-auto"
