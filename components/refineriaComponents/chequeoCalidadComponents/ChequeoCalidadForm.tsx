@@ -7,7 +7,7 @@ import { Button } from "primereact/button";
 import { classNames } from "primereact/utils";
 import { chequeoCalidadSchema } from "@/libs/zod";
 import { Toast } from "primereact/toast";
-import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
+import { Dropdown } from "primereact/dropdown";
 import { useRefineriaStore } from "@/store/refineriaStore";
 import {
   createChequeoCalidad,
@@ -16,17 +16,9 @@ import {
 import { InputNumber } from "primereact/inputnumber";
 
 import { Calendar } from "primereact/calendar";
-import {
-  Producto,
-  Refinacion,
-  Tanque,
-  TorreDestilacion,
-} from "@/libs/interfaces";
-import { getTanques } from "@/app/api/tanqueService";
+
 import { ProgressSpinner } from "primereact/progressspinner";
-import { getProductos } from "@/app/api/productoService";
-import { getTorresDestilacion } from "@/app/api/torreDestilacionService";
-import { getRefinacions } from "@/app/api/refinacionService";
+
 import { useRefineryData } from "@/hooks/useRefineryData";
 
 type FormData = z.infer<typeof chequeoCalidadSchema>;
@@ -44,8 +36,6 @@ interface ChequeoCalidadFormProps {
   ) => void;
 }
 
-const estatusValues = ["true", "false"];
-
 const ChequeoCalidadForm = ({
   chequeoCalidad,
   hideChequeoCalidadFormDialog,
@@ -56,14 +46,12 @@ const ChequeoCalidadForm = ({
   const { activeRefineria } = useRefineriaStore();
   const { productos, operadors, tanques, recepcions, despachos, loading } =
     useRefineryData(activeRefineria?.id || "");
-  const toast = useRef<Toast | null>(null);
 
   const [submitting, setSubmitting] = useState(false);
   const [dynamicOptions, setDynamicOptions] = useState<
     { label: string; value: any }[]
   >([]);
   const {
-    register,
     handleSubmit,
     formState: { errors },
     setValue,
@@ -80,12 +68,13 @@ const ChequeoCalidadForm = ({
       gravedadAPI: 0,
       puntoDeInflamacion: 0,
       cetano: 0,
+      estado: "aprobado",
+      fechaChequeo: new Date(),
     },
   });
   // Actualizar las opciones dinámicas según la selección de "Aplicar a"
   useEffect(() => {
     const { tipo } = watch("aplicar");
-    console.log("tipo", tipo);
     if (tipo === "Tanque") {
       setDynamicOptions(
         tanques.map((tanque) => ({
@@ -110,6 +99,7 @@ const ChequeoCalidadForm = ({
           value: {
             id: despacho.id,
             idGuia: despacho.idGuia,
+            _id: despacho.id,
           },
         }))
       );
@@ -144,12 +134,16 @@ const ChequeoCalidadForm = ({
     try {
       const payload = {
         ...data,
-        idRefineria: data.idRefineria?.id,
+        idRefineria: activeRefineria?.id,
         idProducto: data.idProducto?.id,
         idOperador: data.idOperador?.id,
-        aplicar: data.aplicar, // Mantenemos esta estructura si es necesaria
+        aplicar: {
+          tipo: data.aplicar.tipo,
+          idReferencia:
+            data.aplicar.idReferencia.id || data.aplicar.idReferencia,
+        },
+        // aplicar: data.aplicar, // Mantenemos esta estructura si es necesaria
       };
-
       if (chequeoCalidad) {
         // Actualización
         const updatedChequeoCalidad = await updateChequeoCalidad(
@@ -164,7 +158,7 @@ const ChequeoCalidadForm = ({
         showToast("success", "Éxito", "Control de calidad actualizado");
       } else {
         // Creación
-        if (!data.idRefineria) {
+        if (!payload.idRefineria) {
           throw new Error("Debe seleccionar una refinería");
         }
 
@@ -187,9 +181,8 @@ const ChequeoCalidadForm = ({
   };
   return (
     <div>
-      <Toast ref={toast} />
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="card p-fluid surface-50 p-2 border-round shadow-2">
+        <div className="card  p-fluid surface-50 p-3  border-round shadow-2">
           {/* Header del Formulario */}
           <div className="mb-2 text-center md:text-left">
             <div className="border-bottom-2 border-primary pb-2">
@@ -293,6 +286,7 @@ const ChequeoCalidadForm = ({
                         value: {
                           id: producto.id,
                           nombre: producto.nombre,
+                          _id: producto.id,
                         },
                       }))}
                       placeholder="Seleccionar producto"
@@ -545,7 +539,6 @@ const ChequeoCalidadForm = ({
                       value={field.value}
                       onChange={(e) => field.onChange(e.value)}
                       options={[
-                        { label: "Pendiente", value: "pendiente" },
                         { label: "Aprobado", value: "aprobado" },
                         { label: "Rechazado", value: "rechazado" },
                       ]}
@@ -565,7 +558,7 @@ const ChequeoCalidadForm = ({
           </div>
 
           {/* Botón de Envío */}
-          <div className="col-12">
+          <div className="col-12 flex justify-content-between align-items-center mt-3">
             <Button
               type="submit"
               disabled={submitting}
@@ -575,7 +568,13 @@ const ChequeoCalidadForm = ({
                   ? "Actualizar Chequeo de Calidad"
                   : "Crear Chequeo de Calidad"
               }
-              className="w-auto mt-3"
+              className="w-auto"
+            />
+            <Button
+              label="Salir"
+              onClick={() => hideChequeoCalidadFormDialog()}
+              className="w-auto"
+              severity="danger"
             />
           </div>
         </div>

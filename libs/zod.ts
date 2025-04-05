@@ -1075,29 +1075,28 @@ export const chequeoCalidadSchema = z.object({
     tipo: z.enum(["Recepcion", "Tanque", "Despacho"], {
       errorMap: () => ({ message: "Tipo de aplicación inválido" }),
     }),
-    idReferencia: z.discriminatedUnion("tipo", [
+    idReferencia: z.union([
+      z
+        .object({
+          id: z.string().min(1, "El ID de referencia es obligatorio"),
+          idGuia: z.number().min(1, "El ID de guía debe ser positivo"),
+        })
+        .refine((data) => data.id && data.idGuia, {
+          message: "Datos incompletos para Recepcion o Despacho",
+        }),
       z.object({
-        tipo: z.literal("Recepcion"),
-        idGuia: z.number().min(1, "El ID de guía debe ser positivo"),
-        id: z.string().min(1, "El ID de referencia es obligatorio"),
-      }),
-      z.object({
-        tipo: z.literal("Tanque"),
         id: z.string().min(1, "El ID de referencia es obligatorio"),
         nombre: z.string().min(1, "El nombre de referencia es obligatorio"),
       }),
-      z.object({
-        tipo: z.literal("Despacho"),
-        idGuia: z.number().min(1, "El ID de guía debe ser positivo"),
-        id: z.string().min(1, "El ID de referencia es obligatorio"),
-      }),
     ]),
   }),
-  idRefineria: z.object({
-    _id: z.string().optional(),
-    nombre: z.string().min(1, "El nombre de la refinería es obligatorio"),
-    id: z.string().min(1, "El ID de la refinería es obligatorio"),
-  }),
+  idRefineria: z
+    .object({
+      _id: z.string().optional(),
+      nombre: z.string().min(1, "El nombre de la refinería es obligatorio"),
+      id: z.string().min(1, "El ID de la refinería es obligatorio"),
+    })
+    .optional(),
   idProducto: z.object({
     _id: z.string().optional(),
     nombre: z.string().min(1, "El nombre del producto es obligatorio"),
@@ -1122,14 +1121,13 @@ export const chequeoCalidadSchema = z.object({
     nombre: z.string().min(1, "El nombre del operador es obligatorio"),
     id: z.string().min(1, "El ID del operador es obligatorio"),
   }),
-  estado: z
-    .union([z.literal("true"), z.literal("false")])
-    .transform((val) => val === "true"),
+  estado: string().min(1, "El estado es obligatorio"),
   eliminado: z.boolean().default(false),
   numeroChequeoCalidad: z
     .number()
     .int()
-    .positive("El número de chequeo debe ser positivo"),
+    .positive("El número de chequeo debe ser positivo")
+    .optional(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
   id: z.string().optional(),

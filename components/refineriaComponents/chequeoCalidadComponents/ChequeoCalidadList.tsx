@@ -31,7 +31,6 @@ const ChequeoCalidadList = () => {
   const [chequeoCalidadFormDialog, setChequeoCalidadFormDialog] =
     useState(false);
 
-  const router = useRouter();
   const dt = useRef(null);
   const toast = useRef<Toast | null>(null);
 
@@ -246,19 +245,29 @@ const ChequeoCalidadList = () => {
 
       <Dialog
         visible={chequeoCalidadFormDialog}
-        style={{ width: "50vw" }}
+        style={{ width: "70vw" }}
         header={`${chequeoCalidad ? "Editar" : "Agregar"} Chequeo de Calidad`}
         modal
         onHide={hideChequeoCalidadFormDialog}
+        content={() => (
+          <ChequeoCalidadForm
+            chequeoCalidad={chequeoCalidad}
+            hideChequeoCalidadFormDialog={hideChequeoCalidadFormDialog}
+            chequeoCalidads={chequeoCalidads}
+            setChequeoCalidads={setChequeoCalidads}
+            setChequeoCalidad={setChequeoCalidad}
+            showToast={showToast}
+          />
+        )}
       >
-        <ChequeoCalidadForm
+        {/* <ChequeoCalidadForm
           chequeoCalidad={chequeoCalidad}
           hideChequeoCalidadFormDialog={hideChequeoCalidadFormDialog}
           chequeoCalidads={chequeoCalidads}
           setChequeoCalidads={setChequeoCalidads}
           setChequeoCalidad={setChequeoCalidad}
           showToast={showToast}
-        />
+        /> */}
       </Dialog>
     </div>
   );
