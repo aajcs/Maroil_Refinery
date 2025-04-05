@@ -79,14 +79,14 @@ const ChequeoCantidadList = () => {
       toast.current?.show({
         severity: "success",
         summary: "Éxito",
-        detail: "ChequeoCantidad Eliminada",
+        detail: "Chequeo de Cantidad Eliminada",
         life: 3000,
       });
     } else {
       toast.current?.show({
         severity: "error",
         summary: "Error",
-        detail: "No se pudo eliminar el chequeo de calidad",
+        detail: "No se pudo eliminar el chequeo de cantidad",
         life: 3000,
       });
     }
@@ -163,7 +163,7 @@ const ChequeoCantidadList = () => {
         rowsPerPageOptions={[10, 25, 50]}
         filters={filters}
         loading={loading}
-        emptyMessage="No hay chequeos de calidad disponibles"
+        emptyMessage="No hay chequeos de cantidad disponibles"
       >
         <Column body={actionBodyTemplate} />
         <Column
@@ -251,7 +251,7 @@ const ChequeoCantidadList = () => {
           />
           {chequeoCantidad && (
             <span>
-              ¿Estás seguro de que deseas eliminar el chequeo de calidad con el
+              ¿Estás seguro de que deseas eliminar el chequeo de cantidad con el
               número de chequeo <b>{chequeoCantidad.numeroChequeoCantidad}</b>?
             </span>
           )}

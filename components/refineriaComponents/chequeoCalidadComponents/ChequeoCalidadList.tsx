@@ -78,7 +78,7 @@ const ChequeoCalidadList = () => {
       toast.current?.show({
         severity: "success",
         summary: "Éxito",
-        detail: "ChequeoCalidad Eliminada",
+        detail: "Chequeo de Calidad Eliminada",
         life: 3000,
       });
     } else {
