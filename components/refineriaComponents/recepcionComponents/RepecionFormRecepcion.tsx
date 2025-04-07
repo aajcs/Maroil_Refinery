@@ -6,6 +6,8 @@ import { InputNumber } from "primereact/inputnumber";
 import { InputText } from "primereact/inputtext";
 import { Calendar } from "primereact/calendar";
 import { classNames } from "primereact/utils";
+import CustomCalendar from "@/components/common/CustomCalendar";
+import { useEffect, useRef } from "react";
 
 interface RepecionFormRecepcionProps {
   control: any;
@@ -27,6 +29,8 @@ interface RepecionFormRecepcionProps {
   contratos: any[];
   truncateText: (text: string, maxLength: number) => string;
   register: any;
+  setValue: any;
+  calendarRef: any;
 }
 
 export const RepecionFormRecepcion = ({
@@ -42,6 +46,8 @@ export const RepecionFormRecepcion = ({
   contratos,
   truncateText,
   register,
+  setValue,
+  calendarRef,
 }: RepecionFormRecepcionProps) => {
   console.log(watch("idContrato"));
   return (
@@ -385,24 +391,23 @@ export const RepecionFormRecepcion = ({
               control={control}
               render={({ field, fieldState }) => (
                 <>
-                  <Calendar
-                    id="fechaSalida"
+                  <CustomCalendar
+                    {...field}
+                    name="fechaSalida"
+                    control={control}
+                    setValue={setValue}
+                    calendarRef={calendarRef}
+                    isFieldEnabled={
+                      !isFieldEnabledRecepcion("fechaSalida", estadoRecepcion)
+                    }
                     value={
                       field.value
                         ? new Date(field.value as string | Date)
-                        : undefined
+                        : null
                     }
-                    onChange={(e) => field.onChange(e.value)}
-                    showTime
-                    hourFormat="24"
-                    className={classNames("w-full", {
-                      "p-invalid": fieldState.error,
-                    })}
-                    locale="es"
-                    disabled={
-                      !isFieldEnabledRecepcion("fechaSalida", estadoRecepcion)
-                    }
+                    onChange={field.onChange}
                   />
+
                   {fieldState.error && (
                     <small className="p-error block mt-2 flex align-items-center">
                       <i className="pi pi-exclamation-circle mr-2"></i>
@@ -420,40 +425,63 @@ export const RepecionFormRecepcion = ({
           <div className="p-3 bg-white border-round shadow-1">
             <label className="block font-medium text-900 mb-2 flex align-items-center">
               <i className="pi pi-calendar-plus text-primary mr-2"></i>
-              Fecha Llegada
+              {watch("estadoRecepcion") === "EN_TRANSITO"
+                ? "Fecha estimada de llegada"
+                : "Fecha de llegada real"}
             </label>
 
             <Controller
               name="fechaLlegada"
               control={control}
-              render={({ field, fieldState }) => (
-                <>
-                  <Calendar
-                    id="fechaLlegada"
-                    value={
-                      field.value
-                        ? new Date(field.value as string | Date)
-                        : undefined
-                    }
-                    onChange={(e) => field.onChange(e.value)}
-                    showTime
-                    hourFormat="24"
-                    className={classNames("w-full", {
-                      "p-invalid": fieldState.error,
-                    })}
-                    locale="es"
-                    disabled={
-                      !isFieldEnabledRecepcion("fechaLlegada", estadoRecepcion)
-                    }
-                  />
-                  {fieldState.error && (
-                    <small className="p-error block mt-2 flex align-items-center">
-                      <i className="pi pi-exclamation-circle mr-2"></i>
-                      {fieldState.error.message}
-                    </small>
-                  )}
-                </>
-              )}
+              render={({ field, fieldState }) => {
+                // Usar useEffect para manejar el cambio de estado
+                const previousEstadoRecepcion = useRef<string | null>(null); // Estado previo
+                useEffect(() => {
+                  const currentEstadoRecepcion = watch("estadoRecepcion");
+
+                  // Detectar la transición de EN_TRANSITO a EN_REFINERIA
+                  if (
+                    previousEstadoRecepcion.current === "EN_TRANSITO" &&
+                    currentEstadoRecepcion === "EN_REFINERIA"
+                  ) {
+                    field.onChange(new Date()); // Actualizar la fecha de llegada
+                  }
+
+                  // Actualizar el estado previo
+                  previousEstadoRecepcion.current = currentEstadoRecepcion;
+                }, [watch("estadoRecepcion")]); // Ejecutar cuando cambie estadoRecepcion
+
+                return (
+                  <>
+                    <CustomCalendar
+                      {...field}
+                      name="fechaLlegada"
+                      control={control}
+                      setValue={setValue}
+                      calendarRef={calendarRef}
+                      isFieldEnabled={
+                        !isFieldEnabledRecepcion(
+                          "fechaLlegada",
+                          estadoRecepcion
+                        )
+                      }
+                      value={
+                        field.value
+                          ? new Date(field.value as string | Date)
+                          : null
+                      }
+                      onChange={field.onChange}
+                    />
+
+                    {fieldState.error && (
+                      <small className="p-error block mt-2 flex align-items-center">
+                        <i className="pi pi-exclamation-circle mr-2"></i>
+                        {fieldState.error.message}
+                      </small>
+                    )}
+                  </>
+                );
+              }}
             />
           </div>
         </div>

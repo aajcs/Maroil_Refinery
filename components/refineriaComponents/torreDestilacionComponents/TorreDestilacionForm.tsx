@@ -16,6 +16,7 @@ import { Dropdown } from "primereact/dropdown";
 import { useRefineriaStore } from "@/store/refineriaStore";
 import { Material, Producto } from "@/libs/interfaces";
 import { getProductos } from "@/app/api/productoService";
+import { MultiSelect } from "primereact/multiselect";
 
 type FormData = z.infer<typeof torreDestilacionSchema>;
 
@@ -43,10 +44,13 @@ const TorreDestilacionForm = ({
 }: TorreDestilacionFormProps) => {
   const { activeRefineria } = useRefineriaStore();
   const toast = useRef<Toast | null>(null);
-  const [selectedMaterials, setSelectedMaterials] = useState<Material[]>([]);
   const [productos, setProductos] = useState<Producto[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+
+  // Estado para materiales seleccionados
+  const [selectedMaterials, setSelectedMaterials] = useState<Material[]>([]);
+
   const {
     register,
     handleSubmit,
@@ -57,7 +61,6 @@ const TorreDestilacionForm = ({
     resolver: zodResolver(torreDestilacionSchema),
   });
 
-  // Obtener productos al cargar el componente
   const fetchData = useCallback(async () => {
     try {
       const productosDB = await getProductos();
@@ -79,7 +82,6 @@ const TorreDestilacionForm = ({
     fetchData();
   }, [fetchData]);
 
-  // Inicializar materiales si hay una torre de destilación
   useEffect(() => {
     if (torreDestilacion && torreDestilacion.material) {
       Object.keys(torreDestilacion).forEach((key) =>
@@ -89,13 +91,12 @@ const TorreDestilacionForm = ({
     }
   }, [torreDestilacion]);
 
-  // Manejar el envío del formulario
   const onSubmit = async (data: FormData) => {
     setSubmitting(true);
     try {
       const requestData = {
         ...data,
-        material: selectedMaterials, // Incluir los materiales seleccionados
+        material: selectedMaterials,
       };
 
       if (torreDestilacion) {
@@ -126,169 +127,127 @@ const TorreDestilacionForm = ({
         error instanceof Error ? error.message : "Ocurrió un error inesperado"
       );
     } finally {
-      setSubmitting(false); // Desactivar el estado de envío
+      setSubmitting(false);
     }
   };
 
-  // Componente para manejar materiales
-  const MaterialForm = ({
-    materials,
-    onAddMaterial,
-    onRemoveMaterial,
-  }: {
-    materials: Material[];
-    onAddMaterial: (material: Material) => void;
-    onRemoveMaterial: (index: number) => void;
-  }) => {
-    const [newMaterial, setNewMaterial] = useState<Material>({
-      idProducto: undefined,
-      estadoMaterial: "True",
-    });
-
-    const handleAddMaterial = () => {
-      if (newMaterial.idProducto) {
-        onAddMaterial({
-          ...newMaterial,
-          idProducto: {
-            _id: newMaterial.idProducto.id,
-            nombre: newMaterial.idProducto.nombre,
-            posicion: newMaterial.idProducto.posicion,
-            color: "#000000",
-            id: newMaterial.idProducto.id,
-          },
-        });
-        setNewMaterial({
-          idProducto: undefined,
-          estadoMaterial: "True",
-        });
-      }
-    };
-
-    return (
-      <div className="mb-4">
-        <h3 className="font-medium text-900 mb-2">Materiales</h3>
-        {materials.map((material, index) => (
-          <div key={index} className="flex items-center gap-2 mb-2">
-            <span>{material.idProducto?.nombre}</span>
-            <Button
-              type="button"
-              icon="pi pi-times"
-              className="p-button-danger p-button-sm"
-              onClick={() => onRemoveMaterial(index)}
-            />
-          </div>
-        ))}
-        <div className="flex gap-2">
-          {/* Campo: Selección de producto */}
-          <Dropdown
-            value={newMaterial.idProducto}
-            options={productos.map((producto) => ({
-              label: producto.nombre,
-              value: { id: producto.id, nombre: producto.nombre },
-            }))}
-            onChange={(e) =>
-              setNewMaterial({ ...newMaterial, idProducto: e.value })
-            }
-            placeholder="Seleccionar producto"
-            optionLabel="label"
-            className="w-full"
-          />
-
-          <Button
-            type="button"
-            label="Agregar"
-            className="p-button-success"
-            onClick={handleAddMaterial}
-          />
-        </div>
-      </div>
-    );
-  };
-
-  // Agregar un material
-  const handleAddMaterial = (material: Material) => {
-    setSelectedMaterials([...selectedMaterials, material]);
-  };
-
-  // Eliminar un material
-  const handleRemoveMaterial = (index: number) => {
-    const updatedMaterials = selectedMaterials.filter((_, i) => i !== index);
-    setSelectedMaterials(updatedMaterials);
-  };
   return (
     <div>
-      <Toast ref={toast} />
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="grid formgrid p-fluid">
-          {/* Campo: Nombre */}
-          <div className="field mb-4 col-12">
-            <label htmlFor="nombre" className="font-medium text-900">
-              Nombre
-            </label>
-            <InputText
-              id="nombre"
-              type="text"
-              className={classNames("w-full", { "p-invalid": errors.nombre })}
-              {...register("nombre")}
-            />
-            {errors.nombre && (
-              <small className="p-error">{errors.nombre.message}</small>
-            )}
+        <div className="card p-fluid surface-50 p-3 border-round shadow-2">
+          {/* Header del Formulario */}
+          <div className="mb-2 text-center md:text-left">
+            <div className="border-bottom-2 border-primary pb-2">
+              <h2 className="text-2xl font-bold text-900 mb-2 flex align-items-center justify-content-center md:justify-content-start">
+                <i className="pi pi-check-circle mr-3 text-primary text-3xl"></i>
+                {torreDestilacion
+                  ? "Modificar Torre de Destilación"
+                  : "Crear Torre de Destilación"}
+              </h2>
+            </div>
           </div>
 
-          {/* Campo: Estado */}
-          <div className="field mb-4 col-12 md:col-6">
-            <label htmlFor="estado" className="font-medium text-900">
-              Estado
-            </label>
-            <Dropdown
-              id="estado"
-              value={watch("estado")}
-              onChange={(e) => setValue("estado", e.value)}
-              options={estatusValues}
-              placeholder="Seleccionar"
-              className={classNames("w-full", { "p-invalid": errors.estado })}
-            />
-            {errors.estado && (
-              <small className="p-error">{errors.estado.message}</small>
-            )}
+          {/* Cuerpo del Formulario */}
+          <div className="grid formgrid row-gap-2">
+            {/* Campo: Nombre */}
+            <div className="col-12 md:col-6 ">
+              <div className="p-2 bg-white border-round shadow-1 surface-card">
+                <label className="block font-medium text-900 mb-3 flex align-items-center">
+                  <i className="pi pi-tag mr-2 text-primary"></i>
+                  Nombre
+                </label>
+                <InputText
+                  id="nombre"
+                  type="text"
+                  className={classNames("w-full", {
+                    "p-invalid": errors.nombre,
+                  })}
+                  {...register("nombre")}
+                />
+                {errors.nombre && (
+                  <small className="p-error block mt-2 flex align-items-center">
+                    <i className="pi pi-exclamation-circle mr-2"></i>
+                    {errors.nombre.message}
+                  </small>
+                )}
+              </div>
+            </div>
+
+            {/* Campo: Estado
+            <div className="col-12 md:col-6 lg:col-4 xl:col-3">
+              <div className="p-2 bg-white border-round shadow-1 surface-card">
+                <label className="block font-medium text-900 mb-3 flex align-items-center">
+                  <i className="pi pi-info-circle mr-2 text-primary"></i>
+                  Estado
+                </label>
+                <Dropdown
+                  id="estado"
+                  value={watch("estado")}
+                  onChange={(e) => setValue("estado", e.value)}
+                  options={estatusValues}
+                  placeholder="Seleccionar"
+                  className={classNames("w-full", {
+                    "p-invalid": errors.estado,
+                  })}
+                />
+                {errors.estado && (
+                  <small className="p-error block mt-2 flex align-items-center">
+                    <i className="pi pi-exclamation-circle mr-2"></i>
+                    {errors.estado.message}
+                  </small>
+                )}
+              </div>
+            </div> */}
+
+            {/* Campo: Materiales */}
+            <div className="col-12 ">
+              <div className="p-2 bg-white border-round shadow-1 surface-card">
+                <label className="block font-medium text-900 mb-3 flex align-items-center">
+                  <i className="pi pi-box mr-2 text-primary"></i>
+                  Materiales
+                </label>
+                <MultiSelect
+                  value={selectedMaterials.map((m) => m.idProducto)}
+                  options={productos}
+                  optionLabel="nombre"
+                  onChange={(e) => {
+                    const selected = e.value as Producto[];
+                    const materials: any[] = selected.map((producto) => ({
+                      idProducto: producto,
+                      estadoMaterial: "True",
+                    }));
+                    setSelectedMaterials(materials as any);
+                  }}
+                  display="chip"
+                  placeholder="Seleccionar materiales"
+                  maxSelectedLabels={3}
+                  className="w-full"
+                  disabled={loading}
+                />
+              </div>
+            </div>
           </div>
 
-          {/* Campo: Ubicación */}
-          <div className="field mb-4 col-12">
-            <label htmlFor="ubicacion" className="font-medium text-900">
-              Ubicación
-            </label>
-            <InputText
-              id="ubicacion"
-              type="text"
-              className={classNames("w-full", {
-                "p-invalid": errors.ubicacion,
-              })}
-              {...register("ubicacion")}
-            />
-            {errors.ubicacion && (
-              <small className="p-error">{errors.ubicacion.message}</small>
-            )}
-          </div>
-
-          {/* Componente de materiales */}
-          <MaterialForm
-            materials={selectedMaterials}
-            onAddMaterial={handleAddMaterial}
-            onRemoveMaterial={handleRemoveMaterial}
-          />
-
-          {/* Botón de envío */}
-          <div className="col-12">
+          {/* Botones */}
+          <div className="col-12 flex justify-content-between align-items-center mt-3">
             <Button
               type="submit"
+              disabled={submitting}
+              icon={submitting ? "pi pi-spinner pi-spin" : ""}
               label={
                 torreDestilacion
-                  ? "Modificar torre de destilación"
-                  : "Crear torre de destilación"
+                  ? "Modificar Torre de Destilación"
+                  : "Crear Torre de Destilación"
               }
-              className="w-auto mt-3"
+              className="w-auto"
+            />
+
+            <Button
+              type="button"
+              label="Salir"
+              onClick={() => hideTorreDestilacionFormDialog()}
+              className="w-auto"
+              severity="danger"
             />
           </div>
         </div>

@@ -93,6 +93,9 @@ const RecepcionForm = ({
         setValue(key as keyof FormData, recepcion[key])
       );
     }
+    if (recepcion?.idChequeoCantidad) {
+      setValue("cantidadRecibida", recepcion.idChequeoCantidad.cantidad);
+    }
   }, [recepcion, setValue]);
 
   const onSubmit = async (data: FormData) => {
@@ -268,9 +271,12 @@ const RecepcionForm = ({
               contratos={contratos}
               truncateText={truncateText}
               register={register}
+              setValue={setValue}
+              calendarRef={calendarRef}
             />
-            {watch("estadoRecepcion") === "EN_REFINERIA" ||
-            watch("estadoRecepcion") === "COMPLETADO" ? (
+            {(watch("estadoRecepcion") === "EN_REFINERIA" ||
+              watch("estadoRecepcion") === "COMPLETADO") &&
+            recepcion?.idChequeoCalidad ? (
               <div className="card p-fluid surface-50 p-2 border-round shadow-2">
                 {/* Header del Proceso */}
                 <div className="mb-2 text-center md:text-left">
@@ -285,49 +291,91 @@ const RecepcionForm = ({
                       <Controller
                         name="estadoCarga"
                         control={control}
-                        render={({ field }) => (
-                          <Steps
-                            model={estadoCargaOptions.map((option) => ({
-                              label: option.label,
-                              command: () => {
-                                const validTransitions =
-                                  getValidTransitionsCarga(estadoCarga);
-                                if (
-                                  validTransitions.includes(
-                                    option.value as EstadoCarga
-                                  )
-                                ) {
+                        render={({ field }) => {
+                          // Verificar si el estatus es "Aprobado" y establecer automáticamente "MUESTREO_APROBADO"
+
+                          return (
+                            <Steps
+                              model={estadoCargaOptions.map((option) => ({
+                                label: option.label,
+                                command: () => {
+                                  const validTransitions =
+                                    getValidTransitionsCarga(estadoCarga);
                                   if (
-                                    validarCamposRequeridosCarga(option.value)
+                                    validTransitions.includes(
+                                      option.value as EstadoCarga
+                                    )
                                   ) {
-                                    field.onChange(option.value);
+                                    if (
+                                      validarCamposRequeridosCarga(option.value)
+                                    ) {
+                                      field.onChange(option.value);
+                                    }
+                                  } else {
+                                    showToast(
+                                      "warn",
+                                      "Transición no válida",
+                                      `No puedes cambiar a ${option.label} desde ${estadoCarga}`
+                                    );
                                   }
-                                } else {
-                                  showToast(
-                                    "warn",
-                                    "Transición no válida",
-                                    `No puedes cambiar a ${option.label} desde ${estadoCarga}`
-                                  );
-                                }
-                              },
-                            }))}
-                            activeIndex={estadoCargaOptions.findIndex(
-                              (option) => option.value === field.value
-                            )}
-                            className="bg-white p-3 border-round shadow-1"
-                            readOnly={false}
-                          />
-                        )}
+                                },
+                              }))}
+                              activeIndex={estadoCargaOptions.findIndex(
+                                (option) => option.value === field.value
+                              )}
+                              className="bg-white p-3 border-round shadow-1"
+                              readOnly={false}
+                            />
+                          );
+                        }}
                       />
                     </div>
-                    <h1>
-                      Numero de Chequeo de Calidad:{" "}
-                      {recepcion.idChequeoCalidad?.numeroChequeoCalidad}
-                    </h1>
-                    <h1>
-                      Numero de Chequeo de Cantidad:{" "}
-                      {recepcion.idChequeoCantidad?.numeroChequeoCantidad}
-                    </h1>
+                    <div className="p-3 bg-white border-round shadow-1 surface-card">
+                      <div className="flex flex-column md:flex-row align-items-center justify-content-between">
+                        {/* Información de Chequeo de Calidad */}
+                        <div className="mb-3 md:mb-0">
+                          <h3 className="text-xl font-bold text-900 mb-2 flex align-items-center">
+                            <i className="pi pi-check-circle text-primary mr-2"></i>
+                            Chequeo de Calidad
+                          </h3>
+                          <p className="text-700 mb-1">
+                            <strong>Número:</strong>{" "}
+                            {recepcion?.idChequeoCalidad
+                              ?.numeroChequeoCalidad || "N/A"}
+                          </p>
+                          <p className="text-700">
+                            <strong>Estatus:</strong>{" "}
+                            <span
+                              className={classNames("font-bold", {
+                                "text-yellow-500": recepcion?.idChequeoCalidad,
+                                "text-green-500":
+                                  recepcion?.idChequeoCalidad?.estado ===
+                                  "aprobado",
+                                "text-red-500":
+                                  recepcion?.idChequeoCalidad?.estado ===
+                                  "rechazado",
+                              })}
+                            >
+                              {recepcion?.idChequeoCalidad?.estado ||
+                                "Pendiente"}
+                            </span>
+                          </p>
+                        </div>
+
+                        {/* Información de Chequeo de Cantidad */}
+                        <div>
+                          <h3 className="text-xl font-bold text-900 mb-2 flex align-items-center">
+                            <i className="pi pi-chart-bar text-primary mr-2"></i>
+                            Chequeo de Cantidad
+                          </h3>
+                          <p className="text-700">
+                            <strong>Número:</strong>{" "}
+                            {recepcion?.idChequeoCantidad
+                              ?.numeroChequeoCantidad || "N/A"}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
                     {/* Dropdown Mobile */}
                     <div className="lg:hidden mt-3">
                       <Controller
@@ -677,7 +725,9 @@ const RecepcionForm = ({
                     </h2>
                     <p className="text-600 mt-2 flex align-items-center">
                       <i className="pi pi-info-circle mr-2"></i>
-                      Actualmente no estás en estado de refinería
+                      {recepcion?.idChequeoCalidad
+                        ? "Actualmente no estás en estado de refinería"
+                        : "Actualmente esta esperando el chequeo de calidad"}
                     </p>
                   </div>
                   <i className="pi pi-truck text-6xl text-primary hidden md:block"></i>
@@ -776,16 +826,6 @@ const RecepcionForm = ({
                 </div>
               </div>
             )}
-
-            {/* <div className="col-12">
-              <Button
-                type="submit"
-                disabled={submitting} // Deshabilitar el botón mientras se envía
-                icon={submitting ? "pi pi-spinner pi-spin" : ""} // Mostrar ícono de carga
-                label={recepcion ? "Modificar Recepción" : "Crear Recepción"}
-                className="w-auto mt-3"
-              />
-            </div> */}
           </form>
         )}
       </div>
@@ -794,280 +834,3 @@ const RecepcionForm = ({
 };
 
 export default RecepcionForm;
-
-// <div className="grid formgrid p-fluid border-1 border-gray-200 rounded-lg">
-//   {/* Campo: Estado de carga*/}
-//   {/* <div className="field mb-4 col-12 sm:col-6 lg:col-4 lg:hidden "> */}
-//   <div className="field mb-4 col-12 hidden lg:block  ">
-//     <label htmlFor="estadoCarga" className="font-medium text-900">
-//       Estado de Carga
-//     </label>
-//     <Controller
-//       name="estadoCarga"
-//       control={control}
-//       render={({ field, fieldState }) => (
-//         <>
-//           <Steps
-//             model={estadoCargaOptions.map((option) => ({
-//               label: option.label,
-//               command: () => {
-//                 field.onChange(option.value); // Actualiza el valor en el formulario
-//               },
-//             }))}
-//             activeIndex={estadoCargaOptions.findIndex(
-//               (option) => option.value === field.value
-//             )} // Marca el estado actual como activo
-//             onSelect={(e) => {
-//               const selectedOption = estadoCargaOptions[e.index];
-//               field.onChange(selectedOption.value); // Actualiza el valor seleccionado
-//             }}
-//             readOnly={false} // Permite seleccionar pasos
-//           />
-//           {fieldState.error && (
-//             <small className="p-error">
-//               {fieldState.error.message}
-//             </small>
-//           )}
-//         </>
-//       )}
-//     />
-//   </div>
-//   <div className="field mb-4 col-12 sm:col-6 lg:col-4 lg:hidden ">
-//     <label htmlFor="estadoEntrega" className="font-medium text-900 ">
-//       Estado de Carga
-//     </label>
-//     <Controller
-//       name="estadoCarga"
-//       control={control}
-//       render={({ field, fieldState }) => (
-//         <Dropdown
-//           id="estadoCarga"
-//           value={field.value}
-//           onChange={(e) => field.onChange(e.value)}
-//           options={estadoCargaOptions}
-//           placeholder="Seleccionar estado de entrega"
-//           className={classNames("w-full", {
-//             "p-invalid": fieldState.error,
-//           })}
-//         />
-//       )}
-//     />
-//     {errors.estadoCarga && (
-//       <small className="p-error">{errors.estadoCarga.message}</small>
-//     )}
-//   </div>
-
-//   {/* Campo: Nombre de la Línea */}
-//   <div className="field mb-4 col-12 sm:col-6 lg:col-4">
-//     <label
-//       htmlFor="id_contacto.nombre"
-//       className="font-medium text-900"
-//     >
-//       Nombre de la Línea
-//     </label>
-//     <Controller
-//       name="idLinea"
-//       control={control}
-//       render={({ field, fieldState }) => (
-//         <Dropdown
-//           id="idLinea.id"
-//           value={field.value}
-//           onChange={(e) => {
-//             field.onChange(e.value); // Actualiza el valor seleccionado
-//             if (!e.value) {
-//               field.onChange(null); // Limpia el valor en el formulario
-//             }
-//           }}
-//           options={lineaRecepcions.map((lineaRecepcion) => ({
-//             label: lineaRecepcion.nombre,
-//             value: {
-//               id: lineaRecepcion.id,
-//               nombre: lineaRecepcion.nombre,
-//             },
-//           }))}
-//           placeholder="Seleccionar una línea"
-//           className={classNames("w-full", {
-//             "p-invalid": fieldState.error,
-//           })}
-//           showClear
-//           filter
-//           disabled={isFieldEnabledCarga(
-//             "idLinea",
-//             estadoCarga as EstadoCarga
-//           )}
-//         />
-//       )}
-//     />
-//     {errors.idLinea?.nombre && (
-//       <small className="p-error">
-//         {errors.idLinea.nombre.message}
-//       </small>
-//     )}
-//   </div>
-
-//   {/* Campo:  del Tanque */}
-//   <div className="field mb-4 col-12 sm:col-6 lg:col-4">
-//     <label
-//       htmlFor="id_contacto.nombre"
-//       className="font-medium text-900"
-//     >
-//       Nombre del Tanque
-//     </label>
-//     <Controller
-//       name="idTanque"
-//       control={control}
-//       render={({ field, fieldState }) => {
-//         // Obtener el producto seleccionado en idContratoItems
-//         const selectedProducto = watch("idContratoItems")?.producto;
-
-//         // Filtrar los tanques que almacenan el producto seleccionado
-//         const filteredTanques = tanques.filter(
-//           (tanque) => tanque.idProducto?.id === selectedProducto?.id
-//         );
-//         // Condición para inhabilitar el campo
-//         const isDisabled = isFieldEnabledCarga(
-//           "idTanque",
-//           estadoCarga as EstadoCarga
-//         );
-
-//         return (
-//           <>
-//             <Dropdown
-//               id="idTanque.id"
-//               value={field.value}
-//               onChange={(e) => {
-//                 field.onChange(e.value); // Actualiza el valor seleccionado
-//                 if (!e.value) {
-//                   field.onChange(null); // Limpia el valor en el formulario
-//                 }
-//               }}
-//               options={filteredTanques.map((tanque) => ({
-//                 label: `${tanque.nombre} - ${
-//                   tanque.idProducto?.nombre || "Sin producto"
-//                 } (${tanque.almacenamiento || 0} Bbl)`,
-//                 value: {
-//                   id: tanque.id,
-//                   nombre: tanque.nombre,
-//                   _id: tanque.id,
-//                 },
-//               }))}
-//               placeholder="Seleccionar un tanque"
-//               className={classNames("w-full", {
-//                 "p-invalid": fieldState.error,
-//               })}
-//               showClear
-//               filter
-//               disabled={isDisabled} // Inhabilitar el campo si no está en proceso
-//             />
-//             {fieldState.error && (
-//               <small className="p-error">
-//                 {fieldState.error.message}
-//               </small>
-//             )}
-//           </>
-//         );
-//       }}
-//     />
-//   </div>
-
-//   {/* Campo: Fecha Inicio Receocion */}
-//   <div className="field mb-4 col-12 sm:col-4 lg:4">
-//     <label
-//       htmlFor="fechaInicioRecepcion"
-//       className="font-medium text-900"
-//     >
-//       Fecha Inicio Recepción
-//     </label>
-//     <Calendar
-//       id="fechaInicioRecepcion"
-//       value={
-//         watch("fechaInicioRecepcion")
-//           ? new Date(watch("fechaInicioRecepcion") as string | Date)
-//           : undefined
-//       }
-//       {...register("fechaInicioRecepcion")}
-//       showTime
-//       hourFormat="24"
-//       className={classNames("w-full", {
-//         "p-invalid": errors.fechaInicioRecepcion,
-//       })}
-//       locale="es"
-//       disabled={isFieldEnabledCarga(
-//         "fechaInicioRecepcion",
-//         estadoCarga as EstadoCarga
-//       )}
-//     />
-//     {errors.fechaInicioRecepcion && (
-//       <small className="p-error">
-//         {errors.fechaInicioRecepcion.message}
-//       </small>
-//     )}
-//   </div>
-//   {/* Campo: Fecha Fin Recepcion */}
-//   <div className="field mb-4 col-12 sm:col-4 lg:4">
-//     <label
-//       htmlFor="fechaFinRecepcion"
-//       className="font-medium text-900"
-//     >
-//       Fecha Fin Recepción
-//     </label>
-//     <Calendar
-//       id="fechaFinRecepcion"
-//       value={
-//         watch("fechaFinRecepcion")
-//           ? new Date(watch("fechaFinRecepcion") as string | Date)
-//           : undefined
-//       }
-//       {...register("fechaFinRecepcion")}
-//       showTime
-//       hourFormat="24"
-//       className={classNames("w-full", {
-//         "p-invalid": errors.fechaFinRecepcion,
-//       })}
-//       locale="es"
-//       disabled={isFieldEnabledCarga(
-//         "fechaFinRecepcion",
-//         estadoCarga as EstadoCarga
-//       )}
-//     />
-//     {errors.fechaFinRecepcion && (
-//       <small className="p-error">
-//         {errors.fechaFinRecepcion.message}
-//       </small>
-//     )}
-//   </div>
-//   {/* Campo: Cantidad Recibida */}
-//   <div className="field mb-4 col-12 sm:col-6 lg:col-2">
-//     <label
-//       htmlFor="cantidadRecibida"
-//       className="font-medium text-900"
-//     >
-//       Cantidad Recibida
-//     </label>
-//     <Controller
-//       name="cantidadRecibida"
-//       control={control}
-//       render={({ field }) => (
-//         <InputNumber
-//           id="cantidadRecibida"
-//           value={field.value}
-//           onValueChange={(e) => field.onChange(e.value)}
-//           className={classNames("w-full", {
-//             "p-invalid": errors.cantidadRecibida,
-//           })}
-//           min={0}
-//           locale="es"
-//           disabled={isFieldEnabledCarga(
-//             "cantidadRecibida",
-//             estadoCarga as EstadoCarga
-//           )}
-//         />
-//       )}
-//     />
-//     {errors.cantidadRecibida && (
-//       <small className="p-error">
-//         {errors.cantidadRecibida.message}
-//       </small>
-//     )}
-//   </div>
-// </div>

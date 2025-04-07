@@ -244,16 +244,17 @@ const TorreDestilacionList = () => {
         } Torre de Destilación`}
         modal
         onHide={hideTorreDestilacionFormDialog}
-      >
-        <TorreDestilacionForm
-          torreDestilacion={torreDestilacion}
-          hideTorreDestilacionFormDialog={hideTorreDestilacionFormDialog}
-          torresDestilacion={torresDestilacion}
-          setTorresDestilacion={setTorresDestilacion}
-          setTorreDestilacion={setTorreDestilacion}
-          showToast={showToast}
-        />
-      </Dialog>
+        content={() => (
+          <TorreDestilacionForm
+            torreDestilacion={torreDestilacion}
+            hideTorreDestilacionFormDialog={hideTorreDestilacionFormDialog}
+            torresDestilacion={torresDestilacion}
+            setTorresDestilacion={setTorresDestilacion}
+            setTorreDestilacion={setTorreDestilacion}
+            showToast={showToast}
+          />
+        )}
+      ></Dialog>
     </div>
   );
 };
