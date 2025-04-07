@@ -130,11 +130,8 @@ export const lineaDespachoSchema = object({
 
 export const contactoSchema = object({
   id: string().optional(),
-  nombre: string().min(1, "El nombre es obligatorio"),
-  identificacionFiscal: string().min(
-    1,
-    "La identificación fiscal es obligatoria"
-  ),
+  nombre: string().min(1, "La razon es obligatoria"),
+  identificacionFiscal: string().min(1, "Nit es obligatoria"),
   correo: string().email("El correo debe ser válido"),
   direccion: string().min(1, "La dirección es obligatoria"),
   telefono: string().min(1, "El teléfono es obligatorio"),
@@ -143,7 +140,8 @@ export const contactoSchema = object({
     id: string().optional(),
   }).optional(),
   representanteLegal: string().min(1, "El representante legal es obligatorio"),
-  estado: string().min(1, "El estado es obligatorio"),
+  ciudad: string().min(1, "La ciudad es obligatoria"),
+  estado: string().min(1, "El estado es obligatorio").optional(),
   eliminado: boolean().default(false),
   createdAt: string().optional(),
   updatedAt: string().optional(),

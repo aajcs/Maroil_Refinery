@@ -155,75 +155,41 @@ const ContactoList = () => {
         emptyMessage="No hay contactos disponibles"
       >
         <Column body={actionBodyTemplate} headerStyle={{ minWidth: "10rem" }} />
-        <Column
-          field="nombre"
-          header="Nombre"
-          sortable
-          style={{ width: "20%" }}
-        />
-        <Column
-          field="identificacionFiscal"
-          header="Identificación Fiscal"
-          sortable
-          style={{ width: "20%" }}
-        />
-        <Column
-          field="correo"
-          header="Correo"
-          sortable
-          style={{ width: "20%" }}
-        />
-        <Column
-          field="direccion"
-          header="Dirección"
-          sortable
-          style={{ width: "20%" }}
-        />
-        <Column
-          field="telefono"
-          header="Teléfono"
-          sortable
-          style={{ width: "20%" }}
-        />
-        <Column field="tipo" header="Tipo" sortable style={{ width: "20%" }} />
-        <Column
-          field="idRefineria.nombre"
-          header="ID Refinería"
-          sortable
-          style={{ width: "20%" }}
-        />
-        <Column
-          field="representanteLegal"
-          header="Representante Legal"
-          sortable
-          style={{ width: "20%" }}
-        />
-        <Column
+        <Column field="nombre" header="Razon Social" />
+        <Column field="identificacionFiscal" header="NIT" />
+        <Column field="correo" header="Correo" />
+        <Column field="ciudad" header="Ciudad" />
+        <Column field="direccion" header="Dirección" />
+        <Column field="telefono" header="Teléfono" />
+        <Column field="tipo" header="Tipo" sortable />
+
+        <Column field="representanteLegal" header="Representante Legal" />
+        {/* <Column
           field="estado"
           header="Estado"
-          sortable
+        
           style={{ width: "20%" }}
         />
         <Column
           field="eliminado"
           header="Eliminado"
-          sortable
+        
           style={{ width: "20%" }}
         />
         <Column
           field="createdAt"
           header="Fecha de Creación"
           body={(rowData: Contacto) => formatDateFH(rowData.createdAt)}
-          sortable
+        
           style={{ width: "20%" }}
         />
         <Column
           field="updatedAt"
           header="Última Actualización"
           body={(rowData: Contacto) => formatDateFH(rowData.updatedAt)}
-          sortable
+        
           style={{ width: "20%" }}
-        />
+        /> */}
       </DataTable>
 
       <Dialog
@@ -268,16 +234,17 @@ const ContactoList = () => {
         header={`${contacto ? "Editar" : "Agregar"} Contacto`}
         modal
         onHide={hideContactoFormDialog}
-      >
-        <ContactoForm
-          contacto={contacto}
-          hideContactoFormDialog={hideContactoFormDialog}
-          contactos={contactos}
-          setContactos={setContactos}
-          setContacto={setContacto}
-          showToast={showToast}
-        />
-      </Dialog>
+        content={
+          <ContactoForm
+            contacto={contacto}
+            hideContactoFormDialog={hideContactoFormDialog}
+            contactos={contactos}
+            setContactos={setContactos}
+            setContacto={setContacto}
+            showToast={showToast}
+          />
+        }
+      ></Dialog>
     </div>
   );
 };
