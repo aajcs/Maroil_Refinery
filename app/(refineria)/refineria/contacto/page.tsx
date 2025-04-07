@@ -1,6 +1,6 @@
 "use client";
 
-import ContactoList from "@/components/contactoComponents/ContactoList";
+import ContactoList from "@/components/refineriaComponents/contactoComponents/ContactoList";
 
 function Tanques() {
   return (

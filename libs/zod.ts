@@ -114,6 +114,13 @@ export const lineaDespachoSchema = object({
   estado: string().min(1, "El estado es obligatorio"),
   eliminado: boolean().default(false),
   ubicacion: string().min(1, "La ubicación es obligatoria").optional(),
+  idProducto: object({
+    _id: string().min(1, "El ID del producto es obligatorio").optional(),
+    nombre: string().min(1, "El nombre del producto es obligatorio"),
+    posicion: number().min(1, "La posición es obligatoria").optional(),
+    color: string().min(1, "El color es obligatorio").optional(),
+    id: string().min(1, "El ID del producto es obligatorio"),
+  }),
   createdAt: string().optional(),
   updatedAt: string().optional(),
   idRefineria: object({

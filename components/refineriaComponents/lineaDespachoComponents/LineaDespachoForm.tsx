@@ -15,6 +15,8 @@ import {
   createLineaDespacho,
   updateLineaDespacho,
 } from "@/app/api/lineaDespachoService";
+import { useRefineryData } from "@/hooks/useRefineryData";
+import { ProgressSpinner } from "primereact/progressspinner";
 
 type FormData = z.infer<typeof lineaDespachoSchema>;
 
@@ -41,7 +43,7 @@ const LineaDespachoForm = ({
   showToast,
 }: LineaDespachoFormProps) => {
   const { activeRefineria } = useRefineriaStore();
-  const toast = useRef<Toast | null>(null);
+  const { productos, loading } = useRefineryData(activeRefineria?.id || "");
 
   const [submitting, setSubmitting] = useState(false);
   const {
@@ -72,6 +74,7 @@ const LineaDespachoForm = ({
           {
             ...data,
             idRefineria: activeRefineria?.id,
+            idProducto: data.idProducto.id,
           }
         );
         const updatedLineaDespachos = lineaDespachos.map((t) =>
@@ -85,6 +88,7 @@ const LineaDespachoForm = ({
         const newLineaDespacho = await createLineaDespacho({
           ...data,
           idRefineria: activeRefineria.id,
+          idProducto: data.idProducto.id,
         });
         setLineaDespachos([...lineaDespachos, newLineaDespacho]);
         showToast("success", "Éxito", "LineaDespacho creado");
@@ -101,6 +105,13 @@ const LineaDespachoForm = ({
       setSubmitting(false); // Desactivar el estado de envío
     }
   };
+  if (loading) {
+    return (
+      <div className="flex justify-content-center align-items-center h-screen">
+        <ProgressSpinner />
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -121,7 +132,7 @@ const LineaDespachoForm = ({
           {/* Cuerpo del Formulario */}
           <div className="grid formgrid row-gap-2">
             {/* Campo: Nombre */}
-            <div className="col-12 md:col-6 ">
+            <div className="col-12 md:col-6 lg:col-4">
               <div className="p-2 bg-white border-round shadow-1 surface-card">
                 <label className="block font-medium text-900 mb-3 flex align-items-center">
                   <i className="pi pi-tag mr-2 text-primary"></i>
@@ -143,9 +154,42 @@ const LineaDespachoForm = ({
                 )}
               </div>
             </div>
-
+            {/* Campo: Producto */}
+            <div className="col-12 md:col-6 lg:col-4 ">
+              <div className="p-2 bg-white border-round shadow-1 surface-card">
+                <label className="block font-medium text-900 mb-3 flex align-items-center">
+                  <i className="pi pi-box mr-2 text-primary"></i>
+                  Producto
+                </label>
+                <Dropdown
+                  id="idProducto.id"
+                  value={watch("idProducto")}
+                  onChange={(e) => setValue("idProducto", e.value)}
+                  options={productos.map((producto) => ({
+                    label: producto.nombre,
+                    value: {
+                      id: producto.id,
+                      _id: producto.id,
+                      nombre: producto.nombre,
+                      color: producto.color,
+                      posicion: producto.posicion,
+                    },
+                  }))}
+                  placeholder="Seleccionar un producto"
+                  className={classNames("w-full", {
+                    "p-invalid": errors.idProducto?.nombre,
+                  })}
+                />
+                {errors.idProducto?.nombre && (
+                  <small className="p-error block mt-2 flex align-items-center">
+                    <i className="pi pi-exclamation-circle mr-2"></i>
+                    {errors.idProducto.nombre.message}
+                  </small>
+                )}
+              </div>
+            </div>
             {/* Campo: Estado */}
-            <div className="col-12 md:col-6 ">
+            <div className="col-12 md:col-6 lg:col-4 ">
               <div className="p-2 bg-white border-round shadow-1 surface-card">
                 <label className="block font-medium text-900 mb-3 flex align-items-center">
                   <i className="pi pi-info-circle mr-2 text-primary"></i>

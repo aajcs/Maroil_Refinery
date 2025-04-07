@@ -11,7 +11,7 @@ import { Dialog } from "primereact/dialog";
 import { useRefineriaStore } from "@/store/refineriaStore";
 
 import LineaDespachoForm from "./LineaDespachoForm";
-import { LineaDespacho } from "@/libs/interfaces";
+import { LineaDespacho, Tanque } from "@/libs/interfaces";
 import { formatDateFH } from "@/utils/dateUtils";
 import {
   deleteLineaDespacho,
@@ -137,7 +137,19 @@ const LineaDespachoList = () => {
       />
     </>
   );
-
+  const productoBodyTemplate = (rowData: Tanque) => {
+    const { idProducto } = rowData;
+    return (
+      <div>
+        <span
+          className={"customer-badge"}
+          style={{ backgroundColor: `#${idProducto?.color}50` }}
+        >
+          {idProducto?.nombre}
+        </span>
+      </div>
+    );
+  };
   const showToast = (
     severity: "success" | "error",
     summary: string,
@@ -169,7 +181,11 @@ const LineaDespachoList = () => {
           sortable
          
         /> */}
-
+        <Column
+          field="idProducto.nombre"
+          header="Producto"
+          body={productoBodyTemplate}
+        />
         <Column field="estado" header="Estado" sortable />
         {/* <Column
           field="createdAt"

@@ -157,7 +157,7 @@ const TanqueForm = ({
               </div>
             </div>
 
-            {/* Campo: Ubicación */}
+            {/* Campo: Ubicación
             <div className="col-12 md:col-6 lg:col-4 xl:col-3">
               <div className="p-2 bg-white border-round shadow-1 surface-card">
                 <label className="block font-medium text-900 mb-3 flex align-items-center">
@@ -179,7 +179,7 @@ const TanqueForm = ({
                   </small>
                 )}
               </div>
-            </div>
+            </div> */}
 
             {/* Campo: Producto */}
             <div className="col-12 md:col-6 lg:col-4 xl:col-3">
