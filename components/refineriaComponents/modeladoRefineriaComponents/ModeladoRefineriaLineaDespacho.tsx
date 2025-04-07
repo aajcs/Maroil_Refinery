@@ -66,7 +66,7 @@ const ModeladoRefineriaLineaDespacho = ({
           {despachos
             .filter(
               (despacho: Despacho) =>
-                despacho.idLineaDespacho.id === lineaDespacho.id
+                despacho.idLineaDespacho?.id === lineaDespacho.id
             )
             .map((despacho: any, index: number) => (
               <g key={`${animationKey}-${index}`}>

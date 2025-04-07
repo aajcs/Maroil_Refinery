@@ -596,5 +596,6 @@ export interface Rendimiento {
   transporte?: number; // Costo de transporte
   bunker?: number; // Costo de bunker
   costoVenta?: number; // Costo de venta
+  convenio?: number; // Costo de convenio
   porcentaje?: number; // Porcentaje de rendimiento
 }

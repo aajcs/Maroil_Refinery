@@ -179,8 +179,7 @@ const TipoProductoList = () => {
                   <div className="flex align-items-center gap-2">
                     <i className="pi pi-dollar text-green-500"></i>
                     <span>
-                      <strong>Costo Venta:</strong>{" "}
-                      {rendimiento.costoVenta || "N/A"}
+                      <strong>Convenio:</strong> {rendimiento.convenio || "N/A"}
                     </span>
                   </div>
                   <div className="flex align-items-center gap-2">
