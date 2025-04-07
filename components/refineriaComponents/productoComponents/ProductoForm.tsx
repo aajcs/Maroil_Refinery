@@ -104,107 +104,164 @@ const ProductoForm = ({
   };
   return (
     <div>
-      <Toast ref={toast} />
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="grid formgrid p-fluid">
-          <div className="field mb-4 col-12">
-            <label htmlFor="nombre" className="font-medium text-900">
-              Nombre
-            </label>
-            <InputText
-              id="nombre"
-              type="text"
-              className={classNames("w-full", { "p-invalid": errors.nombre })}
-              {...register("nombre")}
-            />
-            {errors.nombre && (
-              <small className="p-error">{errors.nombre.message}</small>
-            )}
+        <div className="card p-fluid surface-50 p-3 border-round shadow-2">
+          {/* Header del Formulario */}
+          <div className="mb-2 text-center md:text-left">
+            <div className="border-bottom-2 border-primary pb-2">
+              <h2 className="text-2xl font-bold text-900 mb-2 flex align-items-center justify-content-center md:justify-content-start">
+                <i className="pi pi-check-circle mr-3 text-primary text-3xl"></i>
+                {producto ? "Modificar Producto" : "Crear Producto"}
+              </h2>
+            </div>
           </div>
-          <div className="field mb-4 col-12">
-            <label htmlFor="posicion" className="font-medium text-900">
-              Posición
-            </label>
-            <Controller
-              name="posicion"
-              control={control}
-              render={({ field }) => (
-                <InputNumber
-                  id={field.name}
-                  value={field.value}
-                  onValueChange={(e) => field.onChange(e.value)}
+
+          {/* Cuerpo del Formulario */}
+          <div className="grid formgrid row-gap-2">
+            {/* Campo: Nombre */}
+            <div className="col-12 md:col-6 lg:col-4 ">
+              <div className="p-2 bg-white border-round shadow-1 surface-card">
+                <label className="block font-medium text-900 mb-3 flex align-items-center">
+                  <i className="pi pi-tag mr-2 text-primary"></i>
+                  Nombre
+                </label>
+                <InputText
+                  id="nombre"
+                  type="text"
                   className={classNames("w-full", {
-                    "p-invalid": errors.posicion,
+                    "p-invalid": errors.nombre,
+                  })}
+                  {...register("nombre")}
+                />
+                {errors.nombre && (
+                  <small className="p-error block mt-2 flex align-items-center">
+                    <i className="pi pi-exclamation-circle mr-2"></i>
+                    {errors.nombre.message}
+                  </small>
+                )}
+              </div>
+            </div>
+            {/* Campo: Posición */}
+            <div className="col-12 md:col-6 lg:col-4 ">
+              <div className="p-2 bg-white border-round shadow-1 surface-card">
+                <label className="block font-medium text-900 mb-3 flex align-items-center">
+                  <i className="pi pi-sort-numeric-up mr-2 text-primary"></i>
+                  Posición
+                </label>
+                <Controller
+                  name="posicion"
+                  control={control}
+                  render={({ field }) => (
+                    <InputNumber
+                      id={field.name}
+                      value={field.value}
+                      onValueChange={(e) => field.onChange(e.value)}
+                      className={classNames("w-full", {
+                        "p-invalid": errors.posicion,
+                      })}
+                    />
+                  )}
+                />
+                {errors.posicion && (
+                  <small className="p-error block mt-2 flex align-items-center">
+                    <i className="pi pi-exclamation-circle mr-2"></i>
+                    {errors.posicion.message}
+                  </small>
+                )}
+              </div>
+            </div>
+            {/* Campo: Color */}
+            <div className="col-12 md:col-6 lg:col-4 ">
+              <div className="p-2 bg-white border-round shadow-1 surface-card">
+                <label className="block font-medium text-900 mb-3 flex align-items-center">
+                  <i className="pi pi-palette mr-2 text-primary"></i>
+                  Color
+                </label>
+                <ColorPicker
+                  id="color"
+                  format="hex"
+                  value={watch("color")}
+                  {...register("color")}
+                  className={classNames("w-full", {
+                    "p-invalid": errors.color,
                   })}
                 />
-              )}
-            />
+                {errors.color && (
+                  <small className="p-error block mt-2 flex align-items-center">
+                    <i className="pi pi-exclamation-circle mr-2"></i>
+                    {errors.color.message}
+                  </small>
+                )}
+              </div>
+            </div>
+            {/* Campo: Tipo de Material
+            <div className="col-12 md:col-6 lg:col-4 xl:col-3">
+              <div className="p-2 bg-white border-round shadow-1 surface-card">
+                <label className="block font-medium text-900 mb-3 flex align-items-center">
+                  <i className="pi pi-list mr-2 text-primary"></i>
+                  Tipo de Material
+                </label>
+                <Dropdown
+                  id="tipoMaterial"
+                  value={watch("tipoMaterial")}
+                  onChange={(e) => setValue("tipoMaterial", e.value)}
+                  options={tipoMaterialValues}
+                  placeholder="Seleccionar"
+                  className={classNames("w-full", {
+                    "p-invalid": errors.tipoMaterial,
+                  })}
+                />
+                {errors.tipoMaterial && (
+                  <small className="p-error block mt-2 flex align-items-center">
+                    <i className="pi pi-exclamation-circle mr-2"></i>
+                    {errors.tipoMaterial.message}
+                  </small>
+                )}
+              </div>
+            </div> */}
+            {/* Campo: Estado
+            <div className="col-12 md:col-6 lg:col-4 xl:col-3">
+              <div className="p-2 bg-white border-round shadow-1 surface-card">
+                <label className="block font-medium text-900 mb-3 flex align-items-center">
+                  <i className="pi pi-info-circle mr-2 text-primary"></i>
+                  Estado
+                </label>
+                <Dropdown
+                  id="estado"
+                  value={watch("estado")}
+                  onChange={(e) => setValue("estado", e.value)}
+                  options={estatusValues}
+                  placeholder="Seleccionar"
+                  className={classNames("w-full", {
+                    "p-invalid": errors.estado,
+                  })}
+                />
+                {errors.estado && (
+                  <small className="p-error block mt-2 flex align-items-center">
+                    <i className="pi pi-exclamation-circle mr-2"></i>
+                    {errors.estado.message}
+                  </small>
+                )}
+              </div>
+            </div> */}
+          </div>
 
-            {errors.posicion && (
-              <small className="p-error">{errors.posicion.message}</small>
-            )}
-          </div>
-          <div className="field mb-4 col-12">
-            <label htmlFor="color" className="font-medium text-900">
-              Color
-            </label>
-            <ColorPicker
-              id="color"
-              inputId="cp-hex"
-              format="hex"
-              value={watch("color")}
-              {...register("color")}
-              className={classNames("ml-3", {
-                "p-invalid": errors.color,
-              })}
-            />
-            {errors.color && (
-              <small className="p-error">{errors.color.message}</small>
-            )}
-          </div>
-          <div className="field mb-4 col-12 md:col-6">
-            <label htmlFor="tipoMaterial" className="font-medium text-900">
-              Estado
-            </label>
-            <Dropdown
-              id="tipoMaterial"
-              value={watch("tipoMaterial")}
-              onChange={(e) => setValue("tipoMaterial", e.value)}
-              options={tipoMaterialValues}
-              placeholder="Seleccionar"
-              className={classNames("w-full", {
-                "p-invalid": errors.tipoMaterial,
-              })}
-            />
-            {errors.tipoMaterial && (
-              <small className="p-error">{errors.tipoMaterial.message}</small>
-            )}
-          </div>
-
-          <div className="field mb-4 col-12 md:col-6">
-            <label htmlFor="estado" className="font-medium text-900">
-              Estado
-            </label>
-            <Dropdown
-              id="estado"
-              value={watch("estado")}
-              onChange={(e) => setValue("estado", e.value)}
-              options={estatusValues}
-              placeholder="Seleccionar"
-              className={classNames("w-full", { "p-invalid": errors.estado })}
-            />
-            {errors.estado && (
-              <small className="p-error">{errors.estado.message}</small>
-            )}
-          </div>
-
-          <div className="col-12">
+          {/* Botones */}
+          <div className="col-12 flex justify-content-between align-items-center mt-3">
             <Button
               type="submit"
-              disabled={submitting} // Deshabilitar el botón mientras se envía
-              icon={submitting ? "pi pi-spinner pi-spin" : ""} // Mostrar ícono de carga
-              label={producto ? "Modificar producto" : "Crear producto"}
-              className="w-auto mt-3"
+              disabled={submitting}
+              icon={submitting ? "pi pi-spinner pi-spin" : ""}
+              label={producto ? "Modificar Producto" : "Crear Producto"}
+              className="w-auto"
+            />
+
+            <Button
+              type="button"
+              label="Salir"
+              onClick={() => hideProductoFormDialog()}
+              className="w-auto"
+              severity="danger"
             />
           </div>
         </div>

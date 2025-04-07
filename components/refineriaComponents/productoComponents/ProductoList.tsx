@@ -170,7 +170,7 @@ const ProductoList = () => {
           )}
         />
 
-        <Column field="tipoMaterial" header="Tipo de Material" sortable />
+        {/* <Column field="tipoMaterial" header="Tipo de Material" sortable /> */}
         <Column
           field="idTipoProducto"
           header="Tipo de Producto"
@@ -182,7 +182,7 @@ const ProductoList = () => {
           sortable
         />
 
-        <Column field="estado" header="Estado" sortable />
+        {/* <Column field="estado" header="Estado" sortable />
         <Column
           field="createdAt"
           header="Fecha de Creación"
@@ -194,7 +194,7 @@ const ProductoList = () => {
           header="Última Actualización"
           body={(rowData: Producto) => formatDateFH(rowData.updatedAt)}
           sortable
-        />
+        /> */}
       </DataTable>
 
       <Dialog
@@ -239,16 +239,17 @@ const ProductoList = () => {
         header={`${producto ? "Editar" : "Agregar"} Producto`}
         modal
         onHide={hideProductoFormDialog}
-      >
-        <ProductoForm
-          producto={producto}
-          hideProductoFormDialog={hideProductoFormDialog}
-          productos={productos}
-          setProductos={setProductos}
-          setProducto={setProducto}
-          showToast={showToast}
-        />
-      </Dialog>
+        content={() => (
+          <ProductoForm
+            producto={producto}
+            hideProductoFormDialog={hideProductoFormDialog}
+            productos={productos}
+            setProductos={setProductos}
+            setProducto={setProducto}
+            showToast={showToast}
+          />
+        )}
+      ></Dialog>
     </div>
   );
 };
