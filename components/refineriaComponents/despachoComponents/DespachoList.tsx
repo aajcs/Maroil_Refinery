@@ -120,7 +120,7 @@ const DespachoList = () => {
       />
       <Button
         icon="pi pi-trash"
-        severity="warning"
+        severity="danger"
         rounded
         onClick={() => {
           setDespacho(rowData);

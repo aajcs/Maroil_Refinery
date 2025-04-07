@@ -119,7 +119,7 @@ const TanqueList = () => {
       />
       <Button
         icon="pi pi-trash"
-        severity="warning"
+        severity="danger"
         rounded
         onClick={() => {
           setTanque(rowData);
@@ -167,7 +167,6 @@ const TanqueList = () => {
       >
         <Column body={actionBodyTemplate} headerStyle={{ minWidth: "10rem" }} />
         <Column field="nombre" header="Nombre" sortable />
-        <Column field="ubicacion" header="Ubicación" sortable />
 
         <Column
           field="idProducto.nombre"
@@ -177,9 +176,14 @@ const TanqueList = () => {
         <Column
           field="almacenamientoMateriaPrimaria"
           header="Tipo Almacenamiento"
+          body={(rowData: Tanque) =>
+            rowData.almacenamientoMateriaPrimaria
+              ? "Materia Prima"
+              : "Producto Terminado"
+          }
         />
         <Column field="estado" header="Estado" sortable />
-        <Column
+        {/* <Column
           field="createdAt"
           header="Fecha de Creación"
           body={(rowData: Tanque) => formatDateFH(rowData.createdAt)}
@@ -190,7 +194,7 @@ const TanqueList = () => {
           header="Última Actualización"
           body={(rowData: Tanque) => formatDateFH(rowData.updatedAt)}
           sortable
-        />
+        /> */}
       </DataTable>
 
       <Dialog
@@ -235,16 +239,17 @@ const TanqueList = () => {
         header={`${tanque ? "Editar" : "Agregar"} Tanque`}
         modal
         onHide={hideTanqueFormDialog}
-      >
-        <TanqueForm
-          tanque={tanque}
-          hideTanqueFormDialog={hideTanqueFormDialog}
-          tanques={tanques}
-          setTanques={setTanques}
-          setTanque={setTanque}
-          showToast={showToast}
-        />
-      </Dialog>
+        content={() => (
+          <TanqueForm
+            tanque={tanque}
+            hideTanqueFormDialog={hideTanqueFormDialog}
+            tanques={tanques}
+            setTanques={setTanques}
+            setTanque={setTanque}
+            showToast={showToast}
+          />
+        )}
+      ></Dialog>
     </div>
   );
 };

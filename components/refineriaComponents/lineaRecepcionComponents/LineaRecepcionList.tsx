@@ -72,14 +72,14 @@ const LineaRecepcionList = () => {
       toast.current?.show({
         severity: "success",
         summary: "Éxito",
-        detail: "LineaRecepcion Eliminada",
+        detail: "Linea de Recepción Eliminada",
         life: 3000,
       });
     } else {
       toast.current?.show({
         severity: "error",
         summary: "Error",
-        detail: "No se pudo eliminar la torre de destilación",
+        detail: "No se pudo eliminar la Linea de Recepción",
         life: 3000,
       });
     }
@@ -128,7 +128,7 @@ const LineaRecepcionList = () => {
       />
       <Button
         icon="pi pi-trash"
-        severity="warning"
+        severity="danger"
         rounded
         onClick={() => {
           setLineaRecepcion(rowData);
@@ -159,42 +159,32 @@ const LineaRecepcionList = () => {
         rowsPerPageOptions={[10, 25, 50]}
         filters={filters}
         loading={loading}
-        emptyMessage="No hay lineaRecepcions disponibles"
+        emptyMessage="No hay linea Recepcion disponibles"
       >
         <Column body={actionBodyTemplate} headerStyle={{ minWidth: "10rem" }} />
-        <Column
-          field="nombre"
-          header="Nombre"
-          sortable
-          style={{ width: "25%" }}
-        />
-        <Column
+        <Column field="nombre" header="Nombre" sortable />
+        {/* <Column
           field="ubicacion"
           header="Ubicación"
           sortable
-          style={{ width: "25%" }}
-        />
 
-        <Column
-          field="estado"
-          header="Estado"
-          sortable
-          style={{ width: "25%" }}
-        />
-        <Column
+        /> */}
+
+        <Column field="estado" header="Estado" sortable />
+        {/* <Column
           field="createdAt"
           header="Fecha de Creación"
           body={(rowData: LineaRecepcion) => formatDateFH(rowData.createdAt)}
           sortable
-          style={{ width: "25%" }}
+
         />
         <Column
           field="updatedAt"
           header="Última Actualización"
           body={(rowData: LineaRecepcion) => formatDateFH(rowData.updatedAt)}
           sortable
-          style={{ width: "25%" }}
-        />
+
+        /> */}
       </DataTable>
 
       <Dialog
@@ -243,16 +233,17 @@ const LineaRecepcionList = () => {
 `}
         modal
         onHide={hideLineaRecepcionFormDialog}
-      >
-        <LineaRecepcionForm
-          lineaRecepcion={lineaRecepcion}
-          hideLineaRecepcionFormDialog={hideLineaRecepcionFormDialog}
-          lineaRecepcions={lineaRecepcions}
-          setLineaRecepcions={setLineaRecepcions}
-          setLineaRecepcion={setLineaRecepcion}
-          showToast={showToast}
-        />
-      </Dialog>
+        content={() => (
+          <LineaRecepcionForm
+            lineaRecepcion={lineaRecepcion}
+            hideLineaRecepcionFormDialog={hideLineaRecepcionFormDialog}
+            lineaRecepcions={lineaRecepcions}
+            setLineaRecepcions={setLineaRecepcions}
+            setLineaRecepcion={setLineaRecepcion}
+            showToast={showToast}
+          />
+        )}
+      ></Dialog>
     </div>
   );
 };

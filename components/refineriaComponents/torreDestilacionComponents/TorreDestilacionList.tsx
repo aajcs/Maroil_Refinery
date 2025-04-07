@@ -135,7 +135,7 @@ const TorreDestilacionList = () => {
       />
       <Button
         icon="pi pi-trash"
-        severity="warning"
+        severity="danger"
         rounded
         onClick={() => {
           setTorreDestilacion(rowData);
@@ -180,14 +180,14 @@ const TorreDestilacionList = () => {
       >
         <Column body={actionBodyTemplate} headerStyle={{ minWidth: "10rem" }} />
         <Column field="nombre" header="Nombre" />
-        <Column field="ubicacion" header="Ubicación" />
+        {/* <Column field="ubicacion" header="Ubicación" /> */}
         <Column
           field="material"
           header="Material"
           body={materialBodyTemplate}
         />
-        <Column field="estado" header="Estado" />
-        <Column
+        {/* <Column field="estado" header="Estado" /> */}
+        {/* <Column
           field="createdAt"
           header="Fecha de Creación"
           body={(rowData: TorreDestilacion) => formatDateFH(rowData.createdAt)}
@@ -196,7 +196,7 @@ const TorreDestilacionList = () => {
           field="updatedAt"
           header="Última Actualización"
           body={(rowData: TorreDestilacion) => formatDateFH(rowData.updatedAt)}
-        />
+        /> */}
       </DataTable>
 
       <Dialog

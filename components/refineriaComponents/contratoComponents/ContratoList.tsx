@@ -127,7 +127,7 @@ const ContratoList = () => {
       />
       <Button
         icon="pi pi-trash"
-        severity="warning"
+        severity="danger"
         rounded
         onClick={() => {
           setContrato(rowData);

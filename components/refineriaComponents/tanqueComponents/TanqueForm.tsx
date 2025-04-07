@@ -14,6 +14,8 @@ import { useRefineriaStore } from "@/store/refineriaStore";
 import { getProductos } from "@/app/api/productoService";
 import { Producto } from "@/libs/interfaces";
 import { InputSwitch } from "primereact/inputswitch";
+import { useRefineryData } from "@/hooks/useRefineryData";
+import { ProgressSpinner } from "primereact/progressspinner";
 
 type FormData = z.infer<typeof tanqueSchema>;
 
@@ -36,7 +38,7 @@ const materiales = [
   "Queroseno",
   "Petroleo Crudo",
 ];
-const estatusValues = ["true", "false"];
+const estatusValues = ["Activo", "Inactivo", "Mantenimiento"];
 
 const TanqueForm = ({
   tanque,
@@ -46,9 +48,8 @@ const TanqueForm = ({
   showToast,
 }: TanqueFormProps) => {
   const { activeRefineria } = useRefineriaStore();
+  const { productos, loading } = useRefineryData(activeRefineria?.id as string);
   const toast = useRef<Toast | null>(null);
-  const [productos, setProductos] = useState<Producto[]>([]);
-  const [loading, setLoading] = useState(true);
 
   const [submitting, setSubmitting] = useState(false);
   const {
@@ -67,26 +68,6 @@ const TanqueForm = ({
       );
     }
   }, [tanque, setValue]);
-  const fetchData = useCallback(async () => {
-    try {
-      const productosDB = await getProductos();
-      if (productosDB && Array.isArray(productosDB.productos)) {
-        const filteredProductos = productosDB.productos.filter(
-          (producto: Producto) =>
-            producto.idRefineria.id === activeRefineria?.id
-        );
-        setProductos(filteredProductos);
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [activeRefineria]);
-
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
 
   const onSubmit = async (data: FormData) => {
     setSubmitting(true);
@@ -125,159 +106,230 @@ const TanqueForm = ({
       setSubmitting(false); // Desactivar el estado de envío
     }
   };
-
+  console.log("watch", watch());
+  if (loading) {
+    return (
+      <div
+        className="flex justify-content-center align-items-center"
+        style={{ height: "300px" }}
+      >
+        <ProgressSpinner />
+      </div>
+    );
+  }
   return (
     <div>
-      <Toast ref={toast} />
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="grid formgrid p-fluid">
-          <div className="field mb-4 col-12">
-            <label htmlFor="nombre" className="font-medium text-900">
-              Nombre
-            </label>
-            <InputText
-              id="nombre"
-              type="text"
-              className={classNames("w-full", { "p-invalid": errors.nombre })}
-              {...register("nombre")}
-            />
-            {errors.nombre && (
-              <small className="p-error">{errors.nombre.message}</small>
-            )}
-          </div>
-
-          <div className="field mb-4 col-12 md:col-6">
-            <label htmlFor="estado" className="font-medium text-900">
-              Estado
-            </label>
-            <Dropdown
-              id="estado"
-              value={watch("estado")}
-              onChange={(e) => setValue("estado", e.value)}
-              options={estatusValues}
-              placeholder="Seleccionar"
-              className={classNames("w-full", { "p-invalid": errors.estado })}
-            />
-            {errors.estado && (
-              <small className="p-error">{errors.estado.message}</small>
-            )}
-          </div>
-
-          <div className="field mb-4 col-12">
-            <label htmlFor="ubicacion" className="font-medium text-900">
-              Ubicación
-            </label>
-            <InputText
-              id="ubicacion"
-              type="text"
-              className={classNames("w-full", {
-                "p-invalid": errors.ubicacion,
-              })}
-              {...register("ubicacion")}
-            />
-            {errors.ubicacion && (
-              <small className="p-error">{errors.ubicacion.message}</small>
-            )}
-          </div>
-
-          <div className="field mb-4 col-12 sm:col-6 lg:col-4">
-            <label
-              htmlFor="id_contacto.nombre"
-              className="font-medium text-900"
-            >
-              Nombre de Producto
-            </label>
-            <Dropdown
-              id="idProducto.id"
-              value={watch("idProducto")}
-              // {...register("idProducto.id")}
-              onChange={(e) => {
-                setValue("idProducto", e.value);
-              }}
-              options={productos.map((producto) => ({
-                label: producto.nombre,
-                value: {
-                  id: producto.id,
-                  _id: producto.id,
-                  nombre: producto.nombre,
-                  color: producto.color,
-                },
-              }))}
-              placeholder="Seleccionar un producto"
-              className={classNames("w-full", {
-                "p-invalid": errors.idProducto?.nombre,
-              })}
-            />
-            {errors.idProducto?.nombre && (
-              <small className="p-error">
-                {errors.idProducto.nombre.message}
-              </small>
-            )}
-          </div>
-          <div className="field mb-4 col-12 sm:col-6 lg:col-4">
-            <label
-              htmlFor="almacenamientoMateriaPrimaria"
-              className="font-medium text-900"
-            >
-              Almacenamiento de Materia Prima
-            </label>
-            <div>
-              <InputSwitch
-                id="almacenamientoMateriaPrimaria"
-                checked={watch("almacenamientoMateriaPrimaria") ?? false}
-                className={classNames("", {
-                  "p-invalid": errors.almacenamientoMateriaPrimaria,
-                })}
-                {...register("almacenamientoMateriaPrimaria")}
-              />
+        <div className="card p-fluid surface-50 p-3 border-round shadow-2">
+          {/* Header del Formulario */}
+          <div className="mb-2 text-center md:text-left">
+            <div className="border-bottom-2 border-primary pb-2">
+              <h2 className="text-2xl font-bold text-900 mb-2 flex align-items-center justify-content-center md:justify-content-start">
+                <i className="pi pi-check-circle mr-3 text-primary text-3xl"></i>
+                {tanque ? "Modificar Tanque" : "Crear Tanque"}
+              </h2>
             </div>
-            {errors.almacenamientoMateriaPrimaria && (
-              <small className="p-error">
-                {errors.almacenamientoMateriaPrimaria.message}
-              </small>
-            )}
           </div>
 
-          <div className="field mb-4 col-12">
-            <label htmlFor="capacidad" className="font-medium text-900">
-              Capacidad
-            </label>
-            <InputText
-              id="capacidad"
-              type="number"
-              className={classNames("w-full", {
-                "p-invalid": errors.capacidad,
-              })}
-              {...register("capacidad", { valueAsNumber: true })}
-            />
-            {errors.capacidad && (
-              <small className="p-error">{errors.capacidad.message}</small>
-            )}
+          {/* Cuerpo del Formulario */}
+          <div className="grid formgrid row-gap-2">
+            {/* Campo: Nombre */}
+            <div className="col-12 md:col-6 lg:col-4 xl:col-3">
+              <div className="p-2 bg-white border-round shadow-1 surface-card">
+                <label className="block font-medium text-900 mb-3 flex align-items-center">
+                  <i className="pi pi-tag mr-2 text-primary"></i>
+                  Nombre
+                </label>
+                <InputText
+                  id="nombre"
+                  type="text"
+                  className={classNames("w-full", {
+                    "p-invalid": errors.nombre,
+                  })}
+                  {...register("nombre")}
+                />
+                {errors.nombre && (
+                  <small className="p-error block mt-2 flex align-items-center">
+                    <i className="pi pi-exclamation-circle mr-2"></i>
+                    {errors.nombre.message}
+                  </small>
+                )}
+              </div>
+            </div>
+
+            {/* Campo: Ubicación */}
+            <div className="col-12 md:col-6 lg:col-4 xl:col-3">
+              <div className="p-2 bg-white border-round shadow-1 surface-card">
+                <label className="block font-medium text-900 mb-3 flex align-items-center">
+                  <i className="pi pi-map-marker mr-2 text-primary"></i>
+                  Ubicación
+                </label>
+                <InputText
+                  id="ubicacion"
+                  type="text"
+                  className={classNames("w-full", {
+                    "p-invalid": errors.ubicacion,
+                  })}
+                  {...register("ubicacion")}
+                />
+                {errors.ubicacion && (
+                  <small className="p-error block mt-2 flex align-items-center">
+                    <i className="pi pi-exclamation-circle mr-2"></i>
+                    {errors.ubicacion.message}
+                  </small>
+                )}
+              </div>
+            </div>
+
+            {/* Campo: Producto */}
+            <div className="col-12 md:col-6 lg:col-4 xl:col-3">
+              <div className="p-2 bg-white border-round shadow-1 surface-card">
+                <label className="block font-medium text-900 mb-3 flex align-items-center">
+                  <i className="pi pi-box mr-2 text-primary"></i>
+                  Producto
+                </label>
+                <Dropdown
+                  id="idProducto.id"
+                  value={watch("idProducto")}
+                  onChange={(e) => setValue("idProducto", e.value)}
+                  options={productos.map((producto) => ({
+                    label: producto.nombre,
+                    value: {
+                      id: producto.id,
+                      _id: producto.id,
+                      nombre: producto.nombre,
+                      color: producto.color,
+                      posicion: producto.posicion,
+                    },
+                  }))}
+                  placeholder="Seleccionar un producto"
+                  className={classNames("w-full", {
+                    "p-invalid": errors.idProducto?.nombre,
+                  })}
+                />
+                {errors.idProducto?.nombre && (
+                  <small className="p-error block mt-2 flex align-items-center">
+                    <i className="pi pi-exclamation-circle mr-2"></i>
+                    {errors.idProducto.nombre.message}
+                  </small>
+                )}
+              </div>
+            </div>
+
+            {/* Campo: Almacenamiento de Materia Prima */}
+            <div className="col-12 md:col-6 lg:col-4 xl:col-3">
+              <div className="p-2 bg-white border-round shadow-1 surface-card">
+                <label className="block font-medium text-900 mb-3 flex align-items-center">
+                  <i className="pi pi-database mr-2 text-primary"></i>
+                  Almacenamiento de Materia Prima
+                </label>
+                <InputSwitch
+                  id="almacenamientoMateriaPrimaria"
+                  checked={watch("almacenamientoMateriaPrimaria") ?? false}
+                  className={classNames("", {
+                    "p-invalid": errors.almacenamientoMateriaPrimaria,
+                  })}
+                  {...register("almacenamientoMateriaPrimaria")}
+                />
+                {errors.almacenamientoMateriaPrimaria && (
+                  <small className="p-error block mt-2 flex align-items-center">
+                    <i className="pi pi-exclamation-circle mr-2"></i>
+                    {errors.almacenamientoMateriaPrimaria.message}
+                  </small>
+                )}
+              </div>
+            </div>
+
+            {/* Campo: Capacidad */}
+            <div className="col-12 md:col-6 lg:col-4 xl:col-3">
+              <div className="p-2 bg-white border-round shadow-1 surface-card">
+                <label className="block font-medium text-900 mb-3 flex align-items-center">
+                  <i className="pi pi-chart-bar mr-2 text-primary"></i>
+                  Capacidad
+                </label>
+                <InputText
+                  id="capacidad"
+                  type="number"
+                  className={classNames("w-full", {
+                    "p-invalid": errors.capacidad,
+                  })}
+                  {...register("capacidad", { valueAsNumber: true })}
+                />
+                {errors.capacidad && (
+                  <small className="p-error block mt-2 flex align-items-center">
+                    <i className="pi pi-exclamation-circle mr-2"></i>
+                    {errors.capacidad.message}
+                  </small>
+                )}
+              </div>
+            </div>
+
+            {/* Campo: Almacenamiento */}
+            <div className="col-12 md:col-6 lg:col-4 xl:col-3">
+              <div className="p-2 bg-white border-round shadow-1 surface-card">
+                <label className="block font-medium text-900 mb-3 flex align-items-center">
+                  <i className="pi pi-box mr-2 text-primary"></i>
+                  Almacenamiento
+                </label>
+                <InputText
+                  id="almacenamiento"
+                  type="number"
+                  className={classNames("w-full", {
+                    "p-invalid": errors.almacenamiento,
+                  })}
+                  {...register("almacenamiento", { valueAsNumber: true })}
+                />
+                {errors.almacenamiento && (
+                  <small className="p-error block mt-2 flex align-items-center">
+                    <i className="pi pi-exclamation-circle mr-2"></i>
+                    {errors.almacenamiento.message}
+                  </small>
+                )}
+              </div>
+            </div>
+            {/* Campo: Estado */}
+            <div className="col-12 md:col-6 lg:col-4 xl:col-3">
+              <div className="p-2 bg-white border-round shadow-1 surface-card">
+                <label className="block font-medium text-900 mb-3 flex align-items-center">
+                  <i className="pi pi-info-circle mr-2 text-primary"></i>
+                  Estado
+                </label>
+                <Dropdown
+                  id="estado"
+                  value={watch("estado")}
+                  onChange={(e) => setValue("estado", e.value)}
+                  options={estatusValues}
+                  placeholder="Seleccionar"
+                  className={classNames("w-full", {
+                    "p-invalid": errors.estado,
+                  })}
+                />
+                {errors.estado && (
+                  <small className="p-error block mt-2 flex align-items-center">
+                    <i className="pi pi-exclamation-circle mr-2"></i>
+                    {errors.estado.message}
+                  </small>
+                )}
+              </div>
+            </div>
           </div>
 
-          <div className="field mb-4 col-12">
-            <label htmlFor="almacenamiento" className="font-medium text-900">
-              Almacenamiento
-            </label>
-            <InputText
-              id="almacenamiento"
-              type="number"
-              className={classNames("w-full", {
-                "p-invalid": errors.almacenamiento,
-              })}
-              {...register("almacenamiento", { valueAsNumber: true })}
-            />
-            {errors.almacenamiento && (
-              <small className="p-error">{errors.almacenamiento.message}</small>
-            )}
-          </div>
-          <div className="col-12">
+          {/* Botones */}
+          <div className="col-12 flex justify-content-between align-items-center mt-3">
             <Button
               type="submit"
-              disabled={submitting} // Deshabilitar el botón mientras se envía
-              icon={submitting ? "pi pi-spinner pi-spin" : ""} // Mostrar ícono de carga
-              label={tanque ? "Modificar tanque" : "Crear tanque"}
-              className="w-auto mt-3"
+              disabled={submitting}
+              icon={submitting ? "pi pi-spinner pi-spin" : ""}
+              label={tanque ? "Modificar Tanque" : "Crear Tanque"}
+              className="w-auto"
+            />
+
+            <Button
+              type="button"
+              label="Salir"
+              onClick={() => hideTanqueFormDialog()}
+              className="w-auto"
+              severity="danger"
             />
           </div>
         </div>

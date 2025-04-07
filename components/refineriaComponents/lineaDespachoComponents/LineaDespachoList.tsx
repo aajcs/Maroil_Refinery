@@ -128,7 +128,7 @@ const LineaDespachoList = () => {
       />
       <Button
         icon="pi pi-trash"
-        severity="warning"
+        severity="danger"
         rounded
         onClick={() => {
           setLineaDespacho(rowData);
@@ -162,26 +162,16 @@ const LineaDespachoList = () => {
         emptyMessage="No hay lineaDespachos disponibles"
       >
         <Column body={actionBodyTemplate} headerStyle={{ minWidth: "10rem" }} />
-        <Column
-          field="nombre"
-          header="Nombre"
-          sortable
-          style={{ width: "25%" }}
-        />
-        <Column
+        <Column field="nombre" header="Nombre" sortable />
+        {/* <Column
           field="ubicacion"
           header="Ubicación"
           sortable
-          style={{ width: "25%" }}
-        />
+         
+        /> */}
 
-        <Column
-          field="estado"
-          header="Estado"
-          sortable
-          style={{ width: "25%" }}
-        />
-        <Column
+        <Column field="estado" header="Estado" sortable />
+        {/* <Column
           field="createdAt"
           header="Fecha de Creación"
           body={(rowData: LineaDespacho) => formatDateFH(rowData.createdAt)}
@@ -194,7 +184,7 @@ const LineaDespachoList = () => {
           body={(rowData: LineaDespacho) => formatDateFH(rowData.updatedAt)}
           sortable
           style={{ width: "25%" }}
-        />
+        /> */}
       </DataTable>
 
       <Dialog
@@ -243,16 +233,17 @@ const LineaDespachoList = () => {
 `}
         modal
         onHide={hideLineaDespachoFormDialog}
-      >
-        <LineaDespachoForm
-          lineaDespacho={lineaDespacho}
-          hideLineaDespachoFormDialog={hideLineaDespachoFormDialog}
-          lineaDespachos={lineaDespachos}
-          setLineaDespachos={setLineaDespachos}
-          setLineaDespacho={setLineaDespacho}
-          showToast={showToast}
-        />
-      </Dialog>
+        content={() => (
+          <LineaDespachoForm
+            lineaDespacho={lineaDespacho}
+            hideLineaDespachoFormDialog={hideLineaDespachoFormDialog}
+            lineaDespachos={lineaDespachos}
+            setLineaDespachos={setLineaDespachos}
+            setLineaDespacho={setLineaDespacho}
+            showToast={showToast}
+          />
+        )}
+      ></Dialog>
     </div>
   );
 };

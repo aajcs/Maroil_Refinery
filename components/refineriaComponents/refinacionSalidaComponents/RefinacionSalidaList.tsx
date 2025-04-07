@@ -141,7 +141,7 @@ const RefinacionSalidaList = () => {
       />
       <Button
         icon="pi pi-trash"
-        severity="warning"
+        severity="danger"
         rounded
         onClick={() => {
           setRefinacionSalida(rowData);

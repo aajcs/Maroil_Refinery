@@ -119,7 +119,7 @@ const ProductoList = () => {
       />
       <Button
         icon="pi pi-trash"
-        severity="warning"
+        severity="danger"
         rounded
         onClick={() => {
           setProducto(rowData);

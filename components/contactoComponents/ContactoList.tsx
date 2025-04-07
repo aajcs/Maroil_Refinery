@@ -120,7 +120,7 @@ const ContactoList = () => {
       />
       <Button
         icon="pi pi-trash"
-        severity="warning"
+        severity="danger"
         rounded
         onClick={() => {
           setContacto(rowData);

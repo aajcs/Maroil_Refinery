@@ -121,7 +121,7 @@ const RecepcionList = () => {
       />
       <Button
         icon="pi pi-trash"
-        severity="warning"
+        severity="danger"
         rounded
         onClick={() => {
           setRecepcion(rowData);
