@@ -20,9 +20,9 @@ const ModeladoRefineriaLineaDespacho = ({
   const [animationKey, setAnimationKey] = useState(0);
 
   const hasAssociatedDespacho = despachos.some(
-    (despacho) =>
-      despacho.idLineaDespacho?.id === lineaDespacho.id &&
-      despacho.estado === "true"
+    (despacho) => despacho.idLineaDespacho?.id === lineaDespacho.id
+    // &&
+    //   despacho.estado === "true"
   );
   useEffect(() => {
     setAnimationKey((prev) => prev + 1);
