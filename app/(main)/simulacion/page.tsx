@@ -6,7 +6,7 @@ const SimulacionPage = () => {
   return (
     <>
       <Simulador />
-      {/* <SimulatorPage /> */}
+      <SimulatorPage />
     </>
   );
 };

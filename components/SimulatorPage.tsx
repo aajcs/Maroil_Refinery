@@ -174,8 +174,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <div className="grid formgrid row-gap-2 ">
-          {/* Fila 1 */}
+        {/* <div className="grid formgrid row-gap-2 ">
           <div className="col-12 lg:col-6">
             <SimulatorForm
               onCalculate={handleCalculate}
@@ -183,9 +182,8 @@ export default function Home() {
             />
           </div>
 
-          {/* Resultados */}
           <div className="col-12 lg:col-6">{renderResults()}</div>
-        </div>
+        </div> */}
       </div>
     </div>
   );
