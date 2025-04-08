@@ -28,6 +28,7 @@ import {
   updateRefinacionSalida,
 } from "@/app/api/refinacionSalidaService";
 import { useRefineryData } from "@/hooks/useRefineryData";
+import { InputTextarea } from "primereact/inputtextarea";
 
 type FormData = z.infer<typeof refinacionSalidaSchema>;
 
@@ -60,9 +61,8 @@ const RefinacionSalidaForm = ({
   showToast,
 }: RefinacionSalidaFormProps) => {
   const { activeRefineria } = useRefineriaStore();
-  const { productos, loading, tanques, refinacions } = useRefineryData(
-    activeRefineria?.id || ""
-  );
+  const { productos, loading, tanques, refinacions, torresDestilacion } =
+    useRefineryData(activeRefineria?.id || "");
   const toast = useRef<Toast | null>(null);
 
   const [submitting, setSubmitting] = useState(false);
@@ -159,250 +159,282 @@ const RefinacionSalidaForm = ({
 
   return (
     <div>
-      <Toast ref={toast} />
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="grid formgrid p-fluid">
-          {/* Campo: Refinación */}
-          <div className="field mb-4 col-12 sm:col-6 lg:col-4">
-            <label htmlFor="idRefinacion.id" className="font-medium text-900">
-              Refinación
-            </label>
-            <Dropdown
-              id="idRefinacion.id"
-              value={watch("idRefinacion")}
-              onChange={(e) => {
-                setValue("idRefinacion", e.value);
-              }}
-              options={refinacions.map((refinacion) => ({
-                label: `Refinación #${refinacion.numeroRefinacion} - ${refinacion.descripcion}`,
-                value: {
-                  id: refinacion.id,
-                  numeroRefinacion: refinacion.numeroRefinacion,
-                  descripcion: refinacion.descripcion,
-                  idTorre: refinacion.idTorre,
-                  idProducto: refinacion.idProducto,
-                  cantidadTotal: refinacion.cantidadTotal,
-                  _id: refinacion.id,
-                  derivado: refinacion.derivado,
-                },
-              }))}
-              placeholder="Seleccionar una refinación"
-              className={classNames("w-full", {
-                "p-invalid": errors.idRefinacion?.id,
-              })}
-            />
-            {errors.idRefinacion?.id && (
-              <small className="p-error">
-                {errors.idRefinacion.id.message}
-              </small>
-            )}
-          </div>
-          {/* Campo: Descripción */}
-          <div className="field mb-4 col-12 sm:col-6 lg:4">
-            <label htmlFor="descripcion" className="font-medium text-900">
-              Descripción
-            </label>
-            <InputText
-              id="descripcion"
-              value={watch("descripcion")}
-              {...register("descripcion")}
-              className={classNames("w-full", {
-                "p-invalid": errors.descripcion,
-              })}
-            />
-            {errors.descripcion && (
-              <small className="p-error">{errors.descripcion.message}</small>
-            )}
+        <div className="card p-fluid surface-50 p-3 border-round shadow-2">
+          {/* Header del Formulario */}
+          <div className="mb-2 text-center md:text-left">
+            <div className="border-bottom-2 border-primary pb-2">
+              <h2 className="text-2xl font-bold text-900 mb-2 flex align-items-center justify-content-center md:justify-content-start">
+                <i className="pi pi-check-circle mr-3 text-primary text-3xl"></i>
+                {refinacionSalida
+                  ? "Modificar Refinación de Salida"
+                  : "Crear Refinación de Salida"}
+              </h2>
+            </div>
           </div>
 
-          {/* Campo: Nombre del Producto */}
-          <div className="field mb-4 col-12 sm:col-6 lg:col-4">
-            <label htmlFor="idProducto.id" className="font-medium text-900">
-              Nombre del Producto
-            </label>
-            <Dropdown
-              id="idProducto.id"
-              value={watch("idProducto")}
-              onChange={(e) => {
-                setValue("idProducto", e.value);
-              }}
-              options={productos.map((producto) => ({
-                label: producto.nombre,
-                value: {
-                  id: producto.id,
-                  _id: producto.id,
-                  nombre: producto.nombre,
-                },
-              }))}
-              placeholder="Seleccionar un producto"
-              className={classNames("w-full", {
-                "p-invalid": errors.idProducto?.nombre,
-              })}
-            />
-            {errors.idProducto?.nombre && (
-              <small className="p-error">
-                {errors.idProducto.nombre.message}
-              </small>
-            )}
-          </div>
+          {/* Cuerpo del Formulario */}
+          <div className="grid formgrid row-gap-2">
+            {/* Derivados de Torres de Destilación */}
+            <div className="col-12">
+              {torresDestilacion.length > 0 &&
+                torresDestilacion.map((torre) => (
+                  <div key={torre.id} className="mb-4">
+                    <h4 className="text-lg font-semibold text-800 mb-3">
+                      {torre.nombre}
+                    </h4>
 
-          {/* Campo: Nombre del Tanque */}
-          <div className="field mb-4 col-12 sm:col-6 lg:col-4">
-            <label htmlFor="idTanque.id" className="font-medium text-900">
-              Nombre de Tanque
-            </label>
-            <Dropdown
-              id="idTanque.id"
-              value={watch("idTanque")}
-              onChange={(e) => {
-                setValue("idTanque", e.value);
-              }}
-              options={tanques.map((tanque) => ({
-                label: tanque.nombre,
-                value: {
-                  id: tanque.id,
-                  nombre: tanque.nombre,
-                  _id: tanque.id,
-                },
-              }))}
-              placeholder="Seleccionar un tanque"
-              className={classNames("w-full", {
-                "p-invalid": errors.idTanque?.nombre,
-              })}
-            />
-            {errors.idTanque?.nombre && (
-              <small className="p-error">
-                {errors.idTanque.nombre.message}
-              </small>
-            )}
-          </div>
-          {/* Campo: Cantidad Total */}
-          <div className="field mb-4 col-12 sm:col-6 lg:col-4">
-            <label htmlFor="cantidadTotal" className="font-medium text-900">
-              Cantidad Total
-            </label>
-            <Controller
-              name="cantidadTotal"
-              control={control}
-              render={({ field }) => (
-                <InputNumber
-                  id="cantidadTotal"
-                  value={field.value}
-                  onValueChange={(e) => field.onChange(e.value)}
+                    {/* Materia Prima */}
+                    <div className="grid">
+                      <div className="col-3 md:col-3">
+                        <label className="block font-medium text-900 mb-3 flex align-items-center">
+                          <i className="pi pi-tag mr-2 text-primary"></i>
+                          Producto: Materia prima
+                        </label>
+                      </div>
+                      <div className="col-12 md:col-6 lg:col-4">
+                        <div className="p-2 bg-white border-round shadow-1 surface-card">
+                          <label className="block font-medium text-900 mb-3 flex align-items-center">
+                            <i className="pi pi-box mr-2 text-primary"></i>
+                            Nombre de Tanque
+                          </label>
+                          <Dropdown
+                            id="idTanque.id"
+                            value={watch("idTanque")}
+                            onChange={(e) => setValue("idTanque", e.value)}
+                            options={tanques
+                              .filter(
+                                (tanque: Tanque) =>
+                                  tanque.almacenamientoMateriaPrimaria
+                              )
+                              .map((tanque) => ({
+                                label: `${tanque.nombre} - ${
+                                  tanque.idProducto?.nombre || "Sin producto"
+                                }`,
+                                value: {
+                                  id: tanque.id,
+                                  nombre: tanque.nombre,
+                                  _id: tanque.id,
+                                },
+                              }))}
+                            placeholder="Seleccionar un tanque"
+                            className={classNames("w-full", {
+                              "p-invalid": errors.idTanque?.nombre,
+                            })}
+                          />
+                          {errors.idTanque?.nombre && (
+                            <small className="p-error block mt-2 flex align-items-center">
+                              <i className="pi pi-exclamation-circle mr-2"></i>
+                              {errors.idTanque.nombre.message}
+                            </small>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="col-12 md:col-6 lg:col-4">
+                        <div className="p-2 bg-white border-round shadow-1 surface-card">
+                          <label className="block font-medium text-900 mb-3 flex align-items-center">
+                            <i className="pi pi-sort-numeric-up mr-2 text-primary"></i>
+                            Cantidad Total
+                          </label>
+                          <Controller
+                            name="cantidadTotal"
+                            control={control}
+                            render={({ field }) => (
+                              <InputNumber
+                                id="cantidadTotal"
+                                value={field.value}
+                                onValueChange={(e) => field.onChange(e.value)}
+                                className={classNames("w-full", {
+                                  "p-invalid": errors.cantidadTotal,
+                                })}
+                                min={0}
+                                locale="es"
+                              />
+                            )}
+                          />
+                          {errors.cantidadTotal && (
+                            <small className="p-error block mt-2 flex align-items-center">
+                              <i className="pi pi-exclamation-circle mr-2"></i>
+                              {errors.cantidadTotal.message}
+                            </small>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex">
+                      {/* Materiales */}
+                      {torre.material.map((material) => (
+                        <div
+                          key={material.idProducto?.id}
+                          className=" align-items-center mt-4"
+                        >
+                          <div className="col-12">
+                            <label className="block font-medium text-900 mb-3 flex align-items-center">
+                              <i className="pi pi-tag mr-2 text-primary"></i>
+                              Producto: {material.idProducto?.nombre}
+                            </label>
+                          </div>
+
+                          <div className="col-12 ">
+                            <div className="p-2 bg-white border-round shadow-1 surface-card">
+                              <label className="block font-medium text-900 mb-3 flex align-items-center">
+                                <i className="pi pi-box mr-2 text-primary"></i>
+                                Nombre de Tanque
+                              </label>
+                              <Dropdown
+                                id="idTanque.id"
+                                value={watch("idTanque")}
+                                onChange={(e) => setValue("idTanque", e.value)}
+                                options={tanques
+                                  .filter(
+                                    (tanque: Tanque) =>
+                                      tanque.idProducto?.id ===
+                                      material.idProducto?.id
+                                  )
+                                  .map((tanque) => ({
+                                    label: `${tanque.nombre} - ${
+                                      tanque.idProducto?.nombre ||
+                                      "Sin producto"
+                                    }`,
+                                    value: {
+                                      id: tanque.id,
+                                      nombre: tanque.nombre,
+                                      _id: tanque.id,
+                                    },
+                                  }))}
+                                placeholder="Seleccionar un tanque"
+                                className={classNames("w-full", {
+                                  "p-invalid": errors.idTanque?.nombre,
+                                })}
+                              />
+                              {errors.idTanque?.nombre && (
+                                <small className="p-error block mt-2 flex align-items-center">
+                                  <i className="pi pi-exclamation-circle mr-2"></i>
+                                  {errors.idTanque.nombre.message}
+                                </small>
+                              )}
+                            </div>
+                          </div>
+
+                          <div className="col-12  ">
+                            <div className="p-2 bg-white border-round shadow-1 surface-card">
+                              <label className="block font-medium text-900 mb-3 flex align-items-center">
+                                <i className="pi pi-sort-numeric-up mr-2 text-primary"></i>
+                                Cantidad Total
+                              </label>
+                              <Controller
+                                name="cantidadTotal"
+                                control={control}
+                                render={({ field }) => (
+                                  <InputNumber
+                                    id="cantidadTotal"
+                                    value={field.value}
+                                    onValueChange={(e) =>
+                                      field.onChange(e.value)
+                                    }
+                                    className={classNames("w-full", {
+                                      "p-invalid": errors.cantidadTotal,
+                                    })}
+                                    min={0}
+                                    locale="es"
+                                  />
+                                )}
+                              />
+                              {errors.cantidadTotal && (
+                                <small className="p-error block mt-2 flex align-items-center">
+                                  <i className="pi pi-exclamation-circle mr-2"></i>
+                                  {errors.cantidadTotal.message}
+                                </small>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+            </div>
+
+            {/* Fecha de Corte */}
+            <div className="col-12 md:col-6 lg:col-4">
+              <div className="p-2 bg-white border-round shadow-1 surface-card">
+                <label className="block font-medium text-900 mb-3 flex align-items-center">
+                  <i className="pi pi-calendar mr-2 text-primary"></i>
+                  Fecha de Corte
+                </label>
+                <Calendar
+                  id="fechaFin"
+                  value={
+                    watch("fechaFin")
+                      ? new Date(watch("fechaFin") as string | Date)
+                      : undefined
+                  }
+                  {...register("fechaFin")}
+                  showTime
+                  hourFormat="24"
                   className={classNames("w-full", {
-                    "p-invalid": errors.cantidadTotal,
+                    "p-invalid": errors.fechaFin,
                   })}
-                  min={0}
                   locale="es"
                 />
-              )}
-            />
-            {errors.cantidadTotal && (
-              <small className="p-error">{errors.cantidadTotal.message}</small>
-            )}
-          </div>
-          {/* Campo: Operador */}
-          <div className="field mb-4 col-12 sm:col-6 lg:col-4">
-            <label htmlFor="operador" className="font-medium text-900">
-              Operador
-            </label>
-            <InputText
-              id="operador"
-              value={watch("operador")}
-              {...register("operador")}
-              className={classNames("w-full", {
-                "p-invalid": errors.operador,
-              })}
-            />
-            {errors.operador && (
-              <small className="p-error">{errors.operador.message}</small>
-            )}
+                {errors.fechaFin && (
+                  <small className="p-error block mt-2 flex align-items-center">
+                    <i className="pi pi-exclamation-circle mr-2"></i>
+                    {errors.fechaFin.message}
+                  </small>
+                )}
+              </div>
+            </div>
+
+            {/* Observación */}
+            <div className="col-12 md:col-6 lg:col-4">
+              <div className="p-2 bg-white border-round shadow-1 surface-card">
+                <label className="block font-medium text-900 mb-3 flex align-items-center">
+                  <i className="pi pi-pencil mr-2 text-primary"></i>
+                  Observación
+                </label>
+                <InputTextarea
+                  id="descripcion"
+                  value={watch("descripcion")}
+                  {...register("descripcion")}
+                  className={classNames("w-full", {
+                    "p-invalid": errors.descripcion,
+                  })}
+                />
+                {errors.descripcion && (
+                  <small className="p-error block mt-2 flex align-items-center">
+                    <i className="pi pi-exclamation-circle mr-2"></i>
+                    {errors.descripcion.message}
+                  </small>
+                )}
+              </div>
+            </div>
           </div>
 
-          {/* Campo: Fecha de Fin */}
-          <div className="field mb-4 col-12 sm:col-6 lg:col-4">
-            <label htmlFor="fechaFin" className="font-medium text-900">
-              Fecha de Fin
-            </label>
-            <Calendar
-              id="fechaFin"
-              value={
-                watch("fechaFin")
-                  ? new Date(watch("fechaFin") as string | Date)
-                  : undefined
+          {/* Botones */}
+          <div className="col-12 flex justify-content-between align-items-center mt-3">
+            <Button
+              type="submit"
+              disabled={submitting}
+              icon={submitting ? "pi pi-spinner pi-spin" : ""}
+              label={
+                refinacionSalida
+                  ? "Modificar Refinación de Salida"
+                  : "Crear Refinación de Salida"
               }
-              {...register("fechaFin")}
-              showTime
-              hourFormat="24"
-              className={classNames("w-full", {
-                "p-invalid": errors.fechaFin,
-              })}
-              locale="es"
+              className="w-auto"
             />
-            {errors.fechaFin && (
-              <small className="p-error">{errors.fechaFin.message}</small>
-            )}
-          </div>
-          {/* Campo: estadoRefinacionSalida */}
-          <div className="field mb-4 col-12 sm:col-6 lg:col-4">
-            <label
-              htmlFor="estadoRefinacionSalida"
-              className="font-medium text-900"
-            >
-              Estado de Refinación
-            </label>
-            <Dropdown
-              id="estadoRefinacionSalida"
-              value={watch("estadoRefinacionSalida")}
-              {...register("estadoRefinacionSalida")}
-              options={estadoRefinacionSalidaValues.map((value) => ({
-                label: value,
-                value,
-              }))}
-              placeholder="Seleccionar estado de refinación"
-              className={classNames("w-full", {
-                "p-invalid": errors.estadoRefinacionSalida,
-              })}
-            />
-            {errors.estadoRefinacionSalida && (
-              <small className="p-error">
-                {errors.estadoRefinacionSalida.message}
-              </small>
-            )}
-          </div>
 
-          {/* Campo: Estado */}
-          <div className="field mb-4 col-12 sm:col-6 lg:col-4">
-            <label htmlFor="estado" className="font-medium text-900">
-              Estado
-            </label>
-            <Dropdown
-              id="estado"
-              value={watch("estado")}
-              {...register("estado")}
-              options={estatusValues.map((value) => ({
-                label: value,
-                value,
-              }))}
-              placeholder="Seleccionar estado"
-              className={classNames("w-full", { "p-invalid": errors.estado })}
+            <Button
+              type="button"
+              label="Salir"
+              onClick={() => hideRefinacionSalidaFormDialog()}
+              className="w-auto"
+              severity="danger"
             />
-            {errors.estado && (
-              <small className="p-error">{errors.estado.message}</small>
-            )}
           </div>
-        </div>
-
-        <div className="col-12">
-          <Button
-            type="submit"
-            disabled={submitting} // Deshabilitar el botón mientras se envía
-            icon={submitting ? "pi pi-spinner pi-spin" : ""} // Mostrar ícono de carga
-            label={
-              refinacionSalida ? "Modificar Refinación" : "Crear Refinación"
-            }
-            className="w-auto mt-3"
-          />
         </div>
       </form>
     </div>

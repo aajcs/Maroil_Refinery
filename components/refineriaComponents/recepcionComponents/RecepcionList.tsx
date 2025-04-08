@@ -1,6 +1,5 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
 import { FilterMatchMode } from "primereact/api";
 import { Button } from "primereact/button";
 import { Column } from "primereact/column";
@@ -25,7 +24,6 @@ const RecepcionList = () => {
   const [deleteProductDialog, setDeleteProductDialog] = useState(false);
   const [recepcionFormDialog, setRecepcionFormDialog] = useState(false);
 
-  const router = useRouter();
   const dt = useRef(null);
   const toast = useRef<Toast | null>(null);
 

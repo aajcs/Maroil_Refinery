@@ -114,6 +114,23 @@ const ChequeoCalidadForm = ({
     }
   }, [watch("aplicar.tipo"), tanques, recepcions, despachos]);
   useEffect(() => {
+    console.log("entro aqui");
+    const referenciaSeleccionada = watch("aplicar.idReferencia");
+    console.log("referenciaSeleccionada", referenciaSeleccionada);
+    if (referenciaSeleccionada) {
+      const productoRelacionado = productos.find(
+        (producto) => producto.id === referenciaSeleccionada.id
+      );
+      if (productoRelacionado) {
+        setValue("idProducto", {
+          id: productoRelacionado.id,
+          nombre: productoRelacionado.nombre,
+          _id: productoRelacionado.id,
+        });
+      }
+    }
+  }, [watch("aplicar.idReferencia"), productos, setValue]);
+  useEffect(() => {
     if (chequeoCalidad) {
       Object.keys(chequeoCalidad).forEach((key) =>
         setValue(key as keyof FormData, chequeoCalidad[key])
@@ -323,6 +340,7 @@ const ChequeoCalidadForm = ({
                       className="w-full"
                       showClear
                       filter
+                      disabled
                     />
                   )}
                 />

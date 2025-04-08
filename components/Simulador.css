@@ -268,8 +268,3 @@ input[type="number"] {
   justify-content: center;
   /* width: 100%; */
 }
-
-.probando.p-card-body.p-card-content {
-  padding: 0.5rem !important;
-  background: red;
-}

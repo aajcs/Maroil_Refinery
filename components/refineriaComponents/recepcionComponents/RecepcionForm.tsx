@@ -268,7 +268,9 @@ const RecepcionForm = ({
                   currentState: string
                 ) => string[]
               }
-              contratos={contratos}
+              contratos={contratos.filter(
+                (contrato) => contrato.tipoContrato === "Compra"
+              )}
               truncateText={truncateText}
               register={register}
               setValue={setValue}
