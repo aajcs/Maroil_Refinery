@@ -342,6 +342,7 @@ export interface Producto {
   color: string;
   estado: boolean;
   eliminado: boolean;
+  tipoMaterial: string;
   createdAt: string;
   updatedAt: string;
   id: string;
@@ -598,4 +599,46 @@ export interface Rendimiento {
   costoVenta?: number; // Costo de venta
   convenio?: number; // Costo de convenio
   porcentaje?: number; // Porcentaje de rendimiento
+}
+
+export interface CorteRefinacion {
+  idRefineria: {
+    _id: string;
+    nombre: string;
+    id: string;
+  };
+  numeroCorteRefinacion: number;
+  corteTorre: Array<{
+    idTorre: {
+      _id: string;
+      nombre: string;
+      id: string;
+    };
+    detalles: Array<{
+      idTanque: {
+        _id: string;
+        nombre: string;
+        id: string;
+      };
+      idProducto: {
+        _id: string;
+        nombre: string;
+        id: string;
+      };
+      cantidad: number;
+      _id: string;
+    }>;
+    _id: string;
+  }>;
+  fechaCorte: string;
+  observacion: string;
+  idOperador: {
+    nombre: string;
+    id: string;
+  };
+  eliminado: boolean;
+  estado: string;
+  createdAt: string;
+  updatedAt: string;
+  id: string;
 }

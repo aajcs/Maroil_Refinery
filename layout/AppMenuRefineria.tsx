@@ -96,6 +96,11 @@ const AppMenuRefineria = () => {
           icon: "pi pi-fw pi-plus",
           to: "/refineria/refinacion-salida",
         },
+        {
+          label: "Corte de Refinación",
+          icon: "pi pi-fw pi-plus",
+          to: "/refineria/corte-refinacion",
+        },
       ],
     },
     // {

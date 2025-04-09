@@ -11,6 +11,7 @@ import {
   Contacto,
   LineaDespacho,
   Despacho,
+  CorteRefinacion,
 } from "@/libs/interfaces";
 import { getTanques } from "@/app/api/tanqueService";
 import { getTorresDestilacion } from "@/app/api/torreDestilacionService";
@@ -25,6 +26,7 @@ import { getBrent } from "@/app/api/brentService";
 import { getLineaDespachos } from "@/app/api/lineaDespachoService";
 import { getDespachos } from "@/app/api/despachoService";
 import { getOperadors } from "@/app/api/operadorService";
+import { getCorteRefinacions } from "@/app/api/corteRefinacionService";
 
 export const useRefineryData = (
   activeRefineriaId: string,
@@ -46,6 +48,9 @@ export const useRefineryData = (
   const [contactos, setContactos] = useState<Contacto[]>([]);
   const [brent, setBrent] = useState<any | null>(null);
   const [operadors, setOperadors] = useState<any>([]);
+  const [corteRefinacions, setCorteRefinacions] = useState<CorteRefinacion[]>(
+    []
+  );
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -63,6 +68,7 @@ export const useRefineryData = (
         tipoProductosDB,
         contactosDB,
         operadorDB,
+        corteRefinacionDB,
         // brent,
       ] = await Promise.all([
         getTanques(),
@@ -77,6 +83,7 @@ export const useRefineryData = (
         getTipoProductos(),
         getContactos(),
         getOperadors(),
+        getCorteRefinacions(),
         // getBrent(),
       ]);
 
@@ -149,6 +156,12 @@ export const useRefineryData = (
           (operador: any) => operador.idRefineria?.id === activeRefineriaId
         ) || [];
 
+      const filteredCorteRefinacion =
+        corteRefinacionDB?.corteRefinacions?.filter(
+          (corteRefinacion: CorteRefinacion) =>
+            corteRefinacion.idRefineria?.id === activeRefineriaId
+        ) || [];
+
       setTanques(filteredTanques);
       setTorresDestilacion(filteredTorresDestilacion);
       setLineaRecepcions(filteredLineaRecepcions);
@@ -161,7 +174,9 @@ export const useRefineryData = (
       setTipoProductos(filterdTipoProductos);
       setContactos(filteredContactos);
       setOperadors(filteredOperador);
+
       setBrent(brent);
+      setCorteRefinacions(filteredCorteRefinacion);
     } catch (error) {
       console.error("Error al obtener los datos:", error);
     } finally {
@@ -209,5 +224,6 @@ export const useRefineryData = (
     contactos,
     loading,
     operadors,
+    corteRefinacions,
   };
 };
