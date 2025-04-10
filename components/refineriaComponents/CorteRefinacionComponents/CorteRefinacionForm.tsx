@@ -87,7 +87,7 @@ const CorteRefinacionForm = ({
       Object.keys(corteRefinacion).forEach((key) =>
         setValue(
           key as keyof FormData,
-          corteRefinacion[key as keyof CorteRefinacion]
+          corteRefinacion[key as keyof CorteRefinacion] as any
         )
       );
     }
@@ -380,7 +380,11 @@ const CorteRefinacionForm = ({
                                   )
                                   .map((tanque) => ({
                                     label: tanque.nombre,
-                                    value: tanque,
+                                    value: {
+                                      id: tanque.id,
+                                      nombre: tanque.nombre,
+                                      _id: tanque.id,
+                                    },
                                   }))}
                                 placeholder="Seleccionar un tanque"
                                 className={classNames("w-full", {
@@ -396,9 +400,9 @@ const CorteRefinacionForm = ({
                                 <small className="p-error block mt-2 flex align-items-center">
                                   <i className="pi pi-exclamation-circle mr-2"></i>
                                   {
-                                    errors.corteTorre[torreIndex].detalles[
+                                    errors?.corteTorre[torreIndex]?.detalles?.[
                                       materialIndex
-                                    ].idTanque.message
+                                    ]?.idTanque?.message
                                   }
                                 </small>
                               )}
@@ -437,9 +441,9 @@ const CorteRefinacionForm = ({
                                 <small className="p-error block mt-2 flex align-items-center">
                                   <i className="pi pi-exclamation-circle mr-2"></i>
                                   {
-                                    errors.corteTorre[torreIndex].detalles[
-                                      materialIndex
-                                    ].cantidad.message
+                                    errors?.corteTorre?.[torreIndex]
+                                      ?.detalles?.[materialIndex]?.cantidad
+                                      ?.message
                                   }
                                 </small>
                               )}
