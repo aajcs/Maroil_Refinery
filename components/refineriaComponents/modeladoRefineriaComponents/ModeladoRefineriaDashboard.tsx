@@ -35,6 +35,7 @@ const ModeladoRefineriaDashboard = () => {
     refinacions,
     lineaDespachos,
     despachos,
+    corteRefinacions,
   } = useRefineryData(
     activeRefineria?.id || "",
     recepcionModificado || undefined // Pasa recepcionModificado como dependencia
@@ -240,6 +241,7 @@ const ModeladoRefineriaDashboard = () => {
                   <ModeladoRefineriaTorre
                     torre={torre}
                     refinacions={refinacions}
+                    corteRefinacions={corteRefinacions}
                   />
                   {/* <ModeladoRefineriaTorreSVG /> */}
                 </div>

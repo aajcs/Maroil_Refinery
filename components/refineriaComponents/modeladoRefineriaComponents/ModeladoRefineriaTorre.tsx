@@ -7,7 +7,7 @@ import React, {
 } from "react";
 import ModeladoRefineriaTorreSVG from "./ModeladoRefineriaTorreSVG";
 import ModeladoRefineriaTuberiaMaterial from "./ModeladoRefineriaTuberiaMaterial";
-import { Refinacion, TorreDestilacion } from "@/libs/interfaces";
+import { CorteRefinacion, TorreDestilacion } from "@/libs/interfaces";
 
 interface TorreSection {
   name: string | undefined;
@@ -20,23 +20,207 @@ interface TorreSection {
 
 interface ModeladoRefineriaTorreProps extends SVGProps<SVGSVGElement> {
   torre: TorreDestilacion;
-  refinacions?: Refinacion[];
+  corteRefinacions?: CorteRefinacion[];
 }
 
 const TOWER_HEIGHT = 380;
 const TOWER_WIDTH = 100;
 const TOWER_X = 150;
 const TOWER_Y = 80;
+interface DailyMetrics {
+  date: string;
+  products: {
+    id: string;
+    name: string;
+    expected: number;
+    actual: number;
+    performance: number;
+    difference: number;
+  }[];
+}
 
+const calculateDailyProduction = (
+  tower: TorreDestilacion,
+  cuts: CorteRefinacion[]
+): DailyMetrics[] => {
+  const sortedCuts = [...cuts].sort(
+    (a, b) =>
+      new Date(a.fechaCorte).getTime() - new Date(b.fechaCorte).getTime()
+  );
+
+  const dailyResults: DailyMetrics[] = [];
+
+  for (let i = 1; i < sortedCuts.length; i++) {
+    const prev = sortedCuts[i - 1];
+    const current = sortedCuts[i];
+
+    const startDate = new Date(prev.fechaCorte);
+    const endDate = new Date(current.fechaCorte);
+    const hoursDiff = Math.abs(endDate.getTime() - startDate.getTime()) / 36e5;
+
+    // Agrupar por día calendario
+    const dateKey = endDate.toISOString().split("T")[0];
+
+    const dailyEntry: DailyMetrics = {
+      date: dateKey,
+      products: [],
+    };
+
+    tower.material.forEach((material) => {
+      const productId = material.idProducto.id;
+      const expectedDaily = tower.capacidad * (material.porcentaje / 100);
+      const expected = expectedDaily * (hoursDiff / 24);
+
+      const prevQty = getQuantity(prev, tower.id, productId);
+      const currentQty = getQuantity(current, tower.id, productId);
+      const actual = currentQty - prevQty;
+
+      const performance = (actual / expected) * 100;
+
+      dailyEntry.products.push({
+        id: productId,
+        name: material.idProducto.nombre,
+        expected,
+        actual,
+        performance: isNaN(performance) ? 0 : performance,
+        difference: actual - expected,
+      });
+    });
+
+    dailyResults.push(dailyEntry);
+  }
+
+  return dailyResults;
+};
+const getProcessedRawMaterial = (
+  cut: CorteRefinacion,
+  towerId: string
+): number => {
+  const torreCut = cut.corteTorre.find((ct) => ct.idTorre.id === towerId);
+  if (!torreCut) return 0;
+
+  const rawMaterial = torreCut.detalles.find(
+    (d) => d.idProducto?.tipoMaterial === "Materia Prima"
+  );
+
+  return rawMaterial?.cantidad || 0;
+};
+
+const calculateProductionMetrics = (
+  tower: TorreDestilacion,
+  cuts: CorteRefinacion[]
+): ProductionMetrics[] => {
+  const sortedCuts = [...cuts].sort(
+    (a, b) =>
+      new Date(a.fechaCorte).getTime() - new Date(b.fechaCorte).getTime()
+  );
+
+  return sortedCuts.slice(1).map((currentCut, index) => {
+    const prevCut = sortedCuts[index];
+    const timeDiffHours =
+      Math.abs(
+        new Date(currentCut.fechaCorte).getTime() -
+          new Date(prevCut.fechaCorte).getTime()
+      ) / 36e5;
+
+    // Calcular materia prima procesada
+    const currentRaw = getProcessedRawMaterial(currentCut, tower.id);
+    const prevRaw = getProcessedRawMaterial(prevCut, tower.id);
+    console.log("currentRaw", currentRaw);
+    console.log("prevRaw", prevRaw);
+    const processedRaw = currentRaw - prevRaw;
+    console.log("processedRaw", processedRaw);
+
+    // Calcular métricas por producto
+    const productsMetrics = tower.material.map((material) => {
+      const productId = material.idProducto.id;
+
+      // Obtener cantidades del producto derivado
+      const getDerivedQty = (cut: CorteRefinacion) => {
+        const torreCut = cut.corteTorre.find(
+          (ct) => ct.idTorre.id === tower.id
+        );
+        const product = torreCut?.detalles.find(
+          (d) =>
+            d.idProducto?.id === productId &&
+            d.idProducto?.tipoMaterial === "Derivado"
+        );
+        return product?.cantidad || 0;
+      };
+
+      const currentQty = getDerivedQty(currentCut);
+      const prevQty = getDerivedQty(prevCut);
+      const actualProduction = currentQty - prevQty;
+
+      // Calcular producción esperada basada en materia prima real procesada
+      const expectedProduction = processedRaw * (material.porcentaje / 100);
+      const performance = (actualProduction / processedRaw) * 100;
+
+      return {
+        id: productId,
+        name: material.idProducto.nombre,
+        expected: expectedProduction,
+        actual: actualProduction,
+        performance: isFinite(performance) ? performance : 0,
+      };
+    });
+
+    return {
+      processedRawMaterial: processedRaw,
+      products: productsMetrics,
+    };
+  });
+};
+const getQuantity = (
+  cut: CorteRefinacion,
+  towerId: string,
+  productId: string
+): number => {
+  const torreCut = cut.corteTorre.find((ct) => ct.idTorre.id === towerId);
+  if (!torreCut) return 0;
+
+  const producto = torreCut.detalles.find(
+    (d) => d.idProducto?.id === productId
+  );
+  return producto?.cantidad || 0;
+};
 const ModeladoRefineriaTorre: React.FC<ModeladoRefineriaTorreProps> = ({
   torre,
-  refinacions,
+  corteRefinacions,
   ...props
 }) => {
+  const [metrics, setMetrics] = useState<DailyMetrics[]>([]);
+  const [latestMetrics, setLatestMetrics] = useState<
+    Record<string, DailyMetrics["products"][0]>
+  >({});
+
+  useEffect(() => {
+    if (!torre || !corteRefinacions.length) return;
+
+    const calculatedMetrics = calculateProductionMetrics(
+      torre,
+      corteRefinacions
+    );
+    setMetrics(calculatedMetrics);
+
+    // Obtener última métrica por producto
+    const latest = calculatedMetrics.reduce((acc, day) => {
+      day.products.forEach((product) => {
+        acc[product.id] = product;
+      });
+      return acc;
+    }, {});
+
+    setLatestMetrics(latest);
+  }, [torre, corteRefinacions]);
   const [apiData, setApiData] = useState<{ sections: TorreSection[] }>({
     sections: [],
   });
-  const [refinacion, setRefinacion] = useState<Refinacion | null>(null);
+  console.log(apiData.sections);
+  // const [ultimosCortes, setUltimosCortes] = useState<CorteRefinacion[]>([]);
+  // const [difUltimosCortes, setDifUltimosCortes] = useState<any[]>([]);
+  // console.log(difUltimosCortes);
+  // console.log(ultimosCortes);
 
   // Calcular datos de las secciones
   interface DerivadoSection {
@@ -51,116 +235,289 @@ const ModeladoRefineriaTorre: React.FC<ModeladoRefineriaTorreProps> = ({
   interface TorreData {
     sections: DerivadoSection[];
   }
+  const { ultimosCortes, diferenciasPorTorre } = useMemo(() => {
+    if (!corteRefinacions || corteRefinacions.length < 2) {
+      return { ultimosCortes: [], diferenciasPorTorre: [] };
+    }
 
+    // Ordenar cortes por fecha
+    const sortedCortes = [...corteRefinacions].sort(
+      (a, b) =>
+        new Date(b.fechaCorte).getTime() - new Date(a.fechaCorte).getTime()
+    );
+
+    const ultimosCortes = sortedCortes.slice(0, 2);
+    const [ultimoCorte, penultimoCorte] = ultimosCortes;
+
+    // Calcular diferencias entre cortes
+    const diferenciasPorTorre = ultimoCorte.corteTorre.map((torreUltimo) => {
+      const torrePenultimo = penultimoCorte.corteTorre.find(
+        (t) => t.idTorre?.id === torreUltimo.idTorre?.id
+      );
+
+      return {
+        idTorre: torreUltimo.idTorre?.id || "Desconocido",
+        productos: torreUltimo.detalles.map((detalleUltimo) => {
+          const detallePenultimo = torrePenultimo?.detalles.find(
+            (d) => d.idProducto?.id === detalleUltimo.idProducto?.id
+          );
+
+          return {
+            idProducto: detalleUltimo.idProducto?.id || "Desconocido",
+            materiaPrima:
+              detalleUltimo.idProducto.tipoMaterial || "Desconocido",
+            diferenciaCantidad:
+              detalleUltimo.cantidad - (detallePenultimo?.cantidad || 0),
+            cantidadActual: detalleUltimo.cantidad,
+          };
+        }),
+      };
+    });
+
+    return { ultimosCortes, diferenciasPorTorre };
+  }, [corteRefinacions]);
+  console.log(diferenciasPorTorre);
+  // Efecto principal para actualizar secciones
   useEffect(() => {
     if (!torre?.material) return;
 
-    const calculateDerivados = () => {
-      const now = new Date();
-
+    const calcularSecciones = () => {
       return torre.material.map((material) => {
-        // 1. Filtrar refinaciones para esta torre
-        const refinacionesTorre =
-          refinacions?.filter(
-            (refinacion) => refinacion.idTorre.id === torre.id
-          ) || [];
+        // Buscar datos actualizados en los cortes
+        const datosActualizados = diferenciasPorTorre
+          .find((t) => t.idTorre === torre?.id)
+          ?.productos.find((p) => p.idProducto === material.idProducto?.id);
+        const datosMateriaPrimaTotal = diferenciasPorTorre
+          .find((t) => t.idTorre === torre?.id)
+          ?.productos.find((p) => p.materiaPrima === "Materia Prima");
 
-        // 2. Encontrar el derivado correspondiente
-        const derivado = refinacionesTorre
-          .flatMap((refinacion) => refinacion.derivado || [])
-          .find((d) => d.idProducto.id === material.idProducto?.id);
-
-        const porcentaje = derivado?.porcentaje || 0;
-
-        // 3. Calcular cantidad refinada hasta ahora
-        const cantidadTotalRefinada = refinacionesTorre.reduce(
-          (acc, refinacion) => {
-            const { fechaInicio, fechaFin, cantidadTotal } = refinacion;
-            if (!fechaInicio || !fechaFin || !cantidadTotal) return acc;
-
-            const start = new Date(fechaInicio);
-            const end = new Date(fechaFin);
-
-            if (now < start) return acc;
-            if (now >= end) return acc + cantidadTotal;
-
-            const fraction =
-              (now.getTime() - start.getTime()) /
-              (end.getTime() - start.getTime());
-            return acc + cantidadTotal * fraction;
-          },
-          0
-        );
-
-        // 4. Calcular cantidad total esperada (sin considerar tiempo)
-        const cantidadTotalEsperada = refinacionesTorre.reduce(
-          (acc, refinacion) => acc + (refinacion.cantidadTotal || 0),
-          0
-        );
-
+        console.log(datosMateriaPrimaTotal);
         return {
           name: material.idProducto?.nombre || "Desconocido",
           idProducto: material.idProducto?.id || "",
           operational: material.estadoMaterial === "True",
-          bblPerHour: parseFloat(
-            ((cantidadTotalRefinada * porcentaje) / 100).toFixed(2)
-          ),
-          porcentaje,
-          cantidad: ((cantidadTotalEsperada * porcentaje) / 100).toFixed(2),
+          porcentaje: material.porcentaje || 0,
+          cantidad: datosActualizados?.cantidadActual.toString() || "0",
+
+          diferenciaCantidad:
+            datosActualizados?.diferenciaCantidad.toString() || "0",
         };
       });
     };
 
-    const sections = calculateDerivados();
-    setApiData({ sections });
+    setApiData({ sections: calcularSecciones() });
+  }, [torre, diferenciasPorTorre]);
+  // useEffect(() => {
+  //   if (!torre?.material) return;
 
-    // Actualizar refinación principal
-    const mainRefinacion = refinacions?.find(
-      (refinacion) => refinacion.idTorre.id === torre.id
-    );
-    setRefinacion(mainRefinacion || null);
-  }, [torre, refinacions]);
+  //   const calculateDerivados = () => {
+  //     return torre.material.map((material) => {
+  //       const porcentaje = material.porcentaje || 0;
 
-  // Calcular el total de refinación con animación
-  const totalRefinacion = useMemo(() => {
-    if (!torre || !refinacions) return 0;
+  //       return {
+  //         name: material.idProducto?.nombre || "Desconocido",
+  //         idProducto: material.idProducto?.id || "",
+  //         operational: material.estadoMaterial === "True",
+  //         bblPerHour: 0,
+  //         porcentaje,
+  //         cantidad: "0", // Inicialmente en 0, se actualizará con los datos de los cortes
+  //         diferenciaCantidad: "0", // Inicialmente en 0, se actualizará con los datos de los cortes
+  //       };
+  //     });
+  //   };
 
-    const now = new Date();
+  //   const sections = calculateDerivados();
+  //   setApiData({ sections });
 
-    return refinacions
-      .filter((refinacion) => refinacion.idTorre.id === torre.id)
-      .reduce((acc, refinacion) => {
-        const { fechaInicio, fechaFin, cantidadTotal } = refinacion;
-        if (!fechaInicio || !fechaFin) return acc;
+  //   // Obtener los últimos dos cortes
+  //   const ultimosCortes = corteRefinacions
+  //     ?.sort(
+  //       (a, b) =>
+  //         new Date(b.fechaCorte).getTime() - new Date(a.fechaCorte).getTime()
+  //     )
+  //     .slice(0, 2);
+  //   setUltimosCortes(ultimosCortes || []);
 
-        const start = new Date(fechaInicio);
-        const end = new Date(fechaFin);
+  //   if (ultimosCortes && ultimosCortes.length === 2) {
+  //     const [ultimoCorte, penultimoCorte] = ultimosCortes;
 
-        if (now < start) return acc;
-        if (now >= end) return acc + cantidadTotal;
+  //     // Calcular las diferencias por torre y producto
+  //     const diferenciasPorTorre = ultimoCorte.corteTorre.map((torreUltimo) => {
+  //       const torrePenultimo = penultimoCorte.corteTorre.find(
+  //         (torre) => torre.idTorre?.id === torreUltimo.idTorre?.id
+  //       );
 
-        const totalTime = end.getTime() - start.getTime();
-        const elapsed = now.getTime() - start.getTime();
-        const fraction = Math.min(elapsed / totalTime, 1);
+  //       const productos = torreUltimo.detalles.map((detalleUltimo) => {
+  //         const detallePenultimo = torrePenultimo?.detalles.find(
+  //           (detalle) => detalle.idProducto?.id === detalleUltimo.idProducto?.id
+  //         );
 
-        return acc + cantidadTotal * fraction;
-      }, 0);
-  }, [torre, refinacions]);
+  //         const diferenciaCantidad =
+  //           detalleUltimo.cantidad - (detallePenultimo?.cantidad || 0);
 
-  const [displayedRefinacion, setDisplayedRefinacion] =
-    useState(totalRefinacion);
+  //         return {
+  //           idProducto: detalleUltimo.idProducto?.id || "Desconocido",
+  //           nombreProducto:
+  //             detalleUltimo.idProducto?.nombre || "Producto sin nombre",
+  //           cantidad: detalleUltimo.cantidad,
+  //           diferenciaCantidad,
+  //         };
+  //       });
 
-  // Animación suave del valor de refinación
-  useEffect(() => {
-    const animationFrame = requestAnimationFrame(() => {
-      setDisplayedRefinacion((prev) => {
-        const diff = totalRefinacion - prev;
-        return prev + diff * 0.1;
-      });
-    });
+  //       return {
+  //         idTorre: torreUltimo.idTorre?.id || "Desconocido",
+  //         nombreTorre: torreUltimo.idTorre?.nombre || "Torre sin nombre",
+  //         productos,
+  //       };
+  //     });
 
-    return () => cancelAnimationFrame(animationFrame);
-  }, [totalRefinacion]);
+  //     // Actualizar las secciones con las cantidades y diferencias
+  //     const updatedSections = sections.map((section) => {
+  //       const torreData = diferenciasPorTorre.find(
+  //         (torre) => torre.idTorre === torre.idProducto
+  //       );
+
+  //       if (torreData) {
+  //         const productoData = torreData.productos.find(
+  //           (producto) => producto.idProducto === section.idProducto
+  //         );
+
+  //         if (productoData) {
+  //           return {
+  //             ...section,
+  //             cantidad: productoData.cantidad.toString(),
+  //             diferenciaCantidad: productoData.diferenciaCantidad.toString(),
+  //           };
+  //         }
+  //       }
+
+  //       return section;
+  //     });
+
+  //     setApiData({ sections: updatedSections });
+  //   }
+  // }, [torre, corteRefinacions, difUltimosCortes]);
+  // useEffect(() => {
+  //   if (!ultimosCortes || ultimosCortes.length < 2) return;
+
+  //   // Ordenar los cortes por fecha de corte (más reciente primero)
+  //   const sortedCortes = [...ultimosCortes].sort(
+  //     (a, b) =>
+  //       new Date(b.fechaCorte).getTime() - new Date(a.fechaCorte).getTime()
+  //   );
+
+  //   // Calcular las diferencias en horas entre cada corte y las cantidades por torre y producto
+  //   const diferenciasHoras = sortedCortes.map((corte, index) => {
+  //     if (index === sortedCortes.length - 1) return null; // No hay siguiente corte para el último
+
+  //     const fechaActual = new Date(corte.fechaCorte);
+  //     const fechaSiguiente = new Date(sortedCortes[index + 1].fechaCorte);
+
+  //     // Diferencia en milisegundos y convertir a horas
+  //     const diferenciaMs = fechaActual.getTime() - fechaSiguiente.getTime();
+  //     const diferenciaHoras = diferenciaMs / (1000 * 60 * 60);
+
+  //     // Calcular cantidades por torre y producto en el corte actual
+  //     const cantidadesPorTorreActual = corte.corteTorre.map((torre) => ({
+  //       idTorre: torre.idTorre?.id || "Desconocido",
+  //       nombreTorre: torre.idTorre?.nombre || "Torre sin nombre",
+  //       productos: torre.detalles.map((detalle) => ({
+  //         idProducto: detalle.idProducto?.id || "Desconocido",
+  //         nombreProducto: detalle.idProducto?.nombre || "Producto sin nombre",
+  //         cantidad: detalle.cantidad,
+  //       })),
+  //     }));
+
+  //     // Calcular cantidades por torre y producto en el siguiente corte
+  //     const cantidadesPorTorreSiguiente = sortedCortes[
+  //       index + 1
+  //     ].corteTorre.map((torre) => ({
+  //       idTorre: torre.idTorre?.id || "Desconocido",
+  //       nombreTorre: torre.idTorre?.nombre || "Torre sin nombre",
+  //       productos: torre.detalles.map((detalle) => ({
+  //         idProducto: detalle.idProducto?.id || "Desconocido",
+  //         nombreProducto: detalle.idProducto?.nombre || "Producto sin nombre",
+  //         cantidad: detalle.cantidad,
+  //       })),
+  //     }));
+
+  //     return {
+  //       numeroCorteActual: corte.numeroCorteRefinacion,
+  //       numeroCorteSiguiente: sortedCortes[index + 1].numeroCorteRefinacion,
+  //       diferenciaHoras: diferenciaHoras.toFixed(2), // Redondear a 2 decimales
+  //       cantidadesPorTorreActual,
+  //       cantidadesPorTorreSiguiente,
+  //     };
+  //   });
+
+  //   console.log(
+  //     "Diferencias en horas y cantidades por torre y producto entre cortes:",
+  //     diferenciasHoras.filter(Boolean)
+  //   );
+  // }, [ultimosCortes]);
+  // useEffect(() => {
+  //   if (!ultimosCortes || ultimosCortes.length < 2) return;
+
+  //   // Ordenar los cortes por fecha de corte (más reciente primero)
+  //   const sortedCortes = [...ultimosCortes].sort(
+  //     (a, b) =>
+  //       new Date(b.fechaCorte).getTime() - new Date(a.fechaCorte).getTime()
+  //   );
+
+  //   // Obtener el último y el penúltimo corte
+  //   const ultimoCorte = sortedCortes[0];
+  //   const penultimoCorte = sortedCortes[1];
+
+  //   // Calcular la diferencia de cantidades por producto y torre
+  //   const diferenciasPorTorre = ultimoCorte.corteTorre.map((torreUltimo) => {
+  //     const torrePenultimo = penultimoCorte.corteTorre.find(
+  //       (torre) => torre.idTorre?.id === torreUltimo.idTorre?.id
+  //     );
+
+  //     if (!torrePenultimo) {
+  //       // Si no existe la torre en el penúltimo corte, todas las cantidades son nuevas
+  //       return {
+  //         idTorre: torreUltimo.idTorre?.id || "Desconocido",
+  //         nombreTorre: torreUltimo.idTorre?.nombre || "Torre sin nombre",
+  //         productos: torreUltimo.detalles.map((detalleUltimo) => ({
+  //           idProducto: detalleUltimo.idProducto?.id || "Desconocido",
+  //           nombreProducto:
+  //             detalleUltimo.idProducto?.nombre || "Producto sin nombre",
+  //           diferenciaCantidad: detalleUltimo.cantidad, // Todo el producto es nuevo
+  //         })),
+  //       };
+  //     }
+
+  //     // Calcular la diferencia de cantidades para cada producto
+  //     const productosDiferencias = torreUltimo.detalles.map((detalleUltimo) => {
+  //       const detallePenultimo = torrePenultimo.detalles.find(
+  //         (detalle) => detalle.idProducto?.id === detalleUltimo.idProducto?.id
+  //       );
+
+  //       const diferenciaCantidad =
+  //         detalleUltimo.cantidad - (detallePenultimo?.cantidad || 0);
+
+  //       return {
+  //         idProducto: detalleUltimo.idProducto?.id || "Desconocido",
+  //         nombreProducto:
+  //           detalleUltimo.idProducto?.nombre || "Producto sin nombre",
+  //         diferenciaCantidad,
+  //       };
+  //     });
+
+  //     return {
+  //       idTorre: torreUltimo.idTorre?.id || "Desconocido",
+  //       nombreTorre: torreUltimo.idTorre?.nombre || "Torre sin nombre",
+  //       productos: productosDiferencias,
+  //     };
+  //   });
+
+  //   console.log(
+  //     "Diferencias de cantidades por torre y producto:",
+  //     diferenciasPorTorre
+  //   );
+  //   setDifUltimosCortes(diferenciasPorTorre);
+  // }, [ultimosCortes]);
 
   const sectionHeight = TOWER_HEIGHT / Math.max(apiData.sections.length, 1);
 
@@ -187,7 +544,7 @@ const ModeladoRefineriaTorre: React.FC<ModeladoRefineriaTorreProps> = ({
 
           <g strokeLinecap="round">
             <path
-              d={`M ${TOWER_X + TOWER_WIDTH - 110} ${sectionY + sectionHeight} 
+              d={`M ${TOWER_X + TOWER_WIDTH - 110} ${sectionY + sectionHeight}
                 L ${TOWER_X + TOWER_WIDTH + 10} ${sectionY + sectionHeight}`}
               stroke="#707070"
               strokeWidth="3"
@@ -195,7 +552,7 @@ const ModeladoRefineriaTorre: React.FC<ModeladoRefineriaTorreProps> = ({
             <path
               d={`M ${TOWER_X + TOWER_WIDTH - 110} ${
                 sectionY + sectionHeight - 3
-              } 
+              }
                 L ${TOWER_X + TOWER_WIDTH + 10} ${
                 sectionY + sectionHeight - 3
               }`}
@@ -209,41 +566,6 @@ const ModeladoRefineriaTorre: React.FC<ModeladoRefineriaTorreProps> = ({
             y={sectionY + sectionHeight / 2 + 100}
           />
 
-          {/* <text
-            x={TOWER_X + TOWER_WIDTH + 35}
-            y={sectionY + sectionHeight / 2 - 5}
-            fill="black"
-            fontSize="14"
-            fontWeight="bold"
-          >
-            {section.name || "Sin nombre"}
-          </text>
-
-          <text
-            x={TOWER_X + TOWER_WIDTH + 35}
-            y={sectionY + sectionHeight / 2 + 10}
-            fill={isOperational ? "green" : "red"}
-            fontSize="12"
-          >
-            {isOperational ? "Operativa" : "Inactiva"}
-          </text>
-
-          <text
-            x={TOWER_X + TOWER_WIDTH + 35}
-            y={sectionY + sectionHeight / 2 + 25}
-            fill="black"
-            fontSize="12"
-          >
-            {section.cantidad} bbl/h
-          </text>
-          <text
-            x={TOWER_X + TOWER_WIDTH + 35}
-            y={sectionY + sectionHeight / 2 + 40}
-            fill="black"
-            fontSize="12"
-          >
-            {section.bblPerHour} bbl/h
-          </text> */}
           <g
             transform={`translate(${TOWER_X + TOWER_WIDTH + 35}, ${
               sectionY + sectionHeight / 2 + -15
@@ -328,6 +650,91 @@ const ModeladoRefineriaTorre: React.FC<ModeladoRefineriaTorreProps> = ({
       );
     });
   }, [apiData.sections, sectionHeight, torre.material]);
+  // const renderSections = useCallback(() => {
+  //   return torre.material.map((material, index) => {
+  //     const product = latestMetrics[material.idProducto.id] || {};
+  //     const sectionY = TOWER_Y + index * (TOWER_HEIGHT / torre.material.length);
+  //     console.log("product", product);
+  //     return (
+  //       <g key={material.idProducto.id}>
+  //         {/* Renderizado de la sección */}
+  //         {/* <rect
+  //           x={TOWER_X}
+  //           y={sectionY}
+  //           width={TOWER_WIDTH}
+  //           height={sectionHeight}
+  //           fill={`#${material.idProducto.color}`}
+  //         /> */}
+  //         <rect
+  //           x={TOWER_X + 15}
+  //           y={sectionY + 5}
+  //           width={TOWER_WIDTH - 30}
+  //           height={sectionHeight - 10}
+  //           fill={
+  //             material.idProducto
+  //               ? `url(#sectionGradient${material.idProducto.color})`
+  //               : "#ddd"
+  //           }
+  //           fill={`#${material.idProducto.color}`}
+  //           opacity={"0.4"}
+  //           stroke="black"
+  //           strokeWidth="1"
+  //           rx="10"
+  //         />
+  //         <g strokeLinecap="round">
+  //           <path
+  //             d={`M ${TOWER_X + TOWER_WIDTH - 110} ${sectionY + sectionHeight}
+  //               L ${TOWER_X + TOWER_WIDTH + 10} ${sectionY + sectionHeight}`}
+  //             stroke="#707070"
+  //             strokeWidth="3"
+  //           />
+  //           <path
+  //             d={`M ${TOWER_X + TOWER_WIDTH - 110} ${
+  //               sectionY + sectionHeight - 3
+  //             }
+  //               L ${TOWER_X + TOWER_WIDTH + 10} ${
+  //               sectionY + sectionHeight - 3
+  //             }`}
+  //             stroke="#a0a09d"
+  //             strokeWidth="3"
+  //           />
+  //         </g>
+
+  //         <ModeladoRefineriaTuberiaMaterial
+  //           x={TOWER_X + TOWER_WIDTH + 35}
+  //           y={sectionY + sectionHeight / 2 + 100}
+  //         />
+  //         <g
+  //           transform={`translate(${TOWER_X + TOWER_WIDTH + 35}, ${
+  //             sectionY + sectionHeight / 2 + -15
+  //           })`}
+  //         >
+  //           {/* Fondo aumentado con sombra suave */}
+  //           <rect
+  //             x="-10"
+  //             y="-30"
+  //             width="160"
+  //             height="90"
+  //             rx="6"
+  //             fill="#ffffff"
+  //             stroke="#e0e0e0"
+  //             stroke-width="1.2"
+  //             filter="url(#shadow-light)"
+  //           />
+  //         </g>
+
+  //         {/* Datos de rendimiento */}
+  //         <text x={TOWER_X + TOWER_WIDTH + 20} y={sectionY + 20}>
+  //           {product.name} - Real: {product.performance?.toFixed(1)}%
+  //         </text>
+  //         <text x={TOWER_X + TOWER_WIDTH + 20} y={sectionY + 40}>
+  //           Esperado: {material.porcentaje}% | Diferencia:{" "}
+  //           {product.difference?.toFixed(1)}
+  //         </text>
+  //       </g>
+  //     );
+  //   });
+  // }, [torre.material, latestMetrics]);
 
   return (
     <svg
@@ -367,10 +774,10 @@ const ModeladoRefineriaTorre: React.FC<ModeladoRefineriaTorreProps> = ({
 
       <g fontSize="14" fill="black">
         <text x={135} y={495}>
-          {refinacion?.cantidadTotal.toFixed(2) || "0.00"} bbl/h
+          {torre?.capacidad?.toFixed(2) || "0.00"} bpd
         </text>
         <text x={135} y={515}>
-          {displayedRefinacion.toFixed(2)} bbl/h
+          {/* {displayedRefinacion.toFixed(2)} bbl/h */}
         </text>
       </g>
 

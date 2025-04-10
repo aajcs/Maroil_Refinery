@@ -308,6 +308,7 @@ export interface TorreDestilacion {
   material: Material[];
   createdAt: string;
   updatedAt: string;
+  capacidad: number;
   idRefineria: {
     id: string | undefined;
     nombre: string;
@@ -321,6 +322,7 @@ export interface Material {
     color: string;
     id: string;
   };
+  porcentaje: number;
 
   estadoMaterial: string;
   _id?: string;
@@ -624,6 +626,7 @@ export interface CorteRefinacion {
         _id: string;
         nombre: string;
         id: string;
+        tipoMaterial: string;
       };
       cantidad: number;
       _id: string;

@@ -57,6 +57,7 @@ export const torreDestilacionSchema = object({
   material: array(
     object({
       estadoMaterial: string(),
+      porcentaje: number().optional(),
       idProducto: object({
         _id: string().min(1, "El ID del producto es obligatorio"),
         nombre: string().min(1, "El nombre del producto es obligatorio"),
@@ -69,6 +70,7 @@ export const torreDestilacionSchema = object({
   idRefineria: object({
     id: string().optional(),
   }).optional(),
+
   createdAt: string().optional(),
   updatedAt: string().optional(),
 });
