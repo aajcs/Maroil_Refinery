@@ -1,28 +1,19 @@
 import { Card } from "primereact/card";
-import { Column, ColumnEditorOptions } from "primereact/column";
-import { DataTable, DataTableRowEditCompleteEvent } from "primereact/datatable";
+import { Column } from "primereact/column";
+import {
+  DataTable,
+  type DataTableRowEditCompleteEvent,
+} from "primereact/datatable";
 import { Dropdown } from "primereact/dropdown";
-import { InputNumber } from "primereact/inputnumber";
-import { Dispatch, Fragment, SetStateAction, useEffect, useState } from "react";
+import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
 import "./Simulador.css";
 import "primeicons/primeicons.css";
 import { Button } from "primereact/button";
 import { animated, useSprings } from "@react-spring/web";
-import {
-  BarChart,
-  CartesianGrid,
-  XAxis,
-  YAxis,
-  Tooltip,
-  Legend,
-  Bar,
-} from "recharts";
-import { getRefinerias } from "@/app/api/refineriaService";
-import { useRefineryData } from "@/hooks/useRefineryData";
-import { TipoProducto } from "@/libs/interfaces";
-import { useRefineryPrecios } from "@/hooks/useRefineryPrecios";
-import { Tag } from "primereact/tag";
-import { ProgressSpinner } from "primereact/progressspinner";
+import ReactSpeedometer from "react-d3-speedometer";
+import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
+import { Steps } from "primereact/steps";
+import type { MenuItem } from "primereact/menuitem";
 
 const barrelUnit = "BBL";
 const dollarPerBarrelUnit = "$/BBL";
@@ -36,7 +27,6 @@ type Mezcla = {
   nombre: string;
   cantidad: number;
   precio: number;
-  transporte: number;
   rendimientos: {
     id: string;
     nombre: string;
@@ -54,6 +44,7 @@ type Productos = {
   };
   nombre: string;
   clasificacion: string;
+  convenio: number;
   rendimientos: {
     idProducto: {
       id: string;
@@ -74,24 +65,6 @@ type Referencia = {
   price: number;
 };
 
-function NumericEditor({ value, editorCallback }: ColumnEditorOptions) {
-  return (
-    <InputNumber
-      className="numericInput numericInputContainer"
-      inputClassName="numericInput"
-      value={value}
-      onValueChange={(e) => editorCallback!(e.value)}
-      showButtons
-      currency="USD"
-      buttonLayout="horizontal"
-      step={0.5}
-      incrementButtonIcon="pi pi-plus"
-      decrementButtonIcon="pi pi-minus"
-      incrementButtonClassName="increment"
-      decrementButtonClassName="decrement"
-    />
-  );
-}
 type NumericInputProps = {
   label?: string;
   unit?: string;
@@ -99,6 +72,7 @@ type NumericInputProps = {
   onChange: Dispatch<SetStateAction<number>>;
   step?: number;
 };
+
 function NumericInput({
   label,
   unit,
@@ -148,70 +122,50 @@ function NumericInput({
   );
 }
 
-function SelectEditor({
-  value,
-  editorCallback,
-  options,
-  optionLabel,
-  optionValue,
-}: ColumnEditorOptions & {
-  options: unknown[];
-  optionLabel: string;
-  optionValue: string;
-}) {
-  return (
-    <Dropdown
-      optionValue={optionValue}
-      value={value}
-      onChange={(e) => {
-        // console.log(e.value);
-        return editorCallback!(e.value);
-      }}
-      options={options}
-      optionLabel={optionLabel}
-      placeholder="--- Seleccione ---"
-    />
-  );
-}
-
-function renderNumber(value: number, truncate?: boolean) {
-  return isNaN(value) ? "-" : truncate ? Math.floor(value) : value.toFixed(2);
+function renderNumber(value: number, truncate?: boolean, point?: boolean) {
+  return Number.isNaN(value)
+    ? "-"
+    : truncate
+    ? Math.floor(value)
+    : point
+    ? Intl.NumberFormat("de-DE").format(value)
+    : value.toFixed(2);
 }
 
 function ComprasCard() {
-  const { loading, brent, oilDerivate } = useRefineryPrecios();
-  console.log(oilDerivate);
   const [refinerias, setRefinerias] = useState<Refineria[]>([]);
   const [selectedRefineria, setSelectedRefineria] = useState<Refineria | null>(
     null
   );
-  const { tipoProductos, loading: loadingData } = useRefineryData(
-    selectedRefineria?.id || ""
-  );
+
   const [referencias, setReferencias] = useState<Referencia[]>([]);
   const [selectedReferencia, setSelectedReferencia] =
     useState<Referencia | null>(null);
-  const [filteredDerivatesdata, setFilteredDerivatesdata] = useState([]);
 
   const [maquila, setMaquila] = useState(3.5);
+  const [tractomula, setTractomula] = useState(7);
 
-  const [products, setProducts] = useState<TipoProducto[]>(tipoProductos || []);
+  const [products, setProducts] = useState<Productos[]>([]);
   const defaultProduct: Mezcla = products.map<Mezcla>((p) => ({
     id: p.id,
     nombre: p.nombre,
     cantidad: 100,
-    precio: (selectedReferencia?.price ?? 0) + (p.convenio ?? 0),
-    rendimientos: [],
+    precio: selectedReferencia ? selectedReferencia.price + p.convenio : 0,
+    rendimientos: p.rendimientos.map((r) => ({
+      id: r.idProducto.id,
+      nombre: r.idProducto.nombre,
+      value: r.porcentaje,
+    })),
     transporte: 0,
   }))[0];
-  console.log(defaultProduct);
+
   const [mezcla, setMezcla] = useState<Mezcla[]>([]);
 
   const totalBbl = mezcla.reduce((prev, curr) => prev + curr.cantidad, 0);
   const precioMezcla =
     mezcla.reduce(
       (prev, curr) =>
-        prev + curr.cantidad * curr.precio + curr.transporte * curr.cantidad,
+        prev + curr.cantidad * curr.precio + tractomula * curr.cantidad,
       0
     ) /
       totalBbl +
@@ -245,10 +199,14 @@ function ComprasCard() {
   const onRowEditComplete = (e: DataTableRowEditCompleteEvent) => {
     const mezclaClone = [...mezcla];
     const { newData, index } = e;
+    // biome-ignore lint/style/noNonNullAssertion: <explanation>
     const product = products.find((p) => p.nombre === newData.nombre)!;
     mezclaClone[index] = {
       ...newData,
       id: product.id,
+      precio: selectedReferencia
+        ? selectedReferencia.price + product.convenio
+        : 0,
       rendimientos: product.rendimientos.map((r) => ({
         id: r.idProducto.id,
         nombre: r.idProducto.nombre,
@@ -262,14 +220,12 @@ function ComprasCard() {
     return (
       <div className="tableHeader">
         <h3>Crudos</h3>
-        {products.length > 0 && (
-          <Button
-            severity="success"
-            icon="pi pi-plus"
-            label="Añadir crudo"
-            onClick={() => setMezcla([...mezcla, defaultProduct])}
-          />
-        )}
+        <Button
+          severity="success"
+          icon="pi pi-plus"
+          label="Añadir crudo"
+          onClick={() => setMezcla([...mezcla, defaultProduct])}
+        />
       </div>
     );
   };
@@ -290,49 +246,45 @@ function ComprasCard() {
     ) : (
       <span className="brentFormula">{`${selectedReferencia.name} ${
         diff > 0 ? "+" : "-"
-      } ${renderNumber(Math.abs(diff))}`}</span>
+      } ${renderNumber(Math.abs(diff), false, true)}`}</span>
     );
   };
 
+  // Un effect todo pirata para hacer el llamado a la api, recomendado utilizar react query o similar
   useEffect(() => {
-    setProducts(tipoProductos);
-  }, [selectedRefineria, tipoProductos]);
-  useEffect(() => {
-    setReferencias([
-      {
-        name: "Brent",
-        price: brent,
-      },
-    ]);
-  }, [brent]);
-  useEffect(() => {
-    const fetchRefinerias = async () => {
-      try {
-        const data = await getRefinerias();
-        const { refinerias: dataRefinerias } = data;
-        if (Array.isArray(dataRefinerias)) {
-          setRefinerias(dataRefinerias);
-        } else {
-          console.error("La respuesta no es un array:", dataRefinerias);
-        }
-      } catch (error) {
-        console.error("Error al obtener las refinerías:", error);
-      }
-    };
+    fetch(
+      "https://api-maroil-refinery-2500582bacd8.herokuapp.com/api/tipoProducto"
+    )
+      .then<{ tipoProductos: Productos[] }>((res) => res.json())
+      .then((body) => setProducts(body.tipoProductos));
 
-    fetchRefinerias();
+    fetch(
+      "https://api-maroil-refinery-2500582bacd8.herokuapp.com/api/refinerias"
+    )
+      .then<{ refinerias: Refineria[] }>((res) => res.json())
+      .then((body) => setRefinerias(body.refinerias));
+
+    fetch("https://oil.sygem.net/brent")
+      .then<{ price: string }>((res) => res.json())
+      .then((body) =>
+        setReferencias([
+          {
+            name: "Brent",
+            price: Number.parseFloat(Number.parseFloat(body.price).toFixed(2)),
+          },
+        ])
+      );
   }, []);
 
   return (
     <main>
       <Card
         title={() => (
-          <h2 className="mb-0">
-            {" "}
+          <h2>
             <span
               className="pi pi-wallet"
               style={{ fontSize: "2rem", marginRight: ".5rem" }}
-            ></span>{" "}
+            />
             Compras
           </h2>
         )}
@@ -343,7 +295,10 @@ function ComprasCard() {
             <Dropdown
               inputId="refineria"
               value={selectedRefineria}
-              onChange={(e) => setSelectedRefineria(e.value)}
+              onChange={(e) => {
+                setSelectedRefineria(e.value);
+                setMaquila(3.5);
+              }}
               options={refinerias}
               optionLabel="nombre"
               placeholder="--- Seleccione ---"
@@ -355,16 +310,9 @@ function ComprasCard() {
               inputId="referencia"
               value={selectedReferencia}
               onChange={(e) => {
-                // const referencia = referencias.find(r => r.name === e.value)
-                // if (referencia) {
-                //     setSelectedReferencia(referencia);
-                // }
-                console.log(referencias);
                 setSelectedReferencia(e.value);
-                console.log(e, selectedReferencia);
               }}
               options={referencias}
-              // optionLabel="name"
               itemTemplate={(referencia: Referencia) => (
                 <span>{`${referencia.name} ($${referencia.price})`}</span>
               )}
@@ -372,15 +320,15 @@ function ComprasCard() {
                 !referencia ? (
                   "--- Seleccione ---"
                 ) : (
-                  <span>{`${referencia?.name} ($${referencia?.price})`}</span>
+                  <span>{`${referencia?.name} ($${renderNumber(
+                    referencia?.price,
+                    false,
+                    true
+                  )})`}</span>
                 )
               }
               placeholder="--- Seleccione ---"
             />
-          </div>
-          <div className="inputGroup">
-            <label htmlFor="maquila">Maquila:</label>
-            <NumericInput onChange={setMaquila} value={maquila} step={0.5} />
           </div>
         </div>
 
@@ -389,7 +337,6 @@ function ComprasCard() {
           value={mezcla}
           editMode="row"
           onRowEditComplete={onRowEditComplete}
-          size="small"
         >
           <Column
             field="nombre"
@@ -401,7 +348,7 @@ function ComprasCard() {
                 optionLabel={"nombre"}
                 optionValue="nombre"
                 onChange={(e) => {
-                  opt.editorCallback!(e.value);
+                  opt.editorCallback?.(e.value);
                 }}
                 placeholder="--- Seleccione ---"
               />
@@ -415,7 +362,7 @@ function ComprasCard() {
               <NumericInput
                 value={options.value}
                 onChange={(e) =>
-                  options.editorCallback!(
+                  options.editorCallback?.(
                     typeof e === "number" ? e : e(options.value)
                   )
                 }
@@ -424,53 +371,29 @@ function ComprasCard() {
             )}
             footer={totalBbl}
           />
-          <Column
-            field="precio"
-            header={`Precio (${dollarPerBarrelUnit})`}
-            editor={(options) => (
-              <NumericInput
-                value={options.value}
-                onChange={(e) =>
-                  options.editorCallback!(
-                    typeof e === "number" ? e : e(options.value)
-                  )
-                }
-                step={0.5}
-              />
-            )}
-            footer={renderNumber(
-              mezcla.reduce(
-                (prev, curr) => prev + curr.cantidad * curr.precio,
-                0
-              ) / totalBbl
-            )}
-          />
-          <Column
-            field="transporte"
-            header={`Tractomula (${dollarPerBarrelUnit})`}
-            editor={(options) => (
-              <NumericInput
-                value={options.value}
-                onChange={(e) =>
-                  options.editorCallback!(
-                    typeof e === "number" ? e : e(options.value)
-                  )
-                }
-                step={0.5}
-              />
-            )}
-            footer={renderNumber(
-              mezcla.reduce(
-                (prev, curr) => prev + curr.cantidad * curr.transporte,
-                0
-              ) / totalBbl
-            )}
-          />
           <Column header="Fórmula" body={(col) => formulaColumn(col)} />
           <Column
+            header="Precio"
+            body={(col: Mezcla) => `${renderNumber(col.precio, false, true)}$`}
+          />
+          <Column
             rowEditor={true}
-            headerStyle={{ width: "10%", minWidth: "8rem" }}
+            headerStyle={{}}
             bodyStyle={{ textAlign: "center" }}
+          />
+          <Column
+            body={(_, column) => (
+              <Button
+                icon="pi pi-times"
+                text
+                severity="danger"
+                onClick={() =>
+                  setMezcla((prev) =>
+                    prev.filter((_, idx) => idx !== column.rowIndex)
+                  )
+                }
+              />
+            )}
           />
         </DataTable>
 
@@ -481,17 +404,17 @@ function ComprasCard() {
         <RendimientoBar rendimientos={rendimientosParche} />
 
         <p className="operativeCost">
-          {renderNumber(precioMezcla)}
+          {renderNumber(precioMezcla, false, true)}
           {dollarPerBarrelUnit}
         </p>
         <p>Costo operativo</p>
-        {/* <p>Costo Operativo {renderNumber(precioMezcla)}</p> */}
       </Card>
       <VentasCard
+        tractomula={tractomula}
         maquila={maquila}
         operationalCost={mezcla.reduce(
           (prev, curr) =>
-            prev + (curr.cantidad * (curr.precio + curr.transporte)) / totalBbl,
+            prev + (curr.cantidad * (curr.precio + tractomula)) / totalBbl,
           maquila
         )}
         rendimientos={rendimientosParche}
@@ -501,10 +424,10 @@ function ComprasCard() {
         )}
         totalBbl={totalBbl}
         totalTractomula={mezcla.reduce(
-          (prev, curr) => prev + curr.transporte * curr.cantidad,
+          (prev, curr) => prev + tractomula * curr.cantidad,
           0
         )}
-      ></VentasCard>
+      />
     </main>
   );
 }
@@ -535,7 +458,7 @@ function RendimientoBar({ rendimientos }: RendimientoBarProps) {
         width: `${rendimientos[index].value}%`,
       },
     }));
-  }, [rendimientos]);
+  }, [rendimientos, api]);
 
   return (
     <div className="rendimientoBar">
@@ -569,13 +492,12 @@ function DietaBar({ mezcla, total }: DietaBarProps) {
   );
 
   useEffect(() => {
-    // console.log(mezcla, total)
     api.start((index) => ({
       to: {
         width: `${(mezcla[index].cantidad / total) * 100}%`,
       },
     }));
-  }, [mezcla, total]);
+  }, [mezcla, total, api]);
 
   return (
     <div className="dietaBar">
@@ -591,25 +513,16 @@ function DietaBar({ mezcla, total }: DietaBarProps) {
 
 type DerivadoPriceProps = {
   price: number;
-  oilCost: number;
-  tractomula: number;
-  bunker: number;
+  operativeCost: number;
   barrels: number;
 };
 
-function DerivadoPrice({
-  price,
-  oilCost,
-  barrels,
-  tractomula,
-  bunker,
-}: DerivadoPriceProps) {
-  const profit = price - oilCost - tractomula - bunker;
-
+function DerivadoPrice({ price, operativeCost, barrels }: DerivadoPriceProps) {
+  const profit = price - operativeCost;
   return (
     <>
       <p className="derivativeProfit">
-        {price}
+        {renderNumber(price, false, true)}
         {dollarPerBarrelUnit}
         <span
           className={`derivativeProfitDiff ${
@@ -617,7 +530,7 @@ function DerivadoPrice({
           }`}
         >
           {profit > 0 ? "+" : "-"}
-          {renderNumber(Math.abs(profit))}
+          {renderNumber(Math.abs(profit), false, true)}
         </span>
       </p>
       <p>
@@ -628,50 +541,23 @@ function DerivadoPrice({
   );
 }
 
-const OperationalMargin = ({
-  profit,
-  operationalCost,
-}: {
-  profit: number;
-  operationalCost: number;
-}) => {
-  if (profit === 0) {
-    return <p>-</p>;
-  } else
-    return (
-      <>
-        <p className="operativeCost">
-          {renderNumber(profit)}$
-          <span
-            className={`derivativeProfitDiff ${
-              profit > 0 ? "positive" : "negative"
-            }`}
-          >
-            {profit > 0 ? "+" : "-"}
-            {renderNumber(Math.abs((profit / operationalCost) * 100))}%
-          </span>
-        </p>
-        <p>Margen Operativo</p>
-      </>
-    );
-};
-
 type VentasCardProps = {
   rendimientos: Mezcla["rendimientos"];
   operationalCost: number;
   oilCost: number;
   totalBbl: number;
   totalTractomula: number;
+  tractomula: number;
   maquila: number;
 };
 
 type Derivative = {
   id: string;
   price: number;
-  tractomula: number;
-  bunker: number;
   nombre: string;
   cantidad: number;
+  sellSteps: number;
+  selectedStepIndex: number;
 };
 
 function VentasCard({
@@ -679,10 +565,11 @@ function VentasCard({
   operationalCost,
   totalBbl,
   totalTractomula,
+  tractomula,
   maquila,
   oilCost,
 }: VentasCardProps) {
-  // const operationalMargin =
+  const [derivativePrices, setDerivativePrices] = useState<Referencia[]>([]);
   const [derivative, setDerivative] = useState<Derivative[]>(
     rendimientos.map((r) => ({
       nombre: r.nombre,
@@ -691,180 +578,359 @@ function VentasCard({
       price: operationalCost,
       tractomula: 0,
       cantidad: (r.value * totalBbl) / 100,
+      // TODO: traer esto de la api
+      sellSteps:
+        r.nombre.toLowerCase().includes("fo4") ||
+        r.nombre.toLowerCase().includes("fo6")
+          ? 3
+          : 2,
+      selectedStepIndex: 0,
     }))
   );
-
   // A continuacion una serie de parches pirata
   const getRendimiento = (d: Derivative) => {
     return rendimientos.find((r) => r.id === d.id)?.value ?? 25;
   };
 
+  const sellSteps: MenuItem[] = [
+    {
+      label: "Planta",
+      data: {
+        price: 0,
+        total: 0,
+      },
+    },
+    {
+      label: "Destino",
+      data: {
+        price: 6.2,
+        total: derivative
+          .filter((d) => d.selectedStepIndex >= 1)
+          .reduce(
+            (prev, curr) =>
+              prev + (getRendimiento(curr) / 100) * totalBbl * 6.2,
+            0
+          ),
+      },
+    },
+    {
+      label: "Bunker",
+      data: {
+        price: 3,
+        total: derivative
+          .filter((d) => d.selectedStepIndex >= 2)
+          .reduce(
+            (prev, curr) => prev + (getRendimiento(curr) / 100) * totalBbl * 3,
+            0
+          ),
+      },
+    },
+  ];
+
+  const sellCosts = sellSteps.reduce((prev, curr) => prev + curr.data.total, 0);
+
+  const profit = derivative.reduce((prev, curr) => {
+    console.log(curr, getRendimiento(curr));
+    return prev + (curr.price * getRendimiento(curr) * totalBbl) / 100;
+  }, -operationalCost * totalBbl - sellCosts);
+
   // Parche pirata a las dos de la mañana porque hay un bug oculto que no me rellena el arreglo de derivados en el use state
   useEffect(() => {
-    if (derivative.length === 0)
-      setDerivative(
-        rendimientos.map((r) => {
-          return {
-            id: r.id,
-            nombre: r.nombre,
-            price: operationalCost,
-            tractomula: 0,
-            bunker: 0,
-            cantidad: (r.value * totalBbl) / 100,
-          };
-        })
-      );
-  }, [rendimientos]);
+    // if (derivative.length === 0)
+    setDerivative(
+      rendimientos.map((r) => {
+        return {
+          id: r.id,
+          nombre: r.nombre,
+          price:
+            derivativePrices.find((d) =>
+              r.nombre.toLowerCase().includes(d.name)
+            )?.price ?? operationalCost,
+          tractomula: 0,
+          bunker: 0,
+          cantidad: (r.value * totalBbl) / 100,
+          // TODO: traer esto de la api
+          sellSteps:
+            r.nombre.toLowerCase().includes("fo4") ||
+            r.nombre.toLowerCase().includes("fo6")
+              ? 3
+              : 2,
+          selectedStepIndex: 0,
+        };
+      })
+    );
+  }, [rendimientos, operationalCost, totalBbl, derivativePrices]);
 
-  const barData = [
-    derivative.reduce<Record<string, number>>(
-      (prev, curr) => {
-        prev[curr.nombre] =
-          (getRendimiento(curr) * totalBbl * curr.price) / 100;
-        // console.log(totalBbl, operationalCost, curr.cantidad, curr.rendimiento, curr.price, curr.rendimiento * totalBbl / 100)
-        return prev;
-      },
-      {
-        tractomula:
-          derivative.reduce(
-            (prev, curr) => prev + curr.tractomula * curr.cantidad,
-            0
-          ) + totalTractomula,
-        bunker: derivative.reduce(
-          (prev, curr) => prev + curr.bunker * curr.cantidad,
-          0
-        ),
-        materiaPrima: totalBbl * oilCost,
-        maquila: totalBbl * maquila,
-      }
-    ),
-  ];
+  useEffect(() => {
+    fetch("https://oil.sygem.net/oil-derivatives")
+      .then<Record<string, string>>((res) => res.json())
+      .then((body) =>
+        setDerivativePrices(
+          Object.entries(body).map(([key, value]) => ({
+            name: key,
+            price: Number.parseFloat(value),
+          }))
+        )
+      );
+  }, []);
 
   return (
     <Card
-      className="ventasCard probando"
+      className="ventasCard"
       title={() => (
-        <h2 className="mb-0 p-0 -mb-3">
-          {" "}
+        <h2>
           <span
             className="pi pi-dollar"
             style={{ fontSize: "2rem", marginRight: "0.5rem" }}
-          ></span>
+          />
           Ventas
         </h2>
       )}
     >
-      <h3 className="my-1">Derivados</h3>
+      <h3 className="derivadosTitle">Costo Productos Refinados</h3>
       <div className="derivativesSection">
-        {derivative.map((d, i) => (
+        {derivative.map((d) => (
           <article key={d.id}>
             <h3>{d.nombre}</h3>
-            <div className="inputGroup">
-              <label htmlFor="naftaPrice">Precio</label>
-              <InputNumber
-                showButtons
-                incrementButtonClassName="primeReactInputNumberButtons"
-                decrementButtonClassName="primeReactInputNumberButtons"
-                value={d.price}
-                onChange={(e) => {
-                  setDerivative((prev) =>
-                    prev.map((p) =>
-                      p.id === d.id ? { ...p, price: e.value ?? 0 } : p
-                    )
-                  );
-                }}
-              />
-            </div>
-            <div className="inputGroup">
-              <label htmlFor="naftaPrice">Tractomula</label>
-              <InputNumber
-                showButtons
-                incrementButtonClassName="primeReactInputNumberButtons"
-                decrementButtonClassName="primeReactInputNumberButtons"
-                value={d.tractomula}
-                onChange={(e) => {
-                  setDerivative((prev) =>
-                    prev.map((p) =>
-                      p.id === d.id ? { ...p, tractomula: e.value ?? 0 } : p
-                    )
-                  );
-                }}
-              />
-            </div>
-            <div className="inputGroup">
-              <label htmlFor="naftaPrice">Bunker</label>
-              <InputNumber
-                showButtons
-                incrementButtonClassName="primeReactInputNumberButtons"
-                decrementButtonClassName="primeReactInputNumberButtons"
-                value={d.bunker}
-                onChange={(e) => {
-                  setDerivative((prev) =>
-                    prev.map((p) =>
-                      p.id === d.id ? { ...p, bunker: e.value ?? 0 } : p
-                    )
-                  );
-                }}
-              />
-            </div>
+
+            <ReactSpeedometer
+              value={
+                (d.price -
+                  operationalCost -
+                  sellSteps
+                    .slice(0, d.selectedStepIndex + 1)
+                    .reduce((prev, curr) => prev + curr.data.price, 0)) /
+                operationalCost
+              }
+              minValue={-0.3}
+              maxValue={0.3}
+              segments={4}
+              width={220}
+              height={160}
+              valueFormat="+.0%"
+              valueTextFontSize="20px"
+            />
             <DerivadoPrice
-              tractomula={d.tractomula}
-              bunker={d.bunker}
               price={d.price}
-              oilCost={operationalCost}
+              operativeCost={
+                operationalCost +
+                sellSteps
+                  .slice(0, d.selectedStepIndex + 1)
+                  .reduce((prev, curr) => prev + curr.data.price, 0)
+              }
               barrels={Math.floor((getRendimiento(d) * totalBbl) / 100)}
+            />
+            <Steps
+              model={sellSteps.slice(0, d.sellSteps)}
+              readOnly={false}
+              className="stepper"
+              activeIndex={d.selectedStepIndex}
+              onSelect={(e) =>
+                setDerivative((prev) =>
+                  prev.map((p) =>
+                    p.id === d.id
+                      ? {
+                          ...p,
+                          selectedStepIndex: e.index,
+                          price:
+                            (derivativePrices.find((d) =>
+                              p.nombre.toLowerCase().includes(d.name)
+                            )?.price || 0) +
+                            sellSteps
+                              .slice(0, e.index + 1)
+                              .reduce(
+                                (prev, curr) => prev + curr.data.price,
+                                0
+                              ),
+                        }
+                      : p
+                  )
+                )
+              }
             />
           </article>
         ))}
       </div>
 
-      <OperationalMargin
-        profit={derivative.reduce((prev, curr) => {
-          console.log(curr, getRendimiento(curr));
-          return (
-            prev +
-            ((curr.price - curr.tractomula - curr.bunker) *
-              getRendimiento(curr) *
-              totalBbl) /
-              100
-          );
-        }, -operationalCost * totalBbl)}
-        operationalCost={operationalCost * totalBbl}
-      />
+      <div className="divider" />
 
-      {derivative.length > 0 && (
-        <div className="graphContainer">
-          <BarChart
-            // style={{width: "100%"}}
-            width={500}
-            height={300}
-            data={barData}
-            margin={{
-              top: 20,
-              right: 30,
-              left: 20,
-              bottom: 5,
-            }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="materiaPrima" stackId="a" fill="#2196f3" />
-            <Bar dataKey="tractomula" stackId="a" fill="#a2cf6e" />
-            <Bar dataKey="maquila" stackId="a" fill="#8561c5" />
-            <Bar dataKey="bunker" stackId="a" fill="#82ca9d" />
-            {derivative.map((d, i) => (
-              <Bar
-                dataKey={d.nombre}
-                stackId="b"
-                fill={`rgb(${30 + i * 80},${30 + i * 20},${10 + i * 10})`}
-              />
-            ))}
-          </BarChart>
+      <div className="ventasDetail">
+        <div>
+          <h3>Costos Operativos</h3>
+          <div className="ventasDetailContainer">
+            <p>
+              Crudo:{" "}
+              <span>{renderNumber(oilCost * totalBbl, false, true)}$</span>
+            </p>
+            <p>
+              Tractomula:{" "}
+              <span>
+                {renderNumber(totalTractomula, false, true)}$ (
+                {renderNumber(tractomula, false, true)}
+                {dollarPerBarrelUnit})
+              </span>
+            </p>
+            <p>
+              Maquila:{" "}
+              <span>
+                {renderNumber(maquila * totalBbl, false, true)}$ (
+                {renderNumber(maquila, false, true)}
+                {dollarPerBarrelUnit})
+              </span>
+            </p>
+            <ResponsiveContainer width="100%" height="100%" minHeight="100px">
+              <BarChart
+                layout="vertical"
+                width={150}
+                height={80}
+                data={[
+                  {
+                    name: "Crudo",
+                    uv: oilCost * totalBbl,
+                  },
+                  {
+                    name: "Tractomula",
+                    uv: totalTractomula,
+                  },
+                  {
+                    name: "Maquila",
+                    uv: maquila * totalBbl,
+                  },
+                ]}
+              >
+                <XAxis type="number" hide />
+                <YAxis
+                  type="category"
+                  width={90}
+                  // padding={{ left: 20 }}
+                  dataKey="name"
+                />
+                <Bar dataKey="uv" fill="#1a2874" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         </div>
-      )}
+        <div>
+          <h3>Costos de venta</h3>
+          <div className="ventasDetailContainer">
+            <p>
+              Tractomula:
+              <span>
+                ${renderNumber(sellSteps[1].data.total)} (
+                {renderNumber(sellSteps[1].data.price)}
+                {dollarPerBarrelUnit})
+              </span>
+            </p>
+            <p>
+              Bunker:
+              <span>
+                ${renderNumber(sellSteps[2].data.total)} (
+                {renderNumber(sellSteps[2].data.price)}
+                {dollarPerBarrelUnit})
+              </span>
+            </p>
+            <ResponsiveContainer width="100%" height="100%" minHeight="100px">
+              <BarChart
+                layout="vertical"
+                width={150}
+                height={80}
+                data={[
+                  {
+                    name: "Tractomula",
+                    uv: sellSteps[1].data.total,
+                  },
+                  {
+                    name: "Bunker",
+                    uv: sellSteps[2].data.total,
+                  },
+                ]}
+              >
+                <XAxis type="number" hide />
+                <YAxis type="category" width={90} dataKey="name" />
+                <Bar dataKey="uv" fill="#1a2874" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+        <div>
+          <h3>Saldos</h3>
+          <div className="ventasDetailContainer">
+            {derivative.map((d) => (
+              <p key={d.id}>
+                {d.nombre}:{" "}
+                <span>
+                  {renderNumber(
+                    (d.price * totalBbl * getRendimiento(d)) / 100,
+                    false,
+                    true
+                  )}
+                  $
+                </span>
+              </p>
+            ))}
+            <ResponsiveContainer width="100%" height="100%" minHeight="100px">
+              <BarChart
+                layout="vertical"
+                width={150}
+                height={80}
+                data={derivative.map((d) => ({
+                  name: d.nombre.split(" ")[0],
+                  uv: (d.price * getRendimiento(d) * totalBbl) / 100,
+                }))}
+              >
+                <XAxis type="number" hide />
+                <YAxis type="category" width={50} dataKey="name" />
+                <Bar dataKey="uv" fill="#1a2874" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </div>
+
+      <h3 className="derivadosTitle">Resumen Final</h3>
+
+      <div className="summary">
+        <div>
+          <h3>Gastos totales</h3>
+          <p>
+            ${renderNumber(operationalCost * totalBbl + sellCosts, false, true)}
+          </p>
+        </div>
+        <div>
+          <h3>Ingresos Totales</h3>
+          <p>
+            $
+            {renderNumber(
+              derivative.reduce(
+                (prev, curr) =>
+                  prev + (curr.price * getRendimiento(curr) * totalBbl) / 100,
+                0
+              ),
+              false,
+              true
+            )}
+          </p>
+        </div>
+        <div>
+          <h3>Margen Operativo</h3>
+          <p>
+            ${renderNumber(profit, false, true)}
+            <span
+              className={`derivativeProfitDiff ${
+                profit > 0 ? "positive" : "negative"
+              }`}
+            >
+              {}
+              {renderNumber(
+                Math.floor((profit / (operationalCost * totalBbl)) * 100),
+                false,
+                true
+              )}
+              %
+            </span>
+          </p>
+        </div>
+      </div>
     </Card>
   );
 }

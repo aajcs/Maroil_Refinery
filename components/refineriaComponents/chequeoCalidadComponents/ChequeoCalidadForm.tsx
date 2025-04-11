@@ -340,7 +340,7 @@ const ChequeoCalidadForm = ({
                       className="w-full"
                       showClear
                       filter
-                      disabled
+                      // disabled
                     />
                   )}
                 />

@@ -1068,9 +1068,11 @@ export const productoSchema = object({
   }).optional(),
   nombre: string().min(1, "El nombre es obligatorio"),
   color: string().min(1, "El color es obligatorio"),
-  estado: string().min(1, "El estado es obligatorio"),
+  estado: string().min(1, "El estado es obligatorio").optional(),
   posicion: number().min(1, "La capacidad es obligatoria"),
-  tipoMaterial: string().min(1, "El tipo de material es obligatorio"),
+  tipoMaterial: string()
+    .min(1, "El tipo de material es obligatorio")
+    .default("Derivado"),
   eliminado: boolean().default(false),
   createdAt: union([string(), date()]).optional(),
   updatedAt: union([string(), date()]).optional(),

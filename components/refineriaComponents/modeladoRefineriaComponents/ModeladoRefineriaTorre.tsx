@@ -67,7 +67,8 @@ const calculateDailyProduction = (
     };
 
     tower.material.forEach((material) => {
-      const productId = material.idProducto.id;
+      const productId = material.idProducto?.id;
+      if (!productId) return;
       const expectedDaily = tower.capacidad * (material.porcentaje / 100);
       const expected = expectedDaily * (hoursDiff / 24);
 
@@ -79,7 +80,7 @@ const calculateDailyProduction = (
 
       dailyEntry.products.push({
         id: productId,
-        name: material.idProducto.nombre,
+        name: material?.idProducto?.nombre || "",
         expected,
         actual,
         performance: isNaN(performance) ? 0 : performance,
@@ -109,7 +110,7 @@ const getProcessedRawMaterial = (
 const calculateProductionMetrics = (
   tower: TorreDestilacion,
   cuts: CorteRefinacion[]
-): ProductionMetrics[] => {
+): any[] => {
   const sortedCuts = [...cuts].sort(
     (a, b) =>
       new Date(a.fechaCorte).getTime() - new Date(b.fechaCorte).getTime()
@@ -133,8 +134,11 @@ const calculateProductionMetrics = (
 
     // Calcular métricas por producto
     const productsMetrics = tower.material.map((material) => {
-      const productId = material.idProducto.id;
+      const productId = material.idProducto?.id;
 
+      if (!productId) {
+        return null;
+      }
       // Obtener cantidades del producto derivado
       const getDerivedQty = (cut: CorteRefinacion) => {
         const torreCut = cut.corteTorre.find(
@@ -158,7 +162,7 @@ const calculateProductionMetrics = (
 
       return {
         id: productId,
-        name: material.idProducto.nombre,
+        name: material.idProducto?.nombre || "",
         expected: expectedProduction,
         actual: actualProduction,
         performance: isFinite(performance) ? performance : 0,
@@ -195,7 +199,7 @@ const ModeladoRefineriaTorre: React.FC<ModeladoRefineriaTorreProps> = ({
   >({});
 
   useEffect(() => {
-    if (!torre || !corteRefinacions.length) return;
+    if (!torre || !corteRefinacions?.length) return;
 
     const calculatedMetrics = calculateProductionMetrics(
       torre,
@@ -205,7 +209,7 @@ const ModeladoRefineriaTorre: React.FC<ModeladoRefineriaTorreProps> = ({
 
     // Obtener última métrica por producto
     const latest = calculatedMetrics.reduce((acc, day) => {
-      day.products.forEach((product) => {
+      day.products.forEach((product: DailyMetrics["products"][0]) => {
         acc[product.id] = product;
       });
       return acc;
@@ -298,7 +302,7 @@ const ModeladoRefineriaTorre: React.FC<ModeladoRefineriaTorreProps> = ({
           operational: material.estadoMaterial === "True",
           porcentaje: material.porcentaje || 0,
           cantidad: datosActualizados?.cantidadActual.toString() || "0",
-
+          bblPerHour: 0,
           diferenciaCantidad:
             datosActualizados?.diferenciaCantidad.toString() || "0",
         };

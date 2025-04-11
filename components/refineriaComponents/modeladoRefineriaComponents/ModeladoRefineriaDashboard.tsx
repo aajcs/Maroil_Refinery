@@ -21,6 +21,7 @@ import ModeladoRefineriaContratosVentaList from "./ModeladoRefineriaContratosVen
 
 import { TabPanel, TabView } from "primereact/tabview";
 import { InputSwitch } from "primereact/inputswitch";
+// import TorreProduction from "./TorreProduction";
 
 const ModeladoRefineriaDashboard = () => {
   const { activeRefineria } = useRefineriaStore();
@@ -196,6 +197,13 @@ const ModeladoRefineriaDashboard = () => {
             <ModeladoRefineriaDespachosList despachos={despachos} />
           </TabPanel>
         </TabView>
+        {/* 
+        {torresDestilacion.map((torre) => (
+          <div key={torre.id} className="col-12 md:col-6">
+            <TorreProduction tower={torre} cuts={corteRefinacions} />
+
+          </div>
+        ))} */}
 
         {/* Línea de recepción */}
 
@@ -240,7 +248,6 @@ const ModeladoRefineriaDashboard = () => {
                 <div key={torre.id} className="col-12 md:col-6">
                   <ModeladoRefineriaTorre
                     torre={torre}
-                    refinacions={refinacions}
                     corteRefinacions={corteRefinacions}
                   />
                   {/* <ModeladoRefineriaTorreSVG /> */}

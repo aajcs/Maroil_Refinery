@@ -3,13 +3,9 @@ import React, { useEffect, useState } from "react";
 import { getRefinerias } from "@/app/api/refineriaService";
 import { useRouter } from "next/navigation";
 import { useRefineriaStore } from "@/store/refineriaStore";
-import { getRecepcions } from "@/app/api/recepcionService";
-import { Recepcion } from "@/libs/interfaces";
-import GraficaRecepcionesPorRefineria from "./GraficaRecepcionesPorRefineria";
 
-const DashboardRefinerias = () => {
+const DashboardOperacionesGlobal = () => {
   const [refinerias, setRefinerias] = useState<any[]>([]);
-  const [recepcions, setRecepcions] = useState<Recepcion[]>([]);
   // const setActiveRefineriaId = useRefineriaStore(
   //   (state) => state.setActiveRefineriaId
   // );
@@ -32,23 +28,6 @@ const DashboardRefinerias = () => {
     };
 
     fetchRefinerias();
-  }, []);
-  useEffect(() => {
-    const fetchRecepcions = async () => {
-      try {
-        const data = await getRecepcions();
-        const { recepcions: dataRepecions } = data;
-        if (Array.isArray(dataRepecions)) {
-          setRecepcions(dataRepecions);
-        } else {
-          console.error("La respuesta no es un array:", dataRepecions);
-        }
-      } catch (error) {
-        console.error("Error al obtener las recepciones:", error);
-      }
-    };
-
-    fetchRecepcions();
   }, []);
   const handleDivClick = (refineria: any) => {
     setActiveRefineria(refineria);
@@ -93,14 +72,8 @@ const DashboardRefinerias = () => {
           <p className="text-500 italic">No hay refinerías disponibles</p>
         </div>
       )}
-
-      {GraficaRecepcionesPorRefineria ? (
-        <GraficaRecepcionesPorRefineria recepcions={recepcions} />
-      ) : (
-        <p>Error loading chart component</p>
-      )}
     </div>
   );
 };
 
-export default DashboardRefinerias;
+export default DashboardOperacionesGlobal;
