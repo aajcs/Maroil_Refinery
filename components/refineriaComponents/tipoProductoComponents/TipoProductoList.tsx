@@ -29,7 +29,6 @@ const TipoProductoList = () => {
   const [deleteProductDialog, setDeleteProductDialog] = useState(false);
   const [tipoProductoFormDialog, setTipoProductoFormDialog] = useState(false);
 
-  const router = useRouter();
   const dt = useRef(null);
   const toast = useRef<Toast | null>(null);
 
@@ -154,7 +153,7 @@ const TipoProductoList = () => {
           {Array.isArray(rowData.rendimientos) &&
             rowData.rendimientos.map((rendimiento, index) => (
               <div
-                className="p-3 mb-2 border-round shadow-1 text-sm text-gray-800 flex align-items-center gap-4"
+                className="p-3 mb-1 border-round shadow-1 text-sm text-gray-800 flex align-items-center gap-1"
                 style={{
                   backgroundColor: `#${rendimiento.idProducto?.color}20`,
                 }}
@@ -180,6 +179,13 @@ const TipoProductoList = () => {
                     <i className="pi pi-dollar text-green-500"></i>
                     <span>
                       <strong>Convenio:</strong> {rendimiento.convenio || "N/A"}
+                    </span>
+                  </div>
+                  <div className="flex align-items-center gap-2">
+                    <i className="pi pi-dollar text-green-500"></i>
+                    <span>
+                      <strong>Precio Venta:</strong>{" "}
+                      {rendimiento.costoVenta || "N/A"}
                     </span>
                   </div>
                   <div className="flex align-items-center gap-2">
