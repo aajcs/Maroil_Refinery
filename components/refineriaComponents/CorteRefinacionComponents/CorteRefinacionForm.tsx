@@ -2,10 +2,9 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { classNames } from "primereact/utils";
-import { corteRefinacionSchema } from "@/libs/zod";
+import { corteRefinacionSchema } from "@/libs/zods";
 import { Toast } from "primereact/toast";
 import { Dropdown } from "primereact/dropdown";
 import { useRefineriaStore } from "@/store/refineriaStore";
@@ -13,21 +12,9 @@ import { useRefineriaStore } from "@/store/refineriaStore";
 import { InputNumber } from "primereact/inputnumber";
 
 import { Calendar } from "primereact/calendar";
-import {
-  Contrato,
-  CorteRefinacion,
-  Producto,
-  Tanque,
-  TorreDestilacion,
-} from "@/libs/interfaces";
-import { getTanques } from "@/app/api/tanqueService";
+import { CorteRefinacion } from "@/libs/interfaces";
 import { ProgressSpinner } from "primereact/progressspinner";
-import { getProductos } from "@/app/api/productoService";
-import { getTorresDestilacion } from "@/app/api/torreDestilacionService";
-import {
-  createRefinacionSalida,
-  updateRefinacionSalida,
-} from "@/app/api/refinacionSalidaService";
+
 import { useRefineryData } from "@/hooks/useRefineryData";
 import { InputTextarea } from "primereact/inputtextarea";
 import {
@@ -49,14 +36,6 @@ interface CorteRefinacionFormProps {
   ) => void;
 }
 
-const estatusValues = ["true", "false"];
-const estadoRefinacionSalidaValues = [
-  "En Cola",
-  "En Proceso",
-  "Finalizado",
-  "Pausado",
-];
-
 const CorteRefinacionForm = ({
   corteRefinacion,
   hideCorteRefinacionFormDialog,
@@ -65,8 +44,9 @@ const CorteRefinacionForm = ({
   showToast,
 }: CorteRefinacionFormProps) => {
   const { activeRefineria } = useRefineriaStore();
-  const { productos, loading, tanques, refinacions, torresDestilacion } =
-    useRefineryData(activeRefineria?.id || "");
+  const { productos, loading, tanques, torresDestilacion } = useRefineryData(
+    activeRefineria?.id || ""
+  );
   const toast = useRef<Toast | null>(null);
 
   const [submitting, setSubmitting] = useState(false);

@@ -1,21 +1,21 @@
 "use client";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { classNames } from "primereact/utils";
-import { tanqueSchema } from "@/libs/zod";
+import { tanqueSchema } from "@/libs/zods";
 import { createTanque, updateTanque } from "@/app/api/tanqueService";
 import { Toast } from "primereact/toast";
 import { Dropdown } from "primereact/dropdown";
 import { useRefineriaStore } from "@/store/refineriaStore";
-import { getProductos } from "@/app/api/productoService";
-import { Producto } from "@/libs/interfaces";
+
 import { InputSwitch } from "primereact/inputswitch";
 import { useRefineryData } from "@/hooks/useRefineryData";
 import { ProgressSpinner } from "primereact/progressspinner";
+import { InputNumber } from "primereact/inputnumber";
 
 type FormData = z.infer<typeof tanqueSchema>;
 
@@ -58,8 +58,13 @@ const TanqueForm = ({
     formState: { errors },
     setValue,
     watch,
+    control,
   } = useForm<FormData>({
     resolver: zodResolver(tanqueSchema),
+    defaultValues: {
+      capacidad: 0,
+      almacenamiento: 0,
+    },
   });
   useEffect(() => {
     if (tanque) {
@@ -247,13 +252,23 @@ const TanqueForm = ({
                   <i className="pi pi-chart-bar mr-2 text-primary"></i>
                   Capacidad
                 </label>
-                <InputText
-                  id="capacidad"
-                  type="number"
-                  className={classNames("w-full", {
-                    "p-invalid": errors.capacidad,
-                  })}
-                  {...register("capacidad", { valueAsNumber: true })}
+                <Controller
+                  name="capacidad"
+                  control={control}
+                  rules={{ required: "La capacidad es requerida" }}
+                  render={({ field, fieldState }) => (
+                    <InputNumber
+                      id="capacidad"
+                      value={field.value}
+                      onValueChange={(e) => field.onChange(e.value)}
+                      mode="decimal"
+                      minFractionDigits={2}
+                      className={classNames("w-full", {
+                        "p-invalid": fieldState.error,
+                      })}
+                      suffix=" bbl"
+                    />
+                  )}
                 />
                 {errors.capacidad && (
                   <small className="p-error block mt-2 flex align-items-center">
@@ -271,13 +286,23 @@ const TanqueForm = ({
                   <i className="pi pi-box mr-2 text-primary"></i>
                   Almacenamiento
                 </label>
-                <InputText
-                  id="almacenamiento"
-                  type="number"
-                  className={classNames("w-full", {
-                    "p-invalid": errors.almacenamiento,
-                  })}
-                  {...register("almacenamiento", { valueAsNumber: true })}
+                <Controller
+                  name="almacenamiento"
+                  control={control}
+                  rules={{ required: "El almacenamiento es requerido" }}
+                  render={({ field, fieldState }) => (
+                    <InputNumber
+                      id="almacenamiento"
+                      value={field.value}
+                      onValueChange={(e) => field.onChange(e.value)}
+                      mode="decimal"
+                      minFractionDigits={2}
+                      className={classNames("w-full", {
+                        "p-invalid": fieldState.error,
+                      })}
+                      suffix=" bbl"
+                    />
+                  )}
                 />
                 {errors.almacenamiento && (
                   <small className="p-error block mt-2 flex align-items-center">
@@ -287,6 +312,7 @@ const TanqueForm = ({
                 )}
               </div>
             </div>
+
             {/* Campo: Estado */}
             <div className="col-12 md:col-6 lg:col-4 xl:col-3">
               <div className="p-2 bg-white border-round shadow-1 surface-card">

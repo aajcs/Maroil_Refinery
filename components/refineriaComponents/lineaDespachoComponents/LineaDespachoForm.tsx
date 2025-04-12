@@ -6,7 +6,7 @@ import { z } from "zod";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { classNames } from "primereact/utils";
-import { lineaDespachoSchema } from "@/libs/zod";
+import { lineaDespachoSchema } from "@/libs/zods";
 
 import { Toast } from "primereact/toast";
 import { Dropdown } from "primereact/dropdown";

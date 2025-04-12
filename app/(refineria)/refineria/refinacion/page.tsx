@@ -1,13 +1,9 @@
 "use client";
 
-import RefinacionList from "@/components/refineriaComponents/refinacionComponents/RefinacionList";
+// import RefinacionList from "@/components/refineriaComponents/refinacionComponents/RefinacionList";
 
 function Refinacion() {
-  return (
-    <>
-      <RefinacionList />
-    </>
-  );
+  return <>{/* <RefinacionList /> */}</>;
 }
 
 export default Refinacion;

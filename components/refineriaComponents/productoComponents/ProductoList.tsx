@@ -170,7 +170,7 @@ const ProductoList = () => {
           )}
         />
 
-        {/* <Column field="tipoMaterial" header="Tipo de Material" sortable /> */}
+        <Column field="tipoMaterial" header="Categoria" sortable />
         <Column
           field="idTipoProducto"
           header="Tipo de Producto"

@@ -7,7 +7,7 @@ import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { Dropdown } from "primereact/dropdown";
 import { classNames } from "primereact/utils";
-import { profileSchema } from "@/libs/zod";
+import { profileSchema } from "@/libs/zods";
 import { createUser, updateUser } from "@/app/api/userService";
 import { Toast } from "primereact/toast";
 import { useRouter } from "next/navigation";

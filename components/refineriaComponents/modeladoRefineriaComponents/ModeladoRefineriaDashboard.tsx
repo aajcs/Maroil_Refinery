@@ -16,7 +16,6 @@ import ModeladoRefineriaContratosList from "./ModeladoRefineriaContratosList";
 import ModeladoRefineriaRecepcionesList from "./ModeladoRefineriaRecepcionesList";
 import ModeladoRefineriaLineaDespacho from "./ModeladoRefineriaLineaDespacho";
 import ModeladoRefineriaDespachosList from "./ModeladoRefineriaDespachosList";
-import { Contrato } from "@/libs/interfaces";
 import ModeladoRefineriaContratosVentaList from "./ModeladoRefineriaContratosVentaList";
 
 import { TabPanel, TabView } from "primereact/tabview";
@@ -33,7 +32,6 @@ const ModeladoRefineriaDashboard = () => {
     recepcions,
     contratos,
     loading,
-    refinacions,
     lineaDespachos,
     despachos,
     corteRefinacions,
@@ -83,7 +81,7 @@ const ModeladoRefineriaDashboard = () => {
       const productos = contrato.idItems.map((item: any) => {
         const recepcionesProducto = recepcionesContrato.filter(
           (recepcion) =>
-            recepcion.idContratoItems?.producto.id === item.producto.id
+            recepcion.idContratoItems?.producto.id === item.producto?.id
         );
 
         const cantidadRecibida = recepcionesProducto.reduce(
@@ -232,7 +230,6 @@ const ModeladoRefineriaDashboard = () => {
                   <ModeladoRefineriaTanque
                     tanque={tanque}
                     recepcions={recepcions}
-                    refinacions={refinacions}
                   />
                 </div>
               ))}
@@ -269,7 +266,6 @@ const ModeladoRefineriaDashboard = () => {
                   <ModeladoRefineriaTanque
                     tanque={tanque}
                     despachos={despachos}
-                    refinacions={refinacions}
                   />
                 </div>
               ))}

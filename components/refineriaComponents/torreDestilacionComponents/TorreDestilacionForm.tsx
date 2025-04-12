@@ -1,12 +1,12 @@
 "use client";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { classNames } from "primereact/utils";
-import { torreDestilacionSchema } from "@/libs/zod";
+import { torreDestilacionSchema } from "@/libs/zods";
 import {
   createTorreDestilacion,
   updateTorreDestilacion,
@@ -17,6 +17,7 @@ import { useRefineriaStore } from "@/store/refineriaStore";
 import { Material, Producto } from "@/libs/interfaces";
 import { getProductos } from "@/app/api/productoService";
 import { MultiSelect } from "primereact/multiselect";
+import { InputNumber } from "primereact/inputnumber";
 
 type FormData = z.infer<typeof torreDestilacionSchema>;
 
@@ -50,6 +51,7 @@ const TorreDestilacionForm = ({
 
   // Estado para materiales seleccionados
   const [selectedMaterials, setSelectedMaterials] = useState<Material[]>([]);
+  console.log(selectedMaterials);
 
   const {
     register,
@@ -57,6 +59,7 @@ const TorreDestilacionForm = ({
     formState: { errors },
     setValue,
     watch,
+    control,
   } = useForm<FormData>({
     resolver: zodResolver(torreDestilacionSchema),
   });
@@ -130,7 +133,7 @@ const TorreDestilacionForm = ({
       setSubmitting(false);
     }
   };
-
+  console.log(errors);
   return (
     <div>
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -199,31 +202,113 @@ const TorreDestilacionForm = ({
               </div>
             </div> */}
 
+            {/* Campo: Capacidad */}
+            <div className="col-12 md:col-6 lg:col-4 xl:col-3">
+              <div className="p-2 bg-white border-round shadow-1 surface-card">
+                <label className="block font-medium text-900 mb-3 flex align-items-center">
+                  <i className="pi pi-chart-bar mr-2 text-primary"></i>
+                  Capacidad
+                </label>
+                <Controller
+                  name="capacidad"
+                  control={control}
+                  rules={{ required: "La capacidad es requerida" }}
+                  render={({ field, fieldState }) => (
+                    <InputNumber
+                      id="capacidad"
+                      value={field.value}
+                      onValueChange={(e) => field.onChange(e.value)}
+                      mode="decimal"
+                      minFractionDigits={2}
+                      className={classNames("w-full", {
+                        "p-invalid": fieldState.error,
+                      })}
+                      suffix=" bbl"
+                    />
+                  )}
+                />
+                {errors.capacidad && (
+                  <small className="p-error block mt-2 flex align-items-center">
+                    <i className="pi pi-exclamation-circle mr-2"></i>
+                    {errors.capacidad.message}
+                  </small>
+                )}
+              </div>
+            </div>
             {/* Campo: Materiales */}
-            <div className="col-12 ">
+            <div className="col-12">
               <div className="p-2 bg-white border-round shadow-1 surface-card">
                 <label className="block font-medium text-900 mb-3 flex align-items-center">
                   <i className="pi pi-box mr-2 text-primary"></i>
-                  Materiales
+                  Materiales y Porcentajes
                 </label>
+
+                {/* Selector de Materiales */}
                 <MultiSelect
                   value={selectedMaterials.map((m) => m.idProducto)}
                   options={productos}
                   optionLabel="nombre"
                   onChange={(e) => {
-                    const selected = e.value as Producto[];
-                    const materials: any[] = selected.map((producto) => ({
-                      idProducto: producto,
-                      estadoMaterial: "True",
-                    }));
-                    setSelectedMaterials(materials as any);
+                    const selectedIds = e.value;
+                    const nuevosMateriales = selectedIds.map((id: any) => {
+                      // Buscar si ya existe en los seleccionados
+                      const existente = selectedMaterials.find(
+                        (m) => m.idProducto === id
+                      );
+                      return (
+                        existente || {
+                          idProducto: id,
+                          estadoMaterial: "True",
+                          porcentaje: 0,
+                        }
+                      );
+                    });
+                    setSelectedMaterials(nuevosMateriales);
                   }}
                   display="chip"
                   placeholder="Seleccionar materiales"
                   maxSelectedLabels={3}
-                  className="w-full"
+                  className="w-full mb-3"
                   disabled={loading}
                 />
+
+                {/* Inputs de Porcentaje */}
+                {selectedMaterials.map((material, index) => (
+                  <div
+                    key={index}
+                    className="flex align-items-center gap-3 mb-2"
+                  >
+                    <span className="w-6rem">
+                      {productos.find((p) => p.id === material.idProducto?.id)
+                        ?.nombre || "Material"}
+                    </span>
+
+                    <InputNumber
+                      value={material.porcentaje}
+                      onValueChange={(e) => {
+                        const nuevosMateriales = [...selectedMaterials];
+                        nuevosMateriales[index].porcentaje = e.value || 0;
+                        setSelectedMaterials(nuevosMateriales);
+                      }}
+                      mode="decimal"
+                      min={0}
+                      max={100}
+                      suffix="%"
+                      className="w-6rem"
+                    />
+
+                    <Button
+                      icon="pi pi-times"
+                      className="p-button-danger p-button-text"
+                      onClick={() => {
+                        const nuevosMateriales = selectedMaterials.filter(
+                          (_, i) => i !== index
+                        );
+                        setSelectedMaterials(nuevosMateriales);
+                      }}
+                    />
+                  </div>
+                ))}
               </div>
             </div>
           </div>

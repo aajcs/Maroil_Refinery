@@ -11,13 +11,13 @@ import { Dialog } from "primereact/dialog";
 import { useRefineriaStore } from "@/store/refineriaStore";
 import ChequeoCalidadForm from "./ChequeoCalidadForm";
 
-import { ChequeoCalidad } from "@/libs/interfaces";
 import { formatDateFH } from "@/utils/dateUtils";
 import {
   deleteChequeoCalidad,
   getChequeoCalidads,
 } from "@/app/api/chequeoCalidadService";
 import CustomActionButtons from "@/components/common/CustomActionButtons";
+import { ChequeoCalidad } from "@/libs/interfaces";
 
 const ChequeoCalidadList = () => {
   const { activeRefineria } = useRefineriaStore();

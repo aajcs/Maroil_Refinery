@@ -6,7 +6,7 @@ import { z } from "zod";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { classNames } from "primereact/utils";
-import { contactoSchema } from "@/libs/zod";
+import { contactoSchema } from "@/libs/zods";
 import { createContacto, updateContacto } from "@/app/api/contactoService";
 import { Toast } from "primereact/toast";
 import { Dropdown } from "primereact/dropdown";

@@ -16,46 +16,10 @@ const DashboardSales = () => {
     recepcions,
     contratos,
     loading,
-    refinacions,
   } = useRefineryData(
     activeRefineria?.id || "",
     recepcionModificado || undefined // Pasa recepcionModificado como dependencia
   );
-  // Agrupar recepciones por contrato y producto
-  const recepcionesPorContrato = useMemo(() => {
-    return contratos.map((contrato) => {
-      const recepcionesContrato = recepcions.filter(
-        (recepcion) => recepcion.idContrato.id === contrato.id
-      );
-      const productos = contrato.idItems.map((item: any) => {
-        const recepcionesProducto = recepcionesContrato.filter(
-          (recepcion) =>
-            recepcion.idContratoItems.producto.id === item.producto.id
-        );
-
-        const cantidadRecibida = recepcionesProducto.reduce(
-          (total, recepcion) => total + recepcion.cantidadRecibida,
-          0
-        );
-        const cantidadFaltante = item.cantidad - cantidadRecibida;
-        const porcentaje = (cantidadRecibida / item.cantidad) * 100;
-
-        return {
-          producto: item.producto,
-          cantidad: item.cantidad,
-          cantidadRecibida,
-          cantidadFaltante,
-          recepciones: recepcionesProducto,
-          porcentaje,
-        };
-      });
-
-      return {
-        ...contrato,
-        productos,
-      };
-    });
-  }, [contratos, recepcions]);
 
   if (loading) {
     return (

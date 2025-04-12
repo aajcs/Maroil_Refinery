@@ -4,12 +4,12 @@ import React, { useRef, useState } from "react";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 
-import { ChequeoCalidad } from "@/libs/interfaces";
 import { formatDateFH } from "@/utils/dateUtils";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import ChequeoCalidadCard from "./ChequeoCalidadCard";
 import { InputText } from "primereact/inputtext";
+import { ChequeoCalidad } from "@/libs/interfaces";
 
 interface ChequeoCalidadListCortProps {
   chequeoCalidad: any;

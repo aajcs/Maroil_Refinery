@@ -6,7 +6,7 @@ import { z } from "zod";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { classNames } from "primereact/utils";
-import { lineaRecepcionSchema } from "@/libs/zod";
+import { lineaRecepcionSchema } from "@/libs/zods";
 import {
   createLineaRecepcion,
   updateLineaRecepcion,

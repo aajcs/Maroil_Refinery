@@ -6,7 +6,7 @@ import { z } from "zod";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { classNames } from "primereact/utils";
-import { refineriaSchema } from "@/libs/zod";
+import { refineriaSchema } from "@/libs/zods";
 import { createRefineria, updateRefineria } from "@/app/api/refineriaService";
 import { Toast } from "primereact/toast";
 import { Dropdown } from "primereact/dropdown";

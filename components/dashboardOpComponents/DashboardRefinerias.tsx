@@ -4,8 +4,9 @@ import { getRefinerias } from "@/app/api/refineriaService";
 import { useRouter } from "next/navigation";
 import { useRefineriaStore } from "@/store/refineriaStore";
 import { getRecepcions } from "@/app/api/recepcionService";
+// import GraficaRecepcionesPorRefineria from "./GraficaRecepcionesPorRefineria";
+// import RecepcionDashboard from "./RecepcionDashboard";
 import { Recepcion } from "@/libs/interfaces";
-import GraficaRecepcionesPorRefineria from "./GraficaRecepcionesPorRefineria";
 
 const DashboardRefinerias = () => {
   const [refinerias, setRefinerias] = useState<any[]>([]);
@@ -93,12 +94,14 @@ const DashboardRefinerias = () => {
           <p className="text-500 italic">No hay refinerías disponibles</p>
         </div>
       )}
-
-      {GraficaRecepcionesPorRefineria ? (
-        <GraficaRecepcionesPorRefineria recepcions={recepcions} />
-      ) : (
-        <p>Error loading chart component</p>
-      )}
+      <div className="col-12">
+        {/* <RecepcionDashboard recepcions={recepcions} /> */}
+        {/* {GraficaRecepcionesPorRefineria ? (
+          <GraficaRecepcionesPorRefineria recepcions={recepcions} />
+        ) : (
+          <p>Error loading chart component</p>
+        )}{" "} */}
+      </div>
     </div>
   );
 };

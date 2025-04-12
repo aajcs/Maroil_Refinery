@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "primereact/button";
 import { classNames } from "primereact/utils";
-import { despachoSchema } from "@/libs/zod";
+import { despachoSchema } from "@/libs/zods";
 import { Dropdown } from "primereact/dropdown";
 import { useRefineriaStore } from "@/store/refineriaStore";
 import { createDespacho, updateDespacho } from "@/app/api/despachoService";

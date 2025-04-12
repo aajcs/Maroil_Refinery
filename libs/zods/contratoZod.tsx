@@ -1,0 +1,177 @@
+import { array, boolean, date, number, object, string, union, z } from "zod";
+
+export const contactoSchema = object({
+  id: string().optional(),
+  nombre: string().min(1, "La razon es obligatoria"),
+  identificacionFiscal: string().min(1, "Nit es obligatoria"),
+  correo: string().email("El correo debe ser válido"),
+  direccion: string().min(1, "La dirección es obligatoria"),
+  telefono: string().min(1, "El teléfono es obligatorio"),
+  tipo: string().min(1, "El tipo es obligatorio"),
+  idRefineria: object({
+    id: string().optional(),
+  }).optional(),
+  representanteLegal: string().min(1, "El representante legal es obligatorio"),
+  ciudad: string().min(1, "La ciudad es obligatoria"),
+  estado: string().min(1, "El estado es obligatorio").optional(),
+  eliminado: boolean().default(false),
+  createdAt: string().optional(),
+  updatedAt: string().optional(),
+});
+
+export const contratoSchema = object({
+  // Ejemplo de campo adicional
+  condicionesPago: object({
+    tipo: string().min(1, "El tipo es obligatorio"),
+    plazo: number().min(0, "El plazo debe ser un número no negativo"),
+    abono: array(
+      object({
+        id: string().optional(),
+        monto: number().min(0, "El monto debe ser un número no negativo"),
+        fecha: string().optional(),
+      })
+    ).optional(),
+  }).optional(),
+  estadoEntrega: string().min(1, "El estado de entrega es obligatorio"),
+  clausulas: array(string()).optional(),
+  estado: string().min(1, "El estado es obligatorio"),
+  estadoContrato: string().min(1, "El estado es obligatorio"),
+  eliminado: boolean().default(false),
+  numeroContrato: string().min(1, "El número de contrato es obligatorio"),
+  descripcion: string().min(1, "La descripción es obligatoria"),
+  tipoContrato: string().min(1, "El tipo de contrato es obligatorio"),
+  idRefineria: object({
+    id: string().optional(),
+    nombre: string().min(1, "El nombre de la refinería es obligatorio"),
+  }).optional(),
+
+  idContacto: object({
+    id: string().optional(),
+    nombre: string().min(1, "El nombre del contacto es obligatorio"),
+  }),
+
+  abono: array(
+    object({
+      id: string().optional(),
+      monto: number().min(0, "El monto debe ser un número no negativo"),
+      fecha: string().optional(),
+    })
+  ).optional(),
+
+  /**
+   * idItems: aquí agregamos los campos
+   * que reflejan la estructura de tu snippet de Mongoose
+   * (producto, brent, convenio, montoTransporte, etc.).
+   */
+  idItems: array(
+    object({
+      id: string().optional(),
+      eliminado: boolean().default(false),
+
+      // Referencia al producto
+      producto: object({
+        nombre: string().min(1, "El nombre del producto es obligatorio"),
+        id: string().min(1, "El ID del producto es obligatorio"),
+      }),
+      ipTipoProducto: object({
+        nombre: string().min(1, "El nombre del producto es obligatorio"),
+        id: string().min(1, "El ID del producto es obligatorio"),
+      }).optional(),
+
+      cantidad: number().min(0, "La cantidad debe ser un número no negativo"),
+      precioUnitario: number().optional(),
+
+      brent: number().optional(),
+      convenio: number().optional(),
+      montoTransporte: number()
+        .min(0, "El monto de transporte debe ser un número no negativo")
+        .optional(),
+
+      // Características del producto
+      clasificacion: string()
+        .min(1, "La clasificación es obligatoria")
+        .optional(),
+      gravedadAPI: number()
+        .min(0, "La gravedad API debe ser un número no negativo")
+        .optional(),
+      azufre: number()
+        .min(0, "El porcentaje de azufre debe ser un número no negativo")
+        .optional(),
+      contenidoAgua: number()
+        .min(0, "El contenido de agua debe ser un número no negativo")
+        .optional(),
+      flashPoint: number().min(0, "El Flashpoint es obligatorio").optional(),
+
+      // Estado local de cada item
+      estado: string().optional(),
+    })
+  ).optional(),
+
+  /**
+   * Campos alternativos para items (si tuvieras otra colección con la misma estructura).
+   * Ajusta o elimina si no lo estás usando.
+   */
+  items: array(
+    object({
+      id: string().optional(),
+      eliminado: boolean().default(false),
+
+      // Referencia al producto
+      producto: object({
+        nombre: string().min(1, "El nombre del producto es obligatorio"),
+        id: string().min(1, "El ID del producto es obligatorio"),
+      }),
+      ipTipoProducto: object({
+        nombre: string().min(1, "El nombre del producto es obligatorio"),
+        id: string().min(1, "El ID del producto es obligatorio"),
+      }),
+      cantidad: number().min(0, "La cantidad debe ser un número no negativo"),
+      precioUnitario: number().min(
+        0,
+        "El precio unitario debe ser un número no negativo"
+      ),
+
+      brent: number()
+        .min(0, "El valor de brent debe ser un número no negativo")
+        .optional(),
+      convenio: number()
+        .min(0, "El porcentaje de convenio debe ser un número no negativo")
+        .optional(),
+      montoTransporte: number()
+        .min(0, "El monto de transporte debe ser un número no negativo")
+        .optional(),
+
+      // Características del producto
+      clasificacion: string()
+        .min(1, "La clasificación es obligatoria")
+        .optional(),
+      gravedadAPI: number()
+        .min(0, "La gravedad API debe ser un número no negativo")
+        .optional(),
+      azufre: number()
+        .min(0, "El porcentaje de azufre debe ser un número no negativo")
+        .optional(),
+      contenidoAgua: number()
+        .min(0, "El contenido de agua debe ser un número no negativo")
+        .optional(),
+      flashPoint: number().min(0, "El Flashpoint es obligatorio").optional(),
+
+      // Estado local de cada item
+      estado: string().optional(),
+    })
+  ).optional(),
+
+  historialModificaciones: array(
+    object({
+      id: string().optional(),
+      fecha: string().optional(),
+      descripcion: string().optional(),
+    })
+  ).optional(),
+
+  fechaInicio: union([string(), date()]).optional(),
+  fechaFin: union([string(), date()]).optional(),
+  createdAt: string().optional(),
+  updatedAt: string().optional(),
+  id: string().optional(),
+});

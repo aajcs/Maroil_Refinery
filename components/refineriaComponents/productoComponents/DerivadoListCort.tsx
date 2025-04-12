@@ -6,7 +6,7 @@ import { DataTable, DataTableFilterMeta } from "primereact/datatable";
 import { Toast } from "primereact/toast";
 import { useRefineriaStore } from "@/store/refineriaStore";
 import { formatDateFH } from "@/utils/dateUtils";
-import { Derivado } from "@/libs/interfaces";
+import { Derivado } from "@/libs/interface";
 
 interface DerivadoListCortProps {
   derivado: Derivado[];

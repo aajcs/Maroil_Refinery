@@ -86,16 +86,16 @@ const AppMenuRefineria = () => {
           icon: "pi pi-fw pi-plus",
           to: "/refineria/chequeo-cantidad",
         },
-        {
-          label: "Refinación",
-          icon: "pi pi-fw pi-plus",
-          to: "/refineria/refinacion",
-        },
-        {
-          label: "Refinación Salida",
-          icon: "pi pi-fw pi-plus",
-          to: "/refineria/refinacion-salida",
-        },
+        // {
+        //   label: "Refinación",
+        //   icon: "pi pi-fw pi-plus",
+        //   to: "/refineria/refinacion",
+        // },
+        // {
+        //   label: "Refinación Salida",
+        //   icon: "pi pi-fw pi-plus",
+        //   to: "/refineria/refinacion-salida",
+        // },
         {
           label: "Corte de Refinación",
           icon: "pi pi-fw pi-plus",

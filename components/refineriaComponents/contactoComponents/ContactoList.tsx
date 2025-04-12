@@ -11,8 +11,8 @@ import { Dialog } from "primereact/dialog";
 import { useRefineriaStore } from "@/store/refineriaStore";
 import { deleteContacto, getContactos } from "@/app/api/contactoService";
 import ContactoForm from "./ContactoForm";
-import { Contacto } from "@/libs/interfaces";
 import { formatDateFH } from "@/utils/dateUtils";
+import { Contacto } from "@/libs/interfaces/contratoInterface";
 
 const ContactoList = () => {
   const { activeRefineria } = useRefineriaStore();

@@ -8,7 +8,7 @@ import { Button } from "primereact/button";
 import { useRouter } from "next/navigation";
 import { classNames } from "primereact/utils";
 import { useContext } from "react";
-import { loginSchema } from "@/libs/zod";
+import { loginSchema } from "@/libs/zods";
 import { LayoutContext } from "@/layout/context/layoutcontext";
 import { Page } from "@/types";
 import { signIn } from "next-auth/react";

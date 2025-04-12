@@ -6,7 +6,7 @@ import { z } from "zod";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { classNames } from "primereact/utils";
-import { productoSchema } from "@/libs/zod";
+import { productoSchema } from "@/libs/zods";
 import { createProducto, updateProducto } from "@/app/api/productoService";
 import { Toast } from "primereact/toast";
 import { Dropdown } from "primereact/dropdown";
@@ -191,6 +191,32 @@ const ProductoForm = ({
                   <small className="p-error block mt-2 flex align-items-center">
                     <i className="pi pi-exclamation-circle mr-2"></i>
                     {errors.color.message}
+                  </small>
+                )}
+              </div>
+            </div>
+
+            {/* Campo: Estado */}
+            <div className="col-12 md:col-6 ">
+              <div className="p-2 bg-white border-round shadow-1 surface-card">
+                <label className="block font-medium text-900 mb-3 flex align-items-center">
+                  <i className="pi pi-info-circle mr-2 text-primary"></i>
+                  Categoria
+                </label>
+                <Dropdown
+                  id="tipoMaterial"
+                  value={watch("tipoMaterial")}
+                  onChange={(e) => setValue("tipoMaterial", e.value)}
+                  options={tipoMaterialValues}
+                  placeholder="Seleccionar"
+                  className={classNames("w-full", {
+                    "p-invalid": errors.tipoMaterial,
+                  })}
+                />
+                {errors.tipoMaterial && (
+                  <small className="p-error block mt-2 flex align-items-center">
+                    <i className="pi pi-exclamation-circle mr-2"></i>
+                    {errors.tipoMaterial.message}
                   </small>
                 )}
               </div>

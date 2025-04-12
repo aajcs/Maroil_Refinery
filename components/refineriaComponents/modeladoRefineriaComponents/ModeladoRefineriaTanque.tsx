@@ -1,5 +1,5 @@
 "use client";
-import { Despacho, Recepcion, Refinacion, Tanque } from "@/libs/interfaces";
+import { Despacho, Recepcion, Tanque } from "@/libs/interfaces";
 import { useEffect, useState, useMemo } from "react";
 import {
   PocisionAbierta,
@@ -12,14 +12,12 @@ import { getFillColor } from "@/utils/getFillCollor";
 interface ModeladoRefineriaTanqueProps {
   tanque: Tanque;
   recepcions?: Recepcion[];
-  refinacions?: Refinacion[];
   despachos?: Despacho[];
 }
 
 const ModeladoRefineriaTanque = ({
   tanque,
   recepcions,
-  refinacions,
   despachos,
 }: ModeladoRefineriaTanqueProps) => {
   const [apiData, setApiData] = useState({ tankLevel: 0 });
@@ -34,18 +32,6 @@ const ModeladoRefineriaTanque = ({
   //     console.log("idChequeoCidRefinacionSalidaantidad", idRefinacionSalida);
   //   });
 
-  const ultimosChequeosPorRefinacion = refinacions
-    ?.filter((refinacion) => refinacion.idTanque?.id === tanque.id) // Filtrar por tanque
-    .map((refinacion) => {
-      if (!refinacion.idChequeoCantidad?.length) return null;
-
-      return refinacion.idChequeoCantidad.reduce((prev, current) => {
-        const fechaPrev = new Date(prev.fechaChequeo);
-        const fechaCurrent = new Date(current.fechaChequeo);
-        return fechaCurrent > fechaPrev ? current : prev;
-      });
-    });
-
   const totalRecepcion = useMemo(() => {
     if (!tanque || !recepcions || tanque.capacidad <= 0) return 0;
     return recepcions
@@ -58,100 +44,17 @@ const ModeladoRefineriaTanque = ({
       .filter((despacho) => despacho.idTanque?.id === tanque.id)
       .reduce((sum, despacho) => sum + despacho.cantidadRecibida, 0);
   }, [tanque, despachos]);
-  const totalRefinacion = useMemo(() => {
-    if (!tanque || !refinacions || tanque.capacidad <= 0) return 0;
 
-    const now = new Date();
-
-    return refinacions
-      .filter((refinacion) => refinacion.idTanque.id === tanque.id)
-      .reduce((acc, refinacion) => {
-        // Ajusta el nombre de campos según tu estructura real
-        const { fechaInicio, fechaFin, cantidadTotal } = refinacion;
-        if (!fechaInicio || !fechaFin) return acc;
-
-        const start = new Date(fechaInicio);
-        const end = new Date(fechaFin);
-
-        // Si la fecha actual está antes del inicio, no se ha consumido nada
-        if (now < start) {
-          return acc;
-        }
-        // Si la fecha actual está después del fin, se ha consumido la totalidad
-        if (now >= end) {
-          return acc + cantidadTotal;
-        }
-        // En caso contrario, calcula la fracción consumida según el tiempo transcurrido
-        const totalTime = end.getTime() - start.getTime();
-        const elapsed = now.getTime() - start.getTime();
-        const fraction = elapsed / totalTime;
-        // Retorna la parte proporcional de la cantidadTotal
-        return acc + cantidadTotal * fraction;
-      }, 0);
-  }, [tanque, refinacions]);
-  const totalRefinacionSalida = useMemo(() => {
-    if (!tanque || !refinacions || tanque.capacidad <= 0) return 0;
-
-    const now = new Date();
-
-    return (
-      refinacions
-        // .filter((refinacion) => refinacion.idTanque?.id === tanque.id) // Filtrar refinaciones por tanque
-        .reduce((acc, refinacion) => {
-          const { fechaInicio, fechaFin, idRefinacionSalida } = refinacion;
-
-          if (!fechaInicio || !fechaFin || !idRefinacionSalida?.length) {
-            return acc;
-          }
-
-          const start = new Date(fechaInicio);
-          const end = new Date(fechaFin);
-
-          let cantidadSalida = 0;
-
-          // Calcular la cantidad refinada proporcional al tiempo transcurrido
-          if (now >= start && now <= end) {
-            const totalTime = end.getTime() - start.getTime();
-            const elapsed = now.getTime() - start.getTime();
-            const fraction = elapsed / totalTime;
-
-            cantidadSalida = idRefinacionSalida.reduce((sum, salida) => {
-              // console.log("Procesando salida:", salida);
-
-              if (salida.idTanque?.id === tanque.id) {
-                return sum + salida.cantidadTotal * fraction;
-              }
-              return sum;
-            }, 0);
-          } else if (now > end) {
-            // Si la fecha actual es después del fin, sumar toda la cantidad de salida
-            cantidadSalida = idRefinacionSalida.reduce((sum, salida) => {
-              // console.log("Procesando salida después del fin:", salida);
-              if (salida.idTanque?.id === tanque.id) {
-                return sum + salida.cantidadTotal;
-              }
-              return sum;
-            }, 0);
-          }
-
-          return acc + cantidadSalida;
-        }, 0)
-    );
-  }, [tanque, refinacions]);
   // console.log("totalRefinacionSalida", totalRefinacionSalida);
   const tanqueLevel = useMemo(() => {
     if (tanque?.capacidad > 0) {
       return (
-        ((totalRecepcion +
-          totalRefinacionSalida -
-          totalRefinacion -
-          totalDespacho) /
-          tanque.capacidad) *
+        ((totalRecepcion + totalDespacho) / tanque.capacidad) *
         100
       ).toFixed(2);
     }
     return "0.00";
-  }, [totalRecepcion, totalRefinacionSalida, tanque]);
+  }, [totalRecepcion, tanque]);
 
   const isLoadingRecepcion = useMemo(() => {
     if (!recepcions || !tanque) return false;
@@ -173,28 +76,6 @@ const ModeladoRefineriaTanque = ({
       // && despacho.estado === "true"
     );
   }, [despachos, tanque]);
-  const isLoadingRefinacion = useMemo(() => {
-    if (!refinacions || !tanque) return false;
-
-    return refinacions.some((refinacion) => {
-      // Verificar si la refinación principal está activa
-      return (
-        refinacion.idTanque?.id === tanque.id && refinacion.estado === "true"
-      );
-    });
-  }, [refinacions, tanque]);
-
-  const isLoadingRefinacionSalida = useMemo(() => {
-    if (!refinacions || !tanque) return false;
-
-    return refinacions.some((refinacion) =>
-      refinacion.idRefinacionSalida?.some(
-        (salida) => salida.idTanque?.id === tanque.id
-        // &&
-        //   salida.estadoRefinacionSalida === "En Proceso"
-      )
-    );
-  }, [refinacions, tanque]);
 
   useEffect(() => {
     setApiData({ tankLevel: parseFloat(tanqueLevel) });
@@ -494,12 +375,9 @@ const ModeladoRefineriaTanque = ({
                 fill="#2d3436"
                 font-weight="600"
               >
-                {(
-                  totalRecepcion +
-                  totalRefinacionSalida -
-                  totalRefinacion -
-                  totalDespacho
-                ).toLocaleString(undefined, { maximumFractionDigits: 2 })}{" "}
+                {(totalRecepcion + totalDespacho).toLocaleString(undefined, {
+                  maximumFractionDigits: 2,
+                })}{" "}
                 Bbl
               </text>
 
@@ -560,7 +438,7 @@ const ModeladoRefineriaTanque = ({
             />
           </rect>
         )} */}
-        {isLoadingRecepcion || isLoadingRefinacionSalida ? (
+        {isLoadingRecepcion ? (
           <>
             <g transform="matrix(.25 0 0 0.306621 55 27.2831)">
               <g transform="matrix(.122101 0 0 0.122101-122.210883-91.867315)">
@@ -606,7 +484,7 @@ const ModeladoRefineriaTanque = ({
             <ValvulaCerrada />
           </g>
         )}
-        {isLoadingDespacho || isLoadingRefinacion ? (
+        {isLoadingDespacho ? (
           // (isLoadingRefinacion || isLoadingRecepcion) &&
           // tanque.almacenamientoMateriaPrimaria ? (
           <>

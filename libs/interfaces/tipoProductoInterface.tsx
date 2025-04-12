@@ -1,0 +1,31 @@
+import { Producto, Refineria } from "./configRefineriaInterface";
+
+export interface TipoProducto {
+  id: string; // ID único del producto
+  idRefineria: Refineria; // Relación con la refinería
+  idProducto: Producto; // Relación con el modelo Producto
+  nombre: string; // Nombre del producto
+  clasificacion: string;
+  gravedadAPI: number; // Gravedad API del producto
+  azufre: number; // Porcentaje de azufre en el producto
+  contenidoAgua: number; // Contenido de agua en el producto
+  flashPoint: number; // Punto de inflamación (Flashpoint) del producto
+  rendimientos: Rendimiento[]; // Lista de rendimientos asociados al producto
+  costoOperacional?: number; // Costo operativo del producto
+  transporte?: number; // Costo de transporte del producto
+  convenio?: number; // Costo de convenio del producto
+  estado: string; // Estado del producto (Activo o Inactivo)
+  eliminado: boolean; // Indica si el producto ha sido eliminado (eliminación lógica)
+  createdAt: string; // Fecha de creación
+  updatedAt: string; // Fecha de última actualización
+}
+
+// Interfaz para los rendimientos asociados al producto
+export interface Rendimiento {
+  idProducto: Producto; // Relación con el modelo Producto
+  transporte?: number; // Costo de transporte
+  bunker?: number; // Costo de bunker
+  costoVenta?: number; // Costo de venta
+  convenio?: number; // Costo de convenio
+  porcentaje?: number; // Porcentaje de rendimiento
+}

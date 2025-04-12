@@ -5,7 +5,6 @@ import {
   LineaRecepcion,
   Recepcion,
   Contrato,
-  Refinacion,
   Producto,
   TipoProducto,
   Contacto,
@@ -22,7 +21,6 @@ import { getRefinacions } from "@/app/api/refinacionService";
 import { getProductos } from "@/app/api/productoService";
 import { getTipoProductos } from "@/app/api/tipoProductoService";
 import { getContactos } from "@/app/api/contactoService";
-import { getBrent } from "@/app/api/brentService";
 import { getLineaDespachos } from "@/app/api/lineaDespachoService";
 import { getDespachos } from "@/app/api/despachoService";
 import { getOperadors } from "@/app/api/operadorService";
@@ -42,7 +40,6 @@ export const useRefineryData = (
   const [despachos, setDespachos] = useState<Despacho[]>([]);
   const [contratos, setContratos] = useState<Contrato[]>([]);
   const [loading, setLoading] = useState(true);
-  const [refinacions, setRefinacions] = useState<Refinacion[]>([]);
   const [productos, setProductos] = useState<Producto[]>([]);
   const [tipoProductos, setTipoProductos] = useState<TipoProducto[]>([]);
   const [contactos, setContactos] = useState<Contacto[]>([]);
@@ -130,12 +127,6 @@ export const useRefineryData = (
           (contrato: Contrato) => contrato.idRefineria?.id === activeRefineriaId
         ) || [];
 
-      const filteredRefinacion =
-        refinacionDB?.refinacions?.filter(
-          (refinacion: Refinacion) =>
-            refinacion.idRefineria?.id === activeRefineriaId
-        ) || [];
-
       const filteredPorducto =
         productosDB?.productos?.filter(
           (producto: Producto) => producto.idRefineria?.id === activeRefineriaId
@@ -169,7 +160,6 @@ export const useRefineryData = (
       setRecepcions(filteredRecepcions);
       setDespachos(filteredDespachos);
       setContratos(filteredContratos);
-      setRefinacions(filteredRefinacion);
       setProductos(filteredPorducto);
       setTipoProductos(filterdTipoProductos);
       setContactos(filteredContactos);
@@ -218,7 +208,6 @@ export const useRefineryData = (
     recepcions,
     despachos,
     contratos,
-    refinacions,
     productos,
     tipoProductos,
     contactos,
