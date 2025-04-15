@@ -201,6 +201,11 @@ const ContratoList = ({ tipoContrato }: ContratoListProps) => {
         <Column field="numeroContrato" header="Número de Contrato" sortable />
         <Column field="descripcion" header="Descripción de Contrato" />
         <Column
+          field="montoTotal"
+          header="Monto Total"
+          body={(rowData: Contrato) => rowData.montoTotal?.toFixed(2)}
+        />
+        <Column
           field="condicionesPago.tipo"
           header="Tipo de Condiciones de Pago"
         />
@@ -208,6 +213,7 @@ const ContratoList = ({ tipoContrato }: ContratoListProps) => {
           field="condicionesPago.plazo"
           header="Plazo de Condiciones de Pago"
         />
+
         <Column field="estadoEntrega" header="Estado de Entrega" />
         <Column field="estadoContrato" header="Estado de Contrato" />
         {/* <Column field="estado" header="Estado" /> */}
