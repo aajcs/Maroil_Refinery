@@ -1,71 +1,75 @@
 import { Producto, Refineria } from "./configRefineriaInterface";
-
 export interface ContratoItem {
-  // ID interno del item (por ejemplo, si lo almacenas en MongoDB)
-  id: string | number;
-
-  // Referencia al contrato padre
-  idContrato: string;
-
-  // Referencia al producto asociado
-  producto: Producto; // o un objeto { id: string; nombre: string; ... } si lo prefieres
-
+  id: string | number; // ID interno del item
+  idContrato: string; // Referencia al contrato padre
+  producto: Producto; // Producto asociado
   cantidad?: number;
   precioUnitario?: number;
-
   brent?: number;
   convenio?: number;
   montoTransporte?: number;
 
   // Datos de calidad del producto
-  nombre: string; // El nombre del crudo es obligatorio
-  idContratoItem?: string; // ID del contrato asociado
-  clasificacion?: string; // La clasificación es opcional
-  gravedadAPI?: number; // Gravedad API del producto (opcional, debe ser no negativa)
-  azufre?: number; // Porcentaje de azufre (opcional, debe ser no negativo)
-  contenidoAgua?: number; // Contenido de agua en porcentaje (opcional, debe ser no negativo)
-  flashPoint?: number; // Flashpoint del producto (opcional)
+  idTipoProducto?: {
+    _id: string;
+    nombre: string;
+    id: string;
+  };
+  clasificacion?: string;
+  gravedadAPI?: number;
+  azufre?: number;
+  contenidoAgua?: number;
+  puntoDeInflamacion?: number;
 
   // Estado y lógica de eliminado
-  estado?: string; // "true" | "false" o como se maneje en tu app
+  estado?: string;
   eliminado?: boolean;
+
+  // Timestamps
+  createdAt?: string;
+  updatedAt?: string;
 }
 
-/**
- * Interfaz principal del Contrato.
- * Aquí sustituimos "idItems: any" por un arreglo tipado de `ContratoItem`.
- */
+export interface Abono {
+  monto: number;
+  fecha: string;
+  _id: string;
+}
+
+export interface CondicionesPago {
+  tipo: string; // Ejemplo: "Contado"
+  plazo: number; // Ejemplo: 2 días
+}
+
 export interface Contrato {
   id: string;
   numeroContrato: string;
-  estado: boolean;
+  descripcion: string;
+  tipoContrato: string; // Ejemplo: "Compra"
+  estadoContrato: string; // Ejemplo: "Adjudicado"
+  estadoEntrega: string; // Ejemplo: "Pendiente"
   eliminado: boolean;
-  ubicacion: string;
-  material: string;
-  createdAt: string;
-  updatedAt: string;
   fechaInicio: string;
   fechaFin: string;
-  estadoContrato: string;
-  estadoEntrega: string;
-  descripcion: string;
-  tipoContrato: string;
-  /**
-   * Items (productos) asociados a este contrato.
-   */
-  idItems: ContratoItem[];
-
-  /**
-   * Referencia al contacto/proveedor asociado.
-   */
-  idContacto: Contacto; // Ajusta con la interfaz real si lo deseas
-
-  /**
-   * Referencia a la refinería asociada.
-   */
-  idRefineria: Refineria;
+  createdAt: string;
+  updatedAt: string;
+  brent?: number;
   montoTotal?: number;
   montoTransporte?: number;
+
+  // Referencias
+  idRefineria: Refineria;
+  idContacto: {
+    id: string;
+    nombre: string;
+  };
+  idItems: ContratoItem[];
+
+  // Nuevos campos
+  condicionesPago?: CondicionesPago;
+  abono?: Abono[];
+  clausulas?: any[]; // Si las cláusulas tienen una estructura específica, ajusta el tipo
+  historialModificaciones?: any[]; // Si el historial tiene una estructura específica, ajusta el tipo
 }
 export interface Contacto {
   id: string;

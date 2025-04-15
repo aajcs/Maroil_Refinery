@@ -57,7 +57,7 @@ export const recepcionSchema = object({
 
         clasificacion: string().min(1, "El origen es obligatorio"),
 
-        flashPoint: number().min(
+        puntoDeInflamacion: number().min(
           0,
           "La presión debe ser un número no negativo"
         ),
@@ -88,7 +88,7 @@ export const recepcionSchema = object({
       "El contenido de agua debe ser un número no negativo"
     ),
     clasificacion: string().min(1, "El origen es obligatorio"),
-    flashPoint: number().min(
+    puntoDeInflamacion: number().min(
       0,
       "La temperatura debe ser un número no negativo"
     ),

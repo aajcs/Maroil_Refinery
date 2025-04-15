@@ -18,7 +18,11 @@ import ContratoForm from "./ContratoForm";
 import { formatDateFH } from "@/utils/dateUtils";
 import { Contrato } from "@/libs/interfaces";
 
-const ContratoList = () => {
+interface ContratoListProps {
+  tipoContrato: string;
+}
+
+const ContratoList = ({ tipoContrato }: ContratoListProps) => {
   const { activeRefineria } = useRefineriaStore();
   const [contratos, setContratos] = useState<Contrato[]>([]);
   const [contrato, setContrato] = useState<Contrato | null>(null);
@@ -157,7 +161,7 @@ const ContratoList = () => {
           <Column field="azufre" header="Azufre" />
 
           <Column field="contenidoAgua" header="Contenido de Agua" />
-          <Column field="flashPoint" header="Flash Point" />
+          <Column field="puntoDeInflamacion" header="Punto De Inflamación" />
 
           <Column field="cantidad" header="Cantidad" />
           <Column field="precioUnitario" header="Precio Unitario" />
@@ -165,7 +169,6 @@ const ContratoList = () => {
             header="Total"
             body={(rowData: any) => rowData.cantidad * rowData.precioUnitario}
           />
-          <Column field="brent" header="Brent" />
           <Column field="convenio" header="Convenio" />
           <Column field="montoTransporte" header="Monto Transporte" />
         </DataTable>
@@ -226,6 +229,12 @@ const ContratoList = () => {
           sortable
         />
         <Column
+          field="brent"
+          header="Brent"
+          body={(rowData: Contrato) => rowData.brent?.toFixed(2)}
+          sortable
+        />
+        <Column
           field="createdAt"
           header="Fecha de Creación"
           body={(rowData: Contrato) => formatDateFH(rowData.createdAt)}
@@ -276,22 +285,54 @@ const ContratoList = () => {
         </div>
       </Dialog>
 
-      <Dialog
+      {/* <Dialog
         visible={contratoFormDialog}
-        style={{ width: "80vw" }}
-        header={`${contrato ? "Editar" : "Agregar"} Contrato`}
+        style={{ width: "80vw", backgroundColor: "red" }}
+        header={
+          <div className="mb-2 text-center md:text-left surface-50">
+            <div className="border-bottom-2 border-primary pb-2">
+              <h2 className="text-2xl font-bold text-900 mb-2 flex align-items-center justify-content-center md:justify-content-start">
+                <i className="pi pi-check-circle mr-3 text-primary text-3xl"></i>
+                {contrato ? "Editar" : "Agregar"} Contrato de {tipoContrato}
+              </h2>
+            </div>
+          </div>
+        }
+        headerStyle={{
+          backgroundColor: "transparent",
+        }}
+        contentStyle={{
+          backgroundColor: "transparent",
+        }}
         modal
         onHide={hideContratoFormDialog}
-      >
+        className="card   surface-50 p-1  border-round shadow-2xl"
+        footer={
+          <div className="flex justify-content-end">
+            <Button
+              label="Cerrar"
+              icon="pi pi-times"
+              text
+              onClick={hideContratoFormDialog}
+            />
+          </div>
+        }
+      > */}
+
+      {contratoFormDialog && (
         <ContratoForm
           contrato={contrato}
+          contratoFormDialog={contratoFormDialog}
           hideContratoFormDialog={hideContratoFormDialog}
           contratos={contratos}
           setContratos={setContratos}
           setContrato={setContrato}
           showToast={showToast}
+          tipoContrato={tipoContrato}
         />
-      </Dialog>
+      )}
+
+      {/* </Dialog> */}
     </div>
   );
 };

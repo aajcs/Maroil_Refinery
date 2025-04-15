@@ -53,7 +53,7 @@ import { array, boolean, date, number, object, string, union, z } from "zod";
 
 //         clasificacion: string().min(1, "El origen es obligatorio"),
 
-//         flashPoint: number().min(
+//         puntoDeInflamacion: number().min(
 //           0,
 //           "La presión debe ser un número no negativo"
 //         ),
@@ -84,7 +84,7 @@ import { array, boolean, date, number, object, string, union, z } from "zod";
 //       "El contenido de agua debe ser un número no negativo"
 //     ),
 //     clasificacion: string().min(1, "El origen es obligatorio"),
-//     flashPoint: number().min(
+//     puntoDeInflamacion: number().min(
 //       0,
 //       "La temperatura debe ser un número no negativo"
 //     ),

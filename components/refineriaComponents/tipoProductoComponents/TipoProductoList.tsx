@@ -250,9 +250,9 @@ const TipoProductoList = () => {
           }
         />
         <Column
-          field="flashPoint"
-          header="Flash Point"
-          body={(rowData: TipoProducto) => rowData.flashPoint || "N/A"}
+          field="puntoDeInflamacion"
+          header="Punto De Inflamación"
+          body={(rowData: TipoProducto) => rowData.puntoDeInflamacion || "N/A"}
         />
         <Column field="estado" header="Estado" />
         <Column

@@ -2,12 +2,12 @@
 
 import ContratoList from "@/components/refineriaComponents/contratoComponents/ContratoList";
 
-function Tanques() {
+function ContratoVenta() {
   return (
     <>
-      <ContratoList />
+      <ContratoList tipoContrato="Venta" />
     </>
   );
 }
 
-export default Tanques;
+export default ContratoVenta;

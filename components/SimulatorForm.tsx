@@ -33,7 +33,7 @@ const formSchema = z.object({
     contenidoAgua: z.number().optional(),
     convenio: z.number().optional(),
     costoOperacional: z.number().optional(),
-    flashPoint: z.number().optional(),
+    puntoDeInflamacion: z.number().optional(),
     transporte: z.number().optional(),
     idProducto: z
       .object({

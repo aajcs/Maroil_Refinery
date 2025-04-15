@@ -52,9 +52,14 @@ const AppMenuRefineria = () => {
           to: "/refineria/contacto",
         },
         {
-          label: "Contrato",
+          label: "Contrato Compra",
           icon: "pi pi-fw pi-briefcase",
-          to: "/refineria/contrato",
+          to: "/refineria/contrato-compra",
+        },
+        {
+          label: "Contrato Venta",
+          icon: "pi pi-fw pi-briefcase",
+          to: "/refineria/contrato-venta",
         },
         {
           label: "Recepción",

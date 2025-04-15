@@ -9,7 +9,7 @@ export interface TipoProducto {
   gravedadAPI: number; // Gravedad API del producto
   azufre: number; // Porcentaje de azufre en el producto
   contenidoAgua: number; // Contenido de agua en el producto
-  flashPoint: number; // Punto de inflamación (Flashpoint) del producto
+  puntoDeInflamacion: number; // Punto de inflamación (Flashpoint) del producto
   rendimientos: Rendimiento[]; // Lista de rendimientos asociados al producto
   costoOperacional?: number; // Costo operativo del producto
   transporte?: number; // Costo de transporte del producto

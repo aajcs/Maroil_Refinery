@@ -45,7 +45,7 @@ export const tipoProductoSchema = object({
     0,
     "El contenido de agua debe ser un número no negativo"
   ),
-  flashPoint: number().min(0, "El Flashpoint es obligatorio"),
+  puntoDeInflamacion: number().min(0, "El Flashpoint es obligatorio"),
   rendimientos: array(rendimientoSchema).optional(),
   costoOperacional: number().min(
     0,

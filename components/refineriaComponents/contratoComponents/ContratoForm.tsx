@@ -16,6 +16,9 @@ import { Column, ColumnEditorOptions } from "primereact/column";
 import { Calendar } from "primereact/calendar";
 import { useRefineryData } from "@/hooks/useRefineryData";
 import { ProgressSpinner } from "primereact/progressspinner";
+import CustomCalendar from "@/components/common/CustomCalendar";
+import { InputTextarea } from "primereact/inputtextarea";
+import { Dialog } from "primereact/dialog";
 
 type FormData = z.infer<typeof contratoSchema>;
 
@@ -30,6 +33,8 @@ interface ContratoFormProps {
     summary: string,
     detail: string
   ) => void;
+  tipoContrato?: string;
+  contratoFormDialog: boolean;
 }
 
 const estatusValues = ["true", "false"];
@@ -41,7 +46,6 @@ const estadoEntregaOptions = [
   { label: "Cancelado", value: "Cancelado" },
 ];
 const estado_contratoOptions = [
-  { label: "Adjudicado", value: "Adjudicado" },
   { label: "Activo", value: "Activo" },
   { label: "Inactivo", value: "Inactivo" },
 ];
@@ -52,12 +56,15 @@ function ContratoForm({
   contratos,
   setContratos,
   showToast,
+  tipoContrato,
+  contratoFormDialog,
 }: ContratoFormProps) {
   const { activeRefineria } = useRefineriaStore();
   const { productos, tipoProductos, contactos, loading } = useRefineryData(
     activeRefineria?.id || ""
   );
   const toast = useRef<Toast | null>(null);
+  const calendarRef = useRef<Calendar>(null);
   const [items, setItems] = useState(contrato?.idItems || []);
 
   const [submitting, setSubmitting] = useState(false);
@@ -71,6 +78,7 @@ function ContratoForm({
   } = useForm<FormData>({
     resolver: zodResolver(contratoSchema),
     defaultValues: {
+      brent: 0,
       condicionesPago: {
         plazo: 0,
       },
@@ -84,6 +92,9 @@ function ContratoForm({
       );
     }
   }, [contrato, setValue]);
+  useEffect(() => {
+    setValue("tipoContrato", tipoContrato || "Compra");
+  }, [tipoContrato, setValue]);
 
   const onSubmit = async (data: FormData) => {
     setSubmitting(true);
@@ -132,9 +143,9 @@ function ContratoForm({
         gravedadAPI: 0, // Gravedad API del producto (opcional, debe ser no negativa)
         azufre: 0, // Porcentaje de azufre (opcional, debe ser no negativo)
         contenidoAgua: 0, // Contenido de agua en porcentaje (opcional, debe ser no negativo)
-        flashPoint: 0, // Flashpoint del producto (opcional)
+        puntoDeInflamacion: 0, // Flashpoint del producto (opcional)
         cantidad: 0, // Cantidad de producto (opcional, debe ser no negativa)
-        brent: 0, // Precio de Brent (opcional, debe ser no negativo)
+
         convenio: 0, // Precio de convenio (opcional, debe ser no negativo)
         precioUnitario: 0, // Precio unitario (opcional, debe ser no negativo)
         montoTransporte: 0, // Monto de transporte (opcional, debe ser no negativo)
@@ -166,8 +177,12 @@ function ContratoForm({
       </div>
     );
   };
-  const calculatePrecioUnitario = (brent: number, convenio: number) => {
-    return (brent || 0) + (convenio || 0);
+  const calculatePrecioUnitario = (
+    brent: number,
+    convenio: number,
+    transporte: number
+  ) => {
+    return (brent || 0) + (convenio || 0) + (transporte || 0);
   };
   const productoEditor = (options: ColumnEditorOptions) => {
     const onChange = (e: DropdownChangeEvent) => {
@@ -260,7 +275,8 @@ function ContratoForm({
     options.rowData.azufre = caracteristicasTipoProducto?.azufre || 0;
     options.rowData.contenidoAgua =
       caracteristicasTipoProducto?.contenidoAgua || 0;
-    options.rowData.flashPoint = caracteristicasTipoProducto?.flashPoint || 0;
+    options.rowData.puntoDeInflamacion =
+      caracteristicasTipoProducto?.puntoDeInflamacion || 0;
 
     setItems(() =>
       items.map((item: any, index: number) => {
@@ -272,7 +288,8 @@ function ContratoForm({
             gravedadAPI: caracteristicasTipoProducto?.gravedadAPI || 0,
             azufre: caracteristicasTipoProducto?.azufre || 0,
             contenidoAgua: caracteristicasTipoProducto?.contenidoAgua || 0,
-            flashPoint: caracteristicasTipoProducto?.flashPoint || 0,
+            puntoDeInflamacion:
+              caracteristicasTipoProducto?.puntoDeInflamacion || 0,
           };
         }
         return item;
@@ -286,78 +303,188 @@ function ContratoForm({
     //   return newItems;
     // });
   };
-  if (loading) {
-    return (
-      <div className="flex justify-content-center align-items-center h-screen">
-        <ProgressSpinner />
-      </div>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <div className="flex justify-content-center align-items-center h-screen">
+  //       <ProgressSpinner />
+  //     </div>
+  //   );
+  // }
+  // Observa el valor de brent
+  const brent = watch("brent") || 0;
+  console.log("object", brent);
+  // Efecto para actualizar el precio unitario cuando cambie el brent
+  useEffect(() => {
+    interface Item {
+      convenio: number;
+      montoTransporte: number;
+      precioUnitario: number;
+    }
+
+    const updatedItems = items.map((item: Item) => ({
+      ...item,
+      precioUnitario: calculatePrecioUnitario(
+        brent,
+        item.convenio,
+        item.montoTransporte
+      ),
+    }));
+    setItems(updatedItems);
+  }, [brent]);
   return (
-    <div>
-      <Toast ref={toast} />
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="grid">
-          {/* Campo: Número de Contrato */}
-          <div className="field mb-4 col-12 sm:col-6 lg:col-4">
-            <label htmlFor="numeroContrato" className="font-medium text-900">
-              Número de Contrato
-            </label>
-            <InputText
-              id="numeroContrato"
-              {...register("numeroContrato")}
-              className={classNames("w-full", {
-                "p-invalid": errors.numeroContrato,
-              })}
-            />
-            {errors.numeroContrato && (
-              <small className="p-error">{errors.numeroContrato.message}</small>
-            )}
+    <Dialog
+      visible={contratoFormDialog}
+      style={{ width: "80vw", backgroundColor: "red" }}
+      header={
+        <div className="mb-2 text-center md:text-left surface-50">
+          <div className="border-bottom-2 border-primary pb-2">
+            <h2 className="text-2xl font-bold text-900 mb-2 flex align-items-center justify-content-center md:justify-content-start">
+              <i className="pi pi-check-circle mr-3 text-primary text-3xl"></i>
+              {contrato ? "Editar" : "Agregar"} Contrato de {tipoContrato}
+            </h2>
           </div>
-          {/* Campo: Descripcion de Contrato */}
-          <div className="field mb-4 col-12 sm:col-6 lg:col-8">
-            <label htmlFor="numeroContrato" className="font-medium text-900">
-              Descripción de Contrato
-            </label>
-            <InputText
-              id="descripcion"
-              {...register("descripcion")}
-              className={classNames("w-full", {
-                "p-invalid": errors.descripcion,
-              })}
+        </div>
+      }
+      headerStyle={{
+        backgroundColor: "transparent",
+      }}
+      contentStyle={{
+        backgroundColor: "transparent",
+      }}
+      modal
+      onHide={hideContratoFormDialog}
+      className="card   surface-50 p-1  border-round shadow-2xl"
+      footer={
+        <div className="flex justify-content-between align-items-center p-2">
+          <Button
+            label="Cancelar"
+            icon="pi pi-times"
+            className="p-button-text p-button-plain"
+            onClick={hideContratoFormDialog}
+          />
+          {!loading && (
+            <Button
+              type="submit"
+              disabled={submitting}
+              icon={submitting ? "pi pi-spinner pi-spin" : "pi pi-check"}
+              label={contrato ? "Modificar Contrato" : "Crear Contrato"}
+              className={`p-button-raised ${
+                submitting ? "p-button-secondary" : "p-button-primary"
+              }`}
+              onClick={handleSubmit(onSubmit)}
             />
-            {errors.descripcion && (
-              <small className="p-error">{errors.descripcion.message}</small>
-            )}
+          )}
+        </div>
+      }
+    >
+      <div>
+        <Toast ref={toast} />
+        {loading ? (
+          <div className="flex justify-content-center align-items-center">
+            <ProgressSpinner />
           </div>
-          {/* Campo: Nombre de Contacto */}
-          <div className="field mb-4 col-12 sm:col-6 lg:col-3">
-            <label htmlFor="idContacto.nombre" className="font-medium text-900">
-              Nombre de Proveedor
-            </label>
-            <Dropdown
-              id="idContacto.id"
-              value={watch("idContacto")}
-              // {...register("idContacto.id")}
-              onChange={(e) => {
-                setValue("idContacto", e.value);
-              }}
-              options={contactos.map((contacto) => ({
-                label: contacto.nombre,
-                value: { id: contacto.id, nombre: contacto.nombre },
-              }))}
-              placeholder="Seleccionar un proveedor"
-              className={classNames("w-full", {
-                "p-invalid": errors.idContacto?.nombre,
-              })}
-            />
-            {errors.idContacto?.nombre && (
-              <small className="p-error">
-                {errors.idContacto.nombre.message}
-              </small>
-            )}
-          </div>
-          {/* Campo: Tipo de contrato */}
+        ) : (
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <div className="grid">
+              {/* Campo: Número de Contrato */}
+              <div className="col-12 sm:col-4 lg:col-3 xl:col-2">
+                <div className="p-2 bg-white border-round shadow-1 surface-card">
+                  <label className="block font-medium text-900 mb-3 flex align-items-center">
+                    <i className="pi pi-file mr-2 text-primary"></i>
+                    Número de Contrato
+                  </label>
+                  <Controller
+                    name="numeroContrato"
+                    control={control}
+                    render={({ field, fieldState }) => (
+                      <>
+                        <InputText
+                          id="numeroContrato"
+                          {...field}
+                          className={classNames("w-full", {
+                            "p-invalid": fieldState.error,
+                          })}
+                        />
+                        {fieldState.error && (
+                          <small className="p-error block mt-2 flex align-items-center">
+                            <i className="pi pi-exclamation-circle mr-2"></i>
+                            {fieldState.error.message}
+                          </small>
+                        )}
+                      </>
+                    )}
+                  />
+                </div>
+              </div>
+              {/* Campo: Descripción de Contrato */}
+              <div className="col-12 sm:col-6 lg:col-5 xl:col-4">
+                <div className="p-2 bg-white border-round shadow-1 surface-card">
+                  <label className="block font-medium text-900 mb-3 flex align-items-center">
+                    <i className="pi pi-align-left mr-2 text-primary"></i>
+                    Descripción de Contrato
+                  </label>
+                  <Controller
+                    name="descripcion"
+                    control={control}
+                    render={({ field, fieldState }) => (
+                      <>
+                        <InputTextarea
+                          id="descripcion"
+                          {...field}
+                          className={classNames("w-full", {
+                            "p-invalid": fieldState.error,
+                          })}
+                        />
+                        {fieldState.error && (
+                          <small className="p-error block mt-2 flex align-items-center">
+                            <i className="pi pi-exclamation-circle mr-2"></i>
+                            {fieldState.error.message}
+                          </small>
+                        )}
+                      </>
+                    )}
+                  />
+                </div>
+              </div>
+              {/* Campo: Nombre de Proveedor */}
+              <div className="col-12 sm:col-6 lg:col-4 xl:col-3">
+                <div className="p-2 bg-white border-round shadow-1 surface-card">
+                  <label className="block font-medium text-900 mb-3 flex align-items-center">
+                    <i className="pi pi-user mr-2 text-primary"></i>
+                    Nombre de Proveedor
+                  </label>
+                  <Controller
+                    name="idContacto"
+                    control={control}
+                    render={({ field, fieldState }) => (
+                      <>
+                        <Dropdown
+                          id="idContacto"
+                          {...field}
+                          options={contactos.map((contacto) => ({
+                            label: contacto.nombre,
+                            value: { id: contacto.id, nombre: contacto.nombre },
+                          }))}
+                          placeholder="Seleccionar un proveedor"
+                          className={classNames("w-full", {
+                            "p-invalid": fieldState.error,
+                          })}
+                          showClear
+                          filter
+                        />
+                        {fieldState.error && (
+                          <small className="p-error block mt-2 flex align-items-center">
+                            <i className="pi pi-exclamation-circle mr-2"></i>
+                            {fieldState.error.message}
+                          </small>
+                        )}
+                      </>
+                    )}
+                  />
+                </div>
+              </div>
+
+              {/* Campo: Tipo de contrato
           <div className="field mb-4 col-12 sm:col-6 lg:col-3">
             <label htmlFor="estado" className="font-medium text-900">
               Tipo de Contrato
@@ -375,472 +502,531 @@ function ContratoForm({
             {errors.tipoContrato && (
               <small className="p-error">{errors.tipoContrato.message}</small>
             )}
-          </div>
-          {/* Campo: Tipo de Condiciones de Pago */}
-          <div className="field mb-4 col-12 sm:col-6 lg:col-3">
-            <label
-              htmlFor="condicionesPago.tipo"
-              className="font-medium text-900"
-            >
-              Tipo de Condiciones de Pago
-            </label>
-            <Dropdown
-              id="condicionesPago.tipo"
-              value={watch("condicionesPago.tipo")}
-              {...register("condicionesPago.tipo")}
-              options={["Contado", "Crédito"]}
-              placeholder="Seleccionar un tipo de condiciones de pago"
-              className={classNames("w-full", {
-                "p-invalid": errors.condicionesPago?.tipo,
-              })}
-            />
-            {errors.condicionesPago?.tipo && (
-              <small className="p-error">
-                {errors.condicionesPago.tipo.message}
-              </small>
-            )}
-          </div>
-
-          {/* Campo: Plazo de Condiciones de Pago */}
-          <div className="field mb-4 col-12 sm:col-6 lg:col-3">
-            <label
-              htmlFor="condicionesPago.plazo"
-              className="font-medium text-900"
-            >
-              {" Plazo de Condiciones de Pago (Dias)"}
-            </label>
-            <Controller
-              name="condicionesPago.plazo"
-              control={control}
-              render={({ field }) => (
-                <InputNumber
-                  id={field.name}
-                  value={field.value}
-                  onValueChange={(e) => field.onChange(e.value)}
-                  className={classNames("w-full", {
-                    "p-invalid": errors.condicionesPago?.plazo,
-                  })}
-                />
+          </div> */}
+              {/* Campo: Tipo de Condiciones de Pago */}
+              <div className="col-12 sm:col-6 lg:col-3 xl:col-2">
+                <div className="p-2 bg-white border-round shadow-1 surface-card">
+                  <label className="block font-medium text-900 mb-3 flex align-items-center">
+                    <i className="pi pi-credit-card mr-2 text-primary"></i>
+                    Condiciones de Pago
+                  </label>
+                  <Controller
+                    name="condicionesPago.tipo"
+                    control={control}
+                    render={({ field, fieldState }) => (
+                      <>
+                        <Dropdown
+                          id="condicionesPago.tipo"
+                          {...field}
+                          options={["Contado", "Crédito"]}
+                          placeholder="Seleccionar un tipo de condiciones de pago"
+                          className={classNames("w-full", {
+                            "p-invalid": fieldState.error,
+                          })}
+                          showClear
+                        />
+                        {fieldState.error && (
+                          <small className="p-error block mt-2 flex align-items-center">
+                            <i className="pi pi-exclamation-circle mr-2"></i>
+                            {fieldState.error.message}
+                          </small>
+                        )}
+                      </>
+                    )}
+                  />
+                </div>
+              </div>
+              {/* Campo: Plazo de Condiciones de Pago */}
+              {watch("condicionesPago.tipo") === "Crédito" && (
+                <div className="col-12 sm:col-6 lg:col-3 xl:col-2">
+                  <div className="p-2 bg-white border-round shadow-1 surface-card">
+                    <label className="block font-medium text-900 mb-3 flex align-items-center">
+                      <i className="pi pi-clock mr-2 text-primary"></i>
+                      Plazo de Pago (Días)
+                    </label>
+                    <Controller
+                      name="condicionesPago.plazo"
+                      control={control}
+                      render={({ field, fieldState }) => (
+                        <>
+                          <InputNumber
+                            id="condicionesPago.plazo"
+                            {...field}
+                            className={classNames("w-full", {
+                              "p-invalid": fieldState.error,
+                            })}
+                          />
+                          {fieldState.error && (
+                            <small className="p-error block mt-2 flex align-items-center">
+                              <i className="pi pi-exclamation-circle mr-2"></i>
+                              {fieldState.error.message}
+                            </small>
+                          )}
+                        </>
+                      )}
+                    />
+                  </div>
+                </div>
               )}
-            />
-            {errors.condicionesPago?.plazo && (
-              <small className="p-error">
-                {errors.condicionesPago.plazo.message}
-              </small>
-            )}
-          </div>
 
-          {/* Campo: Estado de Entrega */}
-          <div className="field mb-4 col-12 sm:col-6 lg:col-4">
-            <label htmlFor="estadoEntrega" className="font-medium text-900">
-              Estado de Contrato
-            </label>
-            <Dropdown
-              id="estadoContrato"
-              value={watch("estadoContrato")}
-              {...register("estadoContrato")}
-              options={estado_contratoOptions}
-              placeholder="Seleccionar estado de entrega"
-              className={classNames("w-full", {
-                "p-invalid": errors.estadoContrato,
-              })}
-            />
-            {errors.estadoContrato && (
-              <small className="p-error">{errors.estadoContrato.message}</small>
-            )}
-          </div>
-          {/* Campo: Estado de Entrega */}
-          <div className="field mb-4 col-12 sm:col-6 lg:col-4">
-            <label htmlFor="estadoEntrega" className="font-medium text-900">
-              Estado de Entrega
-            </label>
-            <Dropdown
-              id="estadoEntrega"
-              value={watch("estadoEntrega")}
-              {...register("estadoEntrega")}
-              options={estadoEntregaOptions}
-              placeholder="Seleccionar estado de entrega"
-              className={classNames("w-full", {
-                "p-invalid": errors.estadoEntrega,
-              })}
-            />
-            {errors.estadoEntrega && (
-              <small className="p-error">{errors.estadoEntrega.message}</small>
-            )}
-          </div>
-          {/* Campo: Fecha Inicio */}
-          <div className="field mb-4 col-12 sm:col-6 lg:col-4">
-            <label htmlFor="estadoEntrega" className="font-medium text-900">
-              Fecha de Inicio
-            </label>
+              {/* Campo: Estado de Contrato */}
+              <div className="col-12 sm:col-6 lg:col-3 xl:col-2">
+                <div className="p-2 bg-white border-round shadow-1 surface-card">
+                  <label className="block font-medium text-900 mb-3 flex align-items-center">
+                    <i className="pi pi-flag mr-2 text-primary"></i>
+                    Estado de Contrato
+                  </label>
+                  <Controller
+                    name="estadoContrato"
+                    control={control}
+                    render={({ field, fieldState }) => (
+                      <>
+                        <Dropdown
+                          id="estadoContrato"
+                          {...field}
+                          options={estado_contratoOptions}
+                          placeholder="Seleccionar estado de contrato"
+                          className={classNames("w-full", {
+                            "p-invalid": fieldState.error,
+                          })}
+                          showClear
+                          filter
+                        />
+                        {fieldState.error && (
+                          <small className="p-error block mt-2 flex align-items-center">
+                            <i className="pi pi-exclamation-circle mr-2"></i>
+                            {fieldState.error.message}
+                          </small>
+                        )}
+                      </>
+                    )}
+                  />
+                </div>
+              </div>
+              {/* Campo: Estado de Entrega */}
+              <div className="col-12 sm:col-6 lg:col-3 xl:col-2">
+                <div className="p-2 bg-white border-round shadow-1 surface-card">
+                  <label className="block font-medium text-900 mb-3 flex align-items-center">
+                    <i className="pi pi-truck mr-2 text-primary"></i>
+                    Estado de Entrega
+                  </label>
+                  <Controller
+                    name="estadoEntrega"
+                    control={control}
+                    render={({ field, fieldState }) => (
+                      <>
+                        <Dropdown
+                          id="estadoEntrega"
+                          {...field}
+                          options={estadoEntregaOptions}
+                          placeholder="Seleccionar estado de entrega"
+                          className={classNames("w-full", {
+                            "p-invalid": fieldState.error,
+                          })}
+                          showClear
+                          filter
+                        />
+                        {fieldState.error && (
+                          <small className="p-error block mt-2 flex align-items-center">
+                            <i className="pi pi-exclamation-circle mr-2"></i>
+                            {fieldState.error.message}
+                          </small>
+                        )}
+                      </>
+                    )}
+                  />
+                </div>
+              </div>
+              {/* Campo: Fecha de Inicio */}
+              <div className="col-12 sm:col-6 lg:col-3 xl:col-2">
+                <div className="p-3 bg-white border-round shadow-1">
+                  <label className="block font-medium text-900 mb-2 flex align-items-center">
+                    <i className="pi pi-calendar-plus text-primary mr-2"></i>
+                    Fecha de Inicio
+                  </label>
+                  <Controller
+                    name="fechaInicio"
+                    control={control}
+                    render={({ field, fieldState }) => (
+                      <>
+                        <CustomCalendar
+                          {...field}
+                          name="fechaInicio"
+                          control={control}
+                          setValue={setValue}
+                          calendarRef={calendarRef}
+                          isFieldEnabled={false}
+                          value={
+                            field.value
+                              ? new Date(field.value as string | Date)
+                              : null
+                          }
+                          onChange={field.onChange}
+                        />
 
-            <Calendar
-              id="fechaInicio"
-              value={
-                watch("fechaInicio")
-                  ? new Date(watch("fechaInicio") as any)
-                  : undefined
-              }
-              {...register("fechaInicio")}
-              showTime
-              hourFormat="24"
-              className={classNames("w-full", {
-                "p-invalid": errors.fechaInicio,
-              })}
-              locale="es"
-            />
-            {errors.fechaInicio && (
-              <small className="p-error">{errors.fechaInicio.message}</small>
-            )}
-          </div>
-          {/* Campo: Fecha Fin */}
-          <div className="field mb-4 col-12 sm:col-6 lg:col-4">
-            <label htmlFor="estadoEntrega" className="font-medium text-900">
-              Fecha de Fin
-            </label>
+                        {fieldState.error && (
+                          <small className="p-error block mt-2 flex align-items-center">
+                            <i className="pi pi-exclamation-circle mr-2"></i>
+                            {fieldState.error.message}
+                          </small>
+                        )}
+                      </>
+                    )}
+                  />
+                </div>
+              </div>
 
-            <Calendar
-              id="fechaFin"
-              value={
-                watch("fechaFin")
-                  ? new Date(watch("fechaFin") as any)
-                  : undefined
-              }
-              {...register("fechaFin")}
-              showTime
-              hourFormat="24"
-              className={classNames("w-full", {
-                "p-invalid": errors.fechaFin,
-              })}
-              locale="es"
-            />
-            {errors.fechaFin && (
-              <small className="p-error">{errors.fechaFin.message}</small>
-            )}
-          </div>
-          {/* Tabla de Items del Contrato */}
-          <div className="orders-subtable col-12">
-            {/* <h5>Items for {contrato?.name}</h5> */}
-            <DataTable
-              value={items}
-              responsiveLayout="scroll"
-              scrollable
-              className="datatable-responsive"
-              size="small"
-              editMode="cell"
-            >
-              <Column
-                field="producto.nombre"
-                header="Producto"
-                editor={(options) => productoEditor(options)}
-                onCellEditComplete={(e) => {
-                  const {
-                    rowData,
-                    newValue,
-                    rowIndex,
-                    originalEvent: event,
-                  } = e;
-                  if (!newValue || !newValue.id) {
-                    event.preventDefault();
-                    return;
-                  }
-                  rowData.producto = newValue;
-                  const updated = [...items];
-                  updated[rowIndex].producto = newValue;
-                  setItems(updated);
-                }}
-              />
-              <Column
-                field="idTipoProducto.nombre"
-                header="Tipo de Producto"
-                editor={(options) => idTipoProductoEditor(options)}
-                // onCellEditComplete={(e) => {
-                //   const {
-                //     rowData,
-                //     newValue,
-                //     rowIndex,
-                //     originalEvent: event,
-                //   } = e;
-                //   if (!newValue || !newValue.id) {
-                //     event.preventDefault();
-                //     return;
-                //   }
-                //   rowData.idTipoProducto = newValue;
-                //   const updated = [...items];
-                //   updated[rowIndex].idTipoProducto = newValue;
-                //   setItems(updated);
-                // }}
-                onCellEditComplete={(e) => {
-                  const { newValue, rowData, rowIndex } = e;
-                  updateRowDataTipoProducto({ rowData, rowIndex }, newValue);
-                }}
-              />
+              {/* Campo: Fecha de Fin */}
+              <div className="col-12 sm:col-6 lg:col-3 xl:col-2">
+                <div className="p-3 bg-white border-round shadow-1">
+                  <label className="block font-medium text-900 mb-2 flex align-items-center">
+                    <i className="pi pi-calendar-minus text-primary mr-2"></i>
+                    Fecha de Fin
+                  </label>
+                  <Controller
+                    name="fechaFin"
+                    control={control}
+                    render={({ field, fieldState }) => (
+                      <>
+                        <CustomCalendar
+                          {...field}
+                          name="fechaFin"
+                          control={control}
+                          setValue={setValue}
+                          calendarRef={calendarRef}
+                          isFieldEnabled={false}
+                          value={
+                            field.value
+                              ? new Date(field.value as string | Date)
+                              : null
+                          }
+                          onChange={field.onChange}
+                        />
 
-              <Column
-                field="clasificacion"
-                header="Clasificación"
-                editor={(options) => (
-                  <InputText
-                    value={options.value}
-                    onChange={(e) =>
-                      updateItem(
-                        options.rowIndex,
-                        "clasificacion",
-                        e.target.value
-                      )
-                    }
+                        {fieldState.error && (
+                          <small className="p-error block mt-2 flex align-items-center">
+                            <i className="pi pi-exclamation-circle mr-2"></i>
+                            {fieldState.error.message}
+                          </small>
+                        )}
+                      </>
+                    )}
                   />
-                )}
-              />
-              <Column
-                field="gravedadAPI"
-                header="Gravedad API"
-                editor={(options) => (
-                  <InputNumber
-                    value={options.value}
-                    onValueChange={(e) =>
-                      updateItem(options.rowIndex, "gravedadAPI", e.value)
-                    }
-                  />
-                )}
-              />
-              <Column
-                field="azufre"
-                header="Azufre"
-                editor={(options) => (
-                  <InputNumber
-                    value={options.value}
-                    onValueChange={(e) =>
-                      updateItem(options.rowIndex, "azufre", e.value)
-                    }
-                  />
-                )}
-              />
+                </div>
+              </div>
 
-              <Column
-                field="contenidoAgua"
-                header="Contenido de Agua"
-                editor={(options) => (
-                  <InputNumber
-                    value={options.value}
-                    onValueChange={(e) =>
-                      updateItem(options.rowIndex, "contenidoAgua", e.value)
-                    }
+              {/* Campo: Brent */}
+              <div className="col-12 sm:col-6 lg:col-3 xl:col-2">
+                <div className="p-2 bg-white border-round shadow-1 surface-card">
+                  <label className="block font-medium text-900 mb-3 flex align-items-center">
+                    <i className="pi pi-dollar mr-2 text-primary"></i>
+                    Brent
+                  </label>
+                  <Controller
+                    name="brent"
+                    control={control}
+                    render={({ field, fieldState }) => (
+                      <>
+                        <InputNumber
+                          id="brent"
+                          className={classNames("w-full", {
+                            "p-invalid": fieldState.error,
+                          })}
+                          mode="currency"
+                          currency="USD"
+                          locale="en-US"
+                          value={field.value}
+                          onValueChange={(e) => {
+                            field.onChange(e.value);
+                          }}
+                        />
+                        {fieldState.error && (
+                          <small className="p-error block mt-2 flex align-items-center">
+                            <i className="pi pi-exclamation-circle mr-2"></i>
+                            {fieldState.error.message}
+                          </small>
+                        )}
+                      </>
+                    )}
                   />
-                )}
-              />
+                </div>
+              </div>
 
-              <Column
-                field="flashPoint"
-                header="Flash Point"
-                editor={(options) => (
-                  <InputNumber
-                    value={options.value}
-                    onValueChange={(e) =>
-                      updateItem(options.rowIndex, "flashPoint", e.value)
-                    }
-                  />
-                )}
-              />
-              <Column
-                field="cantidad"
-                header="Cantidad"
-                editor={(options) => (
-                  <InputNumber
-                    value={options.value}
-                    onValueChange={(e) =>
-                      updateItem(options.rowIndex, "cantidad", e.value)
-                    }
-                  />
-                )}
-              />
-              {/* Columnas agregadas */}
-              <Column
-                field="brent"
-                header="Brent"
-                editor={(options) => (
-                  <InputNumber
-                    value={options.value}
-                    onValueChange={(e) => {
-                      updateItem(options.rowIndex, "brent", e.value);
-                      options.editorCallback!(e.value);
+              {/* Tabla de Items del Contrato */}
+              <div className="orders-subtable col-12">
+                {/* <h5>Items for {contrato?.name}</h5> */}
+                <DataTable
+                  value={items}
+                  responsiveLayout="scroll"
+                  scrollable
+                  className="datatable-responsive"
+                  size="small"
+                  editMode="cell"
+                >
+                  <Column
+                    field="producto.nombre"
+                    header="Producto"
+                    editor={(options) => productoEditor(options)}
+                    onCellEditComplete={(e) => {
+                      const {
+                        rowData,
+                        newValue,
+                        rowIndex,
+                        originalEvent: event,
+                      } = e;
+                      if (!newValue || !newValue.id) {
+                        event.preventDefault();
+                        return;
+                      }
+                      rowData.producto = newValue;
+                      const updated = [...items];
+                      updated[rowIndex].producto = newValue;
+                      setItems(updated);
                     }}
                   />
-                )}
-                onCellEditComplete={(e) => {
-                  const {
-                    rowData,
-                    newValue,
-                    rowIndex,
-                    originalEvent: event,
-                  } = e;
-                  if (newValue === undefined) {
-                    event.preventDefault();
-                    return;
-                  }
-                  const newPrecio = calculatePrecioUnitario(
-                    newValue,
-                    rowData.convenio
-                  );
-                  updateItem(rowIndex, "brent", newValue);
-                  updateItem(rowIndex, "precioUnitario", newPrecio);
-                }}
-              />
-
-              <Column
-                field="convenio"
-                header="Convenio"
-                editor={(options) => (
-                  <InputNumber
-                    value={options.value}
-                    onValueChange={(e) => {
-                      updateItem(options.rowIndex, "convenio", e.value);
-                      options.editorCallback!(e.value);
+                  <Column
+                    field="idTipoProducto.nombre"
+                    header="Tipo de Producto"
+                    editor={(options) => idTipoProductoEditor(options)}
+                    onCellEditComplete={(e) => {
+                      const { newValue, rowData, rowIndex } = e;
+                      updateRowDataTipoProducto(
+                        { rowData, rowIndex },
+                        newValue
+                      );
                     }}
                   />
-                )}
-                onCellEditComplete={(e) => {
-                  const {
-                    rowData,
-                    newValue,
-                    rowIndex,
-                    originalEvent: event,
-                  } = e;
-                  if (newValue === undefined) {
-                    event.preventDefault();
-                    return;
-                  }
-                  const newPrecio = calculatePrecioUnitario(
-                    rowData.brent,
-                    newValue
-                  );
-                  updateItem(rowIndex, "convenio", newValue);
-                  updateItem(rowIndex, "precioUnitario", newPrecio);
-                }}
-              />
 
-              <Column
-                field="precioUnitario"
-                header="Precio Unitario"
-                body={(rowData: any) =>
-                  calculatePrecioUnitario(rowData.brent, rowData.convenio)
-                }
-              />
-              {/* <Column
-                field="brent"
-                header="Brent"
-                editor={(options) => (
-                  <InputNumber
-                    value={options.value}
-                    onValueChange={(e) => {
-                      updateItem(options.rowIndex, "brent", e.value);
-                      options.editorCallback!(e.value);
-                    }}
-                    // onKeyDown={(e) => e.stopPropagation()}
+                  <Column
+                    field="clasificacion"
+                    header="Clasificación"
+                    editor={(options) => (
+                      <InputText
+                        value={options.value}
+                        onChange={(e) =>
+                          updateItem(
+                            options.rowIndex,
+                            "clasificacion",
+                            e.target.value
+                          )
+                        }
+                      />
+                    )}
                   />
-                )}
-                onCellEditComplete={(e) => {
-                  const {
-                    rowData,
-                    newValue,
-                    rowIndex,
-                    originalEvent: event,
-                  } = e;
-                  if (newValue === undefined) {
-                    event.preventDefault();
-                    return;
-                  }
-                  rowData.brent = newValue;
-                  rowData.precioUnitario = rowData.brent + rowData.convenio;
-                  const updated = [...items];
-                  updated[rowIndex] = rowData;
-                  setItems(updated);
-                  const newPrecio = newValue + (rowData.convenio || 0);
-                  updateItem(rowIndex, "precioUnitario", newPrecio);
-                }}
-              />
-
-              <Column
-                field="convenio"
-                header="Convenio"
-                editor={(options) => (
-                  <InputNumber
-                    value={options.value}
-                    onValueChange={(e) => {
-                      updateItem(options.rowIndex, "convenio", e.value);
-                      options.editorCallback!(e.value);
-                    }}
-                    // onKeyDown={(e) => e.stopPropagation()}
+                  <Column
+                    field="gravedadAPI"
+                    header="API (°API)"
+                    body={(rowData: any) => `${rowData.gravedadAPI} °API`}
+                    editor={(options) => (
+                      <InputNumber
+                        value={options.value}
+                        onValueChange={(e) =>
+                          updateItem(options.rowIndex, "gravedadAPI", e.value)
+                        }
+                      />
+                    )}
                   />
-                )}
-                onCellEditComplete={(e) => {
-                  const {
-                    rowData,
-                    newValue,
-                    rowIndex,
-                    originalEvent: event,
-                  } = e;
-                  if (newValue === undefined) {
-                    event.preventDefault();
-                    return;
-                  }
-                  rowData.convenio = newValue;
-                  rowData.precioUnitario = rowData.brent + rowData.convenio;
-                  const updated = [...items];
-                  updated[rowIndex] = rowData;
-                  setItems(updated);
-                  const newPrecio = newValue + (rowData.convenio || 0);
-                  updateItem(rowIndex, "precioUnitario", newPrecio);
-                }}
-              />
+                  <Column
+                    field="azufre"
+                    header="Azufre (%)"
+                    body={(rowData: any) => `${rowData.azufre} %`}
+                    editor={(options) => (
+                      <InputNumber
+                        value={options.value}
+                        onValueChange={(e) =>
+                          updateItem(options.rowIndex, "azufre", e.value)
+                        }
+                        suffix="%"
+                      />
+                    )}
+                  />
 
-              <Column
-                field="precioUnitario"
-                header="Precio Unitario"
-                body={(rowData: any) => rowData.brent + rowData.convenio}
-              /> */}
+                  <Column
+                    field="contenidoAgua"
+                    header="Contenido de Agua (%)"
+                    body={(rowData: any) => `${rowData.contenidoAgua} %`}
+                    editor={(options) => (
+                      <InputNumber
+                        value={options.value}
+                        onValueChange={(e) =>
+                          updateItem(options.rowIndex, "contenidoAgua", e.value)
+                        }
+                        suffix="%"
+                      />
+                    )}
+                  />
 
-              <Column
-                header="Total"
-                body={(rowData: any) =>
-                  rowData.cantidad * rowData.precioUnitario
-                }
-                footer={() =>
-                  items.reduce(
-                    (
-                      acc: number,
-                      item: { cantidad: number; precioUnitario: number }
-                    ) => acc + item.cantidad * item.precioUnitario,
-                    0
-                  )
-                }
-              />
+                  <Column
+                    field="puntoDeInflamacion"
+                    header="Punto De Inflamación (°C)"
+                    body={(rowData: any) => `${rowData.puntoDeInflamacion} °C`}
+                    editor={(options) => (
+                      <InputNumber
+                        value={options.value}
+                        onValueChange={(e) =>
+                          updateItem(
+                            options.rowIndex,
+                            "puntoDeInflamacion",
+                            e.value
+                          )
+                        }
+                        suffix="°C"
+                      />
+                    )}
+                  />
+                  <Column
+                    field="cantidad"
+                    header="Cantidad (Bbl)"
+                    body={(rowData: any) => `${rowData.cantidad} Bbl`}
+                    editor={(options) => (
+                      <InputNumber
+                        value={options.value}
+                        onValueChange={(e) =>
+                          updateItem(options.rowIndex, "cantidad", e.value)
+                        }
+                        suffix=" Bbl"
+                      />
+                    )}
+                  />
 
-              <Column
-                field="montoTransporte"
-                header="Monto Transporte"
-                editor={(options) => (
-                  <InputNumber
-                    value={options.value}
-                    onValueChange={(e) =>
-                      updateItem(options.rowIndex, "montoTransporte", e.value)
+                  <Column
+                    field="convenio"
+                    header="Convenio ($)"
+                    body={(rowData: any) => `$${rowData.convenio}`}
+                    editor={(options) => (
+                      <InputNumber
+                        value={options.value}
+                        onValueChange={(e) => {
+                          updateItem(options.rowIndex, "convenio", e.value);
+                          options.editorCallback!(e.value);
+                        }}
+                        mode="currency"
+                        currency="USD"
+                        locale="en-US"
+                      />
+                    )}
+                    onCellEditComplete={(e) => {
+                      const {
+                        rowData,
+                        newValue,
+                        rowIndex,
+                        originalEvent: event,
+                      } = e;
+                      if (newValue === undefined) {
+                        event.preventDefault();
+                        return;
+                      }
+                      const brent = Number(watch("brent"));
+                      console.log("brent", brent);
+                      const newPrecio = calculatePrecioUnitario(
+                        brent,
+                        newValue,
+                        rowData.montoTransporte
+                      );
+                      updateItem(rowIndex, "convenio", newValue);
+                      updateItem(rowIndex, "precioUnitario", newPrecio);
+                    }}
+                  />
+                  <Column
+                    field="montoTransporte"
+                    header="Transporte ($)"
+                    body={(rowData: any) => `$${rowData.montoTransporte}`}
+                    editor={(options) => (
+                      <InputNumber
+                        value={options.value}
+                        onValueChange={(e) =>
+                          updateItem(
+                            options.rowIndex,
+                            "montoTransporte",
+                            e.value
+                          )
+                        }
+                        mode="currency"
+                        currency="USD"
+                        locale="en-US"
+                      />
+                    )}
+                  />
+                  <Column
+                    field="precioUnitario"
+                    header="Precio Unitario ($)"
+                    body={(rowData: any) =>
+                      `$${calculatePrecioUnitario(
+                        brent,
+                        rowData.convenio,
+                        rowData.montoTransporte
+                      )}`
                     }
                   />
-                )}
-              />
 
-              <Column body={actionBodyTemplate} header="Acciones" />
-            </DataTable>
-            <Button
-              type="button"
-              label="Agregar Item"
-              icon="pi pi-plus"
-              className="mt-2"
-              onClick={addItem}
-            />
-          </div>
+                  <Column
+                    header="Total ($)"
+                    body={(rowData: any) =>
+                      `$${(rowData.cantidad * rowData.precioUnitario).toFixed(
+                        2
+                      )}`
+                    }
+                    footer={() => {
+                      const total = items.reduce(
+                        (
+                          acc: number,
+                          item: { cantidad: number; precioUnitario: number }
+                        ) => acc + item.cantidad * item.precioUnitario,
+                        0
+                      );
 
-          {/* Campo: Estado */}
+                      // Actualizar el monto total en el formulario
+                      setValue("montoTotal", total);
+
+                      return `$${total.toFixed(2)}`;
+                    }}
+                  />
+
+                  <Column body={actionBodyTemplate} header="Acciones" />
+                </DataTable>
+                <Button
+                  type="button"
+                  label="Agregar Item"
+                  icon="pi pi-plus"
+                  className="mt-2"
+                  onClick={addItem}
+                />
+                {/* Campo: Monto Total
+                <div className="col-12 sm:col-6 lg:col-3">
+                  <div className="p-2 bg-white border-round shadow-1 surface-card">
+                    <label className="block font-medium text-900 mb-3 flex align-items-center">
+                      <i className="pi pi-wallet mr-2 text-primary"></i>
+                      Monto Total
+                    </label>
+                    <Controller
+                      name="montoTotal"
+                      control={control}
+                      render={({ field, fieldState }) => (
+                        <>
+                          <InputNumber
+                            id="montoTotal"
+                            {...field}
+                            className={classNames("w-full", {
+                              "p-invalid": fieldState.error,
+                            })}
+                            mode="currency"
+                            currency="USD"
+                            locale="en-US"
+                          />
+                          {fieldState.error && (
+                            <small className="p-error block mt-2 flex align-items-center">
+                              <i className="pi pi-exclamation-circle mr-2"></i>
+                              {fieldState.error.message}
+                            </small>
+                          )}
+                        </>
+                      )}
+                    />
+                  </div>
+                </div> */}
+              </div>
+
+              {/* Campo: Estado
           <div className="field mb-4 col-12 md:col-6">
             <label htmlFor="estado" className="font-medium text-900">
               Estado
@@ -856,21 +1042,23 @@ function ContratoForm({
             {errors.estado && (
               <small className="p-error">{errors.estado.message}</small>
             )}
-          </div>
+          </div> */}
 
-          {/* Botón de Envío */}
-          <div className="col-12">
-            <Button
-              type="submit"
-              disabled={submitting} // Deshabilitar el botón mientras se envía
-              icon={submitting ? "pi pi-spinner pi-spin" : ""} // Mostrar ícono de carga
-              label={contrato ? "Modificar contrato" : "Crear contrato"}
-              className="w-auto mt-3"
-            />
-          </div>
-        </div>
-      </form>
-    </div>
+              {/* Botón de Envío
+              <div className="col-12">
+                <Button
+                  type="submit"
+                  disabled={submitting} // Deshabilitar el botón mientras se envía
+                  icon={submitting ? "pi pi-spinner pi-spin" : ""} // Mostrar ícono de carga
+                  label={contrato ? "Modificar contrato" : "Crear contrato"}
+                  className="w-auto mt-3"
+                />
+              </div> */}
+            </div>
+          </form>
+        )}
+      </div>
+    </Dialog>
   );
 }
 

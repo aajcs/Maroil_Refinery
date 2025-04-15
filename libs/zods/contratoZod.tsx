@@ -21,28 +21,26 @@ export const contactoSchema = object({
 
 export const contratoSchema = object({
   // Ejemplo de campo adicional
-  condicionesPago: object({
-    tipo: string().min(1, "El tipo es obligatorio"),
-    plazo: number().min(0, "El plazo debe ser un número no negativo"),
-    abono: array(
-      object({
-        id: string().optional(),
-        monto: number().min(0, "El monto debe ser un número no negativo"),
-        fecha: string().optional(),
-      })
-    ).optional(),
-  }).optional(),
-  estadoEntrega: string().min(1, "El estado de entrega es obligatorio"),
-  clausulas: array(string()).optional(),
-  estado: string().min(1, "El estado es obligatorio"),
-  estadoContrato: string().min(1, "El estado es obligatorio"),
-  eliminado: boolean().default(false),
+  id: string().optional(),
   numeroContrato: string().min(1, "El número de contrato es obligatorio"),
   descripcion: string().min(1, "La descripción es obligatoria"),
-  tipoContrato: string().min(1, "El tipo de contrato es obligatorio"),
+  tipoContrato: string().min(1, "El tipo de contrato es obligatorio"), // Ejemplo: "Compra"
+  estadoContrato: string().min(1, "El estado del contrato es obligatorio"), // Ejemplo: "Adjudicado"
+  estadoEntrega: string().min(1, "El estado de entrega es obligatorio"), // Ejemplo: "Pendiente"
+  eliminado: boolean().default(false),
+  fechaInicio: union([string(), date()]).optional(),
+  fechaFin: union([string(), date()]).optional(),
+  createdAt: union([string(), date()]).optional(),
+  updatedAt: union([string(), date()]).optional(),
+  brent: number().optional(),
+  montoTotal: number().optional(),
+  montoTransporte: number().optional(),
+
+  // Referencias
   idRefineria: object({
-    id: string().optional(),
+    _id: string().optional(),
     nombre: string().min(1, "El nombre de la refinería es obligatorio"),
+    id: string().optional(),
   }).optional(),
 
   idContacto: object({
@@ -50,11 +48,18 @@ export const contratoSchema = object({
     nombre: string().min(1, "El nombre del contacto es obligatorio"),
   }),
 
+  // Condiciones de pago
+  condicionesPago: object({
+    tipo: string().min(1, "El tipo de condiciones de pago es obligatorio"),
+    plazo: number().min(0, "El plazo debe ser un número no negativo"),
+  }).optional(),
+
+  // Abonos
   abono: array(
     object({
-      id: string().optional(),
+      _id: string().optional(),
       monto: number().min(0, "El monto debe ser un número no negativo"),
-      fecha: string().optional(),
+      fecha: union([string(), date()]).optional(),
     })
   ).optional(),
 
@@ -100,7 +105,9 @@ export const contratoSchema = object({
       contenidoAgua: number()
         .min(0, "El contenido de agua debe ser un número no negativo")
         .optional(),
-      flashPoint: number().min(0, "El Flashpoint es obligatorio").optional(),
+      puntoDeInflamacion: number()
+        .min(0, "El Flashpoint es obligatorio")
+        .optional(),
 
       // Estado local de cada item
       estado: string().optional(),
@@ -154,12 +161,18 @@ export const contratoSchema = object({
       contenidoAgua: number()
         .min(0, "El contenido de agua debe ser un número no negativo")
         .optional(),
-      flashPoint: number().min(0, "El Flashpoint es obligatorio").optional(),
+      puntoDeInflamacion: number()
+        .min(0, "El Flashpoint es obligatorio")
+        .optional(),
 
       // Estado local de cada item
       estado: string().optional(),
     })
   ).optional(),
+  // Clausulas
+  clausulas: array(string()).optional(),
+
+  // Historial de modificaciones
 
   historialModificaciones: array(
     object({
@@ -168,10 +181,4 @@ export const contratoSchema = object({
       descripcion: string().optional(),
     })
   ).optional(),
-
-  fechaInicio: union([string(), date()]).optional(),
-  fechaFin: union([string(), date()]).optional(),
-  createdAt: string().optional(),
-  updatedAt: string().optional(),
-  id: string().optional(),
 });

@@ -68,7 +68,7 @@ const TipoProductoForm = ({
       gravedadAPI: 0,
       azufre: 0,
       contenidoAgua: 0,
-      flashPoint: 0,
+      puntoDeInflamacion: 0,
       estado: "true",
     },
   });
@@ -363,7 +363,35 @@ const TipoProductoForm = ({
                 )}
               </div>
             </div>
-
+            {/* Campo: Punto de Inflamación */}
+            <div className="col-12 md:col-6 lg:col-4 xl:col-3">
+              <div className="p-2 bg-white border-round shadow-1 surface-card">
+                <label className="block font-medium text-900 mb-3 flex align-items-center">
+                  <i className="pi pi-fire mr-2 text-primary"></i>
+                  Punto de Inflamación (°C)
+                </label>
+                <Controller
+                  name="puntoDeInflamacion"
+                  control={control}
+                  render={({ field }) => (
+                    <InputNumber
+                      value={field.value}
+                      onValueChange={(e) => field.onChange(e.value)}
+                      min={0}
+                      suffix="°C"
+                      className="w-full"
+                      locale="es"
+                    />
+                  )}
+                />
+                {errors.puntoDeInflamacion && (
+                  <small className="p-error block mt-2 flex align-items-center">
+                    <i className="pi pi-exclamation-circle mr-2"></i>
+                    {errors.puntoDeInflamacion.message}
+                  </small>
+                )}
+              </div>
+            </div>
             {/* Campo: Transporte */}
             <div className="col-12 md:col-6 lg:col-4">
               <div className="p-2 bg-white border-round shadow-1 surface-card">
