@@ -1,6 +1,8 @@
 import { Producto, Refineria } from "./configRefineriaInterface";
 export interface ContratoItem {
   id: string | number; // ID interno del item
+  _id: string;
+
   idContrato: string; // Referencia al contrato padre
   producto: Producto; // Producto asociado
   cantidad?: number;

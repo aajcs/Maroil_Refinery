@@ -71,6 +71,7 @@ export const contratoSchema = object({
   idItems: array(
     object({
       id: string().optional(),
+      _id: string().optional(),
       eliminado: boolean().default(false),
 
       // Referencia al producto
@@ -121,6 +122,8 @@ export const contratoSchema = object({
   items: array(
     object({
       id: string().optional(),
+      _id: string().optional(),
+
       eliminado: boolean().default(false),
 
       // Referencia al producto
