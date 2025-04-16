@@ -26,6 +26,14 @@ const ModeladoRefineriaLineaDespacho = ({
     // &&
     //   despacho.estado === "true"
   );
+  const tanqueRecetor = despachos.find(
+    (despacho) =>
+      despacho.idLineaDespacho?.id === lineaDespacho.id &&
+      despacho.estadoDespacho === "EN_REFINERIA" &&
+      (despacho.estadoCarga === "EN_PROCESO" ||
+        despacho.estadoCarga === "PENDIENTE_MUESTREO" ||
+        despacho.estadoCarga === "MUESTREO_APROBADO")
+  );
   useEffect(() => {
     setAnimationKey((prev) => prev + 1);
   }, [hasAssociatedDespacho]);
@@ -63,6 +71,12 @@ const ModeladoRefineriaLineaDespacho = ({
           />
         </g>
       )} */}
+      <text x="0" y="10" fill="black" fontSize="12" fontWeight="bold">
+        {lineaDespacho.nombre}
+      </text>
+      <text x="0" y="25" fill="black" fontSize="12" fontWeight="bold">
+        {tanqueRecetor?.idTanque?.nombre}
+      </text>
       {hasAssociatedDespacho && (
         <g>
           {despachos
@@ -104,7 +118,7 @@ const ModeladoRefineriaLineaDespacho = ({
         // <g transform="matrix(.045615 0 0 0.045615-51.18604-48.938999)">
         //   <PocisionAbiertaDespacho />
         // </g>
-        <g transform="translate(110, 48)scale(0.8) ">
+        <g transform="translate(-50, -45)scale(0.8) ">
           <ValvulaAbierda />
         </g>
       )}
