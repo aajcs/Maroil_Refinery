@@ -50,6 +50,7 @@ export const chequeoCalidadSchema = z.object({
   idOperador: z.object({
     nombre: z.string().min(1, "El nombre del operador es obligatorio"),
     id: z.string().min(1, "El ID del operador es obligatorio"),
+    _id: z.string().optional(),
   }),
   estado: string().min(1, "El estado es obligatorio"),
   eliminado: z.boolean().default(false),
@@ -103,6 +104,7 @@ export const chequeoCantidadSchema = z.object({
   idOperador: z.object({
     nombre: z.string().min(1, "El nombre del operador es obligatorio"),
     id: z.string().min(1, "El ID del operador es obligatorio"),
+    _id: z.string().optional(),
   }),
   estado: string().min(1, "El estado es obligatorio"),
   eliminado: z.boolean().default(false),

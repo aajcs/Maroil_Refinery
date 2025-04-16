@@ -112,3 +112,28 @@
   margin-right: 0.5rem !important;
   font-size: 1.2em !important;
 }
+
+.bg-programado {
+  background-color: #d1e7dd; /* Verde claro */
+  color: #0f5132; /* Texto verde oscuro */
+}
+
+.bg-en-transito {
+  background-color: #cff4fc; /* Azul claro */
+  color: #055160; /* Texto azul oscuro */
+}
+
+.bg-en-refineria {
+  background-color: #fff3cd; /* Amarillo claro */
+  color: #664d03; /* Texto amarillo oscuro */
+}
+
+.bg-completado {
+  background-color: #e2e3e5; /* Gris claro */
+  color: #41464b; /* Texto gris oscuro */
+}
+
+.bg-cancelado {
+  background-color: #f8d7da; /* Rojo claro */
+  color: #842029; /* Texto rojo oscuro */
+}

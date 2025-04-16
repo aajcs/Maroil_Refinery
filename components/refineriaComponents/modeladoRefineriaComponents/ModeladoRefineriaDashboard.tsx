@@ -35,10 +35,13 @@ const ModeladoRefineriaDashboard = () => {
     lineaDespachos,
     despachos,
     corteRefinacions,
+    chequeoCantidads,
   } = useRefineryData(
     activeRefineria?.id || "",
     recepcionModificado || undefined // Pasa recepcionModificado como dependencia
   );
+  console.log(corteRefinacions);
+  console.log(chequeoCantidads);
   const [visible, setVisible] = useState<boolean>(false);
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [visibleDespachos, setVisibleDespachos] = useState<boolean>(false);
@@ -146,7 +149,16 @@ const ModeladoRefineriaDashboard = () => {
       </div>
     );
   }
-
+  const rowClass = (data: any) => {
+    console.log("Estado Recepción:", data[0].estadoRecepcion);
+    return {
+      "bg-programado": data[0].estadoRecepcion === "PROGRAMADO",
+      "bg-en-transito": data[0].estadoRecepcion === "EN_TRANSITO",
+      "bg-en-refineria": data[0].estadoRecepcion === "EN_REFINERIA",
+      "bg-completado": data[0].estadoRecepcion === "COMPLETADO",
+      "bg-cancelado": data[0].estadoRecepcion === "CANCELADO",
+    };
+  };
   return (
     <div className="">
       <div className="flex flex-wrap ">
@@ -230,6 +242,9 @@ const ModeladoRefineriaDashboard = () => {
                   <ModeladoRefineriaTanque
                     tanque={tanque}
                     recepcions={recepcions}
+                    corteRefinacions={corteRefinacions}
+                    chequeoCantidads={chequeoCantidads}
+                    salida={false}
                   />
                 </div>
               ))}
@@ -266,6 +281,9 @@ const ModeladoRefineriaDashboard = () => {
                   <ModeladoRefineriaTanque
                     tanque={tanque}
                     despachos={despachos}
+                    chequeoCantidads={chequeoCantidads}
+                    corteRefinacions={corteRefinacions}
+                    salida={true}
                   />
                 </div>
               ))}
@@ -397,14 +415,22 @@ const ModeladoRefineriaDashboard = () => {
                   </div>
                 </div>
               }
+              // rowClassName={(rowData) => {
+              //   return {
+              //     "bg-programado": rowData.estadoRecepcion === "PROGRAMADO",
+              //     "bg-en-transito": rowData.estadoRecepcion === "EN_TRANSITO",
+              //     "bg-en-refineria": rowData.estadoRecepcion === "EN_REFINERIA",
+              //     "bg-completado": rowData.estadoRecepcion === "COMPLETADO",
+              //     "bg-cancelado": rowData.estadoRecepcion === "CANCELADO",
+              //   };
+              // }}
+              rowClassName={rowClass}
             >
               <Column field="placa" header="Placa"></Column>
               <Column
                 field="nombreChofer"
                 header="Chofer"
-                body={(rowData: any) =>
-                  rowData.nombreChofer + " " + rowData.apellidoChofer
-                }
+                body={(rowData: any) => rowData.nombreChofer}
               ></Column>
               <Column field="idGuia" header="Guía"></Column>
               <Column field="idTanque.nombre" header="Tanque"></Column>
@@ -417,27 +443,31 @@ const ModeladoRefineriaDashboard = () => {
                   )} Bbls`
                 }
               ></Column>
-
               <Column
-                field="fechaInicio"
+                field="fechaSalida"
                 header="Fecha Inicio"
-                body={(rowData: any) => formatDateFH(rowData.fechaInicio)}
+                body={(rowData: any) => formatDateFH(rowData.fechaSalida)}
               ></Column>
               <Column
-                field="fechaDespacho"
-                header="Fecha Despacho"
-                body={(rowData: any) => formatDateFH(rowData.fechaDespacho)}
-              ></Column>
-              <Column
-                field="fechaFin"
+                field="fechaLlegada"
                 header="Fecha Fin"
-                body={(rowData: any) => formatDateFH(rowData.fechaFin)}
+                body={(rowData: any) => formatDateFH(rowData.fechaLlegada)}
               ></Column>
               <Column
                 header="Tiempo de Carga"
                 body={(rowData: any) =>
-                  formatDuration(rowData.fechaInicio, rowData.fechaFin)
+                  formatDuration(rowData.fechaSalida, rowData.fechaLlegada)
                 }
+              ></Column>
+              <Column
+                field="estadoRecepcion"
+                header="Estado Recepción"
+                body={(rowData: any) => rowData.estadoRecepcion}
+              ></Column>
+              <Column
+                field="estadoCarga"
+                header="Estado Carga"
+                body={(rowData: any) => rowData.estadoCarga}
               ></Column>
             </DataTable>
           </>
@@ -509,25 +539,37 @@ const ModeladoRefineriaDashboard = () => {
               ></Column>
 
               <Column
-                field="fechaInicio"
+                field="fechaInicioDespacho"
                 header="Fecha Inicio"
                 body={(rowData: any) => formatDateFH(rowData.fechaInicio)}
               ></Column>
               <Column
                 field="fechaDespacho"
                 header="Fecha Despacho"
-                body={(rowData: any) => formatDateFH(rowData.fechaDespacho)}
+                body={(rowData: any) =>
+                  formatDateFH(rowData.fechaInicioDespacho)
+                }
               ></Column>
               <Column
-                field="fechaFin"
+                field="fechaFinDespacho"
                 header="Fecha Fin"
-                body={(rowData: any) => formatDateFH(rowData.fechaFin)}
+                body={(rowData: any) => formatDateFH(rowData.fechaFinDespacho)}
               ></Column>
               <Column
                 header="Tiempo de Carga"
                 body={(rowData: any) =>
                   formatDuration(rowData.fechaInicio, rowData.fechaFin)
                 }
+              ></Column>
+              <Column
+                field="estadoDespacho"
+                header="Estado Despacho"
+                body={(rowData: any) => rowData.estadoDespacho}
+              ></Column>
+              <Column
+                field="estadoCarga"
+                header="Estado Carga"
+                body={(rowData: any) => rowData.estadoCarga}
               ></Column>
             </DataTable>
           </>

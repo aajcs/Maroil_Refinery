@@ -11,6 +11,7 @@ import {
   LineaDespacho,
   Despacho,
   CorteRefinacion,
+  ChequeoCantidad,
 } from "@/libs/interfaces";
 import { getTanques } from "@/app/api/tanqueService";
 import { getTorresDestilacion } from "@/app/api/torreDestilacionService";
@@ -25,6 +26,11 @@ import { getLineaDespachos } from "@/app/api/lineaDespachoService";
 import { getDespachos } from "@/app/api/despachoService";
 import { getOperadors } from "@/app/api/operadorService";
 import { getCorteRefinacions } from "@/app/api/corteRefinacionService";
+import {
+  getChequeoCalidad,
+  getChequeoCalidads,
+} from "@/app/api/chequeoCalidadService";
+import { getChequeoCantidads } from "@/app/api/chequeoCantidadService";
 
 export const useRefineryData = (
   activeRefineriaId: string,
@@ -48,6 +54,9 @@ export const useRefineryData = (
   const [corteRefinacions, setCorteRefinacions] = useState<CorteRefinacion[]>(
     []
   );
+  const [chequeoCantidads, setChequeoCantidads] = useState<ChequeoCantidad[]>(
+    []
+  );
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -60,12 +69,13 @@ export const useRefineryData = (
         recepcionsDB,
         despachosDB,
         contratosDB,
-        refinacionDB,
         productosDB,
         tipoProductosDB,
         contactosDB,
         operadorDB,
         corteRefinacionDB,
+        chequeoCantidadDB,
+
         // brent,
       ] = await Promise.all([
         getTanques(),
@@ -75,12 +85,12 @@ export const useRefineryData = (
         getRecepcions(),
         getDespachos(),
         getContratos(),
-        getRefinacions(),
         getProductos(),
         getTipoProductos(),
         getContactos(),
         getOperadors(),
         getCorteRefinacions(),
+        getChequeoCantidads(),
         // getBrent(),
       ]);
 
@@ -153,6 +163,12 @@ export const useRefineryData = (
             corteRefinacion.idRefineria?.id === activeRefineriaId
         ) || [];
 
+      const filteredChequeoCantidads =
+        chequeoCantidadDB?.chequeoCantidads?.filter(
+          (chequeoCantidad: ChequeoCantidad) =>
+            chequeoCantidad.idRefineria?.id === activeRefineriaId
+        ) || [];
+
       setTanques(filteredTanques);
       setTorresDestilacion(filteredTorresDestilacion);
       setLineaRecepcions(filteredLineaRecepcions);
@@ -164,6 +180,7 @@ export const useRefineryData = (
       setTipoProductos(filterdTipoProductos);
       setContactos(filteredContactos);
       setOperadors(filteredOperador);
+      setChequeoCantidads(filteredChequeoCantidads);
 
       setBrent(brent);
       setCorteRefinacions(filteredCorteRefinacion);
@@ -214,5 +231,6 @@ export const useRefineryData = (
     loading,
     operadors,
     corteRefinacions,
+    chequeoCantidads,
   };
 };

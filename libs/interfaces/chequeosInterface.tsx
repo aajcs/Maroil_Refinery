@@ -23,6 +23,7 @@ export interface ChequeoCalidad {
   idOperador: {
     nombre: string;
     id: string;
+    _id: string;
   };
   estado: string;
   eliminado: boolean;
@@ -55,6 +56,7 @@ export interface ChequeoCantidad {
   idOperador: {
     nombre: string;
     id: string;
+    _id: string;
   };
   estado: string;
   eliminado: boolean;

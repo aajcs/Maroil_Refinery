@@ -6,6 +6,8 @@ import {
   PocisionAbiertaDespacho,
   PocisionCerradaDespacho,
   TuberiaDespacho,
+  ValvulaAbierda,
+  ValvulaCerrada,
 } from "./ElementosLineaCarga";
 import { LineaDespacho, Despacho } from "@/libs/interfaces";
 
@@ -90,12 +92,20 @@ const ModeladoRefineriaLineaDespacho = ({
       </g>
 
       {!hasAssociatedDespacho ? (
-        <g transform="matrix(.045615 0 0 0.045615-51.186032-48.938911)">
-          <PocisionCerradaDespacho />
+        // <g transform="matrix(.045615 0 0 0.045615-51.186032-48.938911)">
+        //   {/* <PocisionCerradaDespacho /> */}
+        //   <ValvulaCerrada />
+        // </g>
+
+        <g transform="translate(-50, -45) scale(0.8)">
+          <ValvulaCerrada />
         </g>
       ) : (
-        <g transform="matrix(.045615 0 0 0.045615-51.18604-48.938999)">
-          <PocisionAbiertaDespacho />
+        // <g transform="matrix(.045615 0 0 0.045615-51.18604-48.938999)">
+        //   <PocisionAbiertaDespacho />
+        // </g>
+        <g transform="translate(110, 48)scale(0.8) ">
+          <ValvulaAbierda />
         </g>
       )}
       <script />

@@ -1,5 +1,11 @@
 "use client";
-import { Despacho, Recepcion, Tanque } from "@/libs/interfaces";
+import {
+  ChequeoCantidad,
+  CorteRefinacion,
+  Despacho,
+  Recepcion,
+  Tanque,
+} from "@/libs/interfaces";
 import { useEffect, useState, useMemo } from "react";
 import {
   PocisionAbierta,
@@ -13,14 +19,22 @@ interface ModeladoRefineriaTanqueProps {
   tanque: Tanque;
   recepcions?: Recepcion[];
   despachos?: Despacho[];
+  corteRefinacions?: CorteRefinacion[];
+  chequeoCantidads?: ChequeoCantidad[];
+  salida?: Boolean;
 }
 
 const ModeladoRefineriaTanque = ({
   tanque,
   recepcions,
   despachos,
+  corteRefinacions,
+  chequeoCantidads,
+  salida = false,
 }: ModeladoRefineriaTanqueProps) => {
-  const [apiData, setApiData] = useState({ tankLevel: 0 });
+  const [apiData, setApiData] = useState<{ tankLevel: number }>({
+    tankLevel: 0,
+  });
 
   // refinacions?.forEach((refinacions) => {
   //   console.log("refinacions", refinacions);
@@ -44,17 +58,127 @@ const ModeladoRefineriaTanque = ({
       .filter((despacho) => despacho.idTanque?.id === tanque.id)
       .reduce((sum, despacho) => sum + despacho.cantidadRecibida, 0);
   }, [tanque, despachos]);
+  const totalCorteRefinacion = useMemo(() => {
+    if (!tanque || !corteRefinacions || tanque.capacidad <= 0) {
+      console.log("tanque:", { tanque });
+      console.log("corteRefinacions", { corteRefinacions });
+      return 0;
+    }
+
+    return corteRefinacions.reduce((totalSum, refinacion) => {
+      console.log("Procesando refinacion:", refinacion);
+
+      const corteSum = refinacion.corteTorre.reduce((corteSum, corte) => {
+        console.log("Procesando corte:", corte);
+
+        const detallesSum = (corte.detalles || []).reduce(
+          (detalleSum, detalle) => {
+            console.log("Procesando detalle:", detalle);
+
+            if (detalle.idTanque?.id === tanque.id) {
+              console.log(
+                "Tanque coincide, sumando cantidad:",
+                detalle.cantidad
+              );
+              return detalleSum + detalle.cantidad;
+            }
+            return detalleSum;
+          },
+          0
+        );
+
+        return corteSum + detallesSum;
+      }, 0);
+
+      return totalSum + corteSum;
+    }, 0);
+  }, [tanque, corteRefinacions]);
+  const ultimoCorteRefinacion = useMemo(() => {
+    if (!tanque || !corteRefinacions || tanque.capacidad <= 0) {
+      console.log("Datos inválidos:", { tanque, corteRefinacions });
+      return null;
+    }
+
+    // Filtrar los cortes de refinación que tienen el tanque asociado
+    const cortesFiltrados = corteRefinacions.filter((refinacion) =>
+      refinacion.corteTorre.some((corte) =>
+        (corte.detalles || []).some(
+          (detalle) => detalle.idTanque?.id === tanque.id
+        )
+      )
+    );
+
+    // Obtener el último corte basado en la fecha
+    const ultimoCorte = cortesFiltrados.reduce((ultimo, actual) => {
+      return new Date(actual.fechaCorte) > new Date(ultimo.fechaCorte)
+        ? actual
+        : ultimo;
+    }, cortesFiltrados[0]);
+
+    if (!ultimoCorte) return null;
+
+    // Calcular el totalCorteRefinacion para el tanque en el último corte
+    const totalCorteRefinacionUltimo = ultimoCorte.corteTorre.reduce(
+      (corteSum, corte) => {
+        const detallesSum = (corte.detalles || []).reduce(
+          (detalleSum, detalle) => {
+            if (detalle.idTanque?.id === tanque.id) {
+              return detalleSum + detalle.cantidad;
+            }
+            return detalleSum;
+          },
+          0
+        );
+        return corteSum + detallesSum;
+      },
+      0
+    );
+
+    return { ...ultimoCorte, totalCorteRefinacion: totalCorteRefinacionUltimo };
+  }, [tanque, corteRefinacions]);
+
+  console.log("Último corte de refinación con total:", ultimoCorteRefinacion);
+  const ultimoChequeoCantidad = useMemo(() => {
+    if (!chequeoCantidads || !tanque) {
+      console.log("tanque:", { tanque });
+      console.log("chequeoCantidads", { chequeoCantidads });
+      return 0;
+    }
+    // Filtrar por tipo "Tanque" y que coincida con el tanque actual
+    const chequeosFiltrados = chequeoCantidads.filter(
+      (chequeo) =>
+        chequeo.aplicar?.tipo === "Tanque" &&
+        chequeo.aplicar?.idReferencia?.id === tanque.id
+    );
+
+    // Obtener el último registro basado en la fecha
+    return chequeosFiltrados.reduce((ultimo, actual) => {
+      return new Date(actual.fechaChequeo) > new Date(ultimo.fechaChequeo)
+        ? actual
+        : ultimo;
+    }, chequeosFiltrados[0]);
+  }, [chequeoCantidads, tanque]);
+
+  console.log("Último chequeo cantidad:", ultimoChequeoCantidad);
+  console.log(totalCorteRefinacion);
 
   // console.log("totalRefinacionSalida", totalRefinacionSalida);
   const tanqueLevel = useMemo(() => {
-    if (tanque?.capacidad > 0) {
-      return (
-        ((totalRecepcion + totalDespacho) / tanque.capacidad) *
-        100
-      ).toFixed(2);
+    if (!tanque || tanque.capacidad <= 0) {
+      return 0; // Retornar 0 si el tanque no es válido o la capacidad es inválida
     }
-    return "0.00";
-  }, [totalRecepcion, tanque]);
+
+    // Usar ultimoCorteRefinacion.totalCorteRefinacion si está disponible
+    const totalCorte = ultimoCorteRefinacion?.totalCorteRefinacion || 0;
+
+    // Calcular el nivel del tanque según el caso (entrada o salida)
+    const nivel = salida
+      ? (totalCorte - totalDespacho) / tanque.capacidad // Caso de salida
+      : (totalRecepcion - totalCorte) / tanque.capacidad; // Caso de entrada
+
+    // Asegurar que el nivel esté entre 0% y 100%
+    return Math.min(Math.max(nivel * 100, 0), 100);
+  }, [tanque, salida, totalRecepcion, totalDespacho, ultimoCorteRefinacion]);
 
   const isLoadingRecepcion = useMemo(() => {
     if (!recepcions || !tanque) return false;
@@ -78,7 +202,7 @@ const ModeladoRefineriaTanque = ({
   }, [despachos, tanque]);
 
   useEffect(() => {
-    setApiData({ tankLevel: parseFloat(tanqueLevel) });
+    setApiData({ tankLevel: parseFloat(tanqueLevel.toString()) });
   }, [tanqueLevel]);
 
   const bottomY = 250;
@@ -304,7 +428,7 @@ const ModeladoRefineriaTanque = ({
             x="5"
             y="5"
             width="240"
-            height="130"
+            height="160"
             rx="8"
             fill="#f8f9fa"
             stroke="#dee2e6"
@@ -360,7 +484,7 @@ const ModeladoRefineriaTanque = ({
                 fill="#2d3436"
                 font-weight="600"
               >
-                {apiData.tankLevel}%
+                {apiData.tankLevel.toFixed(2)}%
               </text>
 
               {/* Cantidad */}
@@ -375,9 +499,18 @@ const ModeladoRefineriaTanque = ({
                 fill="#2d3436"
                 font-weight="600"
               >
-                {(totalRecepcion + totalDespacho).toLocaleString(undefined, {
-                  maximumFractionDigits: 2,
-                })}{" "}
+                {ultimoCorteRefinacion
+                  ? (!salida
+                      ? totalRecepcion +
+                        totalDespacho -
+                        ultimoCorteRefinacion.totalCorteRefinacion // Caso de entrada
+                      : ultimoCorteRefinacion.totalCorteRefinacion -
+                        totalDespacho
+                    ) // Caso de salida
+                      .toLocaleString(undefined, {
+                        maximumFractionDigits: 2,
+                      })
+                  : "0.00"}{" "}
                 Bbl
               </text>
 
@@ -396,6 +529,52 @@ const ModeladoRefineriaTanque = ({
               >
                 {/* Puedes reemplazar con el dato real cuando lo tengas */}
                 N/A
+              </text>
+              <text x="15" y="145" font-weight="500">
+                Último Chequeo:
+              </text>
+              <text
+                x="240"
+                y="145"
+                fontSize="18"
+                text-anchor="end"
+                fill="#2d3436"
+                font-weight="600"
+              >
+                {ultimoChequeoCantidad
+                  ? `${ultimoChequeoCantidad.cantidad.toLocaleString()} Bbl 
+                    `
+                  : "0"}
+              </text>
+              <text
+                x="240"
+                y="160"
+                fontSize="18"
+                text-anchor="end"
+                fill="#2d3436"
+                // font-weight="600"
+              >
+                {ultimoChequeoCantidad &&
+                  `Hace ${
+                    (Date.now() -
+                      new Date(ultimoChequeoCantidad.fechaChequeo).getTime()) /
+                      (1000 * 60 * 60) <
+                    1
+                      ? `${(
+                          (Date.now() -
+                            new Date(
+                              ultimoChequeoCantidad.fechaChequeo
+                            ).getTime()) /
+                          (1000 * 60)
+                        ).toFixed(0)} min`
+                      : `${(
+                          (Date.now() -
+                            new Date(
+                              ultimoChequeoCantidad.fechaChequeo
+                            ).getTime()) /
+                          (1000 * 60 * 60)
+                        ).toFixed(1)} h`
+                  }`}
               </text>
             </g>
           </g>

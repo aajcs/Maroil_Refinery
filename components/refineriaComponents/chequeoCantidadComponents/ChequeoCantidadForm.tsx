@@ -409,7 +409,7 @@ const ChequeoCantidadForm = ({
                       value={field.value}
                       onValueChange={(e) => field.onChange(e.value)}
                       min={0}
-                      max={100}
+                      max={300}
                       className="w-full"
                       locale="es"
                     />
