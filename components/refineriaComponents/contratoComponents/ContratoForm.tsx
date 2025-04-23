@@ -19,6 +19,7 @@ import { ProgressSpinner } from "primereact/progressspinner";
 import CustomCalendar from "@/components/common/CustomCalendar";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Dialog } from "primereact/dialog";
+import { useRefineryPrecios } from "@/hooks/useRefineryPrecios";
 
 type FormData = z.infer<typeof contratoSchema>;
 
@@ -63,6 +64,8 @@ function ContratoForm({
   const { productos, tipoProductos, contactos, loading } = useRefineryData(
     activeRefineria?.id || ""
   );
+  const { brent: brentOnline, oilDerivate } = useRefineryPrecios();
+
   const toast = useRef<Toast | null>(null);
   const calendarRef = useRef<Calendar>(null);
   const [items, setItems] = useState(contrato?.idItems || []);
@@ -451,7 +454,9 @@ function ContratoForm({
                 <div className="p-2 bg-white border-round shadow-1 surface-card">
                   <label className="block font-medium text-900 mb-3 flex align-items-center">
                     <i className="pi pi-user mr-2 text-primary"></i>
-                    Nombre de Proveedor
+                    {tipoContrato === "Compra"
+                      ? "Nombre del Proveedor"
+                      : "Nombre del Cliente"}
                   </label>
                   <Controller
                     name="idContacto"
@@ -461,10 +466,21 @@ function ContratoForm({
                         <Dropdown
                           id="idContacto"
                           {...field}
-                          options={contactos.map((contacto) => ({
-                            label: contacto.nombre,
-                            value: { id: contacto.id, nombre: contacto.nombre },
-                          }))}
+                          options={contactos
+                            .filter((contacto) =>
+                              tipoContrato === "Compra"
+                                ? contacto.tipo === "Proveedor"
+                                : tipoContrato === "Venta"
+                                ? contacto.tipo === "Cliente"
+                                : true
+                            )
+                            .map((contacto) => ({
+                              label: contacto.nombre,
+                              value: {
+                                id: contacto.id,
+                                nombre: contacto.nombre,
+                              },
+                            }))}
                           placeholder="Seleccionar un proveedor"
                           className={classNames("w-full", {
                             "p-invalid": fieldState.error,
@@ -718,9 +734,12 @@ function ContratoForm({
               {/* Campo: Brent */}
               <div className="col-12 sm:col-6 lg:col-3 xl:col-2">
                 <div className="p-2 bg-white border-round shadow-1 surface-card">
-                  <label className="block font-medium text-900 mb-3 flex align-items-center">
-                    <i className="pi pi-dollar mr-2 text-primary"></i>
-                    Brent
+                  <label className="block font-medium text-900 mb-3 flex justify-content-between align-items-center">
+                    <span className="flex align-items-center">
+                      <i className="pi pi-dollar mr-2 text-primary"></i>
+                      Brent
+                    </span>
+                    <span>Ref={brentOnline}$</span>
                   </label>
                   <Controller
                     name="brent"

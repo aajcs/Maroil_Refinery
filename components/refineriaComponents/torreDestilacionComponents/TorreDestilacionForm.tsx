@@ -51,7 +51,6 @@ const TorreDestilacionForm = ({
 
   // Estado para materiales seleccionados
   const [selectedMaterials, setSelectedMaterials] = useState<Material[]>([]);
-  console.log(selectedMaterials);
 
   const {
     register,
@@ -70,7 +69,8 @@ const TorreDestilacionForm = ({
       if (productosDB && Array.isArray(productosDB.productos)) {
         const filteredProductos = productosDB.productos.filter(
           (producto: Producto) =>
-            producto.idRefineria.id === activeRefineria?.id
+            producto.idRefineria.id === activeRefineria?.id &&
+            producto.tipoMaterial === "Derivado"
         );
         setProductos(filteredProductos);
       }
@@ -207,7 +207,7 @@ const TorreDestilacionForm = ({
               <div className="p-2 bg-white border-round shadow-1 surface-card">
                 <label className="block font-medium text-900 mb-3 flex align-items-center">
                   <i className="pi pi-chart-bar mr-2 text-primary"></i>
-                  Capacidad
+                  Capacidad de procesamiento
                 </label>
                 <Controller
                   name="capacidad"
@@ -240,7 +240,7 @@ const TorreDestilacionForm = ({
               <div className="p-2 bg-white border-round shadow-1 surface-card">
                 <label className="block font-medium text-900 mb-3 flex align-items-center">
                   <i className="pi pi-box mr-2 text-primary"></i>
-                  Materiales y Porcentajes
+                  Materiales y Procesamiento
                 </label>
 
                 {/* Selector de Materiales */}

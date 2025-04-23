@@ -20,6 +20,8 @@ import ModeladoRefineriaContratosVentaList from "./ModeladoRefineriaContratosVen
 
 import { TabPanel, TabView } from "primereact/tabview";
 import { InputSwitch } from "primereact/inputswitch";
+// import CalculoTorreDestilacion from "./CalculoTorreDestilacion";
+// import RefineryAnalysis from "./RefineryAnalysis";
 // import TorreProduction from "./TorreProduction";
 
 const ModeladoRefineriaDashboard = () => {
@@ -207,11 +209,13 @@ const ModeladoRefineriaDashboard = () => {
             <ModeladoRefineriaDespachosList despachos={despachos} />
           </TabPanel>
         </TabView>
-        {/* 
-        {torresDestilacion.map((torre) => (
-          <div key={torre.id} className="col-12 md:col-6">
-            <TorreProduction tower={torre} cuts={corteRefinacions} />
 
+        {/* {torresDestilacion.map((torre) => (
+          <div key={torre.id} className="col-12 md:col-6">
+            <RefineryAnalysis
+              torre={torre}
+              corteRefinacions={corteRefinacions}
+            />
           </div>
         ))} */}
 
@@ -257,12 +261,11 @@ const ModeladoRefineriaDashboard = () => {
             <h1 className="text-2xl font-bold mb-3">Torres de Procesamiento</h1>
             <div className="grid">
               {torresDestilacion.map((torre) => (
-                <div key={torre.id} className="col-12 md:col-6">
+                <div key={torre.id} className="col-12 md:col-12">
                   <ModeladoRefineriaTorre
                     torre={torre}
                     corteRefinacions={corteRefinacions}
                   />
-                  {/* <ModeladoRefineriaTorreSVG /> */}
                 </div>
               ))}
             </div>

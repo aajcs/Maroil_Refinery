@@ -112,10 +112,10 @@ const RefineriaList = () => {
         <Button
           type="button"
           icon="pi pi-user-plus"
-          label="Agregar Nuevo"
+          label="Crear Refineria"
           outlined
           className="w-full sm:w-auto flex-order-0 sm:flex-order-1"
-          onClick={() => router.push("/profile/create")}
+          onClick={() => router.push("/todas-refinerias/create")}
         />
       </div>
     );
@@ -169,13 +169,13 @@ const RefineriaList = () => {
           body={actionBodyTemplate}
           headerStyle={{ minWidth: "10rem" }}
         ></Column>
-        <Column
+        {/* <Column
           field="img"
           header="Imagen"
           sortable
           headerClassName="white-space-nowrap"
           style={{ width: "25%" }}
-        ></Column>
+        ></Column> */}
         <Column
           field="nombre"
           header="Nombre"
@@ -199,19 +199,19 @@ const RefineriaList = () => {
         ></Column>
         <Column
           field="nit"
-          header="Identificación"
+          header="NIT"
           sortable
           headerClassName="white-space-nowrap"
           style={{ width: "25%" }}
         ></Column>
-
+        {/* 
         <Column
           field="estado"
           header="Estado"
           sortable
           headerClassName="white-space-nowrap"
           style={{ width: "25%" }}
-        ></Column>
+        ></Column> */}
       </DataTable>
 
       <Dialog

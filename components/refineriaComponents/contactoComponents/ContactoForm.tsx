@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { InputText } from "primereact/inputtext";
@@ -13,6 +13,7 @@ import { Dropdown } from "primereact/dropdown";
 import { useRefineriaStore } from "@/store/refineriaStore";
 import { Checkbox } from "primereact/checkbox";
 import { InputTextarea } from "primereact/inputtextarea";
+import { InputNumber } from "primereact/inputnumber";
 
 type FormData = z.infer<typeof contactoSchema>;
 
@@ -49,6 +50,7 @@ const ContactoForm = ({
     formState: { errors },
     setValue,
     watch,
+    control,
   } = useForm<FormData>({
     resolver: zodResolver(contactoSchema),
   });
@@ -151,6 +153,10 @@ const ContactoForm = ({
                     "p-invalid": errors.identificacionFiscal,
                   })}
                   {...register("identificacionFiscal")}
+                  onInput={(e) => {
+                    const input = e.target as HTMLInputElement;
+                    input.value = input.value.replace(/[^0-9-]/g, ""); // Elimina caracteres no válidos
+                  }}
                 />
                 {errors.identificacionFiscal && (
                   <small className="p-error block mt-2 flex align-items-center">
@@ -187,25 +193,36 @@ const ContactoForm = ({
 
             {/* Campo: Teléfono */}
             <div className="col-12 md:col-6 lg:col-4 xl:col-3">
-              <div className="p-2 bg-white border-round shadow-1 surface-card">
-                <label className="block font-medium text-900 mb-3 flex align-items-center">
-                  <i className="pi pi-phone mr-2 text-primary"></i>
+              <div className="p-3 bg-white border-round shadow-1">
+                <label className="block font-medium text-900 mb-2 flex align-items-center">
+                  <i className="pi pi-phone text-primary mr-2"></i>
                   Teléfono
                 </label>
-                <InputText
-                  id="telefono"
-                  type="text"
-                  className={classNames("w-full", {
-                    "p-invalid": errors.telefono,
-                  })}
-                  {...register("telefono")}
+                <Controller
+                  name="telefono"
+                  control={control}
+                  render={({ field, fieldState }) => (
+                    <>
+                      <InputNumber
+                        id="telefono"
+                        value={field.value}
+                        onValueChange={(e) => field.onChange(e.value ?? 0)}
+                        useGrouping={false}
+                        // min={1000000} // Mínimo 7 dígitos
+                        // max={9999999999} // Máximo 10 dígitos
+                        className={classNames("w-full", {
+                          "p-invalid": fieldState.error,
+                        })}
+                      />
+                      {fieldState.error && (
+                        <small className="p-error block mt-2 flex align-items-center">
+                          <i className="pi pi-exclamation-circle mr-2"></i>
+                          {fieldState.error.message}
+                        </small>
+                      )}
+                    </>
+                  )}
                 />
-                {errors.telefono && (
-                  <small className="p-error block mt-2 flex align-items-center">
-                    <i className="pi pi-exclamation-circle mr-2"></i>
-                    {errors.telefono.message}
-                  </small>
-                )}
               </div>
             </div>
 

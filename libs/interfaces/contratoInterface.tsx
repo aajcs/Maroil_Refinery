@@ -83,4 +83,5 @@ export interface Contacto {
   createdAt: string;
   updatedAt: string;
   idRefineria: Refineria;
+  tipo: string;
 }

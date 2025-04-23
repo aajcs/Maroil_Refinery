@@ -3,10 +3,20 @@ import { array, boolean, date, number, object, string, union, z } from "zod";
 export const contactoSchema = object({
   id: string().optional(),
   nombre: string().min(1, "La razon es obligatoria"),
-  identificacionFiscal: string().min(1, "Nit es obligatoria"),
+  identificacionFiscal: string()
+    .regex(/^[0-9-]+$/, {
+      message: "El NIT solo puede contener números y el carácter '-'",
+    })
+    .min(8, { message: "El NIT debe tener al menos 8 caracteres" }) // Valida longitud mínima
+    .max(13, { message: "El NIT no puede tener más de 13 caracteres" }), // Valida longitud máxima
   correo: string().email("El correo debe ser válido"),
   direccion: string().min(1, "La dirección es obligatoria"),
-  telefono: string().min(1, "El teléfono es obligatorio"),
+  telefono: number()
+    .min(1000000, { message: "El teléfono debe tener al menos 7 dígitos" })
+    .max(9999999999, {
+      message: "El teléfono no puede tener más de 10 dígitos",
+    }),
+
   tipo: string().min(1, "El tipo es obligatorio"),
   idRefineria: object({
     id: string().optional(),

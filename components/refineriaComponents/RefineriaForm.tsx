@@ -152,7 +152,7 @@ const RefineriaForm = ({
       <div className="grid">
         {!refineria && (
           <div className="col-12 lg:col-2">
-            <div className="text-900 font-medium text-xl mb-3">Perfil</div>
+            <div className="text-900 font-medium text-xl mb-3">Refinería</div>
             <p className="m-0 p-0 text-600 line-height-3 mr-3">
               Todos los campos son obligatorios.
             </p>
@@ -177,7 +177,7 @@ const RefineriaForm = ({
                   <small className="p-error">{errors.nombre.message}</small>
                 )}
               </div>
-
+              {/* 
               <div className="field mb-4 col-12 md:col-6">
                 <label htmlFor="estado" className="font-medium text-900">
                   Estado
@@ -195,7 +195,7 @@ const RefineriaForm = ({
                 {errors.estado && (
                   <small className="p-error">{errors.estado.message}</small>
                 )}
-              </div>
+              </div> */}
               {/* 
               <div className="field mb-4 col-12 md:col-6">
                 <label htmlFor="eliminado" className="font-medium text-900">

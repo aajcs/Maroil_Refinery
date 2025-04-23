@@ -157,19 +157,19 @@ const RecepcionList = () => {
         <Column field="idGuia" header="ID de la Guía" sortable />
         <Column field="placa" header="Placa" />
         <Column field="nombreChofer" header="Nombre del Chofer" sortable />
-        <Column field="apellidoChofer" header="Apellido del Chofer" sortable />
+        {/* <Column field="apellidoChofer" header="Apellido del Chofer" sortable /> */}
         <Column
           field="idContrato.numeroContrato"
           header="Número de Contrato"
           sortable
         />
-        <Column
+        {/* <Column
           field="idContratoItems.producto.nombre"
           header="Nombre del Producto"
-        />
+        /> */}
         <Column
           field="cantidadEnviada"
-          header="Cantidad Enviada"
+          header="Cantidad Esperada"
           body={(rowData: Recepcion) =>
             ` ${Number(rowData.cantidadEnviada).toLocaleString("de-DE")}Bbl`
           }
@@ -209,7 +209,7 @@ const RecepcionList = () => {
 
         <Column field="estadoRecepcion" header="Estado de la Recepcion" />
         <Column field="estadoCarga" header="Estado de la Carga" />
-        <Column field="estado" header="Estado" />
+        {/* <Column field="estado" header="Estado" />
         <Column
           field="createdAt"
           header="Fecha de Creación"
@@ -219,7 +219,7 @@ const RecepcionList = () => {
           field="updatedAt"
           header="Última Actualización"
           body={(rowData: Recepcion) => formatDateFH(rowData.updatedAt)}
-        />
+        /> */}
       </DataTable>
 
       <Dialog

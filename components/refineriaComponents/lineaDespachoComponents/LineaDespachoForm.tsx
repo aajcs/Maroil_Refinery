@@ -45,6 +45,11 @@ const LineaDespachoForm = ({
   const { activeRefineria } = useRefineriaStore();
   const { productos, loading } = useRefineryData(activeRefineria?.id || "");
 
+  // Filtrar productos por categoría "Derivados"
+  const filteredProductos = productos.filter(
+    (producto: any) => producto.tipoMaterial === "Derivado"
+  );
+
   const [submitting, setSubmitting] = useState(false);
   const {
     register,
@@ -165,7 +170,7 @@ const LineaDespachoForm = ({
                   id="idProducto.id"
                   value={watch("idProducto")}
                   onChange={(e) => setValue("idProducto", e.value)}
-                  options={productos.map((producto) => ({
+                  options={filteredProductos.map((producto) => ({
                     label: producto.nombre,
                     value: {
                       id: producto.id,

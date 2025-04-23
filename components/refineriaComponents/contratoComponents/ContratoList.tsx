@@ -197,14 +197,14 @@ const ContratoList = ({ tipoContrato }: ContratoListProps) => {
       >
         <Column expander style={{ width: "3em" }} />
         <Column body={actionBodyTemplate} headerStyle={{ minWidth: "10rem" }} />
-        <Column field="tipoContrato" header="Tipo de Contrato" sortable />
+        {/* <Column field="tipoContrato" header="Tipo de Contrato" sortable /> */}
         <Column field="numeroContrato" header="Número de Contrato" sortable />
-        <Column field="descripcion" header="Descripción de Contrato" />
+        {/* <Column field="descripcion" header="Descripción de Contrato" />
         <Column
           field="montoTotal"
           header="Monto Total"
           body={(rowData: Contrato) => rowData.montoTotal?.toFixed(2)}
-        />
+        /> */}
         <Column
           field="condicionesPago.tipo"
           header="Tipo de Condiciones de Pago"
@@ -234,7 +234,7 @@ const ContratoList = ({ tipoContrato }: ContratoListProps) => {
           body={(rowData: Contrato) => formatDateFH(rowData.fechaFin)}
           sortable
         />
-        <Column
+        {/* <Column
           field="brent"
           header="Brent"
           body={(rowData: Contrato) => rowData.brent?.toFixed(2)}
@@ -251,7 +251,7 @@ const ContratoList = ({ tipoContrato }: ContratoListProps) => {
           header="Última Actualización"
           body={(rowData: Contrato) => formatDateFH(rowData.updatedAt)}
           sortable
-        />
+        /> */}
       </DataTable>
 
       <Dialog

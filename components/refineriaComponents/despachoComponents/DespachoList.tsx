@@ -158,7 +158,7 @@ const DespachoList = () => {
         <Column field="idGuia" header="ID de la Guía" sortable />
         <Column field="placa" header="Placa" />
         <Column field="nombreChofer" header="Nombre del Chofer" sortable />
-        <Column field="apellidoChofer" header="Apellido del Chofer" sortable />
+        {/* <Column field="apellidoChofer" header="Apellido del Chofer" sortable /> */}
         <Column
           field="idContrato.numeroContrato"
           header="Número de Contrato"
@@ -170,14 +170,14 @@ const DespachoList = () => {
         />
         <Column
           field="cantidadEnviada"
-          header="Cantidad Enviada"
+          header="Cantidad a Depachar"
           body={(rowData: Despacho) =>
             ` ${Number(rowData.cantidadEnviada).toLocaleString("de-DE")}Bbl`
           }
         />
         <Column
           field="cantidadRecibida"
-          header="Cantidad Recibida"
+          header="Cantidad Depachada"
           body={(rowData: Despacho) =>
             ` ${Number(rowData.cantidadRecibida).toLocaleString("de-DE")}Bbl`
           }
@@ -214,7 +214,7 @@ const DespachoList = () => {
 
         <Column field="estadoDespacho" header="Estado de la Despacho" />
         <Column field="estadoCarga" header="Estado de la Carga" />
-        <Column field="estado" header="Estado" />
+        {/* <Column field="estado" header="Estado" />
         <Column
           field="createdAt"
           header="Fecha de Creación"
@@ -224,7 +224,7 @@ const DespachoList = () => {
           field="updatedAt"
           header="Última Actualización"
           body={(rowData: Despacho) => formatDateFH(rowData.updatedAt)}
-        />
+        /> */}
       </DataTable>
 
       <Dialog
