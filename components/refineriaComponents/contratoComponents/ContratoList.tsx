@@ -49,7 +49,8 @@ const ContratoList = ({ tipoContrato }: ContratoListProps) => {
       if (contratosDB && Array.isArray(contratosDB.contratos)) {
         const filteredContratos = contratosDB.contratos.filter(
           (contrato: Contrato) =>
-            contrato.idRefineria.id === activeRefineria?.id
+            contrato.idRefineria.id === activeRefineria?.id &&
+            contrato.tipoContrato === tipoContrato
         );
         setContratos(filteredContratos);
       } else {
