@@ -10,6 +10,7 @@ import { Toast } from "primereact/toast";
 import { Dialog } from "primereact/dialog";
 import { useRefineriaStore } from "@/store/refineriaStore";
 import ChequeoCantidadForm from "./ChequeoCantidadForm";
+import AuditHistoryDialog from "@/components/common/AuditHistoryDialog";
 
 import { ChequeoCantidad } from "@/libs/interfaces";
 import { formatDateFH } from "@/utils/dateUtils";
@@ -33,6 +34,9 @@ const ChequeoCantidadList = () => {
   const [chequeoCantidadFormDialog, setChequeoCantidadFormDialog] =
     useState(false);
   const [onDuplicate, setOnDuplicate] = useState(false);
+  const [auditDialogVisible, setAuditDialogVisible] = useState(false);
+  const [selectedAuditChequeoCantidad, setSelectedAuditChequeoCantidad] =
+    useState<ChequeoCantidad | null>(null);
   const dt = useRef(null);
   const toast = useRef<Toast | null>(null);
 
@@ -90,6 +94,7 @@ const ChequeoCantidadList = () => {
         life: 3000,
       });
     }
+    setChequeoCantidad(null);
     setDeleteProductDialog(false);
   };
 
@@ -124,6 +129,11 @@ const ChequeoCantidadList = () => {
   const actionBodyTemplate = (rowData: ChequeoCantidad) => (
     <CustomActionButtons
       rowData={rowData}
+      onInfo={(data) => {
+        setSelectedAuditChequeoCantidad(data);
+
+        setAuditDialogVisible(true);
+      }}
       onEdit={(data) => {
         setChequeoCantidad(data);
         setChequeoCantidadFormDialog(true);
@@ -257,7 +267,24 @@ const ChequeoCantidadList = () => {
           )}
         </div>
       </Dialog>
-
+      <AuditHistoryDialog
+        visible={auditDialogVisible}
+        onHide={() => setAuditDialogVisible(false)}
+        title={
+          <div className="mb-2 text-center md:text-left">
+            <div className="border-bottom-2 border-primary pb-2">
+              <h2 className="text-2xl font-bold text-900 mb-2 flex align-items-center justify-content-center md:justify-content-start">
+                <i className="pi pi-check-circle mr-3 text-primary text-3xl"></i>
+                Historial -{" "}
+                {selectedAuditChequeoCantidad?.numeroChequeoCantidad}
+              </h2>
+            </div>
+          </div>
+        }
+        createdBy={selectedAuditChequeoCantidad?.createdBy!}
+        createdAt={selectedAuditChequeoCantidad?.createdAt!}
+        historial={selectedAuditChequeoCantidad?.historial}
+      />
       <Dialog
         visible={chequeoCantidadFormDialog}
         style={{ width: "70vw" }}

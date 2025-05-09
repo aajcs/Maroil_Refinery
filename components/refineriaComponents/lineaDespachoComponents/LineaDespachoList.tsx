@@ -9,6 +9,7 @@ import { InputText } from "primereact/inputtext";
 import { Toast } from "primereact/toast";
 import { Dialog } from "primereact/dialog";
 import { useRefineriaStore } from "@/store/refineriaStore";
+import CustomActionButtons from "@/components/common/CustomActionButtons";
 
 import LineaDespachoForm from "./LineaDespachoForm";
 import { LineaDespacho, Tanque } from "@/libs/interfaces";
@@ -17,6 +18,7 @@ import {
   deleteLineaDespacho,
   getLineaDespachos,
 } from "@/app/api/lineaDespachoService";
+import AuditHistoryDialog from "@/components/common/AuditHistoryDialog";
 
 const LineaDespachoList = () => {
   const { activeRefineria } = useRefineriaStore();
@@ -29,6 +31,9 @@ const LineaDespachoList = () => {
   const [globalFilterValue, setGlobalFilterValue] = useState("");
   const [deleteProductDialog, setDeleteProductDialog] = useState(false);
   const [lineaDespachoFormDialog, setLineaDespachoFormDialog] = useState(false);
+  const [auditDialogVisible, setAuditDialogVisible] = useState(false);
+  const [selectedAuditLineaDespacho, setSelectedAuditLineaDespacho] =
+    useState<LineaDespacho | null>(null);
 
   const router = useRouter();
   const dt = useRef(null);
@@ -83,6 +88,7 @@ const LineaDespachoList = () => {
         life: 3000,
       });
     }
+    setLineaDespacho(null);
     setDeleteProductDialog(false);
   };
 
@@ -115,27 +121,21 @@ const LineaDespachoList = () => {
   );
 
   const actionBodyTemplate = (rowData: LineaDespacho) => (
-    <>
-      <Button
-        icon="pi pi-pencil"
-        rounded
-        severity="success"
-        className="mr-2"
-        onClick={() => {
-          setLineaDespacho(rowData);
-          setLineaDespachoFormDialog(true);
-        }}
-      />
-      <Button
-        icon="pi pi-trash"
-        severity="danger"
-        rounded
-        onClick={() => {
-          setLineaDespacho(rowData);
-          setDeleteProductDialog(true);
-        }}
-      />
-    </>
+    <CustomActionButtons
+      rowData={rowData}
+      onInfo={(data) => {
+        setSelectedAuditLineaDespacho(data);
+        setAuditDialogVisible(true);
+      }}
+      onEdit={(data) => {
+        setLineaDespacho(data);
+        setLineaDespachoFormDialog(true);
+      }}
+      onDelete={(data) => {
+        setLineaDespacho(data);
+        setDeleteProductDialog(true);
+      }}
+    />
   );
   const productoBodyTemplate = (rowData: Tanque) => {
     const { idProducto } = rowData;
@@ -171,7 +171,7 @@ const LineaDespachoList = () => {
         rowsPerPageOptions={[10, 25, 50]}
         filters={filters}
         loading={loading}
-        emptyMessage="No hay lineaDespachos disponibles"
+        emptyMessage="No hay linea de despachos disponibles"
       >
         <Column body={actionBodyTemplate} headerStyle={{ minWidth: "10rem" }} />
         <Column field="nombre" header="Nombre" sortable />
@@ -239,7 +239,23 @@ const LineaDespachoList = () => {
           )}
         </div>
       </Dialog>
-
+      <AuditHistoryDialog
+        visible={auditDialogVisible}
+        onHide={() => setAuditDialogVisible(false)}
+        title={
+          <div className="mb-2 text-center md:text-left">
+            <div className="border-bottom-2 border-primary pb-2">
+              <h2 className="text-2xl font-bold text-900 mb-2 flex align-items-center justify-content-center md:justify-content-start">
+                <i className="pi pi-check-circle mr-3 text-primary text-3xl"></i>
+                Historial - {selectedAuditLineaDespacho?.nombre}
+              </h2>
+            </div>
+          </div>
+        }
+        createdBy={selectedAuditLineaDespacho?.createdBy!}
+        createdAt={selectedAuditLineaDespacho?.createdAt!}
+        historial={selectedAuditLineaDespacho?.historial}
+      />
       <Dialog
         visible={lineaDespachoFormDialog}
         style={{ width: "850px" }}

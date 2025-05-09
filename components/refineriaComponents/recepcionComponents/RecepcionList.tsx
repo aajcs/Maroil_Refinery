@@ -12,7 +12,8 @@ import { deleteRecepcion, getRecepcions } from "@/app/api/recepcionService";
 import { Recepcion } from "@/libs/interfaces";
 import { formatDateFH } from "@/utils/dateUtils";
 import RecepcionForm from "./RecepcionForm";
-
+import CustomActionButtons from "@/components/common/CustomActionButtons";
+import AuditHistoryDialog from "@/components/common/AuditHistoryDialog";
 const RecepcionList = () => {
   const { activeRefineria } = useRefineriaStore();
   const [recepcions, setRecepcions] = useState<Recepcion[]>([]);
@@ -23,7 +24,9 @@ const RecepcionList = () => {
   const [globalFilterValue, setGlobalFilterValue] = useState("");
   const [deleteProductDialog, setDeleteProductDialog] = useState(false);
   const [recepcionFormDialog, setRecepcionFormDialog] = useState(false);
-
+  const [auditDialogVisible, setAuditDialogVisible] = useState(false);
+  const [selectedAuditRecepcion, setSelectedAuditRecepcion] =
+    useState<Recepcion | null>(null);
   const dt = useRef(null);
   const toast = useRef<Toast | null>(null);
 
@@ -74,6 +77,7 @@ const RecepcionList = () => {
         life: 3000,
       });
     }
+    setRecepcion(null);
     setDeleteProductDialog(false);
   };
 
@@ -106,27 +110,24 @@ const RecepcionList = () => {
   );
 
   const actionBodyTemplate = (rowData: Recepcion) => (
-    <>
-      <Button
-        icon="pi pi-pencil"
-        rounded
-        severity="success"
-        className="mr-2"
-        onClick={() => {
-          setRecepcion(rowData);
-          setRecepcionFormDialog(true);
-        }}
-      />
-      <Button
-        icon="pi pi-trash"
-        severity="danger"
-        rounded
-        onClick={() => {
-          setRecepcion(rowData);
-          setDeleteProductDialog(true);
-        }}
-      />
-    </>
+    <CustomActionButtons
+      rowData={rowData}
+      onInfo={(data) => {
+        setSelectedAuditRecepcion(data);
+
+        setAuditDialogVisible(true);
+      }}
+      onEdit={(data) => {
+        setRecepcion(rowData);
+        data;
+        setRecepcionFormDialog(true);
+      }}
+      onDelete={(data) => {
+        setRecepcion(rowData);
+        data;
+        setDeleteProductDialog(true);
+      }}
+    />
   );
   const showToast = (
     severity: "success" | "error" | "warn",
@@ -139,7 +140,6 @@ const RecepcionList = () => {
   return (
     <div className="card">
       <Toast ref={toast} />
-
       <DataTable
         ref={dt}
         value={recepcions}
@@ -221,7 +221,6 @@ const RecepcionList = () => {
           body={(rowData: Recepcion) => formatDateFH(rowData.updatedAt)}
         /> */}
       </DataTable>
-
       <Dialog
         visible={deleteProductDialog}
         style={{ width: "450px" }}
@@ -256,7 +255,24 @@ const RecepcionList = () => {
             </span>
           )}
         </div>
-      </Dialog>
+      </Dialog>{" "}
+      <AuditHistoryDialog
+        visible={auditDialogVisible}
+        onHide={() => setAuditDialogVisible(false)}
+        title={
+          <div className="mb-2 text-center md:text-left">
+            <div className="border-bottom-2 border-primary pb-2">
+              <h2 className="text-2xl font-bold text-900 mb-2 flex align-items-center justify-content-center md:justify-content-start">
+                <i className="pi pi-check-circle mr-3 text-primary text-3xl"></i>
+                Historial - {selectedAuditRecepcion?.numeroRecepcion}
+              </h2>
+            </div>
+          </div>
+        }
+        createdBy={selectedAuditRecepcion?.createdBy!}
+        createdAt={selectedAuditRecepcion?.createdAt!}
+        historial={selectedAuditRecepcion?.historial}
+      />
       {recepcionFormDialog && (
         <RecepcionForm
           recepcion={recepcion}

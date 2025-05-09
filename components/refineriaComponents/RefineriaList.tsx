@@ -12,6 +12,8 @@ import { Dialog } from "primereact/dialog";
 import RefineriaForm from "./RefineriaForm";
 import { deleteRefineria, getRefinerias } from "@/app/api/refineriaService";
 import { Refineria } from "@/libs/interfaces";
+import CustomActionButtons from "../common/CustomActionButtons";
+import AuditHistoryDialog from "../common/AuditHistoryDialog";
 
 const RefineriaList = () => {
   const [refinerias, setRefinerias] = useState<Refineria[]>([]);
@@ -22,7 +24,9 @@ const RefineriaList = () => {
   const [globalFilterValue, setGlobalFilterValue] = useState("");
   const [deleteProductDialog, setDeleteProductDialog] = useState(false);
   const [refineriaFormDialog, setRefineriaFormDialog] = useState(false);
-
+  const [auditDialogVisible, setAuditDialogVisible] = useState(false);
+  const [selectedAuditRefineria, setSelectedAuditRefineria] =
+    useState<Refineria | null>(null);
   const router = useRouter();
   const dt = useRef(null);
   const toast = useRef<Toast | null>(null);
@@ -133,21 +137,24 @@ const RefineriaList = () => {
   };
   const actionBodyTemplate = (rowData: any) => {
     return (
-      <>
-        <Button
-          icon="pi pi-pencil"
-          rounded
-          severity="success"
-          className="mr-2"
-          onClick={() => editRefineria(rowData)}
-        />
-        <Button
-          icon="pi pi-trash"
-          severity="warning"
-          rounded
-          onClick={() => confirmDeleteProduct(rowData)}
-        />
-      </>
+      <CustomActionButtons
+        rowData={rowData}
+        onInfo={(data) => {
+          setSelectedAuditRefineria(data);
+
+          setAuditDialogVisible(true);
+        }}
+        onEdit={(data) => {
+          setRefineria(rowData);
+          data;
+          setRefineriaFormDialog(true);
+        }}
+        onDelete={(data) => {
+          setRefineria(rowData);
+          data;
+          setDeleteProductDialog(true);
+        }}
+      />
     );
   };
   return (
@@ -213,7 +220,23 @@ const RefineriaList = () => {
           style={{ width: "25%" }}
         ></Column> */}
       </DataTable>
-
+      <AuditHistoryDialog
+        visible={auditDialogVisible}
+        onHide={() => setAuditDialogVisible(false)}
+        title={
+          <div className="mb-2 text-center md:text-left">
+            <div className="border-bottom-2 border-primary pb-2">
+              <h2 className="text-2xl font-bold text-900 mb-2 flex align-items-center justify-content-center md:justify-content-start">
+                <i className="pi pi-check-circle mr-3 text-primary text-3xl"></i>
+                Historial - {selectedAuditRefineria?.nombre}
+              </h2>
+            </div>
+          </div>
+        }
+        createdBy={selectedAuditRefineria?.createdBy!}
+        createdAt={selectedAuditRefineria?.createdAt!}
+        historial={selectedAuditRefineria?.historial}
+      />
       <Dialog
         visible={deleteProductDialog}
         style={{ width: "450px" }}

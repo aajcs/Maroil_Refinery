@@ -2,7 +2,7 @@ import { array, boolean, date, number, object, string, union, z } from "zod";
 
 export const refineriaSchema = object({
   nombre: string().min(1, "El nombre es obligatorio"),
-  estado: string().min(1, "Debes seleccionar un estado"),
+  estado: string().min(1, "Debes seleccionar un estado").optional(),
   // eliminado: boolean().default(false),
   procesamientoDia: number().min(1, "El procesamiento diario es obligatorio"),
   ubicacion: string().min(1, "La ubicación es obligatoria"),

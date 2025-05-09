@@ -42,8 +42,6 @@ const ModeladoRefineriaDashboard = () => {
     activeRefineria?.id || "",
     recepcionModificado || undefined // Pasa recepcionModificado como dependencia
   );
-  console.log(corteRefinacions);
-  console.log(chequeoCantidads);
   const [visible, setVisible] = useState<boolean>(false);
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [visibleDespachos, setVisibleDespachos] = useState<boolean>(false);
@@ -83,10 +81,14 @@ const ModeladoRefineriaDashboard = () => {
       const recepcionesContrato = recepcions.filter(
         (recepcion) => recepcion.idContrato.id === contrato.id
       );
+      console.log(recepcionesContrato);
       const productos = contrato.idItems.map((item: any) => {
+        console.log("item", item);
         const recepcionesProducto = recepcionesContrato.filter(
           (recepcion) =>
-            recepcion.idContratoItems?.producto.id === item.producto?.id
+            recepcion.idContratoItems?.producto.id === item.producto?.id &&
+            recepcion.idContratoItems?.idTipoProducto ===
+              item.idTipoProducto?.id
         );
 
         const cantidadRecibida = recepcionesProducto.reduce(
@@ -100,7 +102,8 @@ const ModeladoRefineriaDashboard = () => {
 
         const despachosProducto = despachos.filter(
           (despacho) =>
-            despacho.idContratoItems?.producto.id === item.producto.id
+            despacho.idContratoItems?.producto.id === item.producto.id &&
+            despacho.idContratoItems?.idTipoProducto === item.idTipoProducto.id
         );
 
         const cantidadDespachada = despachosProducto.reduce(
@@ -152,7 +155,6 @@ const ModeladoRefineriaDashboard = () => {
     );
   }
   const rowClass = (data: any) => {
-    console.log("Estado Recepción:", data[0].estadoRecepcion);
     return {
       "bg-programado": data[0].estadoRecepcion === "PROGRAMADO",
       "bg-en-transito": data[0].estadoRecepcion === "EN_TRANSITO",

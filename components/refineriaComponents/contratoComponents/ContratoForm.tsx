@@ -936,7 +936,6 @@ function ContratoForm({
                         return;
                       }
                       const brent = Number(watch("brent"));
-                      console.log("brent", brent);
                       const newPrecio = calculatePrecioUnitario(
                         brent,
                         newValue,
@@ -978,7 +977,6 @@ function ContratoForm({
                         return;
                       }
                       const brent = Number(watch("brent"));
-                      console.log("brent", brent);
                       const newPrecio = calculatePrecioUnitario(
                         brent,
                         rowData.convenio,

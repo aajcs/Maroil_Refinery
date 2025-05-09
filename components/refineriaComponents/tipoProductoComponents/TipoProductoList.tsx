@@ -11,7 +11,8 @@ import { Dialog } from "primereact/dialog";
 import { useRefineriaStore } from "@/store/refineriaStore";
 import TipoProductoForm from "./TipoProductoForm";
 import { formatDateFH } from "@/utils/dateUtils";
-
+import CustomActionButtons from "@/components/common/CustomActionButtons";
+import AuditHistoryDialog from "@/components/common/AuditHistoryDialog";
 import { TipoProducto } from "@/libs/interfaces";
 import {
   deleteTipoProducto,
@@ -28,7 +29,9 @@ const TipoProductoList = () => {
   const [globalFilterValue, setGlobalFilterValue] = useState("");
   const [deleteProductDialog, setDeleteProductDialog] = useState(false);
   const [tipoProductoFormDialog, setTipoProductoFormDialog] = useState(false);
-
+  const [auditDialogVisible, setAuditDialogVisible] = useState(false);
+  const [selectedAuditTipoProducto, setSelectedAuditTipoProducto] =
+    useState<TipoProducto | null>(null);
   const dt = useRef(null);
   const toast = useRef<Toast | null>(null);
 
@@ -81,6 +84,7 @@ const TipoProductoList = () => {
         life: 3000,
       });
     }
+    setTipoProducto(null);
     setDeleteProductDialog(false);
   };
 
@@ -113,27 +117,24 @@ const TipoProductoList = () => {
   );
 
   const actionBodyTemplate = (rowData: TipoProducto) => (
-    <>
-      <Button
-        icon="pi pi-pencil"
-        rounded
-        severity="success"
-        className="mr-2"
-        onClick={() => {
-          setTipoProducto(rowData);
-          setTipoProductoFormDialog(true);
-        }}
-      />
-      <Button
-        icon="pi pi-trash"
-        severity="danger"
-        rounded
-        onClick={() => {
-          setTipoProducto(rowData);
-          setDeleteProductDialog(true);
-        }}
-      />
-    </>
+    <CustomActionButtons
+      rowData={rowData}
+      onInfo={(data) => {
+        setSelectedAuditTipoProducto(data);
+
+        setAuditDialogVisible(true);
+      }}
+      onEdit={(data) => {
+        setTipoProducto(rowData);
+        data;
+        setTipoProductoFormDialog(true);
+      }}
+      onDelete={(data) => {
+        setTipoProducto(rowData);
+        data;
+        setDeleteProductDialog(true);
+      }}
+    />
   );
 
   const showToast = (
@@ -302,7 +303,23 @@ const TipoProductoList = () => {
           )}
         </div>
       </Dialog>
-
+      <AuditHistoryDialog
+        visible={auditDialogVisible}
+        onHide={() => setAuditDialogVisible(false)}
+        title={
+          <div className="mb-2 text-center md:text-left">
+            <div className="border-bottom-2 border-primary pb-2">
+              <h2 className="text-2xl font-bold text-900 mb-2 flex align-items-center justify-content-center md:justify-content-start">
+                <i className="pi pi-check-circle mr-3 text-primary text-3xl"></i>
+                Historial - {selectedAuditTipoProducto?.nombre}
+              </h2>
+            </div>
+          </div>
+        }
+        createdBy={selectedAuditTipoProducto?.createdBy!}
+        createdAt={selectedAuditTipoProducto?.createdAt!}
+        historial={selectedAuditTipoProducto?.historial}
+      />
       <Dialog
         visible={tipoProductoFormDialog}
         style={{ width: "850px" }}

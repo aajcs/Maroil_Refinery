@@ -1,4 +1,9 @@
-import { Producto, Refineria } from "./configRefineriaInterface";
+import {
+  HistorialCambio,
+  Producto,
+  Refineria,
+  UserReference,
+} from "./configRefineriaInterface";
 
 export interface ChequeoCalidad {
   aplicar: {
@@ -31,6 +36,9 @@ export interface ChequeoCalidad {
   updatedAt: string;
   numeroChequeoCalidad: number;
   id: string;
+  createdBy: UserReference;
+  modificadoPor: UserReference;
+  historial: HistorialCambio[];
 }
 
 export interface ChequeoCantidad {
@@ -64,4 +72,7 @@ export interface ChequeoCantidad {
   updatedAt: string;
   numeroChequeoCantidad: number;
   id: string;
+  createdBy: UserReference;
+  modificadoPor: UserReference;
+  historial: HistorialCambio[];
 }

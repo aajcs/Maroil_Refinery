@@ -13,6 +13,8 @@ import { deleteContacto, getContactos } from "@/app/api/contactoService";
 import ContactoForm from "./ContactoForm";
 import { formatDateFH } from "@/utils/dateUtils";
 import { Contacto } from "@/libs/interfaces/contratoInterface";
+import CustomActionButtons from "@/components/common/CustomActionButtons";
+import AuditHistoryDialog from "@/components/common/AuditHistoryDialog";
 
 const ContactoList = () => {
   const { activeRefineria } = useRefineriaStore();
@@ -23,7 +25,9 @@ const ContactoList = () => {
   const [globalFilterValue, setGlobalFilterValue] = useState("");
   const [deleteProductDialog, setDeleteProductDialog] = useState(false);
   const [contactoFormDialog, setContactoFormDialog] = useState(false);
-
+  const [auditDialogVisible, setAuditDialogVisible] = useState(false);
+  const [selectedAuditContacto, setSelectedAuditContacto] =
+    useState<Contacto | null>(null);
   const router = useRouter();
   const dt = useRef(null);
   const toast = useRef<Toast | null>(null);
@@ -75,6 +79,7 @@ const ContactoList = () => {
         life: 3000,
       });
     }
+    setContacto(null);
     setDeleteProductDialog(false);
   };
 
@@ -107,27 +112,24 @@ const ContactoList = () => {
   );
 
   const actionBodyTemplate = (rowData: Contacto) => (
-    <>
-      <Button
-        icon="pi pi-pencil"
-        rounded
-        severity="success"
-        className="mr-2"
-        onClick={() => {
-          setContacto(rowData);
-          setContactoFormDialog(true);
-        }}
-      />
-      <Button
-        icon="pi pi-trash"
-        severity="danger"
-        rounded
-        onClick={() => {
-          setContacto(rowData);
-          setDeleteProductDialog(true);
-        }}
-      />
-    </>
+    <CustomActionButtons
+      rowData={rowData}
+      onInfo={(data) => {
+        setSelectedAuditContacto(data);
+
+        setAuditDialogVisible(true);
+      }}
+      onEdit={(data) => {
+        setContacto(rowData);
+        data;
+        setContactoFormDialog(true);
+      }}
+      onDelete={(data) => {
+        setContacto(rowData);
+        data;
+        setDeleteProductDialog(true);
+      }}
+    />
   );
 
   const showToast = (
@@ -227,7 +229,23 @@ const ContactoList = () => {
           )}
         </div>
       </Dialog>
-
+      <AuditHistoryDialog
+        visible={auditDialogVisible}
+        onHide={() => setAuditDialogVisible(false)}
+        title={
+          <div className="mb-2 text-center md:text-left">
+            <div className="border-bottom-2 border-primary pb-2">
+              <h2 className="text-2xl font-bold text-900 mb-2 flex align-items-center justify-content-center md:justify-content-start">
+                <i className="pi pi-check-circle mr-3 text-primary text-3xl"></i>
+                Historial - {selectedAuditContacto?.nombre}
+              </h2>
+            </div>
+          </div>
+        }
+        createdBy={selectedAuditContacto?.createdBy!}
+        createdAt={selectedAuditContacto?.createdAt!}
+        historial={selectedAuditContacto?.historial}
+      />
       <Dialog
         visible={contactoFormDialog}
         style={{ width: "850px" }}

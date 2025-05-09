@@ -13,7 +13,8 @@ import { deleteDespacho, getDespachos } from "@/app/api/despachoService";
 import { Despacho } from "@/libs/interfaces";
 import { formatDateFH } from "@/utils/dateUtils";
 import DespachoForm from "./DespachoForm";
-
+import CustomActionButtons from "@/components/common/CustomActionButtons";
+import AuditHistoryDialog from "@/components/common/AuditHistoryDialog";
 const DespachoList = () => {
   const { activeRefineria } = useRefineriaStore();
   const [despachos, setDespachos] = useState<Despacho[]>([]);
@@ -23,7 +24,9 @@ const DespachoList = () => {
   const [globalFilterValue, setGlobalFilterValue] = useState("");
   const [deleteProductDialog, setDeleteProductDialog] = useState(false);
   const [despachoFormDialog, setDespachoFormDialog] = useState(false);
-
+  const [auditDialogVisible, setAuditDialogVisible] = useState(false);
+  const [selectedAuditDespacho, setSelectedAuditDespacho] =
+    useState<Despacho | null>(null);
   const router = useRouter();
   const dt = useRef(null);
   const toast = useRef<Toast | null>(null);
@@ -75,6 +78,7 @@ const DespachoList = () => {
         life: 3000,
       });
     }
+    setDespacho(null);
     setDeleteProductDialog(false);
   };
 
@@ -107,27 +111,24 @@ const DespachoList = () => {
   );
 
   const actionBodyTemplate = (rowData: Despacho) => (
-    <>
-      <Button
-        icon="pi pi-pencil"
-        rounded
-        severity="success"
-        className="mr-2"
-        onClick={() => {
-          setDespacho(rowData);
-          setDespachoFormDialog(true);
-        }}
-      />
-      <Button
-        icon="pi pi-trash"
-        severity="danger"
-        rounded
-        onClick={() => {
-          setDespacho(rowData);
-          setDeleteProductDialog(true);
-        }}
-      />
-    </>
+    <CustomActionButtons
+      rowData={rowData}
+      onInfo={(data) => {
+        setSelectedAuditDespacho(data);
+
+        setAuditDialogVisible(true);
+      }}
+      onEdit={(data) => {
+        setDespacho(rowData);
+        data;
+        setDespachoFormDialog(true);
+      }}
+      onDelete={(data) => {
+        setDespacho(rowData);
+        data;
+        setDeleteProductDialog(true);
+      }}
+    />
   );
   const showToast = (
     severity: "success" | "error" | "warn",
@@ -140,7 +141,6 @@ const DespachoList = () => {
   return (
     <div className="card">
       <Toast ref={toast} />
-
       <DataTable
         ref={dt}
         value={despachos}
@@ -226,7 +226,6 @@ const DespachoList = () => {
           body={(rowData: Despacho) => formatDateFH(rowData.updatedAt)}
         /> */}
       </DataTable>
-
       <Dialog
         visible={deleteProductDialog}
         style={{ width: "450px" }}
@@ -261,7 +260,24 @@ const DespachoList = () => {
             </span>
           )}
         </div>
-      </Dialog>
+      </Dialog>{" "}
+      <AuditHistoryDialog
+        visible={auditDialogVisible}
+        onHide={() => setAuditDialogVisible(false)}
+        title={
+          <div className="mb-2 text-center md:text-left">
+            <div className="border-bottom-2 border-primary pb-2">
+              <h2 className="text-2xl font-bold text-900 mb-2 flex align-items-center justify-content-center md:justify-content-start">
+                <i className="pi pi-check-circle mr-3 text-primary text-3xl"></i>
+                Historial - {selectedAuditDespacho?.numeroDespacho}
+              </h2>
+            </div>
+          </div>
+        }
+        createdBy={selectedAuditDespacho?.createdBy!}
+        createdAt={selectedAuditDespacho?.createdAt!}
+        historial={selectedAuditDespacho?.historial}
+      />
       {despachoFormDialog && (
         <DespachoForm
           despacho={despacho}

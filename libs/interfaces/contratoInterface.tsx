@@ -1,4 +1,9 @@
-import { Producto, Refineria } from "./configRefineriaInterface";
+import {
+  HistorialCambio,
+  Producto,
+  Refineria,
+  UserReference,
+} from "./configRefineriaInterface";
 export interface ContratoItem {
   id: string | number; // ID interno del item
   _id: string;
@@ -72,6 +77,9 @@ export interface Contrato {
   abono?: Abono[];
   clausulas?: any[]; // Si las cláusulas tienen una estructura específica, ajusta el tipo
   historialModificaciones?: any[]; // Si el historial tiene una estructura específica, ajusta el tipo
+  createdBy: UserReference;
+  modificadoPor: UserReference;
+  historial: HistorialCambio[];
 }
 export interface Contacto {
   id: string;
@@ -84,4 +92,7 @@ export interface Contacto {
   updatedAt: string;
   idRefineria: Refineria;
   tipo: string;
+  createdBy: UserReference;
+  modificadoPor: UserReference;
+  historial: HistorialCambio[];
 }

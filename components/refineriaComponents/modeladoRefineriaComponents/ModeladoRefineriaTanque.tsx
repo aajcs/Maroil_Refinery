@@ -60,26 +60,14 @@ const ModeladoRefineriaTanque = ({
   }, [tanque, despachos]);
   const totalCorteRefinacion = useMemo(() => {
     if (!tanque || !corteRefinacions || tanque.capacidad <= 0) {
-      console.log("tanque:", { tanque });
-      console.log("corteRefinacions", { corteRefinacions });
       return 0;
     }
 
     return corteRefinacions.reduce((totalSum, refinacion) => {
-      console.log("Procesando refinacion:", refinacion);
-
       const corteSum = refinacion.corteTorre.reduce((corteSum, corte) => {
-        console.log("Procesando corte:", corte);
-
         const detallesSum = (corte.detalles || []).reduce(
           (detalleSum, detalle) => {
-            console.log("Procesando detalle:", detalle);
-
             if (detalle.idTanque?.id === tanque.id) {
-              console.log(
-                "Tanque coincide, sumando cantidad:",
-                detalle.cantidad
-              );
               return detalleSum + detalle.cantidad;
             }
             return detalleSum;
@@ -95,7 +83,6 @@ const ModeladoRefineriaTanque = ({
   }, [tanque, corteRefinacions]);
   const ultimoCorteRefinacion = useMemo(() => {
     if (!tanque || !corteRefinacions || tanque.capacidad <= 0) {
-      console.log("Datos inválidos:", { tanque, corteRefinacions });
       return null;
     }
 
@@ -137,11 +124,8 @@ const ModeladoRefineriaTanque = ({
     return { ...ultimoCorte, totalCorteRefinacion: totalCorteRefinacionUltimo };
   }, [tanque, corteRefinacions]);
 
-  console.log("Último corte de refinación con total:", ultimoCorteRefinacion);
   const ultimoChequeoCantidad = useMemo(() => {
     if (!chequeoCantidads || !tanque) {
-      console.log("tanque:", { tanque });
-      console.log("chequeoCantidads", { chequeoCantidads });
       return 0;
     }
     // Filtrar por tipo "Tanque" y que coincida con el tanque actual
@@ -158,9 +142,6 @@ const ModeladoRefineriaTanque = ({
         : ultimo;
     }, chequeosFiltrados[0]);
   }, [chequeoCantidads, tanque]);
-
-  console.log("Último chequeo cantidad:", ultimoChequeoCantidad);
-  console.log(totalCorteRefinacion);
 
   // console.log("totalRefinacionSalida", totalRefinacionSalida);
   const tanqueLevel = useMemo(() => {

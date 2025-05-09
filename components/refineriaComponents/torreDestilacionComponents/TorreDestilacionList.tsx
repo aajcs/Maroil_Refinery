@@ -16,6 +16,10 @@ import TorreDestilacionForm from "./TorreDestilacionForm";
 import { useRefineriaStore } from "@/store/refineriaStore";
 import { Material, TorreDestilacion } from "@/libs/interfaces";
 import { formatDateFH } from "@/utils/dateUtils";
+import { Accordion, AccordionTab } from "primereact/accordion";
+import { Divider } from "primereact/divider";
+import AuditHistoryDialog from "@/components/common/AuditHistoryDialog";
+import CustomActionButtons from "@/components/common/CustomActionButtons";
 
 const TorreDestilacionList = () => {
   const { activeRefineria } = useRefineriaStore();
@@ -28,6 +32,9 @@ const TorreDestilacionList = () => {
   const [loading, setLoading] = useState(true);
   const [globalFilterValue, setGlobalFilterValue] = useState("");
   const [deleteProductDialog, setDeleteProductDialog] = useState(false);
+  const [auditDialogVisible, setAuditDialogVisible] = useState(false);
+  const [selectedAuditTorre, setSelectedAuditTorre] =
+    useState<TorreDestilacion | null>(null);
   const [torreDestilacionFormDialog, setTorreDestilacionFormDialog] =
     useState(false);
   const router = useRouter();
@@ -41,6 +48,7 @@ const TorreDestilacionList = () => {
   const fetchTorresDestilacion = async () => {
     try {
       const torresDestilacionDB = await getTorresDestilacion();
+      console.log("torresDestilacionDB", torresDestilacionDB);
       if (torresDestilacionDB && Array.isArray(torresDestilacionDB.torres)) {
         const filteredTorresDestilacion = torresDestilacionDB.torres.filter(
           (torre: TorreDestilacion) =>
@@ -83,6 +91,7 @@ const TorreDestilacionList = () => {
         life: 3000,
       });
     }
+    setTorreDestilacion(null);
     setDeleteProductDialog(false);
   };
 
@@ -122,27 +131,21 @@ const TorreDestilacionList = () => {
   );
 
   const actionBodyTemplate = (rowData: TorreDestilacion) => (
-    <>
-      <Button
-        icon="pi pi-pencil"
-        rounded
-        severity="success"
-        className="mr-2"
-        onClick={() => {
-          setTorreDestilacion(rowData);
-          setTorreDestilacionFormDialog(true);
-        }}
-      />
-      <Button
-        icon="pi pi-trash"
-        severity="danger"
-        rounded
-        onClick={() => {
-          setTorreDestilacion(rowData);
-          setDeleteProductDialog(true);
-        }}
-      />
-    </>
+    <CustomActionButtons
+      rowData={rowData}
+      onEdit={(data) => {
+        setTorreDestilacion(rowData);
+        setTorreDestilacionFormDialog(true);
+      }}
+      onDelete={(data) => {
+        setTorreDestilacion(rowData);
+        setDeleteProductDialog(true);
+      }}
+      onInfo={(data) => {
+        setSelectedAuditTorre(data);
+        setAuditDialogVisible(true);
+      }}
+    />
   );
   const materialBodyTemplate = (rowData: TorreDestilacion) => {
     return (
@@ -198,7 +201,6 @@ const TorreDestilacionList = () => {
           body={(rowData: TorreDestilacion) => formatDateFH(rowData.updatedAt)}
         /> */}
       </DataTable>
-
       <Dialog
         visible={deleteProductDialog}
         style={{ width: "450px" }}
@@ -235,7 +237,138 @@ const TorreDestilacionList = () => {
           )}
         </div>
       </Dialog>
+      {/* <Dialog
+        visible={auditDialogVisible}
+        style={{ width: "600px" }}
+        header={
+          <div className="mb-2 text-center md:text-left">
+            <div className="border-bottom-2 border-primary pb-2">
+              <h2 className="text-2xl font-bold text-900 mb-2 flex align-items-center justify-content-center md:justify-content-start">
+                <i className="pi pi-check-circle mr-3 text-primary text-3xl"></i>
+                Historial - {selectedAuditTorre?.nombre}
+              </h2>
+            </div>
+          </div>
+        }
+        contentClassName="p-0"
+        modal
+        draggable={false}
+        onHide={() => setAuditDialogVisible(false)}
+        footer={
+          <div className="col-12 flex justify-content-end align-items-center mt-3">
+            <Button
+              type="button"
+              label="Salir"
+              className="w-auto"
+              onClick={() => setAuditDialogVisible(false)}
+              severity="danger"
+            />
+          </div>
+        }
+      >
+        <div className="m-3 p-3 border-round surface-50 border-left-3 border-primary">
+          <div className="text-sm text-600">CREACIÓN INICIAL</div>
+          <div className="flex flex-column gap-1 mt-2">
+            <span>
+              <span className="font-medium">Autor:</span>{" "}
+              {selectedAuditTorre?.createdBy?.nombre}
+            </span>
+            <span>
+              <span className="font-medium">Email:</span>{" "}
+              {selectedAuditTorre?.createdBy?.correo}
+            </span>
+            <span>
+              <span className="font-medium">Fecha:</span>{" "}
+              {formatDateFH(selectedAuditTorre?.createdAt || "")}
+            </span>
+          </div>
+        </div>
 
+        <div className="m-3 p-3 border-round surface-50 border-left-3 border-primary">
+          <Accordion multiple>
+            {selectedAuditTorre?.historial?.length ? (
+              selectedAuditTorre.historial.map((h, idx) => (
+                <AccordionTab
+                  key={idx}
+                  header={
+                    <div className="flex align-items-center gap-3">
+                      <i className="pi pi-pencil text-green-500"></i>
+                      <div>
+                        <div className="font-medium">
+                          {formatDateFH(h.fecha)}
+                        </div>
+                        <div className="text-sm text-600">
+                          {h.modificadoPor.nombre}
+                        </div>
+                      </div>
+                    </div>
+                  }
+                >
+                  <div className="m-2 p-3 surface-50 border-round">
+                    <div className="grid">
+                      <div className="col-12 md:col-6">
+                        <span className="font-medium">Usuario:</span>{" "}
+                        {h.modificadoPor.nombre}
+                      </div>
+                      <div className="col-12 md:col-6">
+                        <span className="font-medium">Email:</span>{" "}
+                        {h.modificadoPor.correo}
+                      </div>
+                    </div>
+
+                    <Divider className="my-3" />
+
+                    <div className="text-lg font-medium mb-2">Cambios:</div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
+                      {Object.entries(h.cambios).map(([field, change], i) => (
+                        <div
+                          key={i}
+                          className="bg-gray-50 p-3 rounded flex justify-between items-center"
+                        >
+                          <span className="text-sm text-gray-800 font-medium">
+                            {field}
+                          </span>
+                          <div className="flex items-center gap-2">
+                            <span className="text-red-600 line-through">
+                              {String(change.from)}
+                            </span>
+                            <i className="pi pi-arrow-right text-gray-500"></i>
+                            <span className="text-green-600 font-semibold">
+                              {String(change.to)}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </AccordionTab>
+              ))
+            ) : (
+              <div className="m-3 p-3 text-center text-600">
+                No se encontraron modificaciones
+              </div>
+            )}
+          </Accordion>
+        </div>
+      </Dialog> */}
+
+      <AuditHistoryDialog
+        visible={auditDialogVisible}
+        onHide={() => setAuditDialogVisible(false)}
+        title={
+          <div className="mb-2 text-center md:text-left">
+            <div className="border-bottom-2 border-primary pb-2">
+              <h2 className="text-2xl font-bold text-900 mb-2 flex align-items-center justify-content-center md:justify-content-start">
+                <i className="pi pi-check-circle mr-3 text-primary text-3xl"></i>
+                Historial - {selectedAuditTorre?.nombre}
+              </h2>
+            </div>
+          </div>
+        }
+        createdBy={selectedAuditTorre?.createdBy!}
+        createdAt={selectedAuditTorre?.createdAt!}
+        historial={selectedAuditTorre?.historial}
+      />
       <Dialog
         visible={torreDestilacionFormDialog}
         style={{ width: "850px" }}

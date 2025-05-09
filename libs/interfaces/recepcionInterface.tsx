@@ -1,12 +1,16 @@
 import {
+  HistorialCambio,
   LineaRecepcion,
   Producto,
   Refineria,
   Tanque,
+  UserReference,
 } from "./configRefineriaInterface";
 import { Contrato, ContratoItem } from "./contratoInterface";
 
 export interface Recepcion {
+  numeroRecepcion: number;
+
   id: string;
   estadoCarga: string;
   estadoRecepcion: string;
@@ -33,4 +37,7 @@ export interface Recepcion {
   apellidoChofer: string;
   createdAt: string;
   updatedAt: string;
+  createdBy: UserReference;
+  modificadoPor: UserReference;
+  historial: HistorialCambio[];
 }

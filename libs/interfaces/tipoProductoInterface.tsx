@@ -1,4 +1,9 @@
-import { Producto, Refineria } from "./configRefineriaInterface";
+import {
+  HistorialCambio,
+  Producto,
+  Refineria,
+  UserReference,
+} from "./configRefineriaInterface";
 
 export interface TipoProducto {
   id: string; // ID único del producto
@@ -18,6 +23,9 @@ export interface TipoProducto {
   eliminado: boolean; // Indica si el producto ha sido eliminado (eliminación lógica)
   createdAt: string; // Fecha de creación
   updatedAt: string; // Fecha de última actualización
+  createdBy: UserReference;
+  modificadoPor: UserReference;
+  historial: HistorialCambio[];
 }
 
 // Interfaz para los rendimientos asociados al producto

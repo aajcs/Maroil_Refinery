@@ -10,6 +10,7 @@ import { Toast } from "primereact/toast";
 import { Dialog } from "primereact/dialog";
 import { useRefineriaStore } from "@/store/refineriaStore";
 import ChequeoCalidadForm from "./ChequeoCalidadForm";
+import AuditHistoryDialog from "@/components/common/AuditHistoryDialog";
 
 import { formatDateFH } from "@/utils/dateUtils";
 import {
@@ -32,6 +33,9 @@ const ChequeoCalidadList = () => {
   const [chequeoCalidadFormDialog, setChequeoCalidadFormDialog] =
     useState(false);
   const [onDuplicate, setOnDuplicate] = useState(false);
+  const [auditDialogVisible, setAuditDialogVisible] = useState(false);
+  const [selectedAuditChequeoCalidad, setSelectedAuditChequeoCalidad] =
+    useState<ChequeoCalidad | null>(null);
   const dt = useRef(null);
   const toast = useRef<Toast | null>(null);
 
@@ -89,6 +93,7 @@ const ChequeoCalidadList = () => {
         life: 3000,
       });
     }
+    setChequeoCalidad(null);
     setDeleteProductDialog(false);
   };
 
@@ -123,6 +128,11 @@ const ChequeoCalidadList = () => {
   const actionBodyTemplate = (rowData: ChequeoCalidad) => (
     <CustomActionButtons
       rowData={rowData}
+      onInfo={(data) => {
+        setSelectedAuditChequeoCalidad(data);
+
+        setAuditDialogVisible(true);
+      }}
       onEdit={(data) => {
         setChequeoCalidad(data);
         setChequeoCalidadFormDialog(true);
@@ -261,7 +271,23 @@ const ChequeoCalidadList = () => {
           )}
         </div>
       </Dialog>
-
+      <AuditHistoryDialog
+        visible={auditDialogVisible}
+        onHide={() => setAuditDialogVisible(false)}
+        title={
+          <div className="mb-2 text-center md:text-left">
+            <div className="border-bottom-2 border-primary pb-2">
+              <h2 className="text-2xl font-bold text-900 mb-2 flex align-items-center justify-content-center md:justify-content-start">
+                <i className="pi pi-check-circle mr-3 text-primary text-3xl"></i>
+                Historial - {selectedAuditChequeoCalidad?.numeroChequeoCalidad}
+              </h2>
+            </div>
+          </div>
+        }
+        createdBy={selectedAuditChequeoCalidad?.createdBy!}
+        createdAt={selectedAuditChequeoCalidad?.createdAt!}
+        historial={selectedAuditChequeoCalidad?.historial}
+      />
       <Dialog
         visible={chequeoCalidadFormDialog}
         style={{ width: "70vw" }}

@@ -2,10 +2,20 @@ import apiClient from "./apiClient";
 
 export const getTorreDestilacion = async (id: string) => {
   const response = await apiClient.get(`/torre/${id}`);
+  if (response.data?.logout) {
+    // Handle logout logic here
+    // For example, redirect to login page or show a message
+    return null; // or throw an error
+  }
   return response.data;
 };
 export const getTorresDestilacion = async () => {
   const response = await apiClient.get("/torre");
+  if (response.data?.logout) {
+    // Handle logout logic here
+    // For example, redirect to login page or show a message
+    return null; // or throw an error
+  }
   return response.data;
 };
 export const createTorreDestilacion = async (data: any) => {

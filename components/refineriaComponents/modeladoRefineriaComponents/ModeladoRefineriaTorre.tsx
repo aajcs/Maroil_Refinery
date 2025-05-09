@@ -127,10 +127,7 @@ const calculateProductionMetrics = (
     // Calcular materia prima procesada
     const currentRaw = getProcessedRawMaterial(currentCut, tower.id);
     const prevRaw = getProcessedRawMaterial(prevCut, tower.id);
-    console.log("currentRaw", currentRaw);
-    console.log("prevRaw", prevRaw);
     const processedRaw = currentRaw - prevRaw;
-    console.log("processedRaw", processedRaw);
 
     // Calcular métricas por producto
     const productsMetrics = tower.material.map((material) => {
@@ -280,7 +277,6 @@ const ModeladoRefineriaTorre: React.FC<ModeladoRefineriaTorreProps> = ({
 
     return { ultimosCortes, diferenciasPorTorre };
   }, [corteRefinacions]);
-  console.log(diferenciasPorTorre);
   // Efecto principal para actualizar secciones
   useEffect(() => {
     if (!torre?.material) return;

@@ -73,62 +73,6 @@ const CorteRefinacionForm = ({
     }
   }, [corteRefinacion, setValue]);
 
-  // const onSubmit = async (data: FormData) => {
-  //   setSubmitting(true);
-
-  //   try {
-  //     // Transformar los datos si es necesario
-  //     const payload = {
-  //       ...data,
-  //       idRefineria: activeRefineria?.id,
-  //       corteTorre: torresDestilacion.map((torre, torreIndex) => ({
-  //         idTorre: { id: torre.id },
-  //         detalles: materialesCompletos
-  //           .map((material, materialIndex) => ({
-  //             idProducto: { id: material.idProducto?.id },
-  //             idTanque: {
-  //               id: watch(
-  //                 `corteTorre.${torreIndex}.detalles.${materialIndex}.idTanque.id`
-  //               ),
-  //             },
-  //             cantidad: watch(
-  //               `corteTorre.${torreIndex}.detalles.${materialIndex}.cantidad`
-  //             ),
-  //           }))
-  //           .filter((item) => item.cantidad > 0), // Opcional: filtrar items con cantidad 0
-  //       })),
-  //       fechaCorte: new Date(data.fechaCorte).toISOString(),
-  //     };
-  //     console.log("payload", payload);
-  //     if (corteRefinacion) {
-  //       const updatedCorteRefinacion = await updateCorteRefinacion(
-  //         corteRefinacion.id,
-  //         payload
-  //       );
-  //       const updatedCorteRefinacions = corteRefinacions.map((c) =>
-  //         c.id === updatedCorteRefinacion.id ? updatedCorteRefinacion : c
-  //       );
-  //       setCorteRefinacions(updatedCorteRefinacions);
-  //       showToast("success", "Éxito", "Corte de Refinación actualizado");
-  //     } else {
-  //       if (!activeRefineria)
-  //         throw new Error("No se ha seleccionado una refinería");
-  //       const newCorteRefinacion = await createCorteRefinacion(payload);
-  //       setCorteRefinacions([...corteRefinacions, newCorteRefinacion]);
-  //       showToast("success", "Éxito", "Corte de Refinación creado");
-  //     }
-  //     hideCorteRefinacionFormDialog();
-  //   } catch (error) {
-  //     console.error("Error al crear/modificar el Corte de Refinación:", error);
-  //     showToast(
-  //       "error",
-  //       "Error",
-  //       error instanceof Error ? error.message : "Ocurrió un error inesperado"
-  //     );
-  //   } finally {
-  //     setSubmitting(false);
-  //   }
-  // };
   const onSubmit = async (data: FormData) => {
     setSubmitting(true);
     try {
@@ -215,9 +159,6 @@ const CorteRefinacionForm = ({
     }
   };
 
-  // console.log(errors);
-  // console.log(JSON.stringify(watch("idContrato"), null, 2));
-  // console.log(watch("idContrato"));
   if (loading) {
     return (
       <div
@@ -225,18 +166,10 @@ const CorteRefinacionForm = ({
         style={{ height: "300px" }}
       >
         <ProgressSpinner />
-        {/* <p className="ml-3">Cargando datos...</p> */}
       </div>
     );
   }
-  // const selectedTorre = watch("idTorre");
-  // const productosTorre = selectedTorre?.material.map((material) => ({
-  //   idProducto: material.idProducto,
-  //   porcentaje: 0, // Inicialmente el porcentaje es 0
-  // }));
-  // setDerivados(productosTorre || []);
-  console.log(watch());
-  console.log(errors);
+
   return (
     <div>
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -255,36 +188,6 @@ const CorteRefinacionForm = ({
 
           {/* Cuerpo del Formulario */}
           <div className="grid formgrid row-gap-2">
-            {/* Número de Corte
-            <div className="col-12 md:col-6 lg:col-4">
-              <div className="p-2 bg-white border-round shadow-1 surface-card">
-                <label className="block font-medium text-900 mb-3 flex align-items-center">
-                  <i className="pi pi-sort-numeric-up mr-2 text-primary"></i>
-                  Número de Corte
-                </label>
-                <Controller
-                  name="numeroCorteRefinacion"
-                  control={control}
-                  render={({ field }) => (
-                    <InputNumber
-                      id="numeroCorteRefinacion"
-                      value={field.value}
-                      onValueChange={(e) => field.onChange(e.value)}
-                      className={classNames("w-full", {
-                        "p-invalid": errors.numeroCorteRefinacion,
-                      })}
-                      min={1}
-                    />
-                  )}
-                />
-                {errors.numeroCorteRefinacion && (
-                  <small className="p-error block mt-2 flex align-items-center">
-                    <i className="pi pi-exclamation-circle mr-2"></i>
-                    {errors.numeroCorteRefinacion.message}
-                  </small>
-                )}
-              </div>
-            </div> */}
             {/* Torres de Destilación */}
             <div className="col-12">
               {torresDestilacion.map((torre, torreIndex) => {
@@ -399,9 +302,11 @@ const CorteRefinacionForm = ({
                               <Controller
                                 name={`corteTorre.${torreIndex}.detalles.${materialIndex}.cantidad`}
                                 control={control}
+                                defaultValue={0}
                                 render={({ field }) => (
                                   <InputNumber
                                     id={`cantidad-${material.idProducto?.id}`}
+                                    defaultValue={field.value ?? 0} // valor inicial por defecto
                                     value={field.value}
                                     onValueChange={(e) =>
                                       field.onChange(e.value)

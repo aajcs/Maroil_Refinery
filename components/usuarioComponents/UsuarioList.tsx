@@ -10,17 +10,11 @@ import { deleteUser, getUsers } from "@/app/api/userService";
 import { Toast } from "primereact/toast";
 import { Dialog } from "primereact/dialog";
 import UsuarioForm from "./UsuarioForm";
+import CustomActionButtons from "../common/CustomActionButtons";
+import AuditHistoryDialog from "../common/AuditHistoryDialog";
+import { Usuario } from "@/libs/interfaces";
 
 const UsuarioList = () => {
-  interface Usuario {
-    id: string;
-    nombre: string;
-    correo: string;
-    rol: string;
-    acceso: string;
-    estado: string;
-  }
-
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
   const [usuario, setUsuario] = useState<Usuario | null>(null);
 
@@ -29,7 +23,9 @@ const UsuarioList = () => {
   const [globalFilterValue, setGlobalFilterValue] = useState("");
   const [deleteProductDialog, setDeleteProductDialog] = useState(false);
   const [usuarioFormDialog, setUsuarioFormDialog] = useState(false);
-
+  const [auditDialogVisible, setAuditDialogVisible] = useState(false);
+  const [selectedAuditUsuario, setSelectedAuditUsuario] =
+    useState<Usuario | null>(null);
   const router = useRouter();
   const dt = useRef(null);
   const toast = useRef<Toast | null>(null);
@@ -130,31 +126,26 @@ const UsuarioList = () => {
 
   const header = renderHeader();
 
-  const editUsuario = (usuario: any) => {
-    setUsuario(usuario);
-    setUsuarioFormDialog(true);
-  };
-  const confirmDeleteProduct = (usuario: any) => {
-    setUsuario(usuario);
-    setDeleteProductDialog(true);
-  };
   const actionBodyTemplate = (rowData: any) => {
     return (
-      <>
-        <Button
-          icon="pi pi-pencil"
-          rounded
-          severity="success"
-          className="mr-2"
-          onClick={() => editUsuario(rowData)}
-        />
-        <Button
-          icon="pi pi-trash"
-          severity="warning"
-          rounded
-          onClick={() => confirmDeleteProduct(rowData)}
-        />
-      </>
+      <CustomActionButtons
+        rowData={rowData}
+        onInfo={(data) => {
+          setSelectedAuditUsuario(data);
+
+          setAuditDialogVisible(true);
+        }}
+        onEdit={(data) => {
+          setUsuario(rowData);
+          data;
+          setUsuarioFormDialog(true);
+        }}
+        onDelete={(data) => {
+          setUsuario(rowData);
+          data;
+          setDeleteProductDialog(true);
+        }}
+      />
     );
   };
   return (
@@ -212,7 +203,6 @@ const UsuarioList = () => {
           style={{ width: "25%" }}
         ></Column>
       </DataTable>
-
       <Dialog
         visible={deleteProductDialog}
         style={{ width: "450px" }}
@@ -233,7 +223,24 @@ const UsuarioList = () => {
             </span>
           )}
         </div>
-      </Dialog>
+      </Dialog>{" "}
+      <AuditHistoryDialog
+        visible={auditDialogVisible}
+        onHide={() => setAuditDialogVisible(false)}
+        title={
+          <div className="mb-2 text-center md:text-left">
+            <div className="border-bottom-2 border-primary pb-2">
+              <h2 className="text-2xl font-bold text-900 mb-2 flex align-items-center justify-content-center md:justify-content-start">
+                <i className="pi pi-check-circle mr-3 text-primary text-3xl"></i>
+                Historial - {selectedAuditUsuario?.nombre}
+              </h2>
+            </div>
+          </div>
+        }
+        createdBy={selectedAuditUsuario?.createdBy!}
+        createdAt={selectedAuditUsuario?.createdAt!}
+        historial={selectedAuditUsuario?.historial}
+      />
       <Dialog
         visible={usuarioFormDialog}
         style={{ width: "850px" }}

@@ -1,8 +1,10 @@
 import {
+  HistorialCambio,
   Producto,
   Refineria,
   Tanque,
   TorreDestilacion,
+  UserReference,
 } from "./configRefineriaInterface";
 
 export interface CorteRefinacion {
@@ -29,4 +31,7 @@ export interface CorteRefinacion {
   createdAt: string;
   updatedAt: string;
   id: string;
+  createdBy: UserReference;
+  modificadoPor: UserReference;
+  historial: HistorialCambio[];
 }

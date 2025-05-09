@@ -312,7 +312,6 @@ function ContratoForm({
   // }
   // Observa el valor de brent
   const brent = watch("brent") || 0;
-  console.log("object", brent);
   // Efecto para actualizar el precio unitario cuando cambie el brent
   useEffect(() => {
     interface Item {

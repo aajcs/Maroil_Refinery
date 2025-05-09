@@ -13,6 +13,8 @@ import { useRefineriaStore } from "@/store/refineriaStore";
 import { getTanques, deleteTanque } from "@/app/api/tanqueService";
 import { Tanque } from "@/libs/interfaces";
 import { formatDateFH } from "@/utils/dateUtils";
+import AuditHistoryDialog from "@/components/common/AuditHistoryDialog";
+import CustomActionButtons from "@/components/common/CustomActionButtons";
 
 const TanqueList = () => {
   const { activeRefineria } = useRefineriaStore();
@@ -23,6 +25,10 @@ const TanqueList = () => {
   const [globalFilterValue, setGlobalFilterValue] = useState("");
   const [deleteProductDialog, setDeleteProductDialog] = useState(false);
   const [tanqueFormDialog, setTanqueFormDialog] = useState(false);
+  const [auditDialogVisible, setAuditDialogVisible] = useState(false);
+  const [selectedAuditTanque, setSelectedAuditTanque] = useState<Tanque | null>(
+    null
+  );
 
   const router = useRouter();
   const dt = useRef(null);
@@ -74,6 +80,7 @@ const TanqueList = () => {
         life: 3000,
       });
     }
+    setTanque(null);
     setDeleteProductDialog(false);
   };
 
@@ -106,27 +113,24 @@ const TanqueList = () => {
   );
 
   const actionBodyTemplate = (rowData: Tanque) => (
-    <>
-      <Button
-        icon="pi pi-pencil"
-        rounded
-        severity="success"
-        className="mr-2"
-        onClick={() => {
-          setTanque(rowData);
-          setTanqueFormDialog(true);
-        }}
-      />
-      <Button
-        icon="pi pi-trash"
-        severity="danger"
-        rounded
-        onClick={() => {
-          setTanque(rowData);
-          setDeleteProductDialog(true);
-        }}
-      />
-    </>
+    <CustomActionButtons
+      rowData={rowData}
+      onInfo={(data) => {
+        setSelectedAuditTanque(data);
+
+        setAuditDialogVisible(true);
+      }}
+      onEdit={(data) => {
+        setTanque(rowData);
+        data;
+        setTanqueFormDialog(true);
+      }}
+      onDelete={(data) => {
+        setTanque(rowData);
+        data;
+        setDeleteProductDialog(true);
+      }}
+    />
   );
   const productoBodyTemplate = (rowData: Tanque) => {
     const { idProducto } = rowData;
@@ -232,7 +236,23 @@ const TanqueList = () => {
           )}
         </div>
       </Dialog>
-
+      <AuditHistoryDialog
+        visible={auditDialogVisible}
+        onHide={() => setAuditDialogVisible(false)}
+        title={
+          <div className="mb-2 text-center md:text-left">
+            <div className="border-bottom-2 border-primary pb-2">
+              <h2 className="text-2xl font-bold text-900 mb-2 flex align-items-center justify-content-center md:justify-content-start">
+                <i className="pi pi-check-circle mr-3 text-primary text-3xl"></i>
+                Historial - {selectedAuditTanque?.nombre}
+              </h2>
+            </div>
+          </div>
+        }
+        createdBy={selectedAuditTanque?.createdBy!}
+        createdAt={selectedAuditTanque?.createdAt!}
+        historial={selectedAuditTanque?.historial}
+      />
       <Dialog
         visible={tanqueFormDialog}
         style={{ width: "850px" }}

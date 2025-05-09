@@ -199,8 +199,6 @@ const ChequeoCantidadForm = ({
       }
     }
   };
-  console.log("errors", errors);
-  console.log("watch", watch());
   return (
     <div>
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -409,7 +407,6 @@ const ChequeoCantidadForm = ({
                       value={field.value}
                       onValueChange={(e) => field.onChange(e.value)}
                       min={0}
-                      max={300}
                       className="w-full"
                       locale="es"
                     />

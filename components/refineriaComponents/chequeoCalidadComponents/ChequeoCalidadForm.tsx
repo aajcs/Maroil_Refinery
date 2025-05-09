@@ -114,9 +114,7 @@ const ChequeoCalidadForm = ({
     }
   }, [watch("aplicar.tipo"), tanques, recepcions, despachos]);
   useEffect(() => {
-    console.log("entro aqui");
     const referenciaSeleccionada = watch("aplicar.idReferencia");
-    console.log("referenciaSeleccionada", referenciaSeleccionada);
     if (referenciaSeleccionada) {
       const productoRelacionado = productos.find(
         (producto) => producto.id === referenciaSeleccionada.id
@@ -224,8 +222,6 @@ const ChequeoCalidadForm = ({
       }
     }
   };
-  console.log("errors", errors);
-  console.log("watch", watch());
   return (
     <div>
       <form onSubmit={handleSubmit(onSubmit)}>

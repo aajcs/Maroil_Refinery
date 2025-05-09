@@ -17,7 +17,8 @@ import { deleteContrato, getContratos } from "@/app/api/contratoService";
 import ContratoForm from "./ContratoForm";
 import { formatDateFH } from "@/utils/dateUtils";
 import { Contrato } from "@/libs/interfaces";
-
+import CustomActionButtons from "@/components/common/CustomActionButtons";
+import AuditHistoryDialog from "@/components/common/AuditHistoryDialog";
 interface ContratoListProps {
   tipoContrato: string;
 }
@@ -34,7 +35,9 @@ const ContratoList = ({ tipoContrato }: ContratoListProps) => {
   const [expandedRows, setExpandedRows] = useState<
     any[] | DataTableExpandedRows
   >([]);
-
+  const [auditDialogVisible, setAuditDialogVisible] = useState(false);
+  const [selectedAuditContrato, setSelectedAuditContrato] =
+    useState<Contrato | null>(null);
   const router = useRouter();
   const dt = useRef(null);
   const toast = useRef<Toast | null>(null);
@@ -87,6 +90,7 @@ const ContratoList = ({ tipoContrato }: ContratoListProps) => {
         life: 3000,
       });
     }
+    setContrato(null);
     setDeleteProductDialog(false);
   };
 
@@ -119,27 +123,24 @@ const ContratoList = ({ tipoContrato }: ContratoListProps) => {
   );
 
   const actionBodyTemplate = (rowData: Contrato) => (
-    <>
-      <Button
-        icon="pi pi-pencil"
-        rounded
-        severity="success"
-        className="mr-2"
-        onClick={() => {
-          setContrato(rowData);
-          setContratoFormDialog(true);
-        }}
-      />
-      <Button
-        icon="pi pi-trash"
-        severity="danger"
-        rounded
-        onClick={() => {
-          setContrato(rowData);
-          setDeleteProductDialog(true);
-        }}
-      />
-    </>
+    <CustomActionButtons
+      rowData={rowData}
+      onInfo={(data) => {
+        setSelectedAuditContrato(data);
+
+        setAuditDialogVisible(true);
+      }}
+      onEdit={(data) => {
+        setContrato(rowData);
+        data;
+        setContratoFormDialog(true);
+      }}
+      onDelete={(data) => {
+        setContrato(rowData);
+        data;
+        setDeleteProductDialog(true);
+      }}
+    />
   );
 
   const showToast = (
@@ -291,7 +292,23 @@ const ContratoList = ({ tipoContrato }: ContratoListProps) => {
           )}
         </div>
       </Dialog>
-
+      <AuditHistoryDialog
+        visible={auditDialogVisible}
+        onHide={() => setAuditDialogVisible(false)}
+        title={
+          <div className="mb-2 text-center md:text-left">
+            <div className="border-bottom-2 border-primary pb-2">
+              <h2 className="text-2xl font-bold text-900 mb-2 flex align-items-center justify-content-center md:justify-content-start">
+                <i className="pi pi-check-circle mr-3 text-primary text-3xl"></i>
+                Historial - {selectedAuditContrato?.numeroContrato}
+              </h2>
+            </div>
+          </div>
+        }
+        createdBy={selectedAuditContrato?.createdBy!}
+        createdAt={selectedAuditContrato?.createdAt!}
+        historial={selectedAuditContrato?.historial}
+      />
       {/* <Dialog
         visible={contratoFormDialog}
         style={{ width: "80vw", backgroundColor: "red" }}

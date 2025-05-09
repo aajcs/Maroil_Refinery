@@ -6,6 +6,19 @@ export interface Refineria {
   acceso: string;
   estado: string;
   procesamientoDia: number;
+  createdAt: string;
+  updatedAt: string;
+  createdBy: UserReference;
+  modificadoPor: UserReference;
+  historial: HistorialCambio[];
+}
+
+// Definir tipo de usuario para auditoría
+export interface UserReference {
+  _id: string;
+  id: string;
+  nombre: string;
+  correo: string;
 }
 
 export interface LineaRecepcion {
@@ -18,6 +31,9 @@ export interface LineaRecepcion {
   createdAt: string;
   updatedAt: string;
   idRefineria: Refineria;
+  createdBy: UserReference;
+  modificadoPor: UserReference;
+  historial: HistorialCambio[];
 }
 export interface LineaDespacho {
   id: string;
@@ -29,21 +45,39 @@ export interface LineaDespacho {
   createdAt: string;
   updatedAt: string;
   idRefineria: Refineria;
+  createdBy: UserReference;
+  modificadoPor: UserReference;
+  historial: HistorialCambio[];
 }
+
+export interface HistorialCambio {
+  _id: string;
+  fecha: string;
+  modificadoPor: UserReference;
+  cambios: Record<string, { from: any; to: any }>;
+}
+
 export interface TorreDestilacion {
+  // datos Mongo
+  _id: string;
   id: string;
+
   nombre: string;
   estado: boolean;
   eliminado: boolean;
   ubicacion: string;
   material: Material[];
-  createdAt: string;
-  updatedAt: string;
   capacidad: number;
-  idRefineria: {
-    id: string | undefined;
-    nombre: string;
-  };
+
+  idRefineria: Refineria;
+
+  // metadatos
+  createdAt: string;
+  createdBy: UserReference;
+  updatedAt: string;
+  fecha: string;
+  modificadoPor: UserReference;
+  historial: HistorialCambio[];
 }
 
 export interface Material {
@@ -73,6 +107,9 @@ export interface Tanque {
   idProducto: Producto;
   almacenamiento: number;
   capacidad: number;
+  createdBy: UserReference;
+  modificadoPor: UserReference;
+  historial: HistorialCambio[];
 }
 
 export interface Producto {
@@ -95,4 +132,7 @@ export interface Producto {
   createdAt: string;
   updatedAt: string;
   id: string;
+  createdBy: UserReference;
+  modificadoPor: UserReference;
+  historial: HistorialCambio[];
 }

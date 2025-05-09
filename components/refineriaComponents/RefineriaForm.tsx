@@ -139,7 +139,7 @@ const RefineriaForm = ({
     }
   };
 
-  const estatusValues = ["true", "false"];
+  console.log("errors", errors);
 
   return (
     <div className="card">

@@ -1,3 +1,5 @@
+import { HistorialCambio, UserReference } from "./configRefineriaInterface";
+
 export interface AuthContextProps {
   children: React.ReactNode;
 }
@@ -8,8 +10,21 @@ export interface AuthState {
   token: string | null;
 }
 
-export interface User {
+interface User {
   uid: string;
   name: string;
   email: string;
+}
+
+export interface Usuario {
+  id: string;
+  nombre: string;
+  correo: string;
+  rol: string;
+  acceso: string;
+  estado: string;
+  createdBy: UserReference;
+  modificadoPor: UserReference;
+  createdAt: string;
+  historial: HistorialCambio[];
 }

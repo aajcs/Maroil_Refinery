@@ -9,6 +9,9 @@ import { InputText } from "primereact/inputtext";
 import { Toast } from "primereact/toast";
 import { Dialog } from "primereact/dialog";
 import { useRefineriaStore } from "@/store/refineriaStore";
+import CustomActionButtons from "@/components/common/CustomActionButtons";
+import AuditHistoryDialog from "@/components/common/AuditHistoryDialog";
+
 import {
   getLineaRecepcions,
   deleteLineaRecepcion,
@@ -29,6 +32,9 @@ const LineaRecepcionList = () => {
   const [deleteProductDialog, setDeleteProductDialog] = useState(false);
   const [lineaRecepcionFormDialog, setLineaRecepcionFormDialog] =
     useState(false);
+  const [auditDialogVisible, setAuditDialogVisible] = useState(false);
+  const [selectedAuditLineaRecepcion, setSelectedAuditLineaRecepcion] =
+    useState<LineaRecepcion | null>(null);
 
   const router = useRouter();
   const dt = useRef(null);
@@ -83,6 +89,7 @@ const LineaRecepcionList = () => {
         life: 3000,
       });
     }
+    setLineaRecepcion(null);
     setDeleteProductDialog(false);
   };
 
@@ -115,27 +122,22 @@ const LineaRecepcionList = () => {
   );
 
   const actionBodyTemplate = (rowData: LineaRecepcion) => (
-    <>
-      <Button
-        icon="pi pi-pencil"
-        rounded
-        severity="success"
-        className="mr-2"
-        onClick={() => {
-          setLineaRecepcion(rowData);
-          setLineaRecepcionFormDialog(true);
-        }}
-      />
-      <Button
-        icon="pi pi-trash"
-        severity="danger"
-        rounded
-        onClick={() => {
-          setLineaRecepcion(rowData);
-          setDeleteProductDialog(true);
-        }}
-      />
-    </>
+    <CustomActionButtons
+      rowData={rowData}
+      onInfo={(data) => {
+        setSelectedAuditLineaRecepcion(data);
+
+        setAuditDialogVisible(true);
+      }}
+      onEdit={(data) => {
+        setLineaRecepcion(data);
+        setLineaRecepcionFormDialog(true);
+      }}
+      onDelete={(data) => {
+        setLineaRecepcion(data);
+        setDeleteProductDialog(true);
+      }}
+    />
   );
 
   const showToast = (
@@ -223,7 +225,23 @@ const LineaRecepcionList = () => {
           )}
         </div>
       </Dialog>
-
+      <AuditHistoryDialog
+        visible={auditDialogVisible}
+        onHide={() => setAuditDialogVisible(false)}
+        title={
+          <div className="mb-2 text-center md:text-left">
+            <div className="border-bottom-2 border-primary pb-2">
+              <h2 className="text-2xl font-bold text-900 mb-2 flex align-items-center justify-content-center md:justify-content-start">
+                <i className="pi pi-check-circle mr-3 text-primary text-3xl"></i>
+                Historial - {selectedAuditLineaRecepcion?.nombre}
+              </h2>
+            </div>
+          </div>
+        }
+        createdBy={selectedAuditLineaRecepcion?.createdBy!}
+        createdAt={selectedAuditLineaRecepcion?.createdAt!}
+        historial={selectedAuditLineaRecepcion?.historial}
+      />
       <Dialog
         visible={lineaRecepcionFormDialog}
         style={{ width: "850px" }}
