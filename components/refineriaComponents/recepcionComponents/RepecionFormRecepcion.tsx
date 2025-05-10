@@ -49,7 +49,7 @@ export const RepecionFormRecepcion = ({
   setValue,
   calendarRef,
 }: RepecionFormRecepcionProps) => {
-  console.log(watch("idContrato"));
+  console.log(watch("idContrato.idItems"));
   return (
     <div className="card p-fluid surface-50 p-2 border-round shadow-2">
       {/* Sección Estado Recepción */}
@@ -218,7 +218,7 @@ export const RepecionFormRecepcion = ({
                           }
                         />
                         <label htmlFor={items.id} className="text-900">
-                          {`${items.producto.nombre} - ${items.cantidad}Bbl`}
+                          {`${items.producto.nombre}- ${items.idTipoProducto.nombre} - ${items.cantidad}Bbl`}
                         </label>
                       </div>
                     ))}

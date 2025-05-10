@@ -14,6 +14,8 @@ import ReactSpeedometer from "react-d3-speedometer";
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 import { Steps } from "primereact/steps";
 import type { MenuItem } from "primereact/menuitem";
+import { useRefineryData } from "@/hooks/useRefineryData";
+import { getRefinerias } from "@/app/api/refineriaService";
 
 const barrelUnit = "BBL";
 const dollarPerBarrelUnit = "$/BBL";
@@ -137,7 +139,9 @@ function ComprasCard() {
   const [selectedRefineria, setSelectedRefineria] = useState<Refineria | null>(
     null
   );
-
+  const { tipoProductos = [], loading: loadingData } = useRefineryData(
+    selectedRefineria?.id || ""
+  ) as { tipoProductos: Productos[]; loading: boolean };
   const [referencias, setReferencias] = useState<Referencia[]>([]);
   const [selectedReferencia, setSelectedReferencia] =
     useState<Referencia | null>(null);
@@ -146,7 +150,7 @@ function ComprasCard() {
   const [tractomula, setTractomula] = useState(7);
 
   const [products, setProducts] = useState<Productos[]>([]);
-  const defaultProduct: Mezcla = products.map<Mezcla>((p) => ({
+  const defaultProduct: Mezcla = products?.map<Mezcla>((p) => ({
     id: p.id,
     nombre: p.nombre,
     cantidad: 100,
@@ -249,20 +253,26 @@ function ComprasCard() {
       } ${renderNumber(Math.abs(diff), false, true)}`}</span>
     );
   };
-
+  useEffect(() => {
+    if (Array.isArray(tipoProductos)) {
+      setProducts(tipoProductos);
+    } else {
+      console.error("tipoProductos is not an array:", tipoProductos);
+    }
+  }, [selectedRefineria, tipoProductos]);
   // Un effect todo pirata para hacer el llamado a la api, recomendado utilizar react query o similar
   useEffect(() => {
-    fetch(
-      "https://api-maroil-refinery-2500582bacd8.herokuapp.com/api/tipoProducto"
-    )
-      .then<{ tipoProductos: Productos[] }>((res) => res.json())
-      .then((body) => setProducts(body.tipoProductos));
+    // fetch(
+    //   "https://api-maroil-refinery-2500582bacd8.herokuapp.com/api/tipoProducto"
+    // )
+    //   .then<{ tipoProductos: Productos[] }>((res) => res.json())
+    //   .then((body) => setProducts(body.tipoProductos));
 
-    fetch(
-      "https://api-maroil-refinery-2500582bacd8.herokuapp.com/api/refinerias"
-    )
-      .then<{ refinerias: Refineria[] }>((res) => res.json())
-      .then((body) => setRefinerias(body.refinerias));
+    // fetch(
+    //   "https://api-maroil-refinery-2500582bacd8.herokuapp.com/api/refinerias"
+    // )
+    //   .then<{ refinerias: Refineria[] }>((res) => res.json())
+    //   .then((body) => setRefinerias(body.refinerias));
 
     fetch("https://oil.sygem.net/brent")
       .then<{ price: string }>((res) => res.json())
@@ -275,7 +285,23 @@ function ComprasCard() {
         ])
       );
   }, []);
+  useEffect(() => {
+    const fetchRefinerias = async () => {
+      try {
+        const data = await getRefinerias();
+        const { refinerias: dataRefinerias } = data;
+        if (Array.isArray(dataRefinerias)) {
+          setRefinerias(dataRefinerias);
+        } else {
+          console.error("La respuesta no es un array:", dataRefinerias);
+        }
+      } catch (error) {
+        console.error("Error al obtener las refinerías:", error);
+      }
+    };
 
+    fetchRefinerias();
+  }, []);
   return (
     <main>
       <Card
