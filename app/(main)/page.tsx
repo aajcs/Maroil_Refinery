@@ -7,7 +7,7 @@ function Dashboard() {
   return (
     <>
       <DashboardRefinerias />
-      <DashboardEjemplo />
+      {/* <DashboardEjemplo /> */}
     </>
   );
 }

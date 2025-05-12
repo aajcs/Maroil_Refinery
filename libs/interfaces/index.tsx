@@ -6,3 +6,4 @@ export * from "./recepcionInterface";
 export * from "./despachoInterface";
 export * from "./contratoInterface";
 export * from "./chequeosInterface";
+export * from "./configBunkeringInterface";

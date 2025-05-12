@@ -81,9 +81,7 @@ const ModeladoRefineriaDashboard = () => {
       const recepcionesContrato = recepcions.filter(
         (recepcion) => recepcion.idContrato.id === contrato.id
       );
-      console.log(recepcionesContrato);
       const productos = contrato.idItems.map((item: any) => {
-        console.log("item", item);
         const recepcionesProducto = recepcionesContrato.filter(
           (recepcion) =>
             recepcion.idContratoItems?.producto.id === item.producto?.id &&

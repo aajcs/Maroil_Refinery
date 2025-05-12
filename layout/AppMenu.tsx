@@ -345,6 +345,22 @@ const AppMenu = () => {
       ],
     },
     {
+      label: "Gestión de Bunkering",
+      icon: "pi pi-fw pi-ship", // Cambiado a icono de buque
+      items: [
+        {
+          label: "Lista",
+          icon: "pi pi-fw pi-list",
+          to: "/todos-bunkering/list",
+        },
+        {
+          label: "Crear",
+          icon: "pi pi-fw pi-plus",
+          to: "/todos-bunkering/create",
+        },
+      ],
+    },
+    {
       label: "Simulador - Análisis de Rentabilidad",
       icon: "pi pi-fw pi-chart-line",
       items: [

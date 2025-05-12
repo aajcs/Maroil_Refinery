@@ -45,7 +45,7 @@ const ModeladoRefineriaTorre: React.FC<ModeladoRefineriaTorreProps> = ({
     if (!corteRefinacions || corteRefinacions.length < 2) {
       return { ultimosCortes: [], diferenciasPorTorre: [] };
     }
-
+    console.log(corteRefinacions);
     // Filtrar cortes solo de la fecha de hoy
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -54,17 +54,21 @@ const ModeladoRefineriaTorre: React.FC<ModeladoRefineriaTorreProps> = ({
       fechaCorte.setHours(0, 0, 0, 0);
       return fechaCorte.getTime() === today.getTime();
     });
-
+    if (cortesHoy.length < 2) {
+      return { ultimosCortes: [], diferenciasPorTorre: [] };
+    }
+    console.log(cortesHoy);
     // Ordenar cortes de hoy por fecha
     const sortedCortes = [...cortesHoy].sort(
       (a, b) =>
         new Date(b.fechaCorte).getTime() - new Date(a.fechaCorte).getTime()
     );
-
+    console.log(sortedCortes);
     const ultimosCortes = [
       sortedCortes[sortedCortes.length - 1],
       sortedCortes[0],
     ];
+    console.log(ultimosCortes);
     const [primerCorte, ultimoCorte] = ultimosCortes;
 
     // Calcular diferencias entre cortes
