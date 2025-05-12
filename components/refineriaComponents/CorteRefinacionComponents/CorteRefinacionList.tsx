@@ -182,7 +182,7 @@ const CorteRefinacionList = () => {
         <Column
           header="Torres de Destilación"
           body={(rowData: CorteRefinacion) =>
-            rowData.corteTorre.map((torre) => (
+            rowData.corteTorre?.map((torre) => (
               <div key={torre._id}>
                 <strong>{torre.idTorre.nombre}</strong>
                 <ul>

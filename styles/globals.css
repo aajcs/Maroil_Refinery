@@ -137,3 +137,8 @@
   background-color: #f8d7da; /* Rojo claro */
   color: #842029; /* Texto rojo oscuro */
 }
+/* styles/globals.css */
+.layout-topbar .surface-overlay a {
+  color: inherit !important;
+  text-decoration: none !important;
+}

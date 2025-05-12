@@ -5,6 +5,10 @@ import type { ChartData, Plugin } from "chart.js";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import NumberFlow from "@number-flow/react";
+import { getDespachos } from "@/app/api/despachoService";
+import { getRecepcions } from "@/app/api/recepcionService";
+import { getTanques } from "@/app/api/tanqueService";
+import { getContratos } from "@/app/api/contratoService";
 
 // Función de agrupación manual
 const groupBy = <T,>(
@@ -267,104 +271,102 @@ function DashboardFinanzas() {
   };
 
   useEffect(() => {
-    fetch("https://api-maroil-refinery-2500582bacd8.herokuapp.com/api/despacho")
-      .then<{ despachos: DespachoResponse[] }>((res) => res.json())
-      .then((body) => {
-        const group = groupBy(
-          body.despachos,
-          (d) => d.idContratoItems.producto.nombre
-        );
+    async () => {
+      const res = await getDespachos();
+      const body = res.data as { despachos: DespachoResponse[] };
+      const group = groupBy(
+        body.despachos,
+        (d) => d.idContratoItems.producto.nombre
+      );
 
-        setTotalDespachos(body.despachos.length);
+      setTotalDespachos(body.despachos.length);
 
-        setDespachosVolumetria(
-          Object.entries(group).reduce(
-            (prev, [productId, despachoGroup]) => {
-              const monthGroups = groupBy(despachoGroup, (v) =>
-                new Date(v.fechaLlegada).getMonth().toString()
-              );
+      setDespachosVolumetria(
+        Object.entries(group).reduce(
+          (prev, [productId, despachoGroup]) => {
+            const monthGroups = groupBy(despachoGroup, (v) =>
+              new Date(v.fechaLlegada).getMonth().toString()
+            );
 
-              for (const [month, d] of Object.entries(monthGroups)) {
-                prev[productId][+month] = d.reduce(
-                  (prev, curr) => prev + curr.cantidadEnviada,
-                  0
-                );
-              }
-
-              return prev;
-            },
-            Object.keys(group).reduce<Record<string, number[]>>((prev, id) => {
-              prev[id] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-              return prev;
-            }, {})
-          )
-        );
-
-        setDespachoDinero(
-          Object.entries(group).reduce<typeof despachoVolumetria>(
-            (prev, [productId, despachoGroup]) => {
-              const monthGroups = groupBy(despachoGroup, (v) =>
-                new Date(v.fechaLlegada).getMonth().toString()
-              );
-
-              for (const [month, d] of Object.entries(monthGroups)) {
-                prev[productId][+month] = d.reduce(
-                  (prev, curr) =>
-                    prev +
-                    curr.cantidadEnviada * curr.idContratoItems.precioUnitario,
-                  0
-                );
-              }
-
-              return prev;
-            },
-            Object.keys(group).reduce<Record<string, number[]>>((prev, id) => {
-              prev[id] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-              return prev;
-            }, {})
-          )
-        );
-      });
-
-    fetch(
-      "https://api-maroil-refinery-2500582bacd8.herokuapp.com/api/recepcion"
-    )
-      .then<{ recepcions: RecepcionesResponse[] }>((res) => res.json())
-      .then((body) => {
-        setTotalRecepciones(body.recepcions.length);
-
-        const receptionMonthGroups = groupBy(body.recepcions, (d) =>
-          new Date(d.fechaFinRecepcion).getMonth().toString()
-        );
-
-        setRecepcionesVolumetria(
-          Object.entries(receptionMonthGroups).reduce(
-            (prev, [month, curr]) => {
-              prev[+month] = curr.reduce(
-                (sum, item) => sum + item.cantidadEnviada,
+            for (const [month, d] of Object.entries(monthGroups)) {
+              prev[productId][+month] = d.reduce(
+                (prev, curr) => prev + curr.cantidadEnviada,
                 0
               );
-              return prev;
-            },
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-          )
-        );
+            }
 
-        setRecepcionDinero(
-          Object.entries(receptionMonthGroups).reduce(
-            (prev, [month, curr]) => {
-              prev[+month] = curr.reduce(
-                (sum, item) =>
-                  sum +
-                  item.cantidadEnviada * item.idContratoItems.precioUnitario,
+            return prev;
+          },
+          Object.keys(group).reduce<Record<string, number[]>>((prev, id) => {
+            prev[id] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            return prev;
+          }, {})
+        )
+      );
+
+      setDespachoDinero(
+        Object.entries(group).reduce<typeof despachoVolumetria>(
+          (prev, [productId, despachoGroup]) => {
+            const monthGroups = groupBy(despachoGroup, (v) =>
+              new Date(v.fechaLlegada).getMonth().toString()
+            );
+
+            for (const [month, d] of Object.entries(monthGroups)) {
+              prev[productId][+month] = d.reduce(
+                (prev, curr) =>
+                  prev +
+                  curr.cantidadEnviada * curr.idContratoItems.precioUnitario,
                 0
               );
-              return prev;
-            },
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-          )
-        );
-      });
+            }
+
+            return prev;
+          },
+          Object.keys(group).reduce<Record<string, number[]>>((prev, id) => {
+            prev[id] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            return prev;
+          }, {})
+        )
+      );
+    };
+
+    (async () => {
+      const res = await getRecepcions();
+      const body = res as { recepcions: RecepcionesResponse[] };
+      setTotalRecepciones(body.recepcions.length);
+
+      const receptionMonthGroups = groupBy(body.recepcions, (d) =>
+        new Date(d.fechaFinRecepcion).getMonth().toString()
+      );
+
+      setRecepcionesVolumetria(
+        Object.entries(receptionMonthGroups).reduce(
+          (prev, [month, curr]) => {
+            prev[+month] = curr.reduce(
+              (sum, item) => sum + item.cantidadEnviada,
+              0
+            );
+            return prev;
+          },
+          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        )
+      );
+
+      setRecepcionDinero(
+        Object.entries(receptionMonthGroups).reduce(
+          (prev, [month, curr]) => {
+            prev[+month] = curr.reduce(
+              (sum, item) =>
+                sum +
+                item.cantidadEnviada * item.idContratoItems.precioUnitario,
+              0
+            );
+            return prev;
+          },
+          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        )
+      );
+    })();
 
     fetch("https://api-maroil-refinery-2500582bacd8.herokuapp.com/api/factura")
       .then<{ facturas: FacturaResponse[] }>((res) => res.json())
@@ -382,132 +384,134 @@ function DashboardFinanzas() {
           }))
         );
       });
+    (async () => {
+      const res = await getTanques();
+      console.log("res", res);
+      const body = res as { tanques: Tanque[] };
+      console.log(body.tanques);
+      const filteredTanques = body.tanques.filter(
+        (t) => t.idRefineria.nombre === Nombre.OctanoIndustrialSAS
+      );
 
-    fetch("https://api-maroil-refinery-2500582bacd8.herokuapp.com/api/tanque/")
-      .then<{ tanques: Tanque[] }>((res) => res.json())
-      .then((body) => {
-        const filteredTanques = body.tanques.filter(
-          (t) => t.idRefineria.nombre === Nombre.OctanoIndustrialSAS
-        );
+      const groupedTanques = groupBy(
+        filteredTanques,
+        (t) => t.idProducto?.id ?? "-"
+      );
 
-        const groupedTanques = groupBy(
-          filteredTanques,
-          (t) => t.idProducto?.id ?? "-"
-        );
+      setInventarios(
+        Object.entries(groupedTanques).reduce<
+          Record<string, { name: string; quantity: number }>
+        >((prev, [id, group]) => {
+          prev[id] = {
+            name: group[0].idProducto?.nombre ?? "",
+            quantity: group.reduce(
+              (sum, curr) => sum + (curr.idChequeoCantidad?.cantidad ?? 0),
+              0
+            ),
+          };
+          return prev;
+        }, {})
+      );
+    })();
 
-        setInventarios(
-          Object.entries(groupedTanques).reduce<
-            Record<string, { name: string; quantity: number }>
-          >((prev, [id, group]) => {
-            prev[id] = {
-              name: group[0].idProducto?.nombre ?? "",
-              quantity: group.reduce(
-                (sum, curr) => sum + (curr.idChequeoCantidad?.cantidad ?? 0),
-                0
-              ),
-            };
-            return prev;
-          }, {})
-        );
-      });
+    (async () => {
+      const res = await getContratos();
+      const body = res as { contratos: ContratoResponse[] };
 
-    fetch("https://api-maroil-refinery-2500582bacd8.herokuapp.com/api/contrato")
-      .then<{ contratos: ContratoResponse[] }>((res) => res.json())
-      .then((body) => {
-        const comprasTotal = body.contratos
+      const comprasTotal = body.contratos
+        .filter((c) => c.tipoContrato === "Compra")
+        .reduce((prev, curr) => prev + curr.montoTotal, 0);
+
+      const ventasTotal = body.contratos
+        .filter((c) => c.tipoContrato === "Venta")
+        .reduce((prev, curr) => prev + curr.montoTotal, 0);
+
+      setCompras(comprasTotal);
+      setVentas(ventasTotal);
+
+      setPagar(
+        body.contratos
           .filter((c) => c.tipoContrato === "Compra")
-          .reduce((prev, curr) => prev + curr.montoTotal, 0);
+          .reduce(
+            (prev, curr) =>
+              prev + curr.abono.reduce((prev, curr) => prev + curr.monto, 0),
+            -comprasTotal
+          ) * -1
+      );
 
-        const ventasTotal = body.contratos
+      setCobrar(
+        body.contratos
           .filter((c) => c.tipoContrato === "Venta")
-          .reduce((prev, curr) => prev + curr.montoTotal, 0);
+          .reduce(
+            (prev, curr) =>
+              prev + curr.abono.reduce((prev, curr) => prev + curr.monto, 0),
+            -ventasTotal
+          ) * -1
+      );
 
-        setCompras(comprasTotal);
-        setVentas(ventasTotal);
+      const comprasPorMes = Object.entries(
+        groupBy(
+          body.contratos.filter((c) => c.tipoContrato === "Compra"),
+          (c) => new Date(c.fechaInicio).getMonth().toString()
+        )
+      ).reduce(
+        (prev, [month, value]) => {
+          const total = value.reduce((sum, curr) => sum + curr.montoTotal, 0);
+          prev[+month] = total;
+          return prev;
+        },
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+      );
 
-        setPagar(
-          body.contratos
-            .filter((c) => c.tipoContrato === "Compra")
-            .reduce(
-              (prev, curr) =>
-                prev + curr.abono.reduce((prev, curr) => prev + curr.monto, 0),
-              -comprasTotal
-            ) * -1
-        );
+      const ventasPorMes = Object.entries(
+        groupBy(
+          body.contratos.filter((c) => c.tipoContrato === "Venta"),
+          (c) => new Date(c.fechaInicio).getMonth().toString()
+        )
+      ).reduce(
+        (prev, [month, value]) => {
+          const total = value.reduce((sum, curr) => sum + curr.montoTotal, 0);
+          prev[+month] = total;
+          return prev;
+        },
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+      );
 
-        setCobrar(
-          body.contratos
-            .filter((c) => c.tipoContrato === "Venta")
-            .reduce(
-              (prev, curr) =>
-                prev + curr.abono.reduce((prev, curr) => prev + curr.monto, 0),
-              -ventasTotal
-            ) * -1
-        );
-
-        const comprasPorMes = Object.entries(
-          groupBy(
-            body.contratos.filter((c) => c.tipoContrato === "Compra"),
-            (c) => new Date(c.fechaInicio).getMonth().toString()
-          )
-        ).reduce(
-          (prev, [month, value]) => {
-            const total = value.reduce((sum, curr) => sum + curr.montoTotal, 0);
-            prev[+month] = total;
-            return prev;
+      setIngresosEgresosChartData({
+        labels: [
+          "Enero",
+          "Febrero",
+          "Marzo",
+          "Abril",
+          "Mayo",
+          "Junio",
+          "Julio",
+          "Agosto",
+          "Septiembre",
+          "Octubre",
+          "Novimebre",
+          "Dicimebre",
+        ],
+        datasets: [
+          {
+            label: "Compras",
+            data: comprasPorMes,
+            backgroundColor: ["#1a2874"],
+            borderColor: ["#1a2874"],
+            borderWidth: 1,
+            borderRadius: 8,
           },
-          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        );
-
-        const ventasPorMes = Object.entries(
-          groupBy(
-            body.contratos.filter((c) => c.tipoContrato === "Venta"),
-            (c) => new Date(c.fechaInicio).getMonth().toString()
-          )
-        ).reduce(
-          (prev, [month, value]) => {
-            const total = value.reduce((sum, curr) => sum + curr.montoTotal, 0);
-            prev[+month] = total;
-            return prev;
+          {
+            label: "Ventas",
+            data: ventasPorMes,
+            backgroundColor: ["rgb(0, 195, 191)"],
+            borderColor: ["rgb(75, 192, 192)"],
+            borderWidth: 1,
+            borderRadius: 8,
           },
-          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        );
-
-        setIngresosEgresosChartData({
-          labels: [
-            "Enero",
-            "Febrero",
-            "Marzo",
-            "Abril",
-            "Mayo",
-            "Junio",
-            "Julio",
-            "Agosto",
-            "Septiembre",
-            "Octubre",
-            "Novimebre",
-            "Dicimebre",
-          ],
-          datasets: [
-            {
-              label: "Compras",
-              data: comprasPorMes,
-              backgroundColor: ["#1a2874"],
-              borderColor: ["#1a2874"],
-              borderWidth: 1,
-              borderRadius: 8,
-            },
-            {
-              label: "Ventas",
-              data: ventasPorMes,
-              backgroundColor: ["rgb(0, 195, 191)"],
-              borderColor: ["rgb(75, 192, 192)"],
-              borderWidth: 1,
-              borderRadius: 8,
-            },
-          ],
-        });
+        ],
       });
+    })();
   }, []);
 
   return (

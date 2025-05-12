@@ -319,12 +319,12 @@ const AppMenu = () => {
         {
           label: "Lista",
           icon: "pi pi-fw pi-list",
-          to: "/profile/list",
+          to: "/users/list",
         },
         {
           label: "Crear",
           icon: "pi pi-fw pi-plus",
-          to: "/profile/create",
+          to: "/users/create",
         },
       ],
     },

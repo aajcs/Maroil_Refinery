@@ -168,11 +168,14 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
         </StyleClass>
         <ul className="list-none p-3 m-0 border-round shadow-2 hidden absolute surface-overlay origin-top w-full sm:w-12rem mt-2 right-0 top-auto">
           <li>
-            <a className="p-ripple flex p-2 border-round align-items-center hover:surface-hover transition-colors transition-duration-150 cursor-pointer">
+            <Link
+              href="/profile/myProfile"
+              className="p-ripple flex p-2 border-round align-items-center hover:surface-hover transition-colors transition-duration-150 cursor-pointer"
+            >
               <i className="pi pi-user mr-3"></i>
               <span>Perfil</span>
               <Ripple />
-            </a>
+            </Link>
 
             <a className="p-ripple flex p-2 border-round align-items-center hover:surface-hover transition-colors transition-duration-150 cursor-pointer">
               <i className="pi pi-cog mr-3"></i>
