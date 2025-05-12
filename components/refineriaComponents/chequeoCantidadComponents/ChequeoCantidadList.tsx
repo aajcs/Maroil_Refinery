@@ -205,7 +205,7 @@ const ChequeoCantidadList = () => {
           }}
         />
         <Column field="idProducto.nombre" header="Producto" sortable />
-        <Column field="idOperador.nombre" header="Operador" sortable />
+        {/* <Column field="idOperador.nombre" header="Operador" sortable /> */}
         <Column
           field="fechaChequeo"
           header="Fecha de Chequeo"

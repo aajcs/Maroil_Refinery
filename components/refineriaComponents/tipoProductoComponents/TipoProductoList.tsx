@@ -326,16 +326,17 @@ const TipoProductoList = () => {
         header={`${tipoProducto ? "Editar" : "Agregar"} Tipo de Producto`}
         modal
         onHide={hideTipoProductoFormDialog}
-      >
-        <TipoProductoForm
-          tipoProducto={tipoProducto}
-          hideTipoProductoFormDialog={hideTipoProductoFormDialog}
-          tipoProductos={tipoProductos}
-          setTipoProductos={setTipoProductos}
-          setTipoProducto={setTipoProducto}
-          showToast={showToast}
-        />
-      </Dialog>
+        content={() => (
+          <TipoProductoForm
+            tipoProducto={tipoProducto}
+            hideTipoProductoFormDialog={hideTipoProductoFormDialog}
+            tipoProductos={tipoProductos}
+            setTipoProductos={setTipoProductos}
+            setTipoProducto={setTipoProducto}
+            showToast={showToast}
+          />
+        )}
+      ></Dialog>
     </div>
   );
 };

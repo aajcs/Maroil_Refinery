@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -33,6 +33,7 @@ import { RepecionFormRecepcion } from "./RepecionFormRecepcion";
 import { ProgressBar } from "primereact/progressbar";
 import CustomCalendar from "@/components/common/CustomCalendar";
 import { Dialog } from "primereact/dialog";
+import { Recepcion } from "@/libs/interfaces";
 
 type FormData = z.infer<typeof recepcionSchema>;
 
@@ -40,8 +41,8 @@ interface RecepcionFormProps {
   recepcion: any;
   hideRecepcionFormDialog: () => void;
   recepcionFormDialog: boolean;
-  recepcions: any[];
-  setRecepcions: (recepcions: any[]) => void;
+  recepcions: Recepcion[];
+  setRecepcions: (recepcions: Recepcion[]) => void;
   setRecepcion: (recepcion: any) => void;
   showToast: (
     severity: "success" | "error" | "warn",
@@ -97,7 +98,47 @@ const RecepcionForm = ({
       setValue("cantidadRecibida", recepcion.idChequeoCantidad.cantidad);
     }
   }, [recepcion, setValue]);
+  // Agrupar recepciones por contrato y producto
+  const recepcionesPorContrato = useMemo(() => {
+    return contratos.map((contrato) => {
+      const recepcionesContrato = recepcions.filter(
+        (recepcion) => recepcion.idContrato.id === contrato.id
+      );
+      const productos = contrato.idItems.map((item: any) => {
+        const recepcionesProducto = recepcionesContrato.filter(
+          (recepcion) =>
+            recepcion.idContratoItems?.producto.id === item.producto?.id &&
+            recepcion.idContratoItems?.idTipoProducto ===
+              item.idTipoProducto?.id
+        );
 
+        const cantidadRecibida = recepcionesProducto.reduce(
+          (total, recepcion) => total + recepcion.cantidadRecibida,
+          0
+        );
+
+        const cantidadFaltante = item.cantidad - cantidadRecibida;
+
+        const porcentaje = (cantidadRecibida / item.cantidad) * 100;
+
+        return {
+          producto: item.producto,
+          cantidad: item.cantidad,
+          tipoProducto: item.idTipoProducto,
+          recepciones: recepcionesProducto,
+          cantidadRecibida,
+          cantidadFaltante,
+          porcentaje,
+        };
+      });
+
+      return {
+        ...contrato,
+        productos,
+      };
+    });
+  }, [contratos, recepcions]);
+  console.log("recepcionesPorContrato", recepcionesPorContrato);
   const onSubmit = async (data: FormData) => {
     setSubmitting(true);
     try {
@@ -217,7 +258,16 @@ const RecepcionForm = ({
     <Dialog
       visible={recepcionFormDialog}
       style={{ width: "70vw", padding: "0px" }}
-      header={`${recepcion ? "Editar" : "Agregar"} Recepción`}
+      header={
+        <div className="mb-2 text-center md:text-left">
+          <div className="border-bottom-2 border-primary pb-2">
+            <h2 className="text-2xl font-bold text-900 mb-2 flex align-items-center justify-content-center md:justify-content-start">
+              <i className="pi pi-check-circle mr-3 text-primary text-3xl"></i>
+              {recepcion ? "Editar" : "Agregar"} Recepción
+            </h2>
+          </div>
+        </div>
+      }
       modal
       onHide={hideRecepcionFormDialog}
       footer={
@@ -268,7 +318,7 @@ const RecepcionForm = ({
                   currentState: string
                 ) => string[]
               }
-              contratos={contratos.filter(
+              contratos={recepcionesPorContrato.filter(
                 (contrato) => contrato.tipoContrato === "Compra"
               )}
               truncateText={truncateText}

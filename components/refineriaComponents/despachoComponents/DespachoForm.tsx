@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -95,6 +95,42 @@ const DespachoForm = ({
     }
   }, [despacho, setValue]);
 
+  // Agrupar recepciones por contrato y producto
+  const recepcionesPorContrato = useMemo(() => {
+    return contratos.map((contrato) => {
+      const productos = contrato.idItems.map((item: any) => {
+        const despachosProducto = despachos.filter(
+          (despacho) =>
+            despacho.idContratoItems?.producto.id === item.producto.id &&
+            despacho.idContratoItems?.idTipoProducto === item.idTipoProducto.id
+        );
+
+        const cantidadDespachada = despachosProducto.reduce(
+          (total, despacho) => total + despacho.cantidadRecibida,
+          0
+        );
+
+        const porcentajeDespacho = (cantidadDespachada / item.cantidad) * 100;
+        const cantidadFaltanteDespacho = item.cantidad - cantidadDespachada;
+
+        return {
+          producto: item.producto,
+          cantidad: item.cantidad,
+          tipoProducto: item.idTipoProducto,
+          despachos: despachosProducto,
+          cantidadDespachada,
+          cantidadFaltanteDespacho,
+          porcentajeDespacho,
+        };
+      });
+
+      return {
+        ...contrato,
+        productos,
+      };
+    });
+  }, [contratos, despachos]);
+  console.log("recepcionesPorContrato", recepcionesPorContrato);
   const onSubmit = async (data: FormData) => {
     setSubmitting(true);
     try {
@@ -214,7 +250,16 @@ const DespachoForm = ({
     <Dialog
       visible={despachoFormDialog}
       style={{ width: "70vw", padding: "0px" }}
-      header={`${despacho ? "Editar" : "Agregar"} Despacho`}
+      header={
+        <div className="mb-2 text-center md:text-left">
+          <div className="border-bottom-2 border-primary pb-2">
+            <h2 className="text-2xl font-bold text-900 mb-2 flex align-items-center justify-content-center md:justify-content-start">
+              <i className="pi pi-check-circle mr-3 text-primary text-3xl"></i>
+              {despacho ? "Editar" : "Agregar"} Despacho
+            </h2>
+          </div>
+        </div>
+      }
       modal
       onHide={hideDespachoFormDialog}
       footer={
@@ -263,7 +308,7 @@ const DespachoForm = ({
                   currentState: string
                 ) => string[]
               }
-              contratos={contratos}
+              contratos={recepcionesPorContrato}
               truncateText={truncateText}
               register={register}
             />

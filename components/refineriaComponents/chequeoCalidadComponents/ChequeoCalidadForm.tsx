@@ -74,6 +74,40 @@ const ChequeoCalidadForm = ({
       fechaChequeo: new Date(),
     },
   });
+  const tipoAplicar = watch("aplicar.tipo");
+  const referencia = watch("aplicar.idReferencia");
+  // Auto-seleccionar producto según el tipo de referencia
+  useEffect(() => {
+    if (!tipoAplicar || !referencia?.id) {
+      setValue("idProducto", { id: "", nombre: "", _id: undefined });
+      return;
+    }
+
+    let prod: { id: string; nombre: string } | undefined;
+
+    if (tipoAplicar === "Recepcion") {
+      const rc = recepcions.find((r) => r.id === referencia.id);
+      prod = rc?.idContratoItems?.producto;
+    } else if (tipoAplicar === "Tanque") {
+      const tn = tanques.find((t) => t.id === referencia.id);
+      console.log("Tanque:", tn);
+      prod = tn?.idProducto; // Asume que tanque tiene campo `producto`
+    } else if (tipoAplicar === "Despacho") {
+      const dsp = despachos.find((d) => d.id === referencia.id);
+      prod = dsp?.idContratoItems?.producto;
+    }
+
+    if (prod) {
+      setValue("idProducto", {
+        id: prod.id,
+        nombre: prod.nombre,
+        _id: prod.id,
+      });
+    } else {
+      setValue("idProducto", { id: "", nombre: "", _id: undefined });
+    }
+  }, [tipoAplicar, referencia, recepcions, tanques, despachos, setValue]);
+
   // Actualizar las opciones dinámicas según la selección de "Aplicar a"
   useEffect(() => {
     const { tipo } = watch("aplicar");
@@ -336,7 +370,7 @@ const ChequeoCalidadForm = ({
                       className="w-full"
                       showClear
                       filter
-                      // disabled
+                      disabled
                     />
                   )}
                 />
@@ -350,7 +384,7 @@ const ChequeoCalidadForm = ({
             </div>
 
             {/* Campo: Operador */}
-            <div className="col-12 md:col-6 lg:col-4 xl:col-3">
+            {/* <div className="col-12 md:col-6 lg:col-4 xl:col-3">
               <div className="p-2 bg-white border-round shadow-1 surface-card">
                 <label className="block font-medium text-900 mb-3 flex align-items-center">
                   <i className="pi pi-user mr-2 text-primary"></i>
@@ -384,7 +418,7 @@ const ChequeoCalidadForm = ({
                   </small>
                 )}
               </div>
-            </div>
+            </div> */}
 
             {/* Campo: Fecha de Chequeo */}
             <div className="col-12 md:col-6 lg:col-4 xl:col-3">

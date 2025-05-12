@@ -6,6 +6,7 @@ import { InputNumber } from "primereact/inputnumber";
 import { InputText } from "primereact/inputtext";
 import { Calendar } from "primereact/calendar";
 import { classNames } from "primereact/utils";
+import { useMemo } from "react";
 
 interface DespachoFormDespachoProps {
   control: any;
@@ -43,7 +44,11 @@ export const DespachoFormDespacho = ({
   truncateText,
   register,
 }: DespachoFormDespachoProps) => {
-  console.log(watch("idContrato"));
+  const idContratoValue = watch("idContrato")?.id;
+  const productosFiltrados = useMemo(() => {
+    const contrato = contratos.find((c) => c.id === idContratoValue);
+    return contrato?.productos ?? [];
+  }, [idContratoValue, contratos]);
   return (
     <div className="card p-fluid surface-50 p-2 border-round shadow-2">
       {/* Sección Estado Despacho */}
@@ -192,17 +197,17 @@ export const DespachoFormDespacho = ({
               render={({ field, fieldState }) => (
                 <>
                   <div className="grid gap-2">
-                    {watch("idContrato.idItems")?.map((items: any) => (
+                    {watch("idContrato.idItems")?.map((item: any) => (
                       <div
-                        key={items.id}
-                        className="col-12 md:col-6 flex align-items-center"
+                        key={item.id}
+                        className="col-12  flex align-items-center"
                       >
                         <RadioButton
-                          inputId={items.id}
-                          name="items"
-                          value={items}
+                          inputId={item.id}
+                          name="item"
+                          value={item}
                           onChange={(e) => field.onChange(e.value)}
-                          checked={field.value?.id === items.id}
+                          checked={field.value?.id === item.id}
                           className="mr-2"
                           disabled={
                             !isFieldEnabledDespacho(
@@ -211,8 +216,38 @@ export const DespachoFormDespacho = ({
                             )
                           }
                         />
-                        <label htmlFor={items.id} className="text-900">
-                          {`${items.producto.nombre} - ${items.cantidad}Bbl`}
+                        <label htmlFor={item.id} className="text-900">
+                          {`${item.producto.nombre} - ${
+                            item.idTipoProducto.nombre
+                          } - ${item.cantidad.toLocaleString()} Bbl - Faltante: ${
+                            productosFiltrados
+                              .find(
+                                (producto: {
+                                  producto: { id: string };
+                                  tipoProducto?: { id: string };
+                                  cantidadFaltanteDespacho?: number;
+                                  cantidadDespachada?: number;
+                                }) =>
+                                  producto.producto.id === item.producto.id &&
+                                  producto.tipoProducto?.id ===
+                                    item.idTipoProducto.id
+                              )
+                              ?.cantidadFaltanteDespacho?.toLocaleString() || 0
+                          } Bbl - Enviado: ${
+                            productosFiltrados
+                              .find(
+                                (producto: {
+                                  producto: { id: string };
+                                  tipoProducto?: { id: string };
+                                  cantidadFaltanteDespacho?: number;
+                                  cantidadDespachada?: number;
+                                }) =>
+                                  producto.producto.id === item.producto.id &&
+                                  producto.tipoProducto?.id ===
+                                    item.idTipoProducto.id
+                              )
+                              ?.cantidadDespachada?.toLocaleString() || 0
+                          } Bbl`}
                         </label>
                       </div>
                     ))}

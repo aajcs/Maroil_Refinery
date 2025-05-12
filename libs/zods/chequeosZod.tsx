@@ -47,11 +47,13 @@ export const chequeoCalidadSchema = z.object({
     .number()
     .min(0, "El punto de inflamación debe ser un número no negativo"),
   cetano: z.number().min(0, "El índice cetano debe ser un número no negativo"),
-  idOperador: z.object({
-    nombre: z.string().min(1, "El nombre del operador es obligatorio"),
-    id: z.string().min(1, "El ID del operador es obligatorio"),
-    _id: z.string().optional(),
-  }),
+  idOperador: z
+    .object({
+      nombre: z.string().min(1, "El nombre del operador es obligatorio"),
+      id: z.string().min(1, "El ID del operador es obligatorio"),
+      _id: z.string().optional(),
+    })
+    .optional(),
   estado: string().min(1, "El estado es obligatorio"),
   eliminado: z.boolean().default(false),
   numeroChequeoCalidad: z
@@ -101,11 +103,13 @@ export const chequeoCantidadSchema = z.object({
     invalid_type_error: "Formato de fecha inválido",
   }),
   cantidad: z.number().min(0, "La cantidad debe ser un número no negativo"),
-  idOperador: z.object({
-    nombre: z.string().min(1, "El nombre del operador es obligatorio"),
-    id: z.string().min(1, "El ID del operador es obligatorio"),
-    _id: z.string().optional(),
-  }),
+  idOperador: z
+    .object({
+      nombre: z.string().min(1, "El nombre del operador es obligatorio"),
+      id: z.string().min(1, "El ID del operador es obligatorio"),
+      _id: z.string().optional(),
+    })
+    .optional(),
   estado: string().min(1, "El estado es obligatorio"),
   eliminado: z.boolean().default(false),
   numeroChequeoCantidad: z
