@@ -16,7 +16,7 @@ import AuditHistoryDialog from "../common/AuditHistoryDialog";
 import {
   deleteBunkering,
   getBunkerings,
-} from "@/app/api/bunkering/refineriaService";
+} from "@/app/api/bunkering/bunkeringService";
 
 const BunkeringList = () => {
   const [bunkerings, setBunkerings] = useState<Bunkering[]>([]);

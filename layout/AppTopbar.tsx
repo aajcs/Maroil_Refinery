@@ -124,7 +124,8 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
         })}
         {!tabs ||
           (tabs.length === 0 &&
-            pathname.startsWith("/refineria") &&
+            (pathname.startsWith("/refineria") ||
+              pathname.startsWith("/bunkering")) &&
             activeRefineria && (
               // <li className="topbar-menu-empty ">
 

@@ -24,73 +24,111 @@ const AppMenuRefineria = () => {
 
     {
       label: "Gestión de " + activeRefineria?.nombre,
-      icon: "pi pi-fw pi-user",
+      icon: "pi pi-fw pi-building", // Cambiado a un icono más representativo de empresa
+
       items: [
         {
-          label: "Linea de Recepción",
-          icon: "pi pi-fw pi-list",
-          to: "/refineria/linea-recepcion",
+          label: "Congifuración",
+          icon: "pi pi-fw pi-cog",
+          items: [
+            {
+              label: "Linea de Recepción",
+              icon: "pi pi-fw pi-list",
+              to: "/refineria/linea-recepcion",
+            },
+            {
+              label: "Tanques",
+              icon: "pi pi-fw pi-database",
+              to: "/refineria/tanques",
+            },
+            {
+              label: "Torres de Destilación",
+              icon: "pi pi-fw pi-building",
+              to: "/refineria/torre-destilacion",
+            },
+            {
+              label: "Linea de Despacho",
+              icon: "pi pi-fw pi-plus",
+              to: "/refineria/linea-despacho",
+            },
+            {
+              label: "Producto",
+              icon: "pi pi-fw pi-plus",
+              to: "/refineria/producto",
+            },
+            {
+              label: "Tipo de Producto",
+              icon: "pi pi-fw pi-plus",
+              to: "/refineria/tipo-producto",
+            },
+          ],
         },
         {
-          label: "Tanques",
-          icon: "pi pi-fw pi-database",
-          to: "/refineria/tanques",
+          label: "Finanzas",
+          icon: "pi pi-fw pi-dollar",
+          items: [
+            {
+              label: "Contactos",
+              icon: "pi pi-fw pi-id-card",
+              to: "/refineria/contacto",
+            },
+            {
+              label: "Contrato Compra",
+              icon: "pi pi-fw pi-briefcase",
+              to: "/refineria/contrato-compra",
+            },
+            {
+              label: "Contrato Venta",
+              icon: "pi pi-fw pi-briefcase",
+              to: "/refineria/contrato-venta",
+            },
+          ],
         },
         {
-          label: "Torres de Destilación",
-          icon: "pi pi-fw pi-building",
-          to: "/refineria/torre-destilacion",
-        },
-        {
-          label: "Linea de Despacho",
-          icon: "pi pi-fw pi-plus",
-          to: "/refineria/linea-despacho",
-        },
-        {
-          label: "Contactos",
-          icon: "pi pi-fw pi-id-card",
-          to: "/refineria/contacto",
-        },
-        {
-          label: "Contrato Compra",
+          label: "Logistica",
           icon: "pi pi-fw pi-briefcase",
-          to: "/refineria/contrato-compra",
+          items: [
+            {
+              label: "Recepción",
+              icon: "pi pi-fw pi-plus",
+              to: "/refineria/recepcion",
+            },
+            {
+              label: "Despacho",
+              icon: "pi pi-fw pi-plus",
+              to: "/refineria/despacho",
+            },
+          ],
         },
+
         {
-          label: "Contrato Venta",
+          label: "Operaciones",
           icon: "pi pi-fw pi-briefcase",
-          to: "/refineria/contrato-venta",
+          items: [
+            {
+              label: "Chequeo Cantidad",
+              icon: "pi pi-fw pi-plus",
+              to: "/refineria/chequeo-cantidad",
+            },
+            {
+              label: "Corte de Refinación",
+              icon: "pi pi-fw pi-plus",
+              to: "/refineria/corte-refinacion",
+            },
+          ],
         },
         {
-          label: "Recepción",
-          icon: "pi pi-fw pi-plus",
-          to: "/refineria/recepcion",
+          label: "Laboratorio",
+          icon: "pi pi-fw pi-briefcase",
+          items: [
+            {
+              label: "Chequeo Calidad",
+              icon: "pi pi-fw pi-plus",
+              to: "/refineria/chequeo-calidad",
+            },
+          ],
         },
-        {
-          label: "Despacho",
-          icon: "pi pi-fw pi-plus",
-          to: "/refineria/despacho",
-        },
-        {
-          label: "Producto",
-          icon: "pi pi-fw pi-plus",
-          to: "/refineria/producto",
-        },
-        {
-          label: "Tipo de Producto",
-          icon: "pi pi-fw pi-plus",
-          to: "/refineria/tipo-producto",
-        },
-        {
-          label: "Chequeo Calidad",
-          icon: "pi pi-fw pi-plus",
-          to: "/refineria/chequeo-calidad",
-        },
-        {
-          label: "Chequeo Cantidad",
-          icon: "pi pi-fw pi-plus",
-          to: "/refineria/chequeo-cantidad",
-        },
+
         // {
         //   label: "Refinación",
         //   icon: "pi pi-fw pi-plus",
@@ -101,11 +139,6 @@ const AppMenuRefineria = () => {
         //   icon: "pi pi-fw pi-plus",
         //   to: "/refineria/refinacion-salida",
         // },
-        {
-          label: "Corte de Refinación",
-          icon: "pi pi-fw pi-plus",
-          to: "/refineria/corte-refinacion",
-        },
       ],
     },
     // {

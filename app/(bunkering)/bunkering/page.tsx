@@ -1,13 +1,11 @@
 "use client";
 
-import ModeladoRefineriaDashboard from "@/components/refineriaComponents/modeladoRefineriaComponents/ModeladoRefineriaDashboard";
-import RefineriasDashboard from "@/components/refineriaComponents/RefineriasDashboard";
+import ModeladoBunkeringDashboard from "@/components/bunkeringComponents/modeladoBunkeringComponents/ModeladoBunkeringDashboard";
 
 function Dashboard() {
   return (
     <>
-      {/* <RefineriasDashboard /> */}
-      <ModeladoRefineriaDashboard />
+      <ModeladoBunkeringDashboard />
     </>
   );
 }

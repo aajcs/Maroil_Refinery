@@ -1,0 +1,23 @@
+import apiClient from "../apiClient";
+
+export const getMuelleBK = async (id: string) => {
+  const response = await apiClient.get(`bunkering/muelle/${id}`);
+  return response.data;
+};
+export const getMuellesBK = async () => {
+  const response = await apiClient.get("bunkering/muelle");
+  return response.data;
+};
+export const createMuelleBK = async (data: any) => {
+  const response = await apiClient.post("bunkering/muelle", data);
+  return response.data;
+};
+export const updateMuelleBK = async (id: string, data: any) => {
+  console.log(data);
+  const response = await apiClient.put(`bunkering/muelle/${id}`, data);
+  return response.data;
+};
+export const deleteMuelleBK = async (id: string) => {
+  const response = await apiClient.delete(`bunkering/muelle/${id}`);
+  return response.data;
+};

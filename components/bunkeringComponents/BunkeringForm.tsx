@@ -13,7 +13,7 @@ import { InputNumber } from "primereact/inputnumber";
 import {
   createBunkering,
   updateBunkering,
-} from "@/app/api/bunkering/refineriaService";
+} from "@/app/api/bunkering/bunkeringService";
 import { bunkeringSchema } from "@/libs/zods";
 
 type FormData = z.infer<typeof bunkeringSchema>;
