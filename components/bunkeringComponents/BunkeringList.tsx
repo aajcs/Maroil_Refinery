@@ -1,12 +1,11 @@
 "use client";
+import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { FilterMatchMode } from "primereact/api";
 import { Button } from "primereact/button";
 import { Column } from "primereact/column";
 import { DataTable, DataTableFilterMeta } from "primereact/datatable";
 import { InputText } from "primereact/inputtext";
-import React, { useEffect, useRef, useState } from "react";
-import { deleteUser } from "@/app/api/userService";
 import { Toast } from "primereact/toast";
 import { Dialog } from "primereact/dialog";
 import BunkeringForm from "./BunkeringForm";

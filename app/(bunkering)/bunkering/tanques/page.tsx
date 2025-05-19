@@ -1,6 +1,6 @@
 "use client";
 
-import TanqueList from "@/components/refineriaComponents/tanqueComponents/TanqueList";
+import TanqueList from "@/components/bunkeringComponents/tanqueComponents/TanqueList";
 
 function Tanques() {
   return (

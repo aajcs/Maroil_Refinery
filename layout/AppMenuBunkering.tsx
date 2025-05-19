@@ -38,28 +38,34 @@ const AppMenuBunkering = () => {
             {
               label: "Linea de Recepción",
               icon: "pi pi-fw pi-list",
-              to: "/refineria/linea-recepcion",
+              to: "/bunkering/linea-recepcion",
             },
+            {
+              label: "Embarcación",
+              icon: "pi pi-fw pi-ship",
+              to: "/bunkering/embarcacion",
+            },
+
             {
               label: "Tanques",
               icon: "pi pi-fw pi-database",
-              to: "/refineria/tanques",
+              to: "/bunkering/tanques",
             },
 
             {
               label: "Linea de Despacho",
               icon: "pi pi-fw pi-plus",
-              to: "/refineria/linea-despacho",
+              to: "/bunkering/linea-despacho",
             },
             {
               label: "Producto",
               icon: "pi pi-fw pi-plus",
-              to: "/refineria/producto",
+              to: "/bunkering/producto",
             },
             {
               label: "Tipo de Producto",
               icon: "pi pi-fw pi-plus",
-              to: "/refineria/tipo-producto",
+              to: "/bunkering/tipo-producto",
             },
           ],
         },
@@ -70,17 +76,17 @@ const AppMenuBunkering = () => {
             {
               label: "Contactos",
               icon: "pi pi-fw pi-id-card",
-              to: "/refineria/contacto",
+              to: "/bunkering/contacto",
             },
             {
               label: "Contrato Compra",
               icon: "pi pi-fw pi-briefcase",
-              to: "/refineria/contrato-compra",
+              to: "/bunkering/contrato-compra",
             },
             {
               label: "Contrato Venta",
               icon: "pi pi-fw pi-briefcase",
-              to: "/refineria/contrato-venta",
+              to: "/bunkering/contrato-venta",
             },
           ],
         },
@@ -91,12 +97,12 @@ const AppMenuBunkering = () => {
             {
               label: "Recepción",
               icon: "pi pi-fw pi-plus",
-              to: "/refineria/recepcion",
+              to: "/bunkering/recepcion",
             },
             {
               label: "Despacho",
               icon: "pi pi-fw pi-plus",
-              to: "/refineria/despacho",
+              to: "/bunkering/despacho",
             },
           ],
         },
@@ -107,7 +113,7 @@ const AppMenuBunkering = () => {
             {
               label: "Chequeo Cantidad",
               icon: "pi pi-fw pi-plus",
-              to: "/refineria/chequeo-cantidad",
+              to: "/bunkering/chequeo-cantidad",
             },
           ],
         },
@@ -118,7 +124,7 @@ const AppMenuBunkering = () => {
             {
               label: "Chequeo Calidad",
               icon: "pi pi-fw pi-plus",
-              to: "/refineria/chequeo-calidad",
+              to: "/bunkering/chequeo-calidad",
             },
           ],
         },
@@ -131,12 +137,12 @@ const AppMenuBunkering = () => {
     //     {
     //       label: "Lista",
     //       icon: "pi pi-fw pi-list",
-    //       to: "/refineria/list",
+    //       to: "/bunkering/list",
     //     },
     //     {
     //       label: "Crear",
     //       icon: "pi pi-fw pi-plus",
-    //       to: "/refineria/create",
+    //       to: "/bunkering/create",
     //     },
     //   ],
     // },

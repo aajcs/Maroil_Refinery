@@ -1,6 +1,6 @@
 "use client";
 
-import LineaRecepcionList from "@/components/refineriaComponents/lineaRecepcionComponents/LineaRecepcionList";
+import LineaRecepcionList from "@/components/bunkeringComponents/lineaRecepcionComponents/LineaRecepcionList";
 
 function LineaRecepcion() {
   return (

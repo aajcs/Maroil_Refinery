@@ -13,17 +13,18 @@ import TipoProductoForm from "./TipoProductoForm";
 import { formatDateFH } from "@/utils/dateUtils";
 import CustomActionButtons from "@/components/common/CustomActionButtons";
 import AuditHistoryDialog from "@/components/common/AuditHistoryDialog";
-import { TipoProducto } from "@/libs/interfaces";
-import {
-  deleteTipoProducto,
-  getTipoProductos,
-} from "@/app/api/tipoProductoService";
+
 import { Accordion, AccordionTab } from "primereact/accordion";
+import {
+  deleteTipoProductoBK,
+  getTipoProductosBK,
+} from "@/app/api/bunkering/tipoProductoBKService";
+import { TipoProductoBK } from "@/libs/interfaces/tipoProductoBKInterface";
 
 const TipoProductoList = () => {
   const { activeRefineria } = useRefineriaStore();
-  const [tipoProductos, setTipoProductos] = useState<TipoProducto[]>([]);
-  const [tipoProducto, setTipoProducto] = useState<TipoProducto | null>(null);
+  const [tipoProductos, setTipoProductos] = useState<TipoProductoBK[]>([]);
+  const [tipoProducto, setTipoProducto] = useState<TipoProductoBK | null>(null);
   const [filters, setFilters] = useState<DataTableFilterMeta>({});
   const [loading, setLoading] = useState(true);
   const [globalFilterValue, setGlobalFilterValue] = useState("");
@@ -31,7 +32,7 @@ const TipoProductoList = () => {
   const [tipoProductoFormDialog, setTipoProductoFormDialog] = useState(false);
   const [auditDialogVisible, setAuditDialogVisible] = useState(false);
   const [selectedAuditTipoProducto, setSelectedAuditTipoProducto] =
-    useState<TipoProducto | null>(null);
+    useState<TipoProductoBK | null>(null);
   const dt = useRef(null);
   const toast = useRef<Toast | null>(null);
 
@@ -41,11 +42,11 @@ const TipoProductoList = () => {
 
   const fetchTipoProductos = async () => {
     try {
-      const tipoProductosDB = await getTipoProductos();
+      const tipoProductosDB = await getTipoProductosBK();
       if (tipoProductosDB && Array.isArray(tipoProductosDB.tipoProductos)) {
         const filteredTipoProductos = tipoProductosDB.tipoProductos.filter(
-          (tipoProducto: TipoProducto) =>
-            tipoProducto.idRefineria.id === activeRefineria?.id
+          (tipoProducto: TipoProductoBK) =>
+            tipoProducto.idBunkering.id === activeRefineria?.id
         );
         setTipoProductos(filteredTipoProductos);
       } else {
@@ -66,7 +67,7 @@ const TipoProductoList = () => {
 
   const handleDeleteTipoProducto = async () => {
     if (tipoProducto?.id) {
-      await deleteTipoProducto(tipoProducto.id);
+      await deleteTipoProductoBK(tipoProducto.id);
       setTipoProductos(
         tipoProductos.filter((val) => val.id !== tipoProducto.id)
       );
@@ -116,7 +117,7 @@ const TipoProductoList = () => {
     </div>
   );
 
-  const actionBodyTemplate = (rowData: TipoProducto) => (
+  const actionBodyTemplate = (rowData: TipoProductoBK) => (
     <CustomActionButtons
       rowData={rowData}
       onInfo={(data) => {
@@ -144,7 +145,7 @@ const TipoProductoList = () => {
   ) => {
     toast.current?.show({ severity, summary, detail, life: 3000 });
   };
-  const rendimientoBodyTemplate = (rowData: TipoProducto) => {
+  const rendimientoBodyTemplate = (rowData: TipoProductoBK) => {
     return (
       <Accordion>
         <AccordionTab
@@ -234,37 +235,41 @@ const TipoProductoList = () => {
         <Column
           field="gravedadAPI"
           header="Gravedad API"
-          body={(rowData: TipoProducto) =>
+          body={(rowData: TipoProductoBK) =>
             rowData.gravedadAPI?.toFixed(2) || "N/A"
           }
         />
         <Column
           field="azufre"
           header="Azufre (%)"
-          body={(rowData: TipoProducto) => rowData.azufre?.toFixed(2) || "N/A"}
+          body={(rowData: TipoProductoBK) =>
+            rowData.azufre?.toFixed(2) || "N/A"
+          }
         />
         <Column
           field="contenidoAgua"
           header="Contenido de Agua (%)"
-          body={(rowData: TipoProducto) =>
+          body={(rowData: TipoProductoBK) =>
             rowData.contenidoAgua?.toFixed(2) || "N/A"
           }
         />
         <Column
           field="puntoDeInflamacion"
           header="Punto De Inflamación"
-          body={(rowData: TipoProducto) => rowData.puntoDeInflamacion || "N/A"}
+          body={(rowData: TipoProductoBK) =>
+            rowData.puntoDeInflamacion || "N/A"
+          }
         />
         <Column field="estado" header="Estado" />
         <Column
           field="createdAt"
           header="Fecha de Creación"
-          body={(rowData: TipoProducto) => formatDateFH(rowData.createdAt)}
+          body={(rowData: TipoProductoBK) => formatDateFH(rowData.createdAt)}
         />
         <Column
           field="updatedAt"
           header="Última Actualización"
-          body={(rowData: TipoProducto) => formatDateFH(rowData.updatedAt)}
+          body={(rowData: TipoProductoBK) => formatDateFH(rowData.updatedAt)}
         />
       </DataTable>
 

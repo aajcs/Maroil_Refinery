@@ -8,71 +8,71 @@ import { DataTable, DataTableFilterMeta } from "primereact/datatable";
 import { InputText } from "primereact/inputtext";
 import { Toast } from "primereact/toast";
 import { Dialog } from "primereact/dialog";
-import TanqueForm from "./TanqueForm";
 import { useRefineriaStore } from "@/store/refineriaStore";
-import { TanqueBK } from "@/libs/interfaces";
+import EmbarcacionForm from "./EmbarcacionForm";
 import { formatDateFH } from "@/utils/dateUtils";
-import AuditHistoryDialog from "@/components/common/AuditHistoryDialog";
 import CustomActionButtons from "@/components/common/CustomActionButtons";
-import {
-  deleteTanqueBK,
-  getTanquesBK,
-} from "@/app/api/bunkering/tanqueBKService";
+import AuditHistoryDialog from "@/components/common/AuditHistoryDialog";
 
-const TanqueList = () => {
+import { Embarcacion } from "@/libs/interfaces";
+import {
+  deleteEmbarcacionBK,
+  getEmbarcacionsBK,
+} from "@/app/api/bunkering/embarcacionBKService";
+
+const EmbarcacionList = () => {
   const { activeRefineria } = useRefineriaStore();
-  const [tanques, setTanques] = useState<TanqueBK[]>([]);
-  const [tanque, setTanque] = useState<TanqueBK | null>(null);
+  const [embarcacions, setEmbarcacions] = useState<Embarcacion[]>([]);
+  const [embarcacion, setEmbarcacion] = useState<Embarcacion | null>(null);
   const [filters, setFilters] = useState<DataTableFilterMeta>({});
   const [loading, setLoading] = useState(true);
   const [globalFilterValue, setGlobalFilterValue] = useState("");
   const [deleteProductDialog, setDeleteProductDialog] = useState(false);
-  const [tanqueFormDialog, setTanqueFormDialog] = useState(false);
+  const [embarcacionFormDialog, setEmbarcacionFormDialog] = useState(false);
   const [auditDialogVisible, setAuditDialogVisible] = useState(false);
-  const [selectedAuditTanque, setSelectedAuditTanque] =
-    useState<TanqueBK | null>(null);
-  const [expandedRows, setExpandedRows] = useState<any>(null);
-
+  const [selectedAuditEmbarcacion, setSelectedAuditEmbarcacion] =
+    useState<Embarcacion | null>(null);
   const router = useRouter();
   const dt = useRef(null);
   const toast = useRef<Toast | null>(null);
 
   useEffect(() => {
-    fetchTanques();
+    fetchEmbarcacions();
   }, [activeRefineria]);
 
-  const fetchTanques = async () => {
+  const fetchEmbarcacions = async () => {
     try {
-      const tanquesDB = await getTanquesBK();
-      if (tanquesDB && Array.isArray(tanquesDB.tanques)) {
-        const filteredTanques = tanquesDB.tanques.filter(
-          (tanque: TanqueBK) => tanque.idBunkering.id === activeRefineria?.id
+      const embarcacionsDB = await getEmbarcacionsBK();
+      if (embarcacionsDB && Array.isArray(embarcacionsDB.embarcacions)) {
+        const filteredEmbarcacions = embarcacionsDB.embarcacions.filter(
+          (embarcacion: Embarcacion) =>
+            embarcacion.idBunkering.id === activeRefineria?.id
         );
-        setTanques(filteredTanques);
+        setEmbarcacions(filteredEmbarcacions);
       } else {
-        console.error("La estructura de tanquesDB no es la esperada");
+        console.error("La estructura de embarcacionsDB no es la esperada");
       }
     } catch (error) {
-      console.error("Error al obtener los tanques:", error);
+      console.error("Error al obtener los embarcacions:", error);
     } finally {
       setLoading(false);
     }
   };
 
   const hideDeleteProductDialog = () => setDeleteProductDialog(false);
-  const hideTanqueFormDialog = () => {
-    setTanque(null);
-    setTanqueFormDialog(false);
+  const hideEmbarcacionFormDialog = () => {
+    setEmbarcacion(null);
+    setEmbarcacionFormDialog(false);
   };
 
-  const handleDeleteTanque = async () => {
-    if (tanque?.id) {
-      await deleteTanqueBK(tanque.id);
-      setTanques(tanques.filter((val) => val.id !== tanque.id));
+  const handleDeleteEmbarcacion = async () => {
+    if (embarcacion?.id) {
+      await deleteEmbarcacionBK(embarcacion.id);
+      setEmbarcacions(embarcacions.filter((val) => val.id !== embarcacion.id));
       toast.current?.show({
         severity: "success",
         summary: "Éxito",
-        detail: "Tanque Eliminada",
+        detail: "Embarcacion Eliminada",
         life: 3000,
       });
     } else {
@@ -83,7 +83,7 @@ const TanqueList = () => {
         life: 3000,
       });
     }
-    setTanque(null);
+    setEmbarcacion(null);
     setDeleteProductDialog(false);
   };
 
@@ -110,26 +110,26 @@ const TanqueList = () => {
         label="Agregar Nuevo"
         outlined
         className="w-full sm:w-auto flex-order-0 sm:flex-order-1"
-        onClick={() => setTanqueFormDialog(true)}
+        onClick={() => setEmbarcacionFormDialog(true)}
       />
     </div>
   );
 
-  const actionBodyTemplate = (rowData: TanqueBK) => (
+  const actionBodyTemplate = (rowData: Embarcacion) => (
     <CustomActionButtons
       rowData={rowData}
       onInfo={(data) => {
-        setSelectedAuditTanque(data);
+        setSelectedAuditEmbarcacion(data);
 
         setAuditDialogVisible(true);
       }}
       onEdit={(data) => {
-        setTanque(rowData);
+        setEmbarcacion(rowData);
         data;
-        setTanqueFormDialog(true);
+        setEmbarcacionFormDialog(true);
       }}
       onDelete={(data) => {
-        setTanque(rowData);
+        setEmbarcacion(rowData);
         data;
         setDeleteProductDialog(true);
       }}
@@ -143,44 +143,12 @@ const TanqueList = () => {
   ) => {
     toast.current?.show({ severity, summary, detail, life: 3000 });
   };
-
   return (
     <div className="card">
       <Toast ref={toast} />
       <DataTable
         ref={dt}
-        value={tanques}
-        rowGroupMode="subheader"
-        groupRowsBy="idEmbarcacion.nombre"
-        sortMode="single"
-        sortField="idEmbarcacion.nombre"
-        sortOrder={1}
-        expandableRowGroups
-        expandedRows={expandedRows}
-        onRowToggle={(e) => setExpandedRows(e.data)}
-        rowGroupHeaderTemplate={(data) => (
-          <span className="font-bold text-primary">
-            Embarcación: {data.idEmbarcacion?.nombre || "-"}
-          </span>
-        )}
-        rowGroupFooterTemplate={(data) => {
-          const total = tanques.filter(
-            (t) => t.idEmbarcacion?.nombre === data.idEmbarcacion?.nombre
-          ).length;
-          const totalAlmacenamiento = tanques
-            .filter(
-              (t) => t.idEmbarcacion?.nombre === data.idEmbarcacion?.nombre
-            )
-            .reduce((sum, t) => sum + (Number(t.almacenamiento) || 0), 0);
-          return (
-            <td colSpan={7}>
-              <div className="flex flex-col md:flex-row justify-content-between w-full font-bold">
-                <span>Total tanques: {total}</span>
-                <span>Total almacenamiento: {totalAlmacenamiento}</span>
-              </div>
-            </td>
-          );
-        }}
+        value={embarcacions}
         header={renderHeader()}
         paginator
         rows={10}
@@ -189,18 +157,34 @@ const TanqueList = () => {
         rowsPerPageOptions={[10, 25, 50]}
         filters={filters}
         loading={loading}
-        emptyMessage="No hay tanques disponibles"
+        emptyMessage="No hay embarcacions disponibles"
       >
-        <Column
-          field="idEmbarcacion.nombre"
-          header="Embarcación"
-          style={{ display: "none" }}
-        />
         <Column body={actionBodyTemplate} headerStyle={{ minWidth: "10rem" }} />
         <Column field="nombre" header="Nombre" sortable />
+        <Column field="imo" header="IMO" sortable />
+        <Column field="tipo" header="Tipo" sortable />
         <Column field="capacidad" header="Capacidad" sortable />
-        <Column field="almacenamiento" header="Almacenamiento" sortable />
-        <Column field="ubicacion" header="Ubicación" sortable />
+        <Column
+          field="tanques"
+          header="Tanques"
+          body={(rowData: Embarcacion) =>
+            rowData.tanques && rowData.tanques.length > 0
+              ? rowData.tanques.map((t) => t.nombre).join(", ")
+              : "Sin tanques"
+          }
+        />
+        <Column
+          field="createdAt"
+          header="Fecha de Creación"
+          body={(rowData: Embarcacion) => formatDateFH(rowData.createdAt)}
+          sortable
+        />
+        <Column
+          field="updatedAt"
+          header="Última Actualización"
+          body={(rowData: Embarcacion) => formatDateFH(rowData.updatedAt)}
+          sortable
+        />
       </DataTable>
 
       <Dialog
@@ -220,7 +204,7 @@ const TanqueList = () => {
               label="Sí"
               icon="pi pi-check"
               text
-              onClick={handleDeleteTanque}
+              onClick={handleDeleteEmbarcacion}
             />
           </>
         }
@@ -231,9 +215,9 @@ const TanqueList = () => {
             className="pi pi-exclamation-triangle mr-3"
             style={{ fontSize: "2rem" }}
           />
-          {tanque && (
+          {embarcacion && (
             <span>
-              ¿Estás seguro de que deseas eliminar <b>{tanque.nombre}</b>?
+              ¿Estás seguro de que deseas eliminar <b>{embarcacion.nombre}</b>?
             </span>
           )}
         </div>
@@ -246,28 +230,28 @@ const TanqueList = () => {
             <div className="border-bottom-2 border-primary pb-2">
               <h2 className="text-2xl font-bold text-900 mb-2 flex align-items-center justify-content-center md:justify-content-start">
                 <i className="pi pi-check-circle mr-3 text-primary text-3xl"></i>
-                Historial - {selectedAuditTanque?.nombre}
+                Historial - {selectedAuditEmbarcacion?.nombre}
               </h2>
             </div>
           </div>
         }
-        createdBy={selectedAuditTanque?.createdBy!}
-        createdAt={selectedAuditTanque?.createdAt!}
-        historial={selectedAuditTanque?.historial}
+        createdBy={selectedAuditEmbarcacion?.createdBy!}
+        createdAt={selectedAuditEmbarcacion?.createdAt!}
+        historial={selectedAuditEmbarcacion?.historial}
       />
       <Dialog
-        visible={tanqueFormDialog}
+        visible={embarcacionFormDialog}
         style={{ width: "850px" }}
-        header={`${tanque ? "Editar" : "Agregar"} Tanque`}
+        header={`${embarcacion ? "Editar" : "Agregar"} Embarcacion`}
         modal
-        onHide={hideTanqueFormDialog}
+        onHide={hideEmbarcacionFormDialog}
         content={() => (
-          <TanqueForm
-            tanque={tanque}
-            hideTanqueFormDialog={hideTanqueFormDialog}
-            tanques={tanques}
-            setTanques={setTanques}
-            setTanque={setTanque}
+          <EmbarcacionForm
+            embarcacion={embarcacion}
+            hideEmbarcacionFormDialog={hideEmbarcacionFormDialog}
+            embarcacions={embarcacions}
+            setEmbarcacions={setEmbarcacions}
+            setEmbarcacion={setEmbarcacion}
             showToast={showToast}
           />
         )}
@@ -276,4 +260,4 @@ const TanqueList = () => {
   );
 };
 
-export default TanqueList;
+export default EmbarcacionList;

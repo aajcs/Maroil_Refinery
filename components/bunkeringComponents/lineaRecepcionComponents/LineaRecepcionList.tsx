@@ -12,18 +12,20 @@ import { useRefineriaStore } from "@/store/refineriaStore";
 import CustomActionButtons from "@/components/common/CustomActionButtons";
 import AuditHistoryDialog from "@/components/common/AuditHistoryDialog";
 
-import {
-  getLineaRecepcions,
-  deleteLineaRecepcion,
-} from "@/app/api/lineaRecepcionService";
 import LineaRecepcionForm from "./LineaRecepcionForm";
-import { LineaRecepcion } from "@/libs/interfaces";
+import { LineaRecepcionBK } from "@/libs/interfaces";
 import { formatDateFH } from "@/utils/dateUtils";
+import {
+  deleteLineaRecepcionBK,
+  getLineaRecepcionsBK,
+} from "@/app/api/bunkering/lineaRecepcionBKService";
 
 const LineaRecepcionList = () => {
   const { activeRefineria } = useRefineriaStore();
-  const [lineaRecepcions, setLineaRecepcions] = useState<LineaRecepcion[]>([]);
-  const [lineaRecepcion, setLineaRecepcion] = useState<LineaRecepcion | null>(
+  const [lineaRecepcions, setLineaRecepcions] = useState<LineaRecepcionBK[]>(
+    []
+  );
+  const [lineaRecepcion, setLineaRecepcion] = useState<LineaRecepcionBK | null>(
     null
   );
   const [filters, setFilters] = useState<DataTableFilterMeta>({});
@@ -34,7 +36,7 @@ const LineaRecepcionList = () => {
     useState(false);
   const [auditDialogVisible, setAuditDialogVisible] = useState(false);
   const [selectedAuditLineaRecepcion, setSelectedAuditLineaRecepcion] =
-    useState<LineaRecepcion | null>(null);
+    useState<LineaRecepcionBK | null>(null);
 
   const router = useRouter();
   const dt = useRef(null);
@@ -46,11 +48,11 @@ const LineaRecepcionList = () => {
 
   const fetchLineaRecepcions = async () => {
     try {
-      const lineaRecepcionsDB = await getLineaRecepcions();
+      const lineaRecepcionsDB = await getLineaRecepcionsBK();
       if (lineaRecepcionsDB && Array.isArray(lineaRecepcionsDB.lineaCargas)) {
         const filteredLineaRecepcions = lineaRecepcionsDB.lineaCargas.filter(
-          (lineaRecepcion: LineaRecepcion) =>
-            lineaRecepcion.idRefineria.id === activeRefineria?.id
+          (lineaRecepcion: LineaRecepcionBK) =>
+            lineaRecepcion.idBunkering.id === activeRefineria?.id
         );
         setLineaRecepcions(filteredLineaRecepcions);
       } else {
@@ -71,7 +73,7 @@ const LineaRecepcionList = () => {
 
   const handleDeleteLineaRecepcion = async () => {
     if (lineaRecepcion?.id) {
-      await deleteLineaRecepcion(lineaRecepcion.id);
+      await deleteLineaRecepcionBK(lineaRecepcion.id);
       setLineaRecepcions(
         lineaRecepcions.filter((val) => val.id !== lineaRecepcion.id)
       );
@@ -121,7 +123,7 @@ const LineaRecepcionList = () => {
     </div>
   );
 
-  const actionBodyTemplate = (rowData: LineaRecepcion) => (
+  const actionBodyTemplate = (rowData: LineaRecepcionBK) => (
     <CustomActionButtons
       rowData={rowData}
       onInfo={(data) => {
@@ -165,12 +167,7 @@ const LineaRecepcionList = () => {
       >
         <Column body={actionBodyTemplate} headerStyle={{ minWidth: "10rem" }} />
         <Column field="nombre" header="Nombre" sortable />
-        {/* <Column
-          field="ubicacion"
-          header="Ubicación"
-          sortable
-
-        /> */}
+        <Column field="idMuelle.nombre" header="Muelle" sortable />
 
         <Column field="estado" header="Estado" sortable />
         {/* <Column

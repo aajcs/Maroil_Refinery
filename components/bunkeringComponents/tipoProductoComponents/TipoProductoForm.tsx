@@ -11,17 +11,19 @@ import { Toast } from "primereact/toast";
 import { Dropdown } from "primereact/dropdown";
 import { useRefineriaStore } from "@/store/refineriaStore";
 import { InputNumber } from "primereact/inputnumber";
-import {
-  createTipoProducto,
-  updateTipoProducto,
-} from "@/app/api/tipoProductoService";
+
 import { useRefineryData } from "@/hooks/useRefineryData";
 import { ProgressSpinner } from "primereact/progressspinner";
-import { tipoProductoSchema } from "@/libs/zods";
 import { MultiSelect } from "primereact/multiselect";
 import { Rendimiento } from "@/libs/interfaces";
+import {
+  createTipoProductoBK,
+  updateTipoProductoBK,
+} from "@/app/api/bunkering/tipoProductoBKService";
+import { useBunkeringData } from "@/hooks/useBunkeringData";
+import { tipoProductoBKSchema } from "@/libs/zods/tipoProductoBKZod";
 
-type FormData = z.infer<typeof tipoProductoSchema>;
+type FormData = z.infer<typeof tipoProductoBKSchema>;
 
 interface TipoProductoFormProps {
   tipoProducto: any;
@@ -36,7 +38,6 @@ interface TipoProductoFormProps {
   ) => void;
 }
 
-const estatusValues = ["true", "false"];
 const clasificacionValues = ["Liviano", "Mediano", "Pesado"];
 
 const TipoProductoForm = ({
@@ -47,7 +48,7 @@ const TipoProductoForm = ({
   showToast,
 }: TipoProductoFormProps) => {
   const { activeRefineria } = useRefineriaStore();
-  const { productos, loading } = useRefineryData(activeRefineria?.id || "");
+  const { productos, loading } = useBunkeringData(activeRefineria?.id || "");
   const toast = useRef<Toast | null>(null);
   const [selectedRendimientos, setSelectedRendimientos] = useState<
     Rendimiento[]
@@ -61,7 +62,7 @@ const TipoProductoForm = ({
     watch,
     control,
   } = useForm<FormData>({
-    resolver: zodResolver(tipoProductoSchema),
+    resolver: zodResolver(tipoProductoBKSchema),
     defaultValues: {
       nombre: "",
       clasificacion: "",
@@ -87,7 +88,7 @@ const TipoProductoForm = ({
     try {
       const requestData = {
         ...data,
-        idRefineria: activeRefineria?.id,
+        idBunkering: activeRefineria?.id,
         idProducto: data.idProducto?.id,
         rendimientos: selectedRendimientos.map(
           ({
@@ -109,7 +110,7 @@ const TipoProductoForm = ({
       };
       console.log("requestData", requestData);
       if (tipoProducto) {
-        const updatedTipoProducto = await updateTipoProducto(
+        const updatedTipoProducto = await updateTipoProductoBK(
           tipoProducto.id,
           requestData
         );
@@ -121,7 +122,7 @@ const TipoProductoForm = ({
       } else {
         if (!activeRefineria)
           throw new Error("No se ha seleccionado una refinería");
-        const newTipoProducto = await createTipoProducto(requestData);
+        const newTipoProducto = await createTipoProductoBK(requestData);
         setTipoProductos([...tipoProductos, newTipoProducto]);
         showToast("success", "Éxito", "TipoProducto creado");
       }
@@ -216,6 +217,29 @@ const TipoProductoForm = ({
                   <small className="p-error block mt-2 flex align-items-center">
                     <i className="pi pi-exclamation-circle mr-2"></i>
                     {errors.nombre.message}
+                  </small>
+                )}
+              </div>
+            </div>
+            {/* Campo: Procedencia */}
+            <div className="col-12 md:col-6 lg:col-4">
+              <div className="p-2 bg-white border-round shadow-1 surface-card">
+                <label className="block font-medium text-900 mb-3 flex align-items-center">
+                  <i className="pi pi-tag mr-2 text-primary"></i>
+                  Procedencia
+                </label>
+                <InputText
+                  id="procedencia"
+                  type="text"
+                  className={classNames("w-full", {
+                    "p-invalid": errors.procedencia,
+                  })}
+                  {...register("procedencia")}
+                />
+                {errors.procedencia && (
+                  <small className="p-error block mt-2 flex align-items-center">
+                    <i className="pi pi-exclamation-circle mr-2"></i>
+                    {errors.procedencia.message}
                   </small>
                 )}
               </div>

@@ -6,17 +6,20 @@ import { z } from "zod";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { classNames } from "primereact/utils";
-import { lineaRecepcionSchema } from "@/libs/zods";
-import {
-  createLineaRecepcion,
-  updateLineaRecepcion,
-} from "@/app/api/lineaRecepcionService";
+
 import { Toast } from "primereact/toast";
 import { Dropdown } from "primereact/dropdown";
 import { useRefineriaStore } from "@/store/refineriaStore";
 import { Checkbox } from "primereact/checkbox";
+import {
+  createLineaRecepcionBK,
+  updateLineaRecepcionBK,
+} from "@/app/api/bunkering/lineaRecepcionBKService";
+import { useBunkeringData } from "@/hooks/useBunkeringData";
+import { lineaRecepcionBKSchema } from "@/libs/zods";
+import { ProgressSpinner } from "primereact/progressspinner";
 
-type FormData = z.infer<typeof lineaRecepcionSchema>;
+type FormData = z.infer<typeof lineaRecepcionBKSchema>;
 
 interface LineaRecepcionFormProps {
   lineaRecepcion: any;
@@ -41,6 +44,8 @@ const LineaRecepcionForm = ({
   showToast,
 }: LineaRecepcionFormProps) => {
   const { activeRefineria } = useRefineriaStore();
+  const { muelles, loading } = useBunkeringData(activeRefineria?.id || "");
+
   const toast = useRef<Toast | null>(null);
 
   const [submitting, setSubmitting] = useState(false);
@@ -51,7 +56,7 @@ const LineaRecepcionForm = ({
     setValue,
     watch,
   } = useForm<FormData>({
-    resolver: zodResolver(lineaRecepcionSchema),
+    resolver: zodResolver(lineaRecepcionBKSchema),
   });
   useEffect(() => {
     if (lineaRecepcion) {
@@ -67,11 +72,12 @@ const LineaRecepcionForm = ({
     setSubmitting(true);
     try {
       if (lineaRecepcion) {
-        const updatedLineaRecepcion = await updateLineaRecepcion(
+        const updatedLineaRecepcion = await updateLineaRecepcionBK(
           lineaRecepcion.id,
           {
             ...data,
-            idRefineria: activeRefineria?.id,
+            idBunkering: activeRefineria?.id,
+            idMuelle: data.idMuelle?.id,
           }
         );
         const updatedLineaRecepcions = lineaRecepcions.map((t) =>
@@ -82,9 +88,10 @@ const LineaRecepcionForm = ({
       } else {
         if (!activeRefineria)
           throw new Error("No se ha seleccionado una refinería");
-        const newLineaRecepcion = await createLineaRecepcion({
+        const newLineaRecepcion = await createLineaRecepcionBK({
           ...data,
-          idRefineria: activeRefineria.id,
+          idBunkering: activeRefineria.id,
+          idMuelle: data.idMuelle?.id,
         });
         setLineaRecepcions([...lineaRecepcions, newLineaRecepcion]);
         showToast("success", "Éxito", "LineaRecepcion creado");
@@ -101,7 +108,16 @@ const LineaRecepcionForm = ({
       setSubmitting(false); // Desactivar el estado de envío
     }
   };
-
+  if (loading) {
+    return (
+      <div
+        className="flex justify-content-center align-items-center"
+        style={{ height: "300px" }}
+      >
+        <ProgressSpinner />
+      </div>
+    );
+  }
   return (
     <div>
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -164,6 +180,38 @@ const LineaRecepcionForm = ({
                   <small className="p-error block mt-2 flex align-items-center">
                     <i className="pi pi-exclamation-circle mr-2"></i>
                     {errors.estado.message}
+                  </small>
+                )}
+              </div>
+            </div>
+            {/* Campo: Muelle */}
+            <div className="col-12 md:col-6 lg:col-4 ">
+              <div className="p-2 bg-white border-round shadow-1 surface-card">
+                <label className="block font-medium text-900 mb-3 flex align-items-center">
+                  <i className="pi pi-box mr-2 text-primary"></i>
+                  Muelle
+                </label>
+                <Dropdown
+                  id="idMuelle.id"
+                  value={watch("idMuelle")}
+                  onChange={(e) => setValue("idMuelle", e.value)}
+                  options={muelles.map((muelle) => ({
+                    label: muelle.nombre,
+                    value: {
+                      id: muelle.id,
+                      _id: muelle.id,
+                      nombre: muelle.nombre,
+                    },
+                  }))}
+                  placeholder="Seleccionar un muelle"
+                  className={classNames("w-full", {
+                    "p-invalid": errors.idMuelle?.nombre,
+                  })}
+                />
+                {errors.idMuelle?.nombre && (
+                  <small className="p-error block mt-2 flex align-items-center">
+                    <i className="pi pi-exclamation-circle mr-2"></i>
+                    {errors.idMuelle.nombre.message}
                   </small>
                 )}
               </div>

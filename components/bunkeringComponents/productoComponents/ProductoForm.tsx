@@ -6,16 +6,19 @@ import { z } from "zod";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { classNames } from "primereact/utils";
-import { productoSchema } from "@/libs/zods";
-import { createProducto, updateProducto } from "@/app/api/productoService";
 import { Toast } from "primereact/toast";
 import { Dropdown } from "primereact/dropdown";
 import { useRefineriaStore } from "@/store/refineriaStore";
 import { Checkbox } from "primereact/checkbox";
 import { InputNumber } from "primereact/inputnumber";
 import { ColorPicker } from "primereact/colorpicker";
+import {
+  createProductoBK,
+  updateProductoBK,
+} from "@/app/api/bunkering/productoBKService";
+import { productoBKSchema } from "@/libs/zods";
 
-type FormData = z.infer<typeof productoSchema>;
+type FormData = z.infer<typeof productoBKSchema>;
 
 interface ProductoFormProps {
   producto: any;
@@ -52,7 +55,7 @@ const ProductoForm = ({
     watch,
     control,
   } = useForm<FormData>({
-    resolver: zodResolver(productoSchema),
+    resolver: zodResolver(productoBKSchema),
     defaultValues: {
       posicion: 0,
     },
@@ -71,9 +74,9 @@ const ProductoForm = ({
     setSubmitting(true);
     try {
       if (producto) {
-        const updatedProducto = await updateProducto(producto.id, {
+        const updatedProducto = await updateProductoBK(producto.id, {
           ...data,
-          idRefineria: activeRefineria?.id,
+          idBunkering: activeRefineria?.id,
         });
         const updatedProductos = productos.map((t) =>
           t.id === updatedProducto.id ? updatedProducto : t
@@ -83,9 +86,9 @@ const ProductoForm = ({
       } else {
         if (!activeRefineria)
           throw new Error("No se ha seleccionado una refinería");
-        const newProducto = await createProducto({
+        const newProducto = await createProductoBK({
           ...data,
-          idRefineria: activeRefineria.id,
+          idBunkering: activeRefineria.id,
         });
         setProductos([...productos, newProducto]);
         showToast("success", "Éxito", "Producto creado");
@@ -221,56 +224,6 @@ const ProductoForm = ({
                 )}
               </div>
             </div>
-            {/* Campo: Tipo de Material
-            <div className="col-12 md:col-6 lg:col-4 xl:col-3">
-              <div className="p-2 bg-white border-round shadow-1 surface-card">
-                <label className="block font-medium text-900 mb-3 flex align-items-center">
-                  <i className="pi pi-list mr-2 text-primary"></i>
-                  Tipo de Material
-                </label>
-                <Dropdown
-                  id="tipoMaterial"
-                  value={watch("tipoMaterial")}
-                  onChange={(e) => setValue("tipoMaterial", e.value)}
-                  options={tipoMaterialValues}
-                  placeholder="Seleccionar"
-                  className={classNames("w-full", {
-                    "p-invalid": errors.tipoMaterial,
-                  })}
-                />
-                {errors.tipoMaterial && (
-                  <small className="p-error block mt-2 flex align-items-center">
-                    <i className="pi pi-exclamation-circle mr-2"></i>
-                    {errors.tipoMaterial.message}
-                  </small>
-                )}
-              </div>
-            </div> */}
-            {/* Campo: Estado
-            <div className="col-12 md:col-6 lg:col-4 xl:col-3">
-              <div className="p-2 bg-white border-round shadow-1 surface-card">
-                <label className="block font-medium text-900 mb-3 flex align-items-center">
-                  <i className="pi pi-info-circle mr-2 text-primary"></i>
-                  Estado
-                </label>
-                <Dropdown
-                  id="estado"
-                  value={watch("estado")}
-                  onChange={(e) => setValue("estado", e.value)}
-                  options={estatusValues}
-                  placeholder="Seleccionar"
-                  className={classNames("w-full", {
-                    "p-invalid": errors.estado,
-                  })}
-                />
-                {errors.estado && (
-                  <small className="p-error block mt-2 flex align-items-center">
-                    <i className="pi pi-exclamation-circle mr-2"></i>
-                    {errors.estado.message}
-                  </small>
-                )}
-              </div>
-            </div> */}
           </div>
 
           {/* Botones */}

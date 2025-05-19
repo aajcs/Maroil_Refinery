@@ -1,3 +1,4 @@
+import { Bunkering } from "./configBunkeringInterface";
 import {
   HistorialCambio,
   Producto,
@@ -54,6 +55,7 @@ export interface ChequeoCantidad {
   };
   _id: string;
   idRefineria: Refineria;
+
   idProducto: {
     _id: string;
     nombre: string;

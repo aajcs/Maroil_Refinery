@@ -9,11 +9,11 @@ import {
   ValvulaAbierda,
   ValvulaCerrada,
 } from "./ElementosLineaCarga";
-import { LineaRecepcion, Recepcion } from "@/libs/interfaces";
+import { LineaRecepcionBK, Recepcion } from "@/libs/interfaces";
 import ModeladoBunkeringRecepcionesList from "./ModeladoBunkeringRecepcionesList";
 
 interface ModeladoBunkeringLineaCargaProps {
-  lineaRecepcion: LineaRecepcion;
+  lineaRecepcion: LineaRecepcionBK;
   recepcions: Recepcion[];
 }
 

@@ -1,6 +1,6 @@
 "use client";
 
-import TipoProductoList from "@/components/refineriaComponents/tipoProductoComponents/TipoProductoList";
+import TipoProductoList from "@/components/bunkeringComponents/tipoProductoComponents/TipoProductoList";
 
 const TipoProducto = () => {
   return (

@@ -1,6 +1,6 @@
 "use client";
 
-import LineaDespachoList from "@/components/refineriaComponents/lineaDespachoComponents/LineaDespachoList";
+import LineaDespachoList from "@/components/bunkeringComponents/lineaDespachoComponents/LineaDespachoList";
 
 function LineaDespacho() {
   return (

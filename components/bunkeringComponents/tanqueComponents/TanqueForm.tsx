@@ -6,7 +6,6 @@ import { z } from "zod";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { classNames } from "primereact/utils";
-import { tanqueSchema } from "@/libs/zods";
 import { createTanque, updateTanque } from "@/app/api/tanqueService";
 import { Toast } from "primereact/toast";
 import { Dropdown } from "primereact/dropdown";
@@ -16,8 +15,9 @@ import { InputSwitch } from "primereact/inputswitch";
 import { useRefineryData } from "@/hooks/useRefineryData";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { InputNumber } from "primereact/inputnumber";
+import { tanqueBKSchema } from "@/libs/zods";
 
-type FormData = z.infer<typeof tanqueSchema>;
+type FormData = z.infer<typeof tanqueBKSchema>;
 
 interface TanqueFormProps {
   tanque: any;
@@ -60,7 +60,7 @@ const TanqueForm = ({
     watch,
     control,
   } = useForm<FormData>({
-    resolver: zodResolver(tanqueSchema),
+    resolver: zodResolver(tanqueBKSchema),
     defaultValues: {
       capacidad: 0,
       almacenamiento: 0,
@@ -80,8 +80,7 @@ const TanqueForm = ({
       if (tanque) {
         const updatedTorre = await updateTanque(tanque.id, {
           ...data,
-          idRefineria: activeRefineria?.id,
-          idProducto: data.idProducto.id,
+          idBunkering: activeRefineria?.id,
         });
         const updatedTanques = tanques.map((t) =>
           t.id === updatedTorre.id ? updatedTorre : t
@@ -93,8 +92,7 @@ const TanqueForm = ({
           throw new Error("No se ha seleccionado una refinería");
         const newTanque = await createTanque({
           ...data,
-          idRefineria: activeRefineria.id,
-          idProducto: data.idProducto.id,
+          idBunkering: activeRefineria.id,
         });
         setTanques([...tanques, newTanque]);
         showToast("success", "Éxito", "Tanque creado");
@@ -138,6 +136,22 @@ const TanqueForm = ({
 
           {/* Cuerpo del Formulario */}
           <div className="grid formgrid row-gap-2">
+            {/* Campo: Embarcación */}
+            <div className="col-12 md:col-6 lg:col-4 xl:col-3">
+              <div className="p-2 bg-white border-round shadow-1 surface-card">
+                <label className="block font-medium text-900 mb-3 flex align-items-center">
+                  <i className="pi pi-ship mr-2 text-primary"></i>
+                  Embarcación
+                </label>
+                <InputText
+                  id="idEmbarcacion.nombre"
+                  value={watch("idEmbarcacion")?.nombre || ""}
+                  disabled
+                  className="w-full"
+                />
+              </div>
+            </div>
+
             {/* Campo: Nombre */}
             <div className="col-12 md:col-6 lg:col-4 xl:col-3">
               <div className="p-2 bg-white border-round shadow-1 surface-card">
@@ -162,84 +176,37 @@ const TanqueForm = ({
               </div>
             </div>
 
-            {/* Campo: Ubicación
+            {/* Campo: Ubicación */}
             <div className="col-12 md:col-6 lg:col-4 xl:col-3">
               <div className="p-2 bg-white border-round shadow-1 surface-card">
                 <label className="block font-medium text-900 mb-3 flex align-items-center">
                   <i className="pi pi-map-marker mr-2 text-primary"></i>
                   Ubicación
                 </label>
-                <InputText
-                  id="ubicacion"
-                  type="text"
-                  className={classNames("w-full", {
-                    "p-invalid": errors.ubicacion,
-                  })}
-                  {...register("ubicacion")}
+                <Controller
+                  name="ubicacion"
+                  control={control}
+                  render={({ field, fieldState }) => (
+                    <Dropdown
+                      id="ubicacion"
+                      value={field.value}
+                      options={[
+                        { label: "Proa", value: "Proa" },
+                        { label: "Popa", value: "Popa" },
+                        { label: "Centro", value: "Centro" },
+                      ]}
+                      onChange={(e) => field.onChange(e.value)}
+                      placeholder="Seleccionar"
+                      className={classNames("w-full", {
+                        "p-invalid": fieldState.error,
+                      })}
+                    />
+                  )}
                 />
                 {errors.ubicacion && (
                   <small className="p-error block mt-2 flex align-items-center">
                     <i className="pi pi-exclamation-circle mr-2"></i>
                     {errors.ubicacion.message}
-                  </small>
-                )}
-              </div>
-            </div> */}
-
-            {/* Campo: Producto */}
-            <div className="col-12 md:col-6 lg:col-4 xl:col-3">
-              <div className="p-2 bg-white border-round shadow-1 surface-card">
-                <label className="block font-medium text-900 mb-3 flex align-items-center">
-                  <i className="pi pi-box mr-2 text-primary"></i>
-                  Producto
-                </label>
-                <Dropdown
-                  id="idProducto.id"
-                  value={watch("idProducto")}
-                  onChange={(e) => setValue("idProducto", e.value)}
-                  options={productos.map((producto) => ({
-                    label: producto.nombre,
-                    value: {
-                      id: producto.id,
-                      _id: producto.id,
-                      nombre: producto.nombre,
-                      color: producto.color,
-                      posicion: producto.posicion,
-                    },
-                  }))}
-                  placeholder="Seleccionar un producto"
-                  className={classNames("w-full", {
-                    "p-invalid": errors.idProducto?.nombre,
-                  })}
-                />
-                {errors.idProducto?.nombre && (
-                  <small className="p-error block mt-2 flex align-items-center">
-                    <i className="pi pi-exclamation-circle mr-2"></i>
-                    {errors.idProducto.nombre.message}
-                  </small>
-                )}
-              </div>
-            </div>
-
-            {/* Campo: Almacenamiento de Materia Prima */}
-            <div className="col-12 md:col-6 lg:col-4 xl:col-3">
-              <div className="p-2 bg-white border-round shadow-1 surface-card">
-                <label className="block font-medium text-900 mb-3 flex align-items-center">
-                  <i className="pi pi-database mr-2 text-primary"></i>
-                  Almacenamiento de Materia Prima
-                </label>
-                <InputSwitch
-                  id="almacenamientoMateriaPrimaria"
-                  checked={watch("almacenamientoMateriaPrimaria") ?? false}
-                  className={classNames("", {
-                    "p-invalid": errors.almacenamientoMateriaPrimaria,
-                  })}
-                  {...register("almacenamientoMateriaPrimaria")}
-                />
-                {errors.almacenamientoMateriaPrimaria && (
-                  <small className="p-error block mt-2 flex align-items-center">
-                    <i className="pi pi-exclamation-circle mr-2"></i>
-                    {errors.almacenamientoMateriaPrimaria.message}
                   </small>
                 )}
               </div>
@@ -313,7 +280,7 @@ const TanqueForm = ({
               </div>
             </div>
 
-            {/* Campo: Estado */}
+            {/* Campo: Estado
             <div className="col-12 md:col-6 lg:col-4 xl:col-3">
               <div className="p-2 bg-white border-round shadow-1 surface-card">
                 <label className="block font-medium text-900 mb-3 flex align-items-center">
@@ -337,7 +304,7 @@ const TanqueForm = ({
                   </small>
                 )}
               </div>
-            </div>
+            </div> */}
           </div>
 
           {/* Botones */}

@@ -12,18 +12,19 @@ import { useRefineriaStore } from "@/store/refineriaStore";
 import CustomActionButtons from "@/components/common/CustomActionButtons";
 
 import LineaDespachoForm from "./LineaDespachoForm";
-import { LineaDespacho, Tanque } from "@/libs/interfaces";
+import { LineaDespachoBK, Tanque } from "@/libs/interfaces";
 import { formatDateFH } from "@/utils/dateUtils";
-import {
-  deleteLineaDespacho,
-  getLineaDespachos,
-} from "@/app/api/lineaDespachoService";
+
 import AuditHistoryDialog from "@/components/common/AuditHistoryDialog";
+import {
+  deleteLineaDespachoBK,
+  getLineaDespachosBK,
+} from "@/app/api/bunkering/lineaDespachoBKService";
 
 const LineaDespachoList = () => {
   const { activeRefineria } = useRefineriaStore();
-  const [lineaDespachos, setLineaDespachos] = useState<LineaDespacho[]>([]);
-  const [lineaDespacho, setLineaDespacho] = useState<LineaDespacho | null>(
+  const [lineaDespachos, setLineaDespachos] = useState<LineaDespachoBK[]>([]);
+  const [lineaDespacho, setLineaDespacho] = useState<LineaDespachoBK | null>(
     null
   );
   const [filters, setFilters] = useState<DataTableFilterMeta>({});
@@ -33,7 +34,7 @@ const LineaDespachoList = () => {
   const [lineaDespachoFormDialog, setLineaDespachoFormDialog] = useState(false);
   const [auditDialogVisible, setAuditDialogVisible] = useState(false);
   const [selectedAuditLineaDespacho, setSelectedAuditLineaDespacho] =
-    useState<LineaDespacho | null>(null);
+    useState<LineaDespachoBK | null>(null);
 
   const router = useRouter();
   const dt = useRef(null);
@@ -45,11 +46,11 @@ const LineaDespachoList = () => {
 
   const fetchLineaDespachos = async () => {
     try {
-      const lineaDespachosDB = await getLineaDespachos();
+      const lineaDespachosDB = await getLineaDespachosBK();
       if (lineaDespachosDB && Array.isArray(lineaDespachosDB.lineaDespachos)) {
         const filteredLineaDespachos = lineaDespachosDB.lineaDespachos.filter(
-          (lineaDespacho: LineaDespacho) =>
-            lineaDespacho.idRefineria.id === activeRefineria?.id
+          (lineaDespacho: LineaDespachoBK) =>
+            lineaDespacho.idBunkering.id === activeRefineria?.id
         );
         setLineaDespachos(filteredLineaDespachos);
       } else {
@@ -70,7 +71,7 @@ const LineaDespachoList = () => {
 
   const handleDeleteLineaDespacho = async () => {
     if (lineaDespacho?.id) {
-      await deleteLineaDespacho(lineaDespacho.id);
+      await deleteLineaDespachoBK(lineaDespacho.id);
       setLineaDespachos(
         lineaDespachos.filter((val) => val.id !== lineaDespacho.id)
       );
@@ -120,7 +121,7 @@ const LineaDespachoList = () => {
     </div>
   );
 
-  const actionBodyTemplate = (rowData: LineaDespacho) => (
+  const actionBodyTemplate = (rowData: LineaDespachoBK) => (
     <CustomActionButtons
       rowData={rowData}
       onInfo={(data) => {
@@ -174,19 +175,9 @@ const LineaDespachoList = () => {
         emptyMessage="No hay linea de despachos disponibles"
       >
         <Column body={actionBodyTemplate} headerStyle={{ minWidth: "10rem" }} />
-        <Column field="nombre" header="Nombre" sortable />
-        {/* <Column
-          field="ubicacion"
-          header="Ubicación"
-          sortable
-         
-        /> */}
-        <Column
-          field="idProducto.nombre"
-          header="Producto"
-          body={productoBodyTemplate}
-        />
-        <Column field="estado" header="Estado" sortable />
+        <Column field="nombre" header="Nombre" />
+        <Column field="idMuelle.nombre" header="Muelle" />
+        <Column field="estado" header="Estado" />
         {/* <Column
           field="createdAt"
           header="Fecha de Creación"

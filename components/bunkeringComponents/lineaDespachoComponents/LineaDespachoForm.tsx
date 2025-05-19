@@ -6,19 +6,21 @@ import { z } from "zod";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { classNames } from "primereact/utils";
-import { lineaDespachoSchema } from "@/libs/zods";
 
 import { Toast } from "primereact/toast";
 import { Dropdown } from "primereact/dropdown";
 import { useRefineriaStore } from "@/store/refineriaStore";
-import {
-  createLineaDespacho,
-  updateLineaDespacho,
-} from "@/app/api/lineaDespachoService";
+
 import { useRefineryData } from "@/hooks/useRefineryData";
 import { ProgressSpinner } from "primereact/progressspinner";
+import {
+  createLineaDespachoBK,
+  updateLineaDespachoBK,
+} from "@/app/api/bunkering/lineaDespachoBKService";
+import { lineaDespachoBKSchema } from "@/libs/zods";
+import { useBunkeringData } from "@/hooks/useBunkeringData";
 
-type FormData = z.infer<typeof lineaDespachoSchema>;
+type FormData = z.infer<typeof lineaDespachoBKSchema>;
 
 interface LineaDespachoFormProps {
   lineaDespacho: any;
@@ -43,12 +45,7 @@ const LineaDespachoForm = ({
   showToast,
 }: LineaDespachoFormProps) => {
   const { activeRefineria } = useRefineriaStore();
-  const { productos, loading } = useRefineryData(activeRefineria?.id || "");
-
-  // Filtrar productos por categoría "Derivados"
-  const filteredProductos = productos.filter(
-    (producto: any) => producto.tipoMaterial === "Derivado"
-  );
+  const { muelles, loading } = useBunkeringData(activeRefineria?.id || "");
 
   const [submitting, setSubmitting] = useState(false);
   const {
@@ -58,7 +55,7 @@ const LineaDespachoForm = ({
     setValue,
     watch,
   } = useForm<FormData>({
-    resolver: zodResolver(lineaDespachoSchema),
+    resolver: zodResolver(lineaDespachoBKSchema),
   });
   useEffect(() => {
     if (lineaDespacho) {
@@ -74,12 +71,12 @@ const LineaDespachoForm = ({
     setSubmitting(true);
     try {
       if (lineaDespacho) {
-        const updatedLineaDespacho = await updateLineaDespacho(
+        const updatedLineaDespacho = await updateLineaDespachoBK(
           lineaDespacho.id,
           {
             ...data,
-            idRefineria: activeRefineria?.id,
-            idProducto: data.idProducto.id,
+            idBunkering: activeRefineria?.id,
+            idMuelle: data.idMuelle?.id,
           }
         );
         const updatedLineaDespachos = lineaDespachos.map((t) =>
@@ -90,10 +87,10 @@ const LineaDespachoForm = ({
       } else {
         if (!activeRefineria)
           throw new Error("No se ha seleccionado una refinería");
-        const newLineaDespacho = await createLineaDespacho({
+        const newLineaDespacho = await createLineaDespachoBK({
           ...data,
-          idRefineria: activeRefineria.id,
-          idProducto: data.idProducto.id,
+          idBunkering: activeRefineria.id,
+          idMuelle: data.idMuelle?.id,
         });
         setLineaDespachos([...lineaDespachos, newLineaDespacho]);
         showToast("success", "Éxito", "LineaDespacho creado");
@@ -159,7 +156,39 @@ const LineaDespachoForm = ({
                 )}
               </div>
             </div>
-            {/* Campo: Producto */}
+            {/* Campo: Muelle */}
+            <div className="col-12 md:col-6 lg:col-4 ">
+              <div className="p-2 bg-white border-round shadow-1 surface-card">
+                <label className="block font-medium text-900 mb-3 flex align-items-center">
+                  <i className="pi pi-box mr-2 text-primary"></i>
+                  Muelle
+                </label>
+                <Dropdown
+                  id="idMuelle.id"
+                  value={watch("idMuelle")}
+                  onChange={(e) => setValue("idMuelle", e.value)}
+                  options={muelles.map((muelle) => ({
+                    label: muelle.nombre,
+                    value: {
+                      id: muelle.id,
+                      _id: muelle.id,
+                      nombre: muelle.nombre,
+                    },
+                  }))}
+                  placeholder="Seleccionar un muelle"
+                  className={classNames("w-full", {
+                    "p-invalid": errors.idMuelle?.nombre,
+                  })}
+                />
+                {errors.idMuelle?.nombre && (
+                  <small className="p-error block mt-2 flex align-items-center">
+                    <i className="pi pi-exclamation-circle mr-2"></i>
+                    {errors.idMuelle.nombre.message}
+                  </small>
+                )}
+              </div>
+            </div>
+            {/* Campo: Producto
             <div className="col-12 md:col-6 lg:col-4 ">
               <div className="p-2 bg-white border-round shadow-1 surface-card">
                 <label className="block font-medium text-900 mb-3 flex align-items-center">
@@ -192,7 +221,7 @@ const LineaDespachoForm = ({
                   </small>
                 )}
               </div>
-            </div>
+            </div> */}
             {/* Campo: Estado */}
             <div className="col-12 md:col-6 lg:col-4 ">
               <div className="p-2 bg-white border-round shadow-1 surface-card">
