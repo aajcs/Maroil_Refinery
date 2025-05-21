@@ -96,7 +96,7 @@ const MuelleForm = ({
       setSubmitting(false); // Desactivar el estado de envío
     }
   };
-
+  console.log(errors);
   return (
     <div>
       <form onSubmit={handleSubmit(onSubmit)}>

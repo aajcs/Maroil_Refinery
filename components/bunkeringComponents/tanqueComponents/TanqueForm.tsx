@@ -6,16 +6,18 @@ import { z } from "zod";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { classNames } from "primereact/utils";
-import { createTanque, updateTanque } from "@/app/api/tanqueService";
 import { Toast } from "primereact/toast";
 import { Dropdown } from "primereact/dropdown";
 import { useRefineriaStore } from "@/store/refineriaStore";
 
-import { InputSwitch } from "primereact/inputswitch";
 import { useRefineryData } from "@/hooks/useRefineryData";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { InputNumber } from "primereact/inputnumber";
 import { tanqueBKSchema } from "@/libs/zods";
+import {
+  createTanqueBK,
+  updateTanqueBK,
+} from "@/app/api/bunkering/tanqueBKService";
 
 type FormData = z.infer<typeof tanqueBKSchema>;
 
@@ -78,7 +80,7 @@ const TanqueForm = ({
     setSubmitting(true);
     try {
       if (tanque) {
-        const updatedTorre = await updateTanque(tanque.id, {
+        const updatedTorre = await updateTanqueBK(tanque.id, {
           ...data,
           idBunkering: activeRefineria?.id,
         });
@@ -90,7 +92,7 @@ const TanqueForm = ({
       } else {
         if (!activeRefineria)
           throw new Error("No se ha seleccionado una refinería");
-        const newTanque = await createTanque({
+        const newTanque = await createTanqueBK({
           ...data,
           idBunkering: activeRefineria.id,
         });

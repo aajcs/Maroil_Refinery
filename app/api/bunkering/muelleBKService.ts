@@ -13,7 +13,6 @@ export const createMuelleBK = async (data: any) => {
   return response.data;
 };
 export const updateMuelleBK = async (id: string, data: any) => {
-  console.log(data);
   const response = await apiClient.put(`bunkering/muelleBK/${id}`, data);
   return response.data;
 };

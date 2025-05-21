@@ -33,10 +33,9 @@ export const muelleSchema = object({
   img: string().url("La URL de la imagen es inválida"),
   estado: string().min(1, "El estado es obligatorio"),
   idBunkering: object({
-    _id: string(),
-    nombre: string(),
-    id: string(),
-  }),
+    id: string().optional(),
+    nombre: string().min(1, "El nombre de la refinería es obligatorio"),
+  }).optional(),
   eliminado: boolean().optional(),
 
   createdAt: string().optional(),
@@ -100,8 +99,7 @@ export const tanqueBKSchema = object({
   idEmbarcacion: object({
     _id: string(),
     nombre: string(),
-    imo: string(),
-    tipo: string(),
+
     id: string(),
   }).optional(),
   capacidad: number(),

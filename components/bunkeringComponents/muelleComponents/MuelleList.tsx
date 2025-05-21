@@ -167,7 +167,7 @@ const MuelleList = () => {
         <Column field="ubicacion" header="Ubicación" />
         <Column field="legal" header="Representante Legal" />
         <Column field="estado" header="Estado" />
-        <Column field="eliminado" header="Eliminado" />
+        {/* <Column field="eliminado" header="Eliminado" />
         <Column
           field="createdAt"
           header="Fecha de Creación"
@@ -177,7 +177,7 @@ const MuelleList = () => {
           field="updatedAt"
           header="Última Actualización"
           body={(rowData: Muelle) => formatDateFH(rowData.updatedAt)}
-        />
+        /> */}
       </DataTable>
 
       <Dialog

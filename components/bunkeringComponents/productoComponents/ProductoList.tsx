@@ -10,16 +10,19 @@ import { Toast } from "primereact/toast";
 import { Dialog } from "primereact/dialog";
 import { useRefineriaStore } from "@/store/refineriaStore";
 import ProductoForm from "./ProductoForm";
-import { Producto } from "@/libs/interfaces";
 import { formatDateFH } from "@/utils/dateUtils";
-import { deleteProducto, getProductos } from "@/app/api/productoService";
 import CustomActionButtons from "@/components/common/CustomActionButtons";
 import AuditHistoryDialog from "@/components/common/AuditHistoryDialog";
+import { ProductoBK } from "@/libs/interfaces";
+import {
+  deleteProductoBK,
+  getProductosBK,
+} from "@/app/api/bunkering/productoBKService";
 
 const ProductoList = () => {
   const { activeRefineria } = useRefineriaStore();
-  const [productos, setProductos] = useState<Producto[]>([]);
-  const [producto, setProducto] = useState<Producto | null>(null);
+  const [productos, setProductos] = useState<ProductoBK[]>([]);
+  const [producto, setProducto] = useState<ProductoBK | null>(null);
   const [filters, setFilters] = useState<DataTableFilterMeta>({});
   const [loading, setLoading] = useState(true);
   const [globalFilterValue, setGlobalFilterValue] = useState("");
@@ -27,7 +30,7 @@ const ProductoList = () => {
   const [productoFormDialog, setProductoFormDialog] = useState(false);
   const [auditDialogVisible, setAuditDialogVisible] = useState(false);
   const [selectedAuditProducto, setSelectedAuditProducto] =
-    useState<Producto | null>(null);
+    useState<ProductoBK | null>(null);
   const router = useRouter();
   const dt = useRef(null);
   const toast = useRef<Toast | null>(null);
@@ -38,11 +41,11 @@ const ProductoList = () => {
 
   const fetchProductos = async () => {
     try {
-      const productosDB = await getProductos();
+      const productosDB = await getProductosBK();
       if (productosDB && Array.isArray(productosDB.productos)) {
         const filteredProductos = productosDB.productos.filter(
-          (producto: Producto) =>
-            producto.idRefineria.id === activeRefineria?.id
+          (producto: ProductoBK) =>
+            producto.idBunkering.id === activeRefineria?.id
         );
         setProductos(filteredProductos);
       } else {
@@ -63,7 +66,7 @@ const ProductoList = () => {
 
   const handleDeleteProducto = async () => {
     if (producto?.id) {
-      await deleteProducto(producto.id);
+      await deleteProductoBK(producto.id);
       setProductos(productos.filter((val) => val.id !== producto.id));
       toast.current?.show({
         severity: "success",
@@ -111,7 +114,7 @@ const ProductoList = () => {
     </div>
   );
 
-  const actionBodyTemplate = (rowData: Producto) => (
+  const actionBodyTemplate = (rowData: ProductoBK) => (
     <CustomActionButtons
       rowData={rowData}
       onInfo={(data) => {
@@ -161,7 +164,7 @@ const ProductoList = () => {
         <Column
           field="color"
           header="Color"
-          body={(rowData: Producto) => (
+          body={(rowData: ProductoBK) => (
             <div className="flex items-center">
               <div
                 className=" h-6 rounded-full mr-2"
@@ -177,7 +180,7 @@ const ProductoList = () => {
         <Column
           field="idTipoProducto"
           header="Tipo de Producto"
-          body={(rowData: Producto) =>
+          body={(rowData: ProductoBK) =>
             rowData.idTipoProducto
               ?.map((tipoProducto: { nombre: string }) => tipoProducto.nombre)
               .join(", ") || "N/A"
