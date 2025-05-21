@@ -7,3 +7,4 @@ export * from "./despachoInterface";
 export * from "./contratoInterface";
 export * from "./chequeosInterface";
 export * from "./configBunkeringInterface";
+export * from "./contratoBKInterface";

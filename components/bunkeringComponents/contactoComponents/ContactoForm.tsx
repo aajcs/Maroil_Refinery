@@ -6,21 +6,25 @@ import { z } from "zod";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { classNames } from "primereact/utils";
-import { contactoSchema } from "@/libs/zods";
-import { createContacto, updateContacto } from "@/app/api/contactoService";
 import { Toast } from "primereact/toast";
 import { Dropdown } from "primereact/dropdown";
 import { useRefineriaStore } from "@/store/refineriaStore";
 import { Checkbox } from "primereact/checkbox";
 import { InputTextarea } from "primereact/inputtextarea";
 import { InputNumber } from "primereact/inputnumber";
+import { contactoBKSchema } from "@/libs/zods/contratoBKZod";
+import { ContactoBK } from "@/libs/interfaces";
+import {
+  createContactoBK,
+  updateContactoBK,
+} from "@/app/api/bunkering/contactoBKService";
 
-type FormData = z.infer<typeof contactoSchema>;
+type FormData = z.infer<typeof contactoBKSchema>;
 
 interface ContactoFormProps {
   contacto: any;
   hideContactoFormDialog: () => void;
-  contactos: any[];
+  contactos: ContactoBK[];
   setContactos: (contactos: any[]) => void;
   setContacto: (contacto: any) => void;
   showToast: (
@@ -52,7 +56,7 @@ const ContactoForm = ({
     watch,
     control,
   } = useForm<FormData>({
-    resolver: zodResolver(contactoSchema),
+    resolver: zodResolver(contactoBKSchema),
   });
 
   useEffect(() => {
@@ -67,9 +71,9 @@ const ContactoForm = ({
     setSubmitting(true);
     try {
       if (contacto) {
-        const updatedContacto = await updateContacto(contacto.id, {
+        const updatedContacto = await updateContactoBK(contacto.id, {
           ...data,
-          idRefineria: activeRefineria?.id,
+          idBunkering: activeRefineria?.id,
         });
         const updatedContactos = contactos.map((t) =>
           t.id === updatedContacto.id ? updatedContacto : t
@@ -79,9 +83,9 @@ const ContactoForm = ({
       } else {
         if (!activeRefineria)
           throw new Error("No se ha seleccionado una refinería");
-        const newContacto = await createContacto({
+        const newContacto = await createContactoBK({
           ...data,
-          idRefineria: activeRefineria.id,
+          idBunkering: activeRefineria.id,
         });
         setContactos([...contactos, newContacto]);
         showToast("success", "Éxito", "Contacto creado");

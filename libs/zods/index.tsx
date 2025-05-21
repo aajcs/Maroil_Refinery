@@ -7,3 +7,4 @@ export * from "./corteRefinacionZod";
 export * from "./chequeosZod";
 export * from "./contratoZod";
 export * from "./configBunkeringZod";
+export * from "./contratoBKZod";

@@ -2,13 +2,13 @@ import { useCallback, useEffect, useState } from "react";
 import {
   Recepcion,
   Contrato,
-  Contacto,
   Despacho,
   ChequeoCantidad,
   Muelle,
   LineaRecepcionBK,
   LineaDespachoBK,
   ProductoBK,
+  ContactoBK,
 } from "@/libs/interfaces";
 
 import { getLineaRecepcionsBK } from "@/app/api/bunkering/lineaRecepcionBKService";
@@ -38,7 +38,7 @@ export const useBunkeringData = (
   const [loading, setLoading] = useState(true);
   const [productos, setProductos] = useState<ProductoBK[]>([]);
   const [tipoProductos, setTipoProductos] = useState<TipoProductoBK[]>([]);
-  const [contactos, setContactos] = useState<Contacto[]>([]);
+  const [contactos, setContactos] = useState<ContactoBK[]>([]);
   const [muelles, setMuelles] = useState<Muelle[]>([]); // Cambia el tipo según tu modelo de datos
 
   const [chequeoCantidads, setChequeoCantidads] = useState<ChequeoCantidad[]>(
@@ -122,7 +122,8 @@ export const useBunkeringData = (
         ) || [];
       const filteredContactos =
         contactosDB?.contactos?.filter(
-          (contacto: Contacto) => contacto.idRefineria?.id === activeRefineriaId
+          (contacto: ContactoBK) =>
+            contacto.idBunkering?.id === activeRefineriaId
         ) || [];
 
       const filteredChequeoCantidads =

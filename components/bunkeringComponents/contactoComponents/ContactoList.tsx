@@ -9,17 +9,20 @@ import { InputText } from "primereact/inputtext";
 import { Toast } from "primereact/toast";
 import { Dialog } from "primereact/dialog";
 import { useRefineriaStore } from "@/store/refineriaStore";
-import { deleteContacto, getContactos } from "@/app/api/contactoService";
 import ContactoForm from "./ContactoForm";
 import { formatDateFH } from "@/utils/dateUtils";
-import { Contacto } from "@/libs/interfaces/contratoInterface";
 import CustomActionButtons from "@/components/common/CustomActionButtons";
 import AuditHistoryDialog from "@/components/common/AuditHistoryDialog";
+import {
+  deleteContactoBK,
+  getContactosBK,
+} from "@/app/api/bunkering/contactoBKService";
+import { ContactoBK } from "@/libs/interfaces";
 
 const ContactoList = () => {
   const { activeRefineria } = useRefineriaStore();
-  const [contactos, setContactos] = useState<Contacto[]>([]);
-  const [contacto, setContacto] = useState<Contacto | null>(null);
+  const [contactos, setContactos] = useState<ContactoBK[]>([]);
+  const [contacto, setContacto] = useState<ContactoBK | null>(null);
   const [filters, setFilters] = useState<DataTableFilterMeta>({});
   const [loading, setLoading] = useState(true);
   const [globalFilterValue, setGlobalFilterValue] = useState("");
@@ -27,7 +30,7 @@ const ContactoList = () => {
   const [contactoFormDialog, setContactoFormDialog] = useState(false);
   const [auditDialogVisible, setAuditDialogVisible] = useState(false);
   const [selectedAuditContacto, setSelectedAuditContacto] =
-    useState<Contacto | null>(null);
+    useState<ContactoBK | null>(null);
   const router = useRouter();
   const dt = useRef(null);
   const toast = useRef<Toast | null>(null);
@@ -38,11 +41,12 @@ const ContactoList = () => {
 
   const fetchContactos = async () => {
     try {
-      const contactosDB = await getContactos();
+      const contactosDB = await getContactosBK();
+      console.log("contactos", contactosDB);
       if (contactosDB && Array.isArray(contactosDB.contactos)) {
         const filteredContactos = contactosDB.contactos.filter(
-          (contacto: Contacto) =>
-            contacto.idRefineria.id === activeRefineria?.id
+          (contacto: ContactoBK) =>
+            contacto.idBunkering?.id === activeRefineria?.id
         );
         setContactos(filteredContactos);
       } else {
@@ -63,7 +67,7 @@ const ContactoList = () => {
 
   const handleDeleteContacto = async () => {
     if (contacto?.id) {
-      await deleteContacto(contacto.id);
+      await deleteContactoBK(contacto.id);
       setContactos(contactos.filter((val) => val.id !== contacto.id));
       toast.current?.show({
         severity: "success",
@@ -111,7 +115,7 @@ const ContactoList = () => {
     </div>
   );
 
-  const actionBodyTemplate = (rowData: Contacto) => (
+  const actionBodyTemplate = (rowData: ContactoBK) => (
     <CustomActionButtons
       rowData={rowData}
       onInfo={(data) => {
