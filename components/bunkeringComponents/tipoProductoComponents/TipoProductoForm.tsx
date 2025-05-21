@@ -22,13 +22,17 @@ import {
 } from "@/app/api/bunkering/tipoProductoBKService";
 import { useBunkeringData } from "@/hooks/useBunkeringData";
 import { tipoProductoBKSchema } from "@/libs/zods/tipoProductoBKZod";
+import {
+  RendimientoBK,
+  TipoProductoBK,
+} from "@/libs/interfaces/tipoProductoBKInterface";
 
 type FormData = z.infer<typeof tipoProductoBKSchema>;
 
 interface TipoProductoFormProps {
   tipoProducto: any;
   hideTipoProductoFormDialog: () => void;
-  tipoProductos: any[];
+  tipoProductos: TipoProductoBK[];
   setTipoProductos: (tipoProductos: any[]) => void;
   setTipoProducto: (tipoProducto: any) => void;
   showToast: (
@@ -51,7 +55,7 @@ const TipoProductoForm = ({
   const { productos, loading } = useBunkeringData(activeRefineria?.id || "");
   const toast = useRef<Toast | null>(null);
   const [selectedRendimientos, setSelectedRendimientos] = useState<
-    Rendimiento[]
+    RendimientoBK[]
   >([]);
   const [submitting, setSubmitting] = useState(false);
   const {
@@ -462,7 +466,6 @@ const TipoProductoForm = ({
                       id={field.name}
                       value={field.value}
                       onValueChange={(e) => field.onChange(e.value)}
-                      min={0}
                       className={classNames("w-full", {
                         "p-invalid": errors.convenio,
                       })}
