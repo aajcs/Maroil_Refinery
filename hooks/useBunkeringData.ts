@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import {
   Recepcion,
-  Contrato,
   Despacho,
   ChequeoCantidad,
   Muelle,
@@ -9,6 +8,8 @@ import {
   LineaDespachoBK,
   ProductoBK,
   ContactoBK,
+  ContratoBK,
+  TanqueBK,
 } from "@/libs/interfaces";
 
 import { getLineaRecepcionsBK } from "@/app/api/bunkering/lineaRecepcionBKService";
@@ -23,6 +24,7 @@ import { getChequeoCantidadsBK } from "@/app/api/bunkering/chequeoCantidadBKServ
 import { getChequeoCalidadsBK } from "@/app/api/bunkering/chequeoCalidadBKService";
 import { getMuellesBK } from "@/app/api/bunkering/muelleBKService";
 import { TipoProductoBK } from "@/libs/interfaces/tipoProductoBKInterface";
+import { getTanquesBK } from "@/app/api/bunkering/tanqueBKService";
 
 export const useBunkeringData = (
   activeRefineriaId: string,
@@ -34,7 +36,7 @@ export const useBunkeringData = (
   const [lineaDespachos, setLineaDespachos] = useState<LineaDespachoBK[]>([]);
   const [recepcions, setRecepcions] = useState<Recepcion[]>([]);
   const [despachos, setDespachos] = useState<Despacho[]>([]);
-  const [contratos, setContratos] = useState<Contrato[]>([]);
+  const [contratos, setContratos] = useState<ContratoBK[]>([]);
   const [loading, setLoading] = useState(true);
   const [productos, setProductos] = useState<ProductoBK[]>([]);
   const [tipoProductos, setTipoProductos] = useState<TipoProductoBK[]>([]);
@@ -45,6 +47,7 @@ export const useBunkeringData = (
     []
   );
   const [chequeoCalidads, setChequeoCalidads] = useState<any[]>([]);
+  const [tanques, setTanques] = useState<TanqueBK[]>([]);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -61,6 +64,7 @@ export const useBunkeringData = (
         getChequeoCantidadsBK(),
         getChequeoCalidadsBK(),
         getMuellesBK(),
+        getTanquesBK(),
       ]);
 
       const [
@@ -75,6 +79,7 @@ export const useBunkeringData = (
         chequeoCantidadDB,
         chequeoCalidadDB,
         muelleDB,
+        tanqueDB,
         // brent,
       ] = results.map((result, idx) => {
         if (result.status === "fulfilled") {
@@ -106,7 +111,8 @@ export const useBunkeringData = (
 
       const filteredContratos =
         contratosDB?.contratos?.filter(
-          (contrato: Contrato) => contrato.idRefineria?.id === activeRefineriaId
+          (contrato: ContratoBK) =>
+            contrato.idBunkering?.id === activeRefineriaId
         ) || [];
 
       const filteredPorducto =
@@ -140,6 +146,10 @@ export const useBunkeringData = (
         muelleDB?.muelles?.filter(
           (muelle: Muelle) => muelle.idBunkering?.id === activeRefineriaId
         ) || [];
+
+      const filteredTanques = tanqueDB?.tanques?.filter(
+        (tanque: TanqueBK) => tanque.idBunkering?.id === activeRefineriaId
+      );
       // const filteredBrent =
       setLineaRecepcions(filteredLineaRecepcions);
       setLineaDespachos(filteredLineaDespachos);
@@ -152,6 +162,7 @@ export const useBunkeringData = (
       setChequeoCantidads(filteredChequeoCantidads);
       setChequeoCalidads(filteredChequeoCalidads);
       setMuelles(filteredMuelles);
+      setTanques(filteredTanques);
     } catch (error) {
       console.error("Error al obtener los datos:", error);
     } finally {
@@ -198,5 +209,6 @@ export const useBunkeringData = (
     chequeoCantidads,
     chequeoCalidads,
     muelles,
+    tanques,
   };
 };

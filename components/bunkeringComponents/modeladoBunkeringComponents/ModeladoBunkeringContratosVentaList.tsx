@@ -15,7 +15,7 @@ interface Producto {
 }
 
 interface ModeladoBunkeringContratosVentaListProps {
-  contratos: Array<Contrato & { productos: Producto[] }>;
+  contratos: any[]; // Cambiar el tipo según tu modelo de datos}>;
   onShowDialog?: (product: Producto) => void;
   onShowDialogDespachos?: (contrato: Producto) => void;
 }
@@ -64,7 +64,7 @@ const ModeladoBunkeringContratosVentaList = ({
                 </div>
                 <hr className="my-2" />
                 <div className="flex flex-column gap-2">
-                  {contrato.productos.map((item) => (
+                  {contrato.productos.map((item: any) => (
                     <div
                       key={item.producto.id}
                       className="flex align-items-center gap-2"

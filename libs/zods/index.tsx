@@ -8,3 +8,4 @@ export * from "./chequeosZod";
 export * from "./contratoZod";
 export * from "./configBunkeringZod";
 export * from "./contratoBKZod";
+export * from "./recepcionZodBK";

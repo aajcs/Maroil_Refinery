@@ -8,16 +8,19 @@ import { InputText } from "primereact/inputtext";
 import { Toast } from "primereact/toast";
 import { Dialog } from "primereact/dialog";
 import { useRefineriaStore } from "@/store/refineriaStore";
-import { deleteRecepcion, getRecepcions } from "@/app/api/recepcionService";
-import { Recepcion } from "@/libs/interfaces";
 import { formatDateFH } from "@/utils/dateUtils";
 import RecepcionForm from "./RecepcionForm";
 import CustomActionButtons from "@/components/common/CustomActionButtons";
 import AuditHistoryDialog from "@/components/common/AuditHistoryDialog";
+import { RecepcionBK } from "@/libs/interfaces";
+import {
+  deleteRecepcionBK,
+  getRecepcionsBK,
+} from "@/app/api/bunkering/recepcionBKService";
 const RecepcionList = () => {
   const { activeRefineria } = useRefineriaStore();
-  const [recepcions, setRecepcions] = useState<Recepcion[]>([]);
-  const [recepcion, setRecepcion] = useState<Recepcion | null>(null);
+  const [recepcions, setRecepcions] = useState<RecepcionBK[]>([]);
+  const [recepcion, setRecepcion] = useState<RecepcionBK | null>(null);
 
   const [filters, setFilters] = useState<DataTableFilterMeta>({});
   const [loading, setLoading] = useState(true);
@@ -26,7 +29,7 @@ const RecepcionList = () => {
   const [recepcionFormDialog, setRecepcionFormDialog] = useState(false);
   const [auditDialogVisible, setAuditDialogVisible] = useState(false);
   const [selectedAuditRecepcion, setSelectedAuditRecepcion] =
-    useState<Recepcion | null>(null);
+    useState<RecepcionBK | null>(null);
   const dt = useRef(null);
   const toast = useRef<Toast | null>(null);
 
@@ -36,11 +39,11 @@ const RecepcionList = () => {
 
   const fetchRecepcions = async () => {
     try {
-      const recepcionsDB = await getRecepcions();
+      const recepcionsDB = await getRecepcionsBK();
       if (recepcionsDB && Array.isArray(recepcionsDB.recepcions)) {
         const filteredRecepcions = recepcionsDB.recepcions.filter(
-          (recepcion: Recepcion) =>
-            recepcion.idRefineria.id === activeRefineria?.id
+          (recepcion: RecepcionBK) =>
+            recepcion.idBunkering.id === activeRefineria?.id
         );
         setRecepcions(filteredRecepcions);
       } else {
@@ -61,7 +64,7 @@ const RecepcionList = () => {
 
   const handleDeleteRecepcion = async () => {
     if (recepcion?.id) {
-      await deleteRecepcion(recepcion.id);
+      await deleteRecepcionBK(recepcion.id);
       setRecepcions(recepcions.filter((val) => val.id !== recepcion.id));
       toast.current?.show({
         severity: "success",
@@ -109,7 +112,7 @@ const RecepcionList = () => {
     </div>
   );
 
-  const actionBodyTemplate = (rowData: Recepcion) => (
+  const actionBodyTemplate = (rowData: RecepcionBK) => (
     <CustomActionButtons
       rowData={rowData}
       onInfo={(data) => {
@@ -170,14 +173,14 @@ const RecepcionList = () => {
         <Column
           field="cantidadEnviada"
           header="Cantidad Esperada"
-          body={(rowData: Recepcion) =>
+          body={(rowData: RecepcionBK) =>
             ` ${Number(rowData.cantidadEnviada).toLocaleString("de-DE")}Bbl`
           }
         />
         <Column
           field="cantidadRecibida"
           header="Cantidad Recibida"
-          body={(rowData: Recepcion) =>
+          body={(rowData: RecepcionBK) =>
             ` ${Number(rowData.cantidadRecibida).toLocaleString("de-DE")}Bbl`
           }
         />
@@ -187,24 +190,26 @@ const RecepcionList = () => {
         <Column
           field="fechaSalida"
           header="Fecha de Salida"
-          body={(rowData: Recepcion) => formatDateFH(rowData.fechaSalida)}
+          body={(rowData: RecepcionBK) => formatDateFH(rowData.fechaSalida)}
         />
         <Column
           field="fechaLlegada"
           header="Fecha de Llegada"
-          body={(rowData: Recepcion) => formatDateFH(rowData.fechaLlegada)}
+          body={(rowData: RecepcionBK) => formatDateFH(rowData.fechaLlegada)}
         />
         <Column
           field="fechaInicioRecepcion"
           header="Fecha de Inicio de Descarga"
-          body={(rowData: Recepcion) =>
+          body={(rowData: RecepcionBK) =>
             formatDateFH(rowData.fechaInicioRecepcion)
           }
         />
         <Column
           field="fechaFinRecepcion"
           header="Fecha de Fin de Descarga"
-          body={(rowData: Recepcion) => formatDateFH(rowData.fechaFinRecepcion)}
+          body={(rowData: RecepcionBK) =>
+            formatDateFH(rowData.fechaFinRecepcion)
+          }
         />
 
         <Column field="estadoRecepcion" header="Estado de la Recepcion" />

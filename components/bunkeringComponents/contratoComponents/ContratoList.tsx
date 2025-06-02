@@ -13,20 +13,23 @@ import { InputText } from "primereact/inputtext";
 import { Toast } from "primereact/toast";
 import { Dialog } from "primereact/dialog";
 import { useRefineriaStore } from "@/store/refineriaStore";
-import { deleteContrato, getContratos } from "@/app/api/contratoService";
 import ContratoForm from "./ContratoForm";
 import { formatDateFH } from "@/utils/dateUtils";
-import { Contrato } from "@/libs/interfaces";
 import CustomActionButtons from "@/components/common/CustomActionButtons";
 import AuditHistoryDialog from "@/components/common/AuditHistoryDialog";
+import { ContratoBK } from "@/libs/interfaces";
+import {
+  deleteContratoBK,
+  getContratosBK,
+} from "@/app/api/bunkering/contratoBKService";
 interface ContratoListProps {
   tipoContrato: string;
 }
 
 const ContratoList = ({ tipoContrato }: ContratoListProps) => {
   const { activeRefineria } = useRefineriaStore();
-  const [contratos, setContratos] = useState<Contrato[]>([]);
-  const [contrato, setContrato] = useState<Contrato | null>(null);
+  const [contratos, setContratos] = useState<ContratoBK[]>([]);
+  const [contrato, setContrato] = useState<ContratoBK | null>(null);
   const [filters, setFilters] = useState<DataTableFilterMeta>({});
   const [loading, setLoading] = useState(true);
   const [globalFilterValue, setGlobalFilterValue] = useState("");
@@ -37,7 +40,7 @@ const ContratoList = ({ tipoContrato }: ContratoListProps) => {
   >([]);
   const [auditDialogVisible, setAuditDialogVisible] = useState(false);
   const [selectedAuditContrato, setSelectedAuditContrato] =
-    useState<Contrato | null>(null);
+    useState<ContratoBK | null>(null);
   const router = useRouter();
   const dt = useRef(null);
   const toast = useRef<Toast | null>(null);
@@ -48,11 +51,11 @@ const ContratoList = ({ tipoContrato }: ContratoListProps) => {
 
   const fetchContratos = async () => {
     try {
-      const contratosDB = await getContratos();
+      const contratosDB = await getContratosBK();
       if (contratosDB && Array.isArray(contratosDB.contratos)) {
         const filteredContratos = contratosDB.contratos.filter(
-          (contrato: Contrato) =>
-            contrato.idRefineria.id === activeRefineria?.id &&
+          (contrato: ContratoBK) =>
+            contrato.idBunkering.id === activeRefineria?.id &&
             contrato.tipoContrato === tipoContrato
         );
         setContratos(filteredContratos);
@@ -74,7 +77,7 @@ const ContratoList = ({ tipoContrato }: ContratoListProps) => {
 
   const handleDeleteContrato = async () => {
     if (contrato?.id) {
-      await deleteContrato(contrato.id);
+      await deleteContratoBK(contrato.id);
       setContratos(contratos.filter((val) => val.id !== contrato.id));
       toast.current?.show({
         severity: "success",
@@ -122,7 +125,7 @@ const ContratoList = ({ tipoContrato }: ContratoListProps) => {
     </div>
   );
 
-  const actionBodyTemplate = (rowData: Contrato) => (
+  const actionBodyTemplate = (rowData: ContratoBK) => (
     <CustomActionButtons
       rowData={rowData}
       onInfo={(data) => {
@@ -227,13 +230,13 @@ const ContratoList = ({ tipoContrato }: ContratoListProps) => {
         <Column
           field="fechaInicio"
           header="Fecha de Inicio"
-          body={(rowData: Contrato) => formatDateFH(rowData.fechaInicio)}
+          body={(rowData: ContratoBK) => formatDateFH(rowData.fechaInicio)}
           sortable
         />
         <Column
           field="fechaFin"
           header="Fecha de Fin"
-          body={(rowData: Contrato) => formatDateFH(rowData.fechaFin)}
+          body={(rowData: ContratoBK) => formatDateFH(rowData.fechaFin)}
           sortable
         />
         {/* <Column

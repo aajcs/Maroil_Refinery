@@ -1,6 +1,6 @@
 "use client";
 
-import ContratoList from "@/components/refineriaComponents/contratoComponents/ContratoList";
+import ContratoList from "@/components/bunkeringComponents/contratoComponents/ContratoList";
 
 function ContratoVenta() {
   return (

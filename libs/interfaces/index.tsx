@@ -8,3 +8,4 @@ export * from "./contratoInterface";
 export * from "./chequeosInterface";
 export * from "./configBunkeringInterface";
 export * from "./contratoBKInterface";
+export * from "./recepcionInterfaceBK";

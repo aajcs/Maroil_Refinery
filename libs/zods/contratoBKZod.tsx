@@ -47,7 +47,7 @@ export const contratoBKSchema = object({
   montoTransporte: number().optional(),
 
   // Referencias
-  idRefineria: object({
+  idBunkering: object({
     _id: string().optional(),
     nombre: string().min(1, "El nombre de la refinería es obligatorio"),
     id: string().optional(),

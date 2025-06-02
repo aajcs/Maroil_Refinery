@@ -5,11 +5,9 @@ import { z } from "zod";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { classNames } from "primereact/utils";
-import { contratoSchema } from "@/libs/zods";
 import { Toast } from "primereact/toast";
 import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
 import { useRefineriaStore } from "@/store/refineriaStore";
-import { createContrato, updateContrato } from "@/app/api/contratoService";
 import { InputNumber } from "primereact/inputnumber";
 import { DataTable } from "primereact/datatable";
 import { Column, ColumnEditorOptions } from "primereact/column";
@@ -20,13 +18,20 @@ import CustomCalendar from "@/components/common/CustomCalendar";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Dialog } from "primereact/dialog";
 import { useRefineryPrecios } from "@/hooks/useRefineryPrecios";
+import { contratoBKSchema } from "@/libs/zods";
+import { ContratoBK } from "@/libs/interfaces";
+import {
+  createContratoBK,
+  updateContratoBK,
+} from "@/app/api/bunkering/contratoBKService";
+import { useBunkeringData } from "@/hooks/useBunkeringData";
 
-type FormData = z.infer<typeof contratoSchema>;
+type FormData = z.infer<typeof contratoBKSchema>;
 
 interface ContratoFormProps {
   contrato: any;
   hideContratoFormDialog: () => void;
-  contratos: any[];
+  contratos: ContratoBK[];
   setContratos: (contratos: any[]) => void;
   setContrato: (contrato: any) => void;
   showToast: (
@@ -38,8 +43,6 @@ interface ContratoFormProps {
   contratoFormDialog: boolean;
 }
 
-const estatusValues = ["true", "false"];
-const tipoContatroValues = ["Compra", "Venta"];
 const estadoEntregaOptions = [
   { label: "Pendiente", value: "Pendiente" },
   { label: "En Tránsito", value: "En Tránsito" },
@@ -61,7 +64,7 @@ function ContratoForm({
   contratoFormDialog,
 }: ContratoFormProps) {
   const { activeRefineria } = useRefineriaStore();
-  const { productos, tipoProductos, contactos, loading } = useRefineryData(
+  const { productos, tipoProductos, contactos, loading } = useBunkeringData(
     activeRefineria?.id || ""
   );
   const { brent: brentOnline, oilDerivate } = useRefineryPrecios();
@@ -79,7 +82,7 @@ function ContratoForm({
     watch,
     control,
   } = useForm<FormData>({
-    resolver: zodResolver(contratoSchema),
+    resolver: zodResolver(contratoBKSchema),
     defaultValues: {
       brent: 0,
       condicionesPago: {
@@ -104,9 +107,9 @@ function ContratoForm({
     try {
       data.items = items;
       if (contrato) {
-        const updatedContrato = await updateContrato(contrato.id, {
+        const updatedContrato = await updateContratoBK(contrato.id, {
           ...data,
-          idRefineria: activeRefineria?.id,
+          idBunkering: activeRefineria?.id,
           idContacto: data.idContacto.id,
         });
         const updatedContratos = contratos.map((t) =>
@@ -117,9 +120,9 @@ function ContratoForm({
       } else {
         if (!activeRefineria)
           throw new Error("No se ha seleccionado una refinería");
-        const newContrato = await createContrato({
+        const newContrato = await createContratoBK({
           ...data,
-          idRefineria: activeRefineria.id,
+          idBunkering: activeRefineria.id,
           idContacto: data.idContacto.id,
         });
         setContratos([...contratos, newContrato]);

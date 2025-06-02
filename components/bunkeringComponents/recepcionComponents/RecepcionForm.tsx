@@ -4,10 +4,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "primereact/button";
 import { classNames } from "primereact/utils";
-import { recepcionSchema } from "@/libs/zods";
 import { Dropdown } from "primereact/dropdown";
 import { useRefineriaStore } from "@/store/refineriaStore";
-import { createRecepcion, updateRecepcion } from "@/app/api/recepcionService";
 import { InputNumber } from "primereact/inputnumber";
 
 import { Calendar } from "primereact/calendar";
@@ -15,7 +13,6 @@ import { Calendar } from "primereact/calendar";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { truncateText } from "@/utils/funcionesUtiles";
 import { Steps } from "primereact/steps";
-import { useRefineryData } from "@/hooks/useRefineryData";
 
 import {
   fieldRulesCarga,
@@ -33,16 +30,22 @@ import { RepecionFormRecepcion } from "./RepecionFormRecepcion";
 import { ProgressBar } from "primereact/progressbar";
 import CustomCalendar from "@/components/common/CustomCalendar";
 import { Dialog } from "primereact/dialog";
-import { Recepcion } from "@/libs/interfaces";
+import { recepcionBKSchema } from "@/libs/zods";
+import { RecepcionBK } from "@/libs/interfaces";
+import { useBunkeringData } from "@/hooks/useBunkeringData";
+import {
+  createRecepcionBK,
+  updateRecepcionBK,
+} from "@/app/api/bunkering/recepcionBKService";
 
-type FormData = z.infer<typeof recepcionSchema>;
+type FormData = z.infer<typeof recepcionBKSchema>;
 
 interface RecepcionFormProps {
   recepcion: any;
   hideRecepcionFormDialog: () => void;
   recepcionFormDialog: boolean;
-  recepcions: Recepcion[];
-  setRecepcions: (recepcions: Recepcion[]) => void;
+  recepcions: RecepcionBK[];
+  setRecepcions: (recepcions: RecepcionBK[]) => void;
   setRecepcion: (recepcion: any) => void;
   showToast: (
     severity: "success" | "error" | "warn",
@@ -61,7 +64,7 @@ const RecepcionForm = ({
 }: RecepcionFormProps) => {
   const { activeRefineria } = useRefineriaStore();
 
-  const { tanques, contratos, lineaRecepcions, loading } = useRefineryData(
+  const { tanques, contratos, lineaRecepcions, loading } = useBunkeringData(
     activeRefineria?.id || ""
   );
   const calendarRef = useRef<Calendar>(null);
@@ -77,7 +80,7 @@ const RecepcionForm = ({
     setError,
     clearErrors,
   } = useForm<FormData>({
-    resolver: zodResolver(recepcionSchema),
+    resolver: zodResolver(recepcionBKSchema),
     defaultValues: {
       idGuia: 0,
       cantidadEnviada: 250,
@@ -102,7 +105,7 @@ const RecepcionForm = ({
   const recepcionesPorContrato = useMemo(() => {
     return contratos.map((contrato) => {
       const recepcionesContrato = recepcions.filter(
-        (recepcion) => recepcion.idContrato.id === contrato.id
+        (recepcion) => recepcion.idContrato?.id === contrato.id
       );
       const productos = contrato.idItems.map((item: any) => {
         const recepcionesProducto = recepcionesContrato.filter(
@@ -148,18 +151,18 @@ const RecepcionForm = ({
         idLinea: data.idLinea?.id,
         idTanque: data.idTanque?.id,
         idContratoItems: data.idContratoItems?.id,
-        idRefineria: activeRefineria?.id,
+        idBunkering: activeRefineria?.id,
       };
 
       if (recepcion) {
-        const updatedRecepcion = await updateRecepcion(recepcion.id, payload);
+        const updatedRecepcion = await updateRecepcionBK(recepcion.id, payload);
         setRecepcions(
           recepcions.map((t) =>
             t.id === updatedRecepcion.id ? updatedRecepcion : t
           )
         );
       } else {
-        const newRecepcion = await createRecepcion(payload);
+        const newRecepcion = await createRecepcionBK(payload);
         setRecepcions([...recepcions, newRecepcion.recepcion]);
       }
       hideRecepcionFormDialog();

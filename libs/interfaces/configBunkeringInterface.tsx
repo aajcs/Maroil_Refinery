@@ -108,13 +108,12 @@ export interface Embarcacion {
 export interface TanqueBK {
   _id: string;
   idBunkering: Bunkering;
-
+  idProducto: ProductoBK;
   idEmbarcacion: Embarcacion;
   capacidad: number;
   almacenamiento: number;
   nombre: string;
   ubicacion: string;
-  almacenamientoMateriaPrimaria: boolean;
   estado: string;
   eliminado: boolean;
   createdBy: UserReference;
