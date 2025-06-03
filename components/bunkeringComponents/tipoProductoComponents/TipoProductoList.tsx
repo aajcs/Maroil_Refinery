@@ -325,7 +325,19 @@ const TipoProductoList = () => {
         createdAt={selectedAuditTipoProducto?.createdAt!}
         historial={selectedAuditTipoProducto?.historial}
       />
-      <Dialog
+
+      {tipoProductoFormDialog && (
+        <TipoProductoForm
+          tipoProducto={tipoProducto}
+          hideTipoProductoFormDialog={hideTipoProductoFormDialog}
+          tipoProductos={tipoProductos}
+          setTipoProductos={setTipoProductos}
+          setTipoProducto={setTipoProducto}
+          showToast={showToast}
+          tipoProductoFormDialog={tipoProductoFormDialog}
+        />
+      )}
+      {/* <Dialog
         visible={tipoProductoFormDialog}
         style={{ width: "850px" }}
         header={`${tipoProducto ? "Editar" : "Agregar"} Tipo de Producto`}
@@ -341,7 +353,7 @@ const TipoProductoList = () => {
             showToast={showToast}
           />
         )}
-      ></Dialog>
+      ></Dialog> */}
     </div>
   );
 };

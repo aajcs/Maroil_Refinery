@@ -26,11 +26,13 @@ import {
   RendimientoBK,
   TipoProductoBK,
 } from "@/libs/interfaces/tipoProductoBKInterface";
+import { Dialog } from "primereact/dialog";
 
 type FormData = z.infer<typeof tipoProductoBKSchema>;
 
 interface TipoProductoFormProps {
   tipoProducto: any;
+  tipoProductoFormDialog: boolean;
   hideTipoProductoFormDialog: () => void;
   tipoProductos: TipoProductoBK[];
   setTipoProductos: (tipoProductos: any[]) => void;
@@ -46,6 +48,7 @@ const clasificacionValues = ["Liviano", "Mediano", "Pesado"];
 
 const TipoProductoForm = ({
   tipoProducto,
+  tipoProductoFormDialog,
   hideTipoProductoFormDialog,
   tipoProductos,
   setTipoProductos,
@@ -151,22 +154,47 @@ const TipoProductoForm = ({
   }
   console.log(errors);
   return (
-    <div>
+    <Dialog
+      visible={tipoProductoFormDialog}
+      style={{ width: "70vw", padding: "0px" }}
+      header={
+        <div className="mb-2 text-center md:text-left">
+          <div className="border-bottom-2 border-primary pb-2">
+            <h2 className="text-2xl font-bold text-900 mb-2 flex align-items-center justify-content-center md:justify-content-start">
+              <i className="pi pi-check-circle mr-3 text-primary text-3xl"></i>
+              {tipoProducto ? "Editar" : "Agregar"} Tipo de Producto
+            </h2>
+          </div>
+        </div>
+      }
+      modal
+      onHide={hideTipoProductoFormDialog}
+      footer={
+        <div className="flex justify-content-between align-items-center p-2">
+          <Button
+            label="Cancelar"
+            icon="pi pi-times"
+            className="p-button-text p-button-plain"
+            onClick={hideTipoProductoFormDialog}
+          />
+          {!loading && (
+            <Button
+              type="submit"
+              disabled={submitting}
+              icon={submitting ? "pi pi-spinner pi-spin" : "pi pi-check"}
+              label={tipoProducto ? "Modificar Recepción" : "Crear Recepción"}
+              className={`p-button-raised ${
+                submitting ? "p-button-secondary" : "p-button-primary"
+              }`}
+              onClick={handleSubmit(onSubmit)}
+            />
+          )}
+        </div>
+      }
+    >
       <Toast ref={toast} />
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="card p-fluid surface-50 p-3 border-round shadow-2">
-          {/* Header del Formulario */}
-          <div className="mb-2 text-center md:text-left">
-            <div className="border-bottom-2 border-primary pb-2">
-              <h2 className="text-2xl font-bold text-900 mb-2 flex align-items-center justify-content-center md:justify-content-start">
-                <i className="pi pi-check-circle mr-3 text-primary text-3xl"></i>
-                {tipoProducto
-                  ? "Modificar Tipo de Producto"
-                  : "Crear Tipo de Producto"}
-              </h2>
-            </div>
-          </div>
-
+        <div className="p-fluid">
           {/* Cuerpo del Formulario */}
           <div className="grid formgrid row-gap-2">
             {/* Campo: Nombre del Producto */}
@@ -657,7 +685,6 @@ const TipoProductoForm = ({
                           setSelectedRendimientos(nuevosRendimientos);
                         }}
                         mode="decimal"
-                        min={0}
                         className="w-6rem"
                         placeholder="Convenio"
                       />
@@ -791,32 +818,9 @@ const TipoProductoForm = ({
               </div>
             </div> */}
           </div>
-
-          {/* Botones */}
-          <div className="col-12 flex justify-content-between align-items-center mt-3">
-            <Button
-              type="submit"
-              disabled={submitting}
-              icon={submitting ? "pi pi-spinner pi-spin" : ""}
-              label={
-                tipoProducto
-                  ? "Modificar Tipo de Producto"
-                  : "Crear Tipo de Producto"
-              }
-              className="w-auto"
-            />
-
-            <Button
-              type="button"
-              label="Salir"
-              onClick={() => hideTipoProductoFormDialog()}
-              className="w-auto"
-              severity="danger"
-            />
-          </div>
         </div>
       </form>
-    </div>
+    </Dialog>
   );
 };
 
