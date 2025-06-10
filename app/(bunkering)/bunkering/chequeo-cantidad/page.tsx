@@ -1,6 +1,6 @@
 "use client";
 
-import ChequeoCantidadList from "@/components/refineriaComponents/chequeoCantidadComponents/ChequeoCantidadList";
+import ChequeoCantidadList from "@/components/bunkeringComponents/chequeoCantidadComponents/ChequeoCantidadList";
 
 function ChequeoCantidad() {
   return (

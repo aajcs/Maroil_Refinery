@@ -37,14 +37,14 @@ apiClient.interceptors.response.use(
       return Promise.reject(new Error("Logout triggered"));
     }
     return response;
+  },
+  (error) => {
+    if (error.response?.status === 401) {
+      window.alert("No autorizado. Por favor inicie sesión nuevamente.");
+      signOut({ callbackUrl: "/auth/login" });
+    }
+    return Promise.reject(error);
   }
-  // (error) => {
-  //   if (error.response?.status === 401) {
-  //     window.alert("No autorizado. Por favor inicie sesión nuevamente.");
-  //     signOut({ callbackUrl: "/login" });
-  //   }
-  //   return Promise.reject(error);
-  // }
 );
 
 export default apiClient;

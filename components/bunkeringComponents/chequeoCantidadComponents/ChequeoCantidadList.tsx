@@ -12,21 +12,22 @@ import { useRefineriaStore } from "@/store/refineriaStore";
 import ChequeoCantidadForm from "./ChequeoCantidadForm";
 import AuditHistoryDialog from "@/components/common/AuditHistoryDialog";
 
-import { ChequeoCantidad } from "@/libs/interfaces";
 import { formatDateFH } from "@/utils/dateUtils";
-import {
-  deleteChequeoCantidad,
-  getChequeoCantidads,
-} from "@/app/api/chequeoCantidadService";
+
 import CustomActionButtons from "@/components/common/CustomActionButtons";
+import {
+  deleteChequeoCantidadBK,
+  getChequeoCantidadsBK,
+} from "@/app/api/bunkering/chequeoCantidadBKService";
+import { ChequeoCantidadBK } from "@/libs/interfaces";
 
 const ChequeoCantidadList = () => {
   const { activeRefineria } = useRefineriaStore();
-  const [chequeoCantidads, setChequeoCantidads] = useState<ChequeoCantidad[]>(
+  const [chequeoCantidads, setChequeoCantidads] = useState<ChequeoCantidadBK[]>(
     []
   );
   const [chequeoCantidad, setChequeoCantidad] =
-    useState<ChequeoCantidad | null>(null);
+    useState<ChequeoCantidadBK | null>(null);
   const [filters, setFilters] = useState<DataTableFilterMeta>({});
   const [loading, setLoading] = useState(true);
   const [globalFilterValue, setGlobalFilterValue] = useState("");
@@ -36,7 +37,7 @@ const ChequeoCantidadList = () => {
   const [onDuplicate, setOnDuplicate] = useState(false);
   const [auditDialogVisible, setAuditDialogVisible] = useState(false);
   const [selectedAuditChequeoCantidad, setSelectedAuditChequeoCantidad] =
-    useState<ChequeoCantidad | null>(null);
+    useState<ChequeoCantidadBK | null>(null);
   const dt = useRef(null);
   const toast = useRef<Toast | null>(null);
 
@@ -46,15 +47,15 @@ const ChequeoCantidadList = () => {
 
   const fetchChequeoCantidads = async () => {
     try {
-      const chequeoCantidadsDB = await getChequeoCantidads();
+      const chequeoCantidadsDB = await getChequeoCantidadsBK();
       if (
         chequeoCantidadsDB &&
         Array.isArray(chequeoCantidadsDB.chequeoCantidads)
       ) {
         const filteredChequeoCantidads =
           chequeoCantidadsDB.chequeoCantidads.filter(
-            (chequeoCantidad: ChequeoCantidad) =>
-              chequeoCantidad.idRefineria.id === activeRefineria?.id
+            (chequeoCantidad: ChequeoCantidadBK) =>
+              chequeoCantidad.idBunkering.id === activeRefineria?.id
           );
         setChequeoCantidads(filteredChequeoCantidads);
       } else {
@@ -76,7 +77,7 @@ const ChequeoCantidadList = () => {
 
   const handleDeleteChequeoCantidad = async () => {
     if (chequeoCantidad?.id) {
-      await deleteChequeoCantidad(chequeoCantidad.id);
+      await deleteChequeoCantidadBK(chequeoCantidad.id);
       setChequeoCantidads(
         chequeoCantidads.filter((val) => val.id !== chequeoCantidad.id)
       );
@@ -126,7 +127,7 @@ const ChequeoCantidadList = () => {
     </div>
   );
 
-  const actionBodyTemplate = (rowData: ChequeoCantidad) => (
+  const actionBodyTemplate = (rowData: ChequeoCantidadBK) => (
     <CustomActionButtons
       rowData={rowData}
       onInfo={(data) => {
@@ -184,7 +185,7 @@ const ChequeoCantidadList = () => {
         <Column field="aplicar.tipo" header="Operacion" sortable />
         <Column
           header="Referencia"
-          body={(rowData: ChequeoCantidad) => {
+          body={(rowData: ChequeoCantidadBK) => {
             const referencia = rowData.aplicar?.idReferencia;
 
             if (!referencia) {
@@ -209,7 +210,7 @@ const ChequeoCantidadList = () => {
         <Column
           field="fechaChequeo"
           header="Fecha de Chequeo"
-          body={(rowData: ChequeoCantidad) =>
+          body={(rowData: ChequeoCantidadBK) =>
             formatDateFH(rowData.fechaChequeo)
           }
           sortable

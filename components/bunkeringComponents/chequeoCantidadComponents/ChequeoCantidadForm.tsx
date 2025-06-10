@@ -4,22 +4,23 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "primereact/button";
 import { classNames } from "primereact/utils";
-import { chequeoCantidadSchema } from "@/libs/zods";
+import { chequeoCantidadBKSchema } from "@/libs/zods";
 import { Dropdown } from "primereact/dropdown";
 import { useRefineriaStore } from "@/store/refineriaStore";
-import {
-  createChequeoCantidad,
-  updateChequeoCantidad,
-} from "@/app/api/chequeoCantidadService";
+
 import { InputNumber } from "primereact/inputnumber";
 
 import { Calendar } from "primereact/calendar";
 
 import { ProgressSpinner } from "primereact/progressspinner";
 
-import { useRefineryData } from "@/hooks/useRefineryData";
+import { useBunkeringData } from "@/hooks/useBunkeringData";
+import {
+  createChequeoCantidadBK,
+  updateChequeoCantidadBK,
+} from "@/app/api/bunkering/chequeoCantidadBKService";
 
-type FormData = z.infer<typeof chequeoCantidadSchema>;
+type FormData = z.infer<typeof chequeoCantidadBKSchema>;
 
 interface ChequeoCantidadFormProps {
   chequeoCantidad: any;
@@ -46,9 +47,9 @@ const ChequeoCantidadForm = ({
   setOnDuplicate,
 }: ChequeoCantidadFormProps) => {
   const { activeRefineria } = useRefineriaStore();
-  const { productos, operadors, tanques, recepcions, despachos, loading } =
-    useRefineryData(activeRefineria?.id || "");
-
+  const { productos, tanques, recepcions, despachos, loading } =
+    useBunkeringData(activeRefineria?.id || "");
+  console.log("recepcions:", recepcions);
   const [submitting, setSubmitting] = useState(false);
   const [dynamicOptions, setDynamicOptions] = useState<
     { label: string; value: any }[]
@@ -60,7 +61,7 @@ const ChequeoCantidadForm = ({
     watch,
     control,
   } = useForm<FormData>({
-    resolver: zodResolver(chequeoCantidadSchema),
+    resolver: zodResolver(chequeoCantidadBKSchema),
     defaultValues: {
       aplicar: {
         tipo: "Recepcion",
@@ -172,7 +173,7 @@ const ChequeoCantidadForm = ({
     try {
       let payload = {
         ...data,
-        idRefineria: activeRefineria?.id,
+        idBunkering: activeRefineria?.id,
         idProducto: data.idProducto?.id,
         idOperador: data.idOperador?.id,
         aplicar: {
@@ -191,7 +192,7 @@ const ChequeoCantidadForm = ({
 
       if (chequeoCantidad && !onDuplicate) {
         // Actualización
-        const updatedChequeoCantidad = await updateChequeoCantidad(
+        const updatedChequeoCantidad = await updateChequeoCantidadBK(
           chequeoCantidad.id,
           payload
         );
@@ -203,11 +204,11 @@ const ChequeoCantidadForm = ({
         showToast("success", "Éxito", "Control de calidad actualizado");
       } else {
         // Creación o Duplicado
-        if (!payload.idRefineria) {
-          throw new Error("Debe seleccionar una refinería");
+        if (!payload.idBunkering) {
+          throw new Error("Debe seleccionar una bunkering");
         }
 
-        const newChequeoCantidad = await createChequeoCantidad(payload);
+        const newChequeoCantidad = await createChequeoCantidadBK(payload);
         setChequeoCantidads([...chequeoCantidads, newChequeoCantidad]);
         showToast(
           "success",

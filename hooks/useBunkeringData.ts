@@ -1,7 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
 import {
-  Recepcion,
-  Despacho,
   ChequeoCantidad,
   Muelle,
   LineaRecepcionBK,
@@ -10,6 +8,8 @@ import {
   ContactoBK,
   ContratoBK,
   TanqueBK,
+  RecepcionBK,
+  DespachoBK,
 } from "@/libs/interfaces";
 
 import { getLineaRecepcionsBK } from "@/app/api/bunkering/lineaRecepcionBKService";
@@ -28,14 +28,14 @@ import { getTanquesBK } from "@/app/api/bunkering/tanqueBKService";
 
 export const useBunkeringData = (
   activeRefineriaId: string,
-  recepcionModificado?: Recepcion
+  recepcionModificado?: RecepcionBK
 ) => {
   const [lineaRecepcions, setLineaRecepcions] = useState<LineaRecepcionBK[]>(
     []
   );
   const [lineaDespachos, setLineaDespachos] = useState<LineaDespachoBK[]>([]);
-  const [recepcions, setRecepcions] = useState<Recepcion[]>([]);
-  const [despachos, setDespachos] = useState<Despacho[]>([]);
+  const [recepcions, setRecepcions] = useState<RecepcionBK[]>([]);
+  const [despachos, setDespachos] = useState<DespachoBK[]>([]);
   const [contratos, setContratos] = useState<ContratoBK[]>([]);
   const [loading, setLoading] = useState(true);
   const [productos, setProductos] = useState<ProductoBK[]>([]);
@@ -101,12 +101,13 @@ export const useBunkeringData = (
         ) || [];
       const filteredRecepcions =
         recepcionsDB?.recepcions?.filter(
-          (recepcion: Recepcion) =>
-            recepcion.idRefineria?.id === activeRefineriaId
+          (recepcion: RecepcionBK) =>
+            recepcion.idBunkering?.id === activeRefineriaId
         ) || [];
       const filteredDespachos =
         despachosDB?.despachos?.filter(
-          (despacho: Despacho) => despacho.idRefineria?.id === activeRefineriaId
+          (despacho: DespachoBK) =>
+            despacho.idBunkering?.id === activeRefineriaId
         ) || [];
 
       const filteredContratos =
