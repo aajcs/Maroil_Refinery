@@ -1,7 +1,7 @@
 // components/modeladoRefineriaRecepcionesList.tsx
 "use client";
 
-import { Recepcion } from "@/libs/interfaces";
+import { RecepcionBK } from "@/libs/interfaces";
 import {
   formatDateFH,
   formatDateSinAnoFH,
@@ -10,7 +10,7 @@ import {
 import { ProgressBar } from "primereact/progressbar";
 
 interface ModeladoBunkeringRecepcionesListProps {
-  recepciones: Recepcion[];
+  recepciones: RecepcionBK[];
 }
 
 const ModeladoBunkeringRecepcionesList = ({

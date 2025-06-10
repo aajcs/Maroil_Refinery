@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
 import {
-  ChequeoCantidad,
   Muelle,
   LineaRecepcionBK,
   LineaDespachoBK,
@@ -10,6 +9,7 @@ import {
   TanqueBK,
   RecepcionBK,
   DespachoBK,
+  ChequeoCantidadBK,
 } from "@/libs/interfaces";
 
 import { getLineaRecepcionsBK } from "@/app/api/bunkering/lineaRecepcionBKService";
@@ -43,7 +43,7 @@ export const useBunkeringData = (
   const [contactos, setContactos] = useState<ContactoBK[]>([]);
   const [muelles, setMuelles] = useState<Muelle[]>([]); // Cambia el tipo según tu modelo de datos
 
-  const [chequeoCantidads, setChequeoCantidads] = useState<ChequeoCantidad[]>(
+  const [chequeoCantidads, setChequeoCantidads] = useState<ChequeoCantidadBK[]>(
     []
   );
   const [chequeoCalidads, setChequeoCalidads] = useState<any[]>([]);
@@ -135,8 +135,8 @@ export const useBunkeringData = (
 
       const filteredChequeoCantidads =
         chequeoCantidadDB?.chequeoCantidads?.filter(
-          (chequeoCantidad: ChequeoCantidad) =>
-            chequeoCantidad.idRefineria?.id === activeRefineriaId
+          (chequeoCantidad: ChequeoCantidadBK) =>
+            chequeoCantidad.idBunkering?.id === activeRefineriaId
         ) || [];
       const filteredChequeoCalidads =
         chequeoCalidadDB?.chequeoCalidads?.filter(

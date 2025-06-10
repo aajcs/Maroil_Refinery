@@ -29,10 +29,7 @@ const ModeladoBunkeringDashboard = () => {
     loading,
     lineaDespachos,
     despachos,
-  } = useBunkeringData(
-    activeRefineria?.id || "",
-    recepcionModificado || undefined // Pasa recepcionModificado como dependencia
-  );
+  } = useBunkeringData(activeRefineria?.id || "");
   const [visible, setVisible] = useState<boolean>(false);
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [visibleDespachos, setVisibleDespachos] = useState<boolean>(false);

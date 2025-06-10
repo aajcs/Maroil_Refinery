@@ -1,7 +1,7 @@
 // components/modeladoRefineriaDespachoesList.tsx
 "use client";
 
-import { Despacho } from "@/libs/interfaces";
+import { DespachoBK } from "@/libs/interfaces";
 import {
   formatDateFH,
   formatDateSinAnoFH,
@@ -10,7 +10,7 @@ import {
 import { ProgressBar } from "primereact/progressbar";
 
 interface ModeladoBunkeringDespachosListProps {
-  despachos: Despacho[];
+  despachos: DespachoBK[];
 }
 
 const ModeladoBunkeringDespachosList = ({

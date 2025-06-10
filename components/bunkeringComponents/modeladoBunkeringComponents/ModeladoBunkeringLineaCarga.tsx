@@ -9,19 +9,19 @@ import {
   ValvulaAbierda,
   ValvulaCerrada,
 } from "./ElementosLineaCarga";
-import { LineaRecepcionBK, Recepcion } from "@/libs/interfaces";
+import { LineaRecepcionBK, RecepcionBK } from "@/libs/interfaces";
 import ModeladoBunkeringRecepcionesList from "./ModeladoBunkeringRecepcionesList";
 
 interface ModeladoBunkeringLineaCargaProps {
   lineaRecepcion: LineaRecepcionBK;
-  recepcions: Recepcion[];
+  recepcions: RecepcionBK[];
 }
 
 const Tooltip = ({
   recepcion,
   position,
 }: {
-  recepcion: Recepcion;
+  recepcion: RecepcionBK;
   position: { x: number; y: number };
 }) => (
   <div
@@ -50,9 +50,8 @@ const ModeladoBunkeringLineaCarga = ({
 }: ModeladoBunkeringLineaCargaProps) => {
   const [showTooltip, setShowTooltip] = useState(false);
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
-  const [selectedRecepcion, setSelectedRecepcion] = useState<Recepcion | null>(
-    null
-  );
+  const [selectedRecepcion, setSelectedRecepcion] =
+    useState<RecepcionBK | null>(null);
   const [animationKey, setAnimationKey] = useState(0);
 
   const hasAssociatedRecepcion = recepcions.some(
@@ -110,14 +109,14 @@ const ModeladoBunkeringLineaCarga = ({
           <g>
             {recepcions
               .filter(
-                (recepcion: Recepcion) =>
+                (recepcion: RecepcionBK) =>
                   recepcion.idLinea?.id === lineaRecepcion.id &&
                   recepcion.estadoRecepcion === "EN_REFINERIA" &&
                   (recepcion.estadoCarga === "EN_PROCESO" ||
                     recepcion.estadoCarga === "PENDIENTE_MUESTREO" ||
                     recepcion.estadoCarga === "MUESTREO_APROBADO")
               )
-              .map((recepcion: Recepcion, index: number) => (
+              .map((recepcion: RecepcionBK, index: number) => (
                 <g
                   key={`${animationKey}-${index}`}
                   onMouseEnter={() => {

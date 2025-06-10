@@ -9,11 +9,11 @@ import {
   ValvulaAbierda,
   ValvulaCerrada,
 } from "./ElementosLineaCarga";
-import { Despacho, LineaDespachoBK } from "@/libs/interfaces";
+import { DespachoBK, LineaDespachoBK } from "@/libs/interfaces";
 
 interface ModeladoBunkeringLineaDespachoProps {
   lineaDespacho: LineaDespachoBK; // Ajusta el tipo según sea necesario
-  despachos: Despacho[]; // Ajusta el tipo según sea necesario
+  despachos: DespachoBK[]; // Ajusta el tipo según sea necesario
 }
 const ModeladoBunkeringLineaDespacho = ({
   lineaDespacho,
@@ -81,7 +81,7 @@ const ModeladoBunkeringLineaDespacho = ({
         <g>
           {despachos
             .filter(
-              (despacho: Despacho) =>
+              (despacho: DespachoBK) =>
                 despacho.idLineaDespacho?.id === lineaDespacho.id
             )
             .map((despacho: any, index: number) => (
