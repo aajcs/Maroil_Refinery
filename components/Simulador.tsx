@@ -165,7 +165,7 @@ function ComprasCard() {
 
   const [mezcla, setMezcla] = useState<Mezcla[]>([]);
 
-  const totalBbl = mezcla.reduce((prev, curr) => prev + curr.cantidad, 0);
+  const totalBbl = mezcla.reduce((prev, curr) => prev + curr?.cantidad, 0);
   const precioMezcla =
     mezcla.reduce(
       (prev, curr) =>
@@ -229,6 +229,7 @@ function ComprasCard() {
           icon="pi pi-plus"
           label="Añadir crudo"
           onClick={() => setMezcla([...mezcla, defaultProduct])}
+          disabled={selectedRefineria === null || loadingData}
         />
       </div>
     );
