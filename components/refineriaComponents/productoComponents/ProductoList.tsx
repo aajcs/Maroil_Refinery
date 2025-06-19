@@ -42,7 +42,7 @@ const ProductoList = () => {
       if (productosDB && Array.isArray(productosDB.productos)) {
         const filteredProductos = productosDB.productos.filter(
           (producto: Producto) =>
-            producto.idRefineria.id === activeRefineria?.id
+            producto.idRefineria?.id === activeRefineria?.id
         );
         setProductos(filteredProductos);
       } else {
