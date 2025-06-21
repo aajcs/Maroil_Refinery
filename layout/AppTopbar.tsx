@@ -155,10 +155,10 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
             <img alt="avatar" src="/layout/images/avatarHombre.png" />
             <span className="profile-details">
               <span className="profile-name">
-                {(session?.user as ExtendedUser)?.usuario?.nombre}
+                {session?.user?.usuario?.nombre}
               </span>
               <span className="profile-job">
-                {(session?.user as ExtendedUser)?.usuario.rol.toLowerCase()}
+                {session?.user?.usuario?.rol.toLowerCase()}
               </span>
               <span className="profile-job">
                 {online ? "Conectado" : "Desconectado"}
