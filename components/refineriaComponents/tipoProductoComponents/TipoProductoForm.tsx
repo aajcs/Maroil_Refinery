@@ -220,6 +220,29 @@ const TipoProductoForm = ({
                 )}
               </div>
             </div>
+            {/* Campo: Procedencia */}
+            <div className="col-12 md:col-6 lg:col-4">
+              <div className="p-2 bg-white border-round shadow-1 surface-card">
+                <label className="block font-medium text-900 mb-3 flex align-items-center">
+                  <i className="pi pi-tag mr-2 text-primary"></i>
+                  Procedencia
+                </label>
+                <InputText
+                  id="procedencia"
+                  type="text"
+                  className={classNames("w-full", {
+                    "p-invalid": errors.procedencia,
+                  })}
+                  {...register("procedencia")}
+                />
+                {errors.procedencia && (
+                  <small className="p-error block mt-2 flex align-items-center">
+                    <i className="pi pi-exclamation-circle mr-2"></i>
+                    {errors.procedencia.message}
+                  </small>
+                )}
+              </div>
+            </div>
             {/* Campo: Clasificación */}
             <div className="col-12 md:col-6 lg:col-4">
               <div className="p-2 bg-white border-round shadow-1 surface-card">

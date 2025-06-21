@@ -8,8 +8,13 @@ import { getRecepcions } from "@/app/api/recepcionService";
 // import RecepcionDashboard from "./RecepcionDashboard";
 import { Bunkering, Recepcion } from "@/libs/interfaces";
 import { getBunkerings } from "@/app/api/bunkering/bunkeringService";
+import { useSession } from "next-auth/react";
 
 const DashboardRefinerias = () => {
+  const { data: session } = useSession();
+  console.log("Session data:", session);
+  const user = session?.user;
+  console.log("Usuario:", user);
   const [refinerias, setRefinerias] = useState<any[]>([]);
   const [recepcions, setRecepcions] = useState<Recepcion[]>([]);
   const [bunkerings, setBunkerings] = useState<Bunkering[]>([]);

@@ -167,40 +167,23 @@ const UsuarioList = () => {
           body={actionBodyTemplate}
           headerStyle={{ minWidth: "10rem" }}
         ></Column>
+        <Column field="nombre" header="Nombre" sortable></Column>
+        <Column field="correo" header="Correo" sortable></Column>
+        <Column field="rol" header="Rol" sortable></Column>
+        <Column field="acceso" header="Acceso" sortable></Column>
+        <Column field="estado" header="Estado" sortable></Column>
         <Column
-          field="nombre"
-          header="Nombre"
-          sortable
+          field="idRefineria"
+          header="Refinerías"
+          body={(rowData: Usuario) =>
+            rowData.idRefineria && rowData.idRefineria.length > 0
+              ? rowData.idRefineria
+                  .map((refineria) => refineria.nombre)
+                  .join(", ")
+              : "Sin acceso"
+          }
           headerClassName="white-space-nowrap"
-          style={{ width: "25%" }}
-        ></Column>
-        <Column
-          field="correo"
-          header="Correo"
-          sortable
-          headerClassName="white-space-nowrap"
-          style={{ width: "25%" }}
-        ></Column>
-        <Column
-          field="rol"
-          header="Rol"
-          sortable
-          headerClassName="white-space-nowrap"
-          style={{ width: "25%" }}
-        ></Column>
-        <Column
-          field="acceso"
-          header="Acceso"
-          sortable
-          headerClassName="white-space-nowrap"
-          style={{ width: "25%" }}
-        ></Column>
-        <Column
-          field="estado"
-          header="Estado"
-          sortable
-          headerClassName="white-space-nowrap"
-          style={{ width: "25%" }}
+          style={{ minWidth: "15rem" }}
         ></Column>
       </DataTable>
       <Dialog

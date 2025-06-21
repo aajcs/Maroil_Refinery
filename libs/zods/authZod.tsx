@@ -22,4 +22,5 @@ export const profileSchema = object({
   rol: string().min(1, "Debes seleccionar un rol"),
   estado: string().min(1, "Debes seleccionar un estado"),
   acceso: string().min(1, "Debes seleccionar un acceso"),
+  idRefineria: string().array().optional(),
 });

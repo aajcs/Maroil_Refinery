@@ -1,4 +1,8 @@
-import { HistorialCambio, UserReference } from "./configRefineriaInterface";
+import {
+  HistorialCambio,
+  Refineria,
+  UserReference,
+} from "./configRefineriaInterface";
 
 export interface AuthContextProps {
   children: React.ReactNode;
@@ -27,4 +31,5 @@ export interface Usuario {
   modificadoPor: UserReference;
   createdAt: string;
   historial: HistorialCambio[];
+  idRefineria?: Refineria[];
 }

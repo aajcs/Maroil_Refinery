@@ -11,6 +11,10 @@ import { profileSchema } from "@/libs/zods";
 import { createUser, updateUser } from "@/app/api/userService";
 import { Toast } from "primereact/toast";
 import { useRouter } from "next/navigation";
+import { Refineria } from "@/libs/interfaces";
+import { getRefinerias } from "@/app/api/refineriaService";
+import { MultiSelect } from "primereact/multiselect";
+import { ProgressSpinner } from "primereact/progressspinner";
 
 type FormData = z.infer<typeof profileSchema>;
 
@@ -29,6 +33,9 @@ const UsuarioForm = ({
   const toast = useRef<Toast | null>(null);
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
+  const [refinerias, setRefinerias] = useState<Refineria[]>([]);
+
+  const [loading, setLoading] = useState(true);
   const {
     register,
     handleSubmit,
@@ -47,8 +54,26 @@ const UsuarioForm = ({
       setValue("rol", usuario.rol);
       setValue("acceso", usuario.acceso);
       setValue("estado", usuario.estado);
+      setValue(
+        "idRefineria",
+        usuario.idRefineria
+          ? usuario.idRefineria.map((ref: any) =>
+              typeof ref === "object" && ref.id ? ref.id : ref
+            )
+          : []
+      ); // Asegurarse de que idRefineria sea un arreglo de IDs
     }
   }, [usuario, setValue]);
+  useEffect(() => {
+    const fetchUsers = async () => {
+      const refineriasDB = await getRefinerias();
+      const { refinerias } = refineriasDB;
+      setRefinerias(refinerias);
+      setLoading(false);
+    };
+
+    fetchUsers();
+  }, []);
   const findIndexById = (id: string) => {
     let index = -1;
     for (let i = 0; i < usuarios.length; i++) {
@@ -138,7 +163,16 @@ const UsuarioForm = ({
   const rolValues = ["superAdmin", "admin", "operador", "user", "lectura"];
 
   const accesoValues = ["completo", "limitado", "ninguno"];
-
+  if (loading) {
+    return (
+      <div
+        className="flex justify-content-center align-items-center"
+        style={{ height: "300px" }}
+      >
+        <ProgressSpinner />
+      </div>
+    );
+  }
   return (
     <div className="card">
       <Toast ref={toast} />
@@ -248,7 +282,32 @@ const UsuarioForm = ({
                   <small className="p-error">{errors.rol.message}</small>
                 )}
               </div>
-
+              {/* Campo para seleccionar refinerías cuando el acceso es limitado */}
+              {watch("acceso") === "limitado" && (
+                <div className="field mb-4 col-12">
+                  <label htmlFor="idRefineria" className="font-medium text-900">
+                    Refinerías
+                  </label>
+                  <MultiSelect
+                    id="idRefineria"
+                    value={watch("idRefineria")}
+                    onChange={(e) => setValue("idRefineria", e.value)}
+                    options={refinerias.map((refineria) => ({
+                      label: refineria.nombre,
+                      value: refineria.id,
+                    }))}
+                    placeholder="Seleccionar Refinerías"
+                    className={classNames("w-full", {
+                      "p-invalid": errors.idRefineria,
+                    })}
+                  />
+                  {errors.idRefineria && (
+                    <small className="p-error">
+                      {errors.idRefineria.message}
+                    </small>
+                  )}
+                </div>
+              )}
               <div className="field mb-4 col-12 md:col-6">
                 <label htmlFor="estado" className="font-medium text-900">
                   Estado

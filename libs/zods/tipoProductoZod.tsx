@@ -36,6 +36,7 @@ export const tipoProductoSchema = object({
   }),
   nombre: string().min(1, "El nombre es obligatorio"),
   clasificacion: string().min(1, "La clasificación es obligatoria"),
+  procedencia: string().min(1, "La procedencia es obligatoria"),
   gravedadAPI: number().min(
     0,
     "La gravedad API debe ser un número no negativo"

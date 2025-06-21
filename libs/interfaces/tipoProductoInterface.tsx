@@ -10,6 +10,7 @@ export interface TipoProducto {
   idRefineria: Refineria; // Relación con la refinería
   idProducto: Producto; // Relación con el modelo Producto
   nombre: string; // Nombre del producto
+  procedencia: string; // Procedencia del producto
   clasificacion: string;
   gravedadAPI: number; // Gravedad API del producto
   azufre: number; // Porcentaje de azufre en el producto
