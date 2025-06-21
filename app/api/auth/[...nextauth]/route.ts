@@ -1,7 +1,14 @@
-import NextAuth from "next-auth";
+import NextAuth, { DefaultSession } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { loginUser } from "../../userService";
-
+import { Usuario } from "@/libs/interfaces";
+declare module "next-auth" {
+  interface Session {
+    user: {
+      usuario?: Usuario;
+    } & DefaultSession["user"];
+  }
+}
 const handler = NextAuth({
   providers: [
     CredentialsProvider({

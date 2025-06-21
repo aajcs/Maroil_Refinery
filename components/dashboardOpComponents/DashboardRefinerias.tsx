@@ -14,7 +14,8 @@ const DashboardRefinerias = () => {
   const { data: session } = useSession();
   console.log("Session data:", session);
   const user = session?.user;
-  console.log("Usuario:", user);
+  console.log("Usuario:", user?.usuario?.acceso);
+
   const [refinerias, setRefinerias] = useState<any[]>([]);
   const [recepcions, setRecepcions] = useState<Recepcion[]>([]);
   const [bunkerings, setBunkerings] = useState<Bunkering[]>([]);
@@ -23,24 +24,56 @@ const DashboardRefinerias = () => {
   // );
   const { activeRefineria, setActiveRefineria } = useRefineriaStore();
   const router = useRouter();
-
+  // Filtrado de refinerías según el acceso del usuario
   useEffect(() => {
     const fetchRefinerias = async () => {
       try {
         const data = await getRefinerias();
-        const { refinerias: dataRefinerias } = data;
-        if (Array.isArray(dataRefinerias)) {
-          setRefinerias(dataRefinerias);
-        } else {
+        let { refinerias: dataRefinerias } = data;
+        if (!Array.isArray(dataRefinerias)) {
           console.error("La respuesta no es un array:", dataRefinerias);
+          dataRefinerias = [];
+        }
+
+        if (user?.usuario?.acceso === "completo") {
+          setRefinerias(dataRefinerias);
+        } else if (
+          user?.usuario?.acceso === "limitado" &&
+          Array.isArray(user?.usuario?.idRefineria)
+        ) {
+          const refineriasFiltradas = dataRefinerias.filter((refineria: any) =>
+            user?.usuario?.idRefineria?.includes(refineria.id)
+          );
+          setRefinerias(refineriasFiltradas);
+        } else {
+          setRefinerias([]);
         }
       } catch (error) {
         console.error("Error al obtener las refinerías:", error);
       }
     };
 
-    fetchRefinerias();
-  }, []);
+    if (user?.usuario?.acceso) {
+      fetchRefinerias();
+    }
+  }, [user]);
+  // useEffect(() => {
+  //   const fetchRefinerias = async () => {
+  //     try {
+  //       const data = await getRefinerias();
+  //       const { refinerias: dataRefinerias } = data;
+  //       if (Array.isArray(dataRefinerias)) {
+  //         setRefinerias(dataRefinerias);
+  //       } else {
+  //         console.error("La respuesta no es un array:", dataRefinerias);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error al obtener las refinerías:", error);
+  //     }
+  //   };
+
+  //   fetchRefinerias();
+  // }, []);
   useEffect(() => {
     const fetchBunkerings = async () => {
       try {

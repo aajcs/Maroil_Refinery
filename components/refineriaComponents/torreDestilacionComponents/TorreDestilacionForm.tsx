@@ -66,10 +66,11 @@ const TorreDestilacionForm = ({
   const fetchData = useCallback(async () => {
     try {
       const productosDB = await getProductos();
+      console.log("Productos DB:", productosDB);
       if (productosDB && Array.isArray(productosDB.productos)) {
         const filteredProductos = productosDB.productos.filter(
           (producto: Producto) =>
-            producto.idRefineria.id === activeRefineria?.id &&
+            producto.idRefineria?.id === activeRefineria?.id &&
             producto.tipoMaterial === "Derivado"
         );
         setProductos(filteredProductos);
