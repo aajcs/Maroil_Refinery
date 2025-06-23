@@ -32,4 +32,5 @@ export interface Usuario {
   createdAt: string;
   historial: HistorialCambio[];
   idRefineria?: Refineria[];
+  departamento?: string[];
 }

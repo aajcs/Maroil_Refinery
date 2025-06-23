@@ -42,7 +42,9 @@ const DashboardRefinerias = () => {
           Array.isArray(user?.usuario?.idRefineria)
         ) {
           const refineriasFiltradas = dataRefinerias.filter((refineria: any) =>
-            user?.usuario?.idRefineria?.includes(refineria.id)
+            user?.usuario?.idRefineria?.some(
+              (refineriaObj: any) => refineriaObj.id === refineria.id
+            )
           );
           setRefinerias(refineriasFiltradas);
         } else {

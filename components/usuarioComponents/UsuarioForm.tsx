@@ -62,6 +62,7 @@ const UsuarioForm = ({
             )
           : []
       ); // Asegurarse de que idRefineria sea un arreglo de IDs
+      setValue("departamento", usuario.departamento);
     }
   }, [usuario, setValue]);
   useEffect(() => {
@@ -162,6 +163,14 @@ const UsuarioForm = ({
 
   const rolValues = ["superAdmin", "admin", "operador", "user", "lectura"];
 
+  const departamentoValues = [
+    "Administración",
+    "Operaciones",
+    "Mantenimiento",
+    "Logística",
+    "Seguridad",
+  ];
+
   const accesoValues = ["completo", "limitado", "ninguno"];
   if (loading) {
     return (
@@ -227,22 +236,24 @@ const UsuarioForm = ({
                 )}
               </div>
 
-              <div className="field mb-4 col-12 md:col-6">
-                <label htmlFor="password" className="font-medium text-900">
-                  Contraseña
-                </label>
-                <InputText
-                  id="password"
-                  type="password"
-                  className={classNames("w-full", {
-                    "p-invalid": errors.password,
-                  })}
-                  {...register("password")}
-                />
-                {errors.password && (
-                  <small className="p-error">{errors.password.message}</small>
-                )}
-              </div>
+              {!usuario && (
+                <div className="field mb-4 col-12 md:col-6">
+                  <label htmlFor="password" className="font-medium text-900">
+                    Contraseña
+                  </label>
+                  <InputText
+                    id="password"
+                    type="password"
+                    className={classNames("w-full", {
+                      "p-invalid": errors.password,
+                    })}
+                    {...register("password")}
+                  />
+                  {errors.password && (
+                    <small className="p-error">{errors.password.message}</small>
+                  )}
+                </div>
+              )}
 
               <div className="field mb-4 col-12 md:col-6">
                 <label htmlFor="rol" className="font-medium text-900">
@@ -261,6 +272,29 @@ const UsuarioForm = ({
                 />
                 {errors.rol && (
                   <small className="p-error">{errors.rol.message}</small>
+                )}
+              </div>
+              <div className="field mb-4 col-12 md:col-6">
+                <label htmlFor="departamento" className="font-medium text-900">
+                  Departamento
+                </label>
+                <MultiSelect
+                  id="departamento"
+                  value={watch("departamento")}
+                  onChange={(e) => setValue("departamento", e.value)}
+                  options={departamentoValues.map((dep) => ({
+                    label: dep,
+                    value: dep,
+                  }))}
+                  placeholder="Seleccionar Departamentos"
+                  className={classNames("w-full", {
+                    "p-invalid": errors.departamento,
+                  })}
+                />
+                {errors.departamento && (
+                  <small className="p-error">
+                    {errors.departamento.message}
+                  </small>
                 )}
               </div>
               <div className="field mb-4 col-12 md:col-6">

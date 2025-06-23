@@ -13,6 +13,7 @@ import UsuarioForm from "./UsuarioForm";
 import CustomActionButtons from "../common/CustomActionButtons";
 import AuditHistoryDialog from "../common/AuditHistoryDialog";
 import { Usuario } from "@/libs/interfaces";
+import UsuarioChangePasswordForm from "./UsuarioChangePasswordForm";
 
 const UsuarioList = () => {
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
@@ -23,6 +24,8 @@ const UsuarioList = () => {
   const [globalFilterValue, setGlobalFilterValue] = useState("");
   const [deleteProductDialog, setDeleteProductDialog] = useState(false);
   const [usuarioFormDialog, setUsuarioFormDialog] = useState(false);
+  const [usuarioPasswordFormDialog, setUsuarioPasswordFormDialog] =
+    useState(false);
   const [auditDialogVisible, setAuditDialogVisible] = useState(false);
   const [selectedAuditUsuario, setSelectedAuditUsuario] =
     useState<Usuario | null>(null);
@@ -53,6 +56,9 @@ const UsuarioList = () => {
   const hideUsuarioFormDialog = () => {
     setUsuarioFormDialog(false);
   };
+  const hideUsuarioPasswordFormDialog = () => {
+    setUsuarioPasswordFormDialog(false);
+  };
   const deleteProduct = async () => {
     let _usuarios = usuarios.filter((val) => val.id !== usuario?.id);
     if (usuario?.id) {
@@ -81,6 +87,13 @@ const UsuarioList = () => {
     (_filters["global"] as any).value = value;
     setFilters(_filters);
     setGlobalFilterValue(value);
+  };
+  const showToast = (
+    severity: "success" | "error",
+    summary: string,
+    detail: string
+  ) => {
+    toast.current?.show({ severity, summary, detail, life: 3000 });
   };
   const deleteProductDialogFooter = (
     <>
@@ -128,24 +141,34 @@ const UsuarioList = () => {
 
   const actionBodyTemplate = (rowData: any) => {
     return (
-      <CustomActionButtons
-        rowData={rowData}
-        onInfo={(data) => {
-          setSelectedAuditUsuario(data);
+      <>
+        <CustomActionButtons
+          rowData={rowData}
+          onInfo={(data) => {
+            setSelectedAuditUsuario(data);
+            setAuditDialogVisible(true);
+          }}
+          onEdit={(data) => {
+            setUsuario(rowData);
+            setUsuarioFormDialog(true);
+          }}
+          onDelete={(data) => {
+            setUsuario(rowData);
+            setDeleteProductDialog(true);
+          }}
+        />
 
-          setAuditDialogVisible(true);
-        }}
-        onEdit={(data) => {
-          setUsuario(rowData);
-          data;
-          setUsuarioFormDialog(true);
-        }}
-        onDelete={(data) => {
-          setUsuario(rowData);
-          data;
-          setDeleteProductDialog(true);
-        }}
-      />
+        <Button
+          icon="pi pi-key"
+          className="p-button-rounded p-button-text"
+          onClick={() => {
+            setUsuario(rowData);
+            setUsuarioPasswordFormDialog(true);
+          }}
+          tooltip="Actualizar Contraseña"
+          tooltipOptions={{ position: "top" }}
+        />
+      </>
     );
   };
   return (
@@ -170,6 +193,18 @@ const UsuarioList = () => {
         <Column field="nombre" header="Nombre" sortable></Column>
         <Column field="correo" header="Correo" sortable></Column>
         <Column field="rol" header="Rol" sortable></Column>
+        <Column
+          field="departamento"
+          header="Departamento"
+          sortable
+          body={(rowData: Usuario) =>
+            rowData.departamento && Array.isArray(rowData.departamento)
+              ? rowData.departamento.map((dep) => dep).join(", ")
+              : rowData.departamento || "Sin departamento"
+          }
+          headerClassName="white-space-nowrap"
+          style={{ minWidth: "15rem" }}
+        ></Column>
         <Column field="acceso" header="Acceso" sortable></Column>
         <Column field="estado" header="Estado" sortable></Column>
         <Column
@@ -206,7 +241,7 @@ const UsuarioList = () => {
             </span>
           )}
         </div>
-      </Dialog>{" "}
+      </Dialog>
       <AuditHistoryDialog
         visible={auditDialogVisible}
         onHide={() => setAuditDialogVisible(false)}
@@ -239,6 +274,21 @@ const UsuarioList = () => {
           setUsuarios={setUsuarios}
         />
       </Dialog>
+      <Dialog
+        visible={usuarioPasswordFormDialog}
+        style={{ width: "850px" }}
+        header="Editar Usuario"
+        modal
+        // footer={deleteProductDialogFooter}
+        onHide={hideUsuarioPasswordFormDialog}
+        content={() => (
+          <UsuarioChangePasswordForm
+            usuario={usuario}
+            hideUsuarioPasswordFormDialog={hideUsuarioPasswordFormDialog}
+            showToast={showToast}
+          />
+        )}
+      ></Dialog>
     </div>
   );
 };
