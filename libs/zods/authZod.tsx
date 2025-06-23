@@ -18,9 +18,17 @@ export const registerSchema = object({
 export const profileSchema = object({
   nombre: string().min(1, "El nombre es obligatorio"),
   correo: string().email("Correo electrónico inválido"),
-  password: string().min(6, "La contraseña debe tener al menos 6 caracteres"),
+  password: string()
+    .optional()
+    .refine((val) => val === undefined || val.length >= 6, {
+      message:
+        "La contraseña debe tener al menos 6 caracteres si se proporciona",
+    }),
   rol: string().min(1, "Debes seleccionar un rol"),
   estado: string().min(1, "Debes seleccionar un estado"),
   acceso: string().min(1, "Debes seleccionar un acceso"),
   idRefineria: string().array().optional(),
+  departamento: string()
+    .array()
+    .min(1, "Debes seleccionar al menos un departamento"),
 });
