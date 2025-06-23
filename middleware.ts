@@ -39,7 +39,11 @@ const apiAuthPrefix = "/api/auth";
 
 const protectedRoutes = [
   { path: "/admin", roles: ["admin"] },
-  { path: "/dashboard", roles: ["admin", "user"] },
+  { path: "/dashboard", roles: ["superAdmin"] },
+  { path: "/users", roles: ["superAdmin"] },
+  { path: "/todas-refinerias", roles: ["superAdmin"] },
+  { path: "/refineria/configuracion", roles: ["superAdmin", "admin"] },
+  { path: "/refineria/finanzas", roles: ["superAdmin", "admin"] },
 ];
 
 export async function middleware(req: NextRequest) {
@@ -55,11 +59,19 @@ export async function middleware(req: NextRequest) {
   const cookies = req.headers.get("cookie");
   // console.log("Cookies:", cookies);
 
-  const token = await getToken({
+  interface CustomToken {
+    user?: {
+      usuario?: {
+        rol?: string;
+      };
+    };
+    [key: string]: any;
+  }
+
+  const token = (await getToken({
     req,
     secret: process.env.AUTH_SECRET,
-  });
-
+  })) as CustomToken;
   // // Más registros de depuración
   // console.log("Token:", token);
   // console.log("Request:", req);
@@ -97,7 +109,7 @@ export async function middleware(req: NextRequest) {
   const route = protectedRoutes.find((route) =>
     nextUrl.pathname.startsWith(route.path)
   );
-  if (route && !route.roles.includes(token?.role as string)) {
+  if (route && !route.roles.includes(token?.user?.usuario?.rol as string)) {
     return NextResponse.redirect(new URL("/auth/accessasd", nextUrl));
   }
 
