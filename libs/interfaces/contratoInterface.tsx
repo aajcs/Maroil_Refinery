@@ -38,10 +38,44 @@ export interface ContratoItem {
 }
 
 export interface Abono {
+  _id: string;
+  idRefineria: Refineria;
+  idContrato: Contrato;
   monto: number;
   fecha: string;
-  _id: string;
+  tipoOperacion: string;
+  referencia: string;
+  numeroAbono: number;
+  eliminado: boolean;
+  createdBy: {
+    _id: string;
+    nombre: string;
+    correo: string;
+    id: string;
+  };
+  historial: HistorialCambio[];
+  createdAt: string;
+  updatedAt: string;
+  cuenta: Cuenta;
+  id: string;
 }
+
+export interface Cuenta {
+  _id: string;
+  idContrato: Contrato;
+  tipoCuenta: string;
+  idContacto: Contacto;
+  abonos: Abono[];
+  montoTotalContrato: number;
+  totalAbonado: number;
+  balancePendiente: number;
+  historial: HistorialCambio[];
+  createdAt: string;
+  updatedAt: string;
+  id: string;
+}
+
+
 
 export interface CondicionesPago {
   tipo: string; // Ejemplo: "Contado"
@@ -50,6 +84,7 @@ export interface CondicionesPago {
 
 export interface Contrato {
   id: string;
+  _id: string; // ID interno del contrato
   numeroContrato: string;
   descripcion: string;
   tipoContrato: string; // Ejemplo: "Compra"

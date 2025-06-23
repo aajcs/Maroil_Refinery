@@ -195,3 +195,39 @@ export const contratoSchema = object({
     })
   ).optional(),
 });
+export const abonoSchema = object({
+  
+  idContrato: object({
+    // Puedes expandir los campos según la interfaz Contrato
+    id: string().min(1, "El ID del contrato es obligatorio"),
+    numeroContrato: string().optional(),
+    descripcion: string().optional(),
+    tipoContrato: string().optional(),
+    estadoContrato: string().optional(),
+    estadoEntrega: string().optional(),
+    eliminado: boolean().optional(),
+    fechaInicio: string().optional(),
+    fechaFin: string().optional(),
+    createdAt: string().optional(),
+    updatedAt: string().optional(),
+    brent: number().optional(),
+    montoTotal: number().optional(),
+    montoTransporte: number().optional(),
+    idRefineria: object({}).optional(),
+    idContacto: object({}).optional(),
+    idItems: array(object({})).optional(),
+    condicionesPago: object({}).optional(),
+    abono: array(object({})).optional(),
+    clausulas: array(object({})).optional(),
+    historialModificaciones: array(object({})).optional(),
+    createdBy: object({}).optional(),
+    modificadoPor: object({}).optional(),
+    historial: array(object({})).optional(),
+  }),
+  monto: number().min(0, "El monto debe ser un número no negativo"),
+  fecha: union([string().min(1, "La fecha es obligatoria"), date()]),
+  tipoOperacion: string().min(1, "El tipo de operación es obligatorio"),
+  referencia: string().min(1, "La referencia es obligatoria"),
+  eliminado: boolean().default(false),
+  id: string().optional(),
+});
