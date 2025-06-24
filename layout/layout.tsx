@@ -207,7 +207,7 @@ const Layout = (props: ChildContainerProps) => {
         <div className="layout-content-wrapper">
           <div className="layout-content">
             <div className="layout-content-inner">
-              {/* <AppBreadcrumb></AppBreadcrumb> */}
+              <AppBreadcrumb></AppBreadcrumb>
               {props.children}
               <AppFooter></AppFooter>
             </div>
