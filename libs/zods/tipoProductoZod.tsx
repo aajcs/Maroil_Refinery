@@ -56,7 +56,7 @@ export const tipoProductoSchema = object({
     0,
     "El costo de transporte debe ser un número no negativo"
   ),
-  convenio: number().min(0, "El convenio debe ser un número no negativo"),
+  convenio: number({ invalid_type_error: "El convenio debe ser un número" }),
   estado: string().min(1, "El estado es obligatorio"),
   eliminado: boolean().default(false),
   createdAt: union([string(), date()]).optional(),
