@@ -123,6 +123,7 @@ const RefineriaForm = ({
 
         // Cerrar el diálogo del formulario
         // hideRefineriaFormDialog();
+        router.push("/todas-refinerias/list");
       }
     } catch (error) {
       // Mostrar notificación de error si algo falla
@@ -135,7 +136,7 @@ const RefineriaForm = ({
       console.error("Error al procesar la solicitud:", error);
     } finally {
       // Redirigir después de que todo esté completo
-      router.push("/todas-refinerias/list");
+      setSubmitting(false);
     }
   };
 

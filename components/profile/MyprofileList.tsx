@@ -149,12 +149,12 @@ const MyProfileList: React.FC = () => {
             <div className="text-600 font-medium mb-1">Acceso</div>
             <div className="text-900">{profile?.usuario?.acceso || "-"}</div>
           </div>
-          <div className="col-12 md:col-6 mb-4">
+          {/* <div className="col-12 md:col-6 mb-4">
             <div className="text-600 font-medium mb-1">Departamento</div>
             {Array.isArray(profile?.usuario?.departamento) &&
-            profile.usuario.departamento.length > 0 ? (
+            profile?.usuario?.departamento?.length > 0 ? (
               <div className="flex flex-wrap gap-2">
-                {profile.usuario.departamento.map(
+                {profile?.usuario?.departamento.map(
                   (dep: string, idx: number) => (
                     <Tag key={idx} value={dep} className="mr-2 mb-2" />
                   )
@@ -163,13 +163,13 @@ const MyProfileList: React.FC = () => {
             ) : (
               <div className="text-900">Sin departamento</div>
             )}
-          </div>
+          </div> */}
 
           <div className="col-12 md:col-6 mb-4">
             <div className="text-600 font-medium mb-1">
               Última actualización
             </div>
-            <div className="text-900">{profile?.usuario?.updatedAt || "-"}</div>
+            {/* <div className="text-900">{profile?.usuario?.updatedAt || "-"}</div> */}
           </div>
 
           <div className="col-12 mb-4">

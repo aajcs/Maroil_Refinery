@@ -10,7 +10,7 @@ import { Toast } from "primereact/toast";
 import { Dialog } from "primereact/dialog";
 import { useRefineriaStore } from "@/store/refineriaStore";
 import { deleteCuenta, getCuentas } from "@/app/api/cuentaService";
-import CuentaForm from "./CuentaForm";
+// import CuentaForm from "./CuentaForm";
 import { formatDateFH } from "@/utils/dateUtils";
 import { Cuenta } from "@/libs/interfaces/contratoInterface";
 import CustomActionButtons from "@/components/common/CustomActionButtons";
@@ -329,7 +329,7 @@ const CuentaList = () => {
         createdAt={selectedAuditCuenta?.createdAt!}
         historial={selectedAuditCuenta?.historial}
       />
-      <Dialog
+      {/* <Dialog
         visible={cuentaFormDialog}
         style={{ width: "850px" }}
         header={`${cuenta ? "Editar" : "Agregar"} Cuenta`}
@@ -345,7 +345,7 @@ const CuentaList = () => {
             showToast={showToast}
           />
         }
-      ></Dialog>
+      ></Dialog> */}
     </div>
   );
 };
