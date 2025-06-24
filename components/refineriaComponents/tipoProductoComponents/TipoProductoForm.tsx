@@ -494,7 +494,7 @@ const TipoProductoForm = ({
                           id={field.name}
                           value={field.value}
                           onValueChange={(e) => field.onChange(e.value)}
-                          min={0}
+                          //min={0}
                           className={classNames("w-full", {
                             "p-invalid": errors.convenio,
                           })}
