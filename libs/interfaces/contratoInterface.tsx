@@ -70,12 +70,18 @@ export interface Cuenta {
   totalAbonado: number;
   balancePendiente: number;
   historial: HistorialCambio[];
+  createdBy: {
+    _id: string;
+    nombre: string;
+    correo: string;
+    id: string;
+  };
   createdAt: string;
   updatedAt: string;
   id: string;
+  idRefineria: Refineria;
+  numeroCuenta: number;
 }
-
-
 
 export interface CondicionesPago {
   tipo: string; // Ejemplo: "Contado"

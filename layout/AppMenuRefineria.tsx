@@ -24,7 +24,7 @@ const AppMenuRefineria = () => {
 
     {
       label: "Gestión de " + activeRefineria?.nombre,
-      icon: "pi pi-fw pi-building", // Cambiado a un icono más representativo de empresa
+      // Cambiado a un icono más representativo de empresa
 
       items: [
         {
@@ -81,6 +81,16 @@ const AppMenuRefineria = () => {
               label: "Contrato Venta",
               icon: "pi pi-fw pi-briefcase",
               to: "/refineria/finanzas/contrato-venta",
+            },
+            {
+              label: "Abono",
+              icon: "pi pi-fw pi-plus",
+              to: "/refineria/finanzas/abono",
+            },
+            {
+              label: "Cuenta por Pagar",
+              icon: "pi pi-fw pi-money-bill",
+              to: "/refineria/finanzas/cuenta-pagar",
             },
           ],
         },
