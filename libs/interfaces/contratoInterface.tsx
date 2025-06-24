@@ -46,6 +46,7 @@ export interface Abono {
   tipoOperacion: string;
   referencia: string;
   numeroAbono: number;
+  tipoAbono: string; 
   eliminado: boolean;
   createdBy: {
     _id: string;

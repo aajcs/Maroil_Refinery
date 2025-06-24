@@ -16,7 +16,10 @@ import { Abono } from "@/libs/interfaces/contratoInterface";
 import CustomActionButtons from "@/components/common/CustomActionButtons";
 import AuditHistoryDialog from "@/components/common/AuditHistoryDialog";
 
-const AbonoList = () => {
+interface AbonoListProps {
+  tipoAbono: string;
+}
+const AbonoList = ({ tipoAbono }: AbonoListProps) => {
   const { activeRefineria } = useRefineriaStore();
   const [abonos, setAbonos] = useState<Abono[]>([]);
   const [abono, setAbono] = useState<Abono | null>(null);
@@ -42,7 +45,8 @@ const AbonoList = () => {
       if (abonosDB && Array.isArray(abonosDB.abonos)) {
         const filteredAbonos = abonosDB.abonos.filter(
           (abono: Abono) =>
-            abono.idRefineria?.id === activeRefineria?.id
+            abono.idRefineria?.id === activeRefineria?.id &&
+            abono.tipoAbono === tipoAbono 
         );
         setAbonos(filteredAbonos);
       } else {
@@ -256,6 +260,7 @@ const AbonoList = () => {
         content={
           <AbonoForm
             abono={abono}
+            tipoAbono={tipoAbono}
             hideAbonoFormDialog={hideAbonoFormDialog}
             abonos={abonos}
             setAbonos={setAbonos}

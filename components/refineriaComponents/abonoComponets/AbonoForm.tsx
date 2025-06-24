@@ -24,11 +24,12 @@ import { log } from "console";
 type FormData = z.infer<typeof abonoSchema>;
 
 interface AbonoFormProps {
-  abono: any;
+  abono?: any;
+  tipoAbono: string; // Puede ser "Cuenta por Pagar" o "Cuenta por Cobrar"
   hideAbonoFormDialog: () => void;
-  abonos: any[];
-  setAbonos: (abonos: any[]) => void;
-  setAbono: (abono: any) => void;
+  abonos?: any[];
+  setAbonos?: (abonos: any[]) => void;
+  setAbono?: (abono: any) => void;
   showToast: (
     severity: "success" | "error",
     summary: string,
@@ -43,6 +44,7 @@ const AbonoForm = ({
   abono,
   hideAbonoFormDialog,
   abonos,
+  tipoAbono,
   setAbonos,
   showToast,
 }: AbonoFormProps) => {
@@ -66,6 +68,9 @@ const estado_operacionOptions = [
     control,
   } = useForm<FormData>({
     resolver: zodResolver(abonoSchema),
+    defaultValues: {
+      monto: 0,
+        },
   });
  console.log("Errors:", errors);
  
@@ -86,19 +91,21 @@ const estado_operacionOptions = [
           ...data,
           idRefineria: activeRefineria?.id,
         });
-        const updatedAbonos = abonos.map((t) =>
+        const updatedAbonos = abonos?.map((t) =>
           t.id === updatedAbono.id ? updatedAbono : t
         );
-        setAbonos(updatedAbonos);
+        if (updatedAbonos && setAbonos) setAbonos(updatedAbonos);
         showToast("success", "Éxito", "Abono actualizado");
       } else {
         if (!activeRefineria)
           throw new Error("No se ha seleccionado una refinería");
         const newAbono = await createAbono({
           ...data,
-          idRefineria: activeRefineria.id, idContrato: data.idContrato.id,
+          idRefineria: activeRefineria.id, idContrato: data.idContrato.id, tipoAbono: tipoAbono,
         });
-        setAbonos([...abonos, newAbono]);
+        if (setAbonos) {
+          setAbonos([...(abonos || []), newAbono]);
+        }
         showToast("success", "Éxito", "Abono creado");
       }
       hideAbonoFormDialog();
@@ -148,7 +155,54 @@ const estado_operacionOptions = [
               <i className="pi pi-file text-primary mr-2"></i>
               Número de Contrato
             </label>
-            <Controller
+
+ <Controller
+  name="idContrato"
+  control={control}
+  render={({ field, fieldState }) => (
+    <>
+      <Dropdown
+        id="idContrato"
+        {...field}
+        options={contratos
+          .filter((contrato) =>
+            // Solo mostrar contratos de compra para cuentas por pagar,
+            // y contratos de venta para cuentas por cobrar
+            tipoAbono === "Cuentas por Pagar"
+              ? contrato.tipoContrato === "Compra"
+              : tipoAbono === "Cuentas por Cobrar"
+              ? contrato.tipoContrato === "Venta"
+              : true
+          )
+        .map((contrato) => ({
+                      label: `${contrato.numeroContrato} - ${truncateText(
+                        contrato.descripcion || "Sin descripción",
+                        30
+                      )}`,
+                      value: {
+                        id: contrato.id,
+                        numeroContrato: contrato.numeroContrato,
+                        idItems: contrato.idItems,
+                        _id: contrato._id,
+        },
+        }))}
+        placeholder="Seleccionar un contrato"
+        className={classNames("w-full", {
+          "p-invalid": fieldState.error,
+        })}
+        showClear
+        filter
+      />
+      {fieldState.error && (
+        <small className="p-error block mt-2 flex align-items-center">
+          <i className="pi pi-exclamation-circle mr-2"></i>
+          {fieldState.error.message}
+        </small>
+      )}
+    </>
+  )}
+/>       
+            {/* <Controller
               name="idContrato"
               control={control}
               render={({ field, fieldState }) => (
@@ -169,7 +223,7 @@ const estado_operacionOptions = [
                         _id: contrato._id,
                       },
                     }))}
-                    placeholder="Seleccionar un proveedor"
+                    placeholder="Seleccionar un contrato"
                     className={classNames("w-full", {
                       "p-invalid": fieldState.error,
                     })}
@@ -185,7 +239,7 @@ const estado_operacionOptions = [
                   )}
                 </>
               )}
-            />
+            /> */}
           </div>
          </div>
 

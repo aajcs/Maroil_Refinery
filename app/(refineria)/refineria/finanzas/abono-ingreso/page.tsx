@@ -5,9 +5,10 @@ import AbonoList from "@/components/refineriaComponents/abonoComponets/AbonoList
 function Abono() {
   return (
     <>
-      <AbonoList />
+     <AbonoList tipoAbono={"Cuentas por Cobrar"}  />
     </>
   );
 }
+
 
 export default Abono;

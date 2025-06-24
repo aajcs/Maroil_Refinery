@@ -16,8 +16,13 @@ import { Cuenta } from "@/libs/interfaces/contratoInterface";
 import CustomActionButtons from "@/components/common/CustomActionButtons";
 import AuditHistoryDialog from "@/components/common/AuditHistoryDialog";
 import { Accordion, AccordionTab } from "primereact/accordion";
+import AbonoForm from "../abonoComponets/AbonoForm";
+interface CuentaListProps {
+  tipoCuenta: string;
+}
 
-const CuentaList = () => {
+
+const CuentaList = ({ tipoCuenta }: CuentaListProps) => {
   const { activeRefineria } = useRefineriaStore();
   const [cuentas, setCuentas] = useState<Cuenta[]>([]);
   const [cuenta, setCuenta] = useState<Cuenta | null>(null);
@@ -25,7 +30,7 @@ const CuentaList = () => {
   const [loading, setLoading] = useState(true);
   const [globalFilterValue, setGlobalFilterValue] = useState("");
   const [deleteProductDialog, setDeleteProductDialog] = useState(false);
-  const [cuentaFormDialog, setCuentaFormDialog] = useState(false);
+  const [abonoFormDialog, setAbonoFormDialog] = useState(false);
   const [auditDialogVisible, setAuditDialogVisible] = useState(false);
   const [selectedAuditCuenta, setSelectedAuditCuenta] = useState<Cuenta | null>(
     null
@@ -43,7 +48,7 @@ const CuentaList = () => {
       const cuentasDB = await getCuentas();
       if (cuentasDB && Array.isArray(cuentasDB.cuentas)) {
         const filteredCuentas = cuentasDB.cuentas.filter(
-          (cuenta: Cuenta) => cuenta.idRefineria?.id === activeRefineria?.id
+          (cuenta: Cuenta)  => cuenta.idRefineria?.id === activeRefineria?.id && cuenta.tipoCuenta === tipoCuenta
         );
         setCuentas(filteredCuentas);
       } else {
@@ -59,7 +64,7 @@ const CuentaList = () => {
   const hideDeleteProductDialog = () => setDeleteProductDialog(false);
   const hideCuentaFormDialog = () => {
     setCuenta(null);
-    setCuentaFormDialog(false);
+    setAbonoFormDialog(false);
   };
 
   const handleDeleteCuenta = async () => {
@@ -104,10 +109,10 @@ const CuentaList = () => {
       <Button
         type="button"
         icon="pi pi-user-plus"
-        label="Agregar Nuevo"
+        label="Agregar Abono"
         outlined
         className="w-full sm:w-auto flex-order-0 sm:flex-order-1"
-        onClick={() => setCuentaFormDialog(true)}
+        onClick={() => setAbonoFormDialog(true)}
       />
     </div>
   );
@@ -119,16 +124,6 @@ const CuentaList = () => {
         setSelectedAuditCuenta(data);
 
         setAuditDialogVisible(true);
-      }}
-      onEdit={(data) => {
-        setCuenta(rowData);
-        data;
-        setCuentaFormDialog(true);
-      }}
-      onDelete={(data) => {
-        setCuenta(rowData);
-        data;
-        setDeleteProductDialog(true);
       }}
     />
   );
@@ -261,8 +256,8 @@ const CuentaList = () => {
           header="N° Contrato"
           sortable
         />
-        <Column field="idRefineria.nombre" header="Refinería" sortable />
-        <Column field="createdBy.nombre" header="Creado Por" sortable />
+        
+        {/* <Column field="createdBy.nombre" header="Creado Por" sortable />
         <Column
           field="createdAt"
           header="Fecha de Creación"
@@ -274,7 +269,7 @@ const CuentaList = () => {
           header="Última Actualización"
           body={(rowData: Cuenta) => formatDateFH(rowData.updatedAt)}
           sortable
-        />
+        /> */}
       </DataTable>
 
       <Dialog
@@ -329,23 +324,24 @@ const CuentaList = () => {
         createdAt={selectedAuditCuenta?.createdAt!}
         historial={selectedAuditCuenta?.historial}
       />
-      {/* <Dialog
-        visible={cuentaFormDialog}
+      <Dialog
+        visible={abonoFormDialog}
         style={{ width: "850px" }}
         header={`${cuenta ? "Editar" : "Agregar"} Cuenta`}
         modal
         onHide={hideCuentaFormDialog}
         content={
-          <CuentaForm
-            cuenta={cuenta}
-            hideCuentaFormDialog={hideCuentaFormDialog}
-            cuentas={cuentas}
-            setCuentas={setCuentas}
-            setCuenta={setCuenta}
+          <AbonoForm
+
+          tipoAbono={tipoCuenta}
+         
+            hideAbonoFormDialog={hideCuentaFormDialog}
+           
+            
             showToast={showToast}
           />
         }
-      ></Dialog> */}
+      ></Dialog>
     </div>
   );
 };

@@ -77,20 +77,33 @@ const AppMenuRefineria = () => {
               icon: "pi pi-fw pi-briefcase",
               to: "/refineria/finanzas/contrato-compra",
             },
+
+             {
+              label: "Abono Egreso",
+              icon: "pi pi-fw pi-plus",
+              to: "/refineria/finanzas/abono-egreso",
+            },
+
             {
               label: "Contrato Venta",
               icon: "pi pi-fw pi-briefcase",
               to: "/refineria/finanzas/contrato-venta",
             },
             {
-              label: "Abono",
+              label: "Abono Ingreso",
               icon: "pi pi-fw pi-plus",
-              to: "/refineria/finanzas/abono",
+              to: "/refineria/finanzas/abono-ingreso",
             },
+
             {
               label: "Cuenta por Pagar",
               icon: "pi pi-fw pi-money-bill",
               to: "/refineria/finanzas/cuenta-pagar",
+            },
+             {
+              label: "Cuenta por Cobrar",
+              icon: "pi pi-fw pi-money-bill",
+              to: "/refineria/finanzas/cuenta-cobrar",
             },
           ],
         },

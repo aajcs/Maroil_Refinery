@@ -5,7 +5,8 @@ import CuentaList from "@/components/refineriaComponents/cuentaComponets/CuentaL
 function Abono() {
   return (
     <>
-      <CuentaList tipoCuenta={"Cuentas por Pagar"}  />
+    
+      <CuentaList tipoCuenta={"Cuentas por Cobrar"}  />
     </>
   );
 }

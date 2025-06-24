@@ -69,7 +69,10 @@ const TipoProductoForm = ({
       azufre: 0,
       contenidoAgua: 0,
       puntoDeInflamacion: 0,
-      estado: "true",
+      convenio: 0,
+      transporte: 0,
+      costoOperacional: 0,
+        estado: "true",
     },
   });
 

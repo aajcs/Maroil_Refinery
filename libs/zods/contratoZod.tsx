@@ -228,6 +228,7 @@ export const abonoSchema = object({
   fecha: union([string().min(1, "La fecha es obligatoria"), date()]),
   tipoOperacion: string().min(1, "El tipo de operación es obligatorio"),
   referencia: string().min(1, "La referencia es obligatoria"),
+  tipoAbono: string().optional(),
   eliminado: boolean().default(false),
   id: string().optional(),
 });
