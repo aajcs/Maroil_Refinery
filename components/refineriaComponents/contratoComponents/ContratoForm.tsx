@@ -269,7 +269,7 @@ function ContratoForm({
     const caracteristicasTipoProducto = tipoProductos.find(
       (tipoProducto) => tipoProducto.id === tipoProductoValue?.id
     );
-
+    console.log("caracteristicasTipoProducto", caracteristicasTipoProducto);
     // // Actualizar directamente el rowData
     options.rowData.idTipoProducto = tipoProductoValue;
     options.rowData.clasificacion =
@@ -280,6 +280,9 @@ function ContratoForm({
       caracteristicasTipoProducto?.contenidoAgua || 0;
     options.rowData.puntoDeInflamacion =
       caracteristicasTipoProducto?.puntoDeInflamacion || 0;
+    options.rowData.convenio = caracteristicasTipoProducto?.convenio || 0;
+    options.rowData.montoTransporte =
+      caracteristicasTipoProducto?.transporte || 0;
 
     setItems(() =>
       items.map((item: any, index: number) => {
@@ -293,6 +296,8 @@ function ContratoForm({
             contenidoAgua: caracteristicasTipoProducto?.contenidoAgua || 0,
             puntoDeInflamacion:
               caracteristicasTipoProducto?.puntoDeInflamacion || 0,
+            convenio: caracteristicasTipoProducto?.convenio || 0,
+            montoTransporte: caracteristicasTipoProducto?.transporte || 0,
           };
         }
         return item;
@@ -732,7 +737,7 @@ function ContratoForm({
               </div>
 
               {/* Campo: Brent */}
-              <div className="col-12 sm:col-6 lg:col-3 xl:col-2">
+              <div className="col-12 sm:col-6 lg:col-3 xl:col-3">
                 <div className="p-2 bg-white border-round shadow-1 surface-card">
                   <label className="block font-medium text-900 mb-3 flex justify-content-between align-items-center">
                     <span className="flex align-items-center">

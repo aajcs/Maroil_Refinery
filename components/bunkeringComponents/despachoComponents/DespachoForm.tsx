@@ -311,6 +311,8 @@ const DespachoForm = ({
               contratos={recepcionesPorContrato}
               truncateText={truncateText}
               register={register}
+              setValue={setValue}
+              calendarRef={calendarRef}
             />
             {watch("estadoDespacho") === "EN_REFINERIA" ||
             watch("estadoDespacho") === "COMPLETADO" ? (

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -18,6 +18,7 @@ import { Calendar } from "primereact/calendar";
 import { ProgressSpinner } from "primereact/progressspinner";
 
 import { useRefineryData } from "@/hooks/useRefineryData";
+import CustomCalendar from "@/components/common/CustomCalendar";
 
 type FormData = z.infer<typeof chequeoCalidadSchema>;
 
@@ -48,7 +49,7 @@ const ChequeoCalidadForm = ({
   const { activeRefineria } = useRefineriaStore();
   const { productos, operadors, tanques, recepcions, despachos, loading } =
     useRefineryData(activeRefineria?.id || "");
-
+  const calendarRef = useRef<Calendar>(null);
   const [submitting, setSubmitting] = useState(false);
   const [dynamicOptions, setDynamicOptions] = useState<
     { label: string; value: any }[]
@@ -430,15 +431,30 @@ const ChequeoCalidadForm = ({
                 <Controller
                   name="fechaChequeo"
                   control={control}
-                  render={({ field }) => (
-                    <Calendar
-                      value={field.value ? new Date(field.value) : null}
-                      onChange={(e) => field.onChange(e.value)}
-                      showTime
-                      hourFormat="24"
-                      className="w-full"
-                      locale="es"
-                    />
+                  render={({ field, fieldState }) => (
+                    <>
+                      <CustomCalendar
+                        {...field}
+                        name="fechaSalida"
+                        control={control}
+                        setValue={setValue}
+                        calendarRef={calendarRef}
+                        isFieldEnabled={false}
+                        value={
+                          field.value
+                            ? new Date(field.value as string | Date)
+                            : null
+                        }
+                        onChange={field.onChange}
+                      />
+
+                      {fieldState.error && (
+                        <small className="p-error block mt-2 flex align-items-center">
+                          <i className="pi pi-exclamation-circle mr-2"></i>
+                          {fieldState.error.message}
+                        </small>
+                      )}
+                    </>
                   )}
                 />
                 {errors.fechaChequeo && (

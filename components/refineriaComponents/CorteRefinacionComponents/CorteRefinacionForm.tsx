@@ -21,6 +21,7 @@ import {
   createCorteRefinacion,
   updateCorteRefinacion,
 } from "@/app/api/corteRefinacionService";
+import CustomCalendar from "@/components/common/CustomCalendar";
 
 type FormData = z.infer<typeof corteRefinacionSchema>;
 
@@ -47,7 +48,7 @@ const CorteRefinacionForm = ({
   const { productos, loading, tanques, torresDestilacion } = useRefineryData(
     activeRefineria?.id || ""
   );
-  const toast = useRef<Toast | null>(null);
+  const calendarRef = useRef<Calendar>(null);
 
   const [submitting, setSubmitting] = useState(false);
   const {
@@ -351,18 +352,30 @@ const CorteRefinacionForm = ({
                 <Controller
                   name="fechaCorte"
                   control={control}
-                  render={({ field }) => (
-                    <Calendar
-                      id="fechaCorte"
-                      value={field.value ? new Date(field.value) : undefined}
-                      onChange={(e) => field.onChange(e.value)}
-                      showTime
-                      hourFormat="24"
-                      className={classNames("w-full", {
-                        "p-invalid": errors.fechaCorte,
-                      })}
-                      locale="es"
-                    />
+                  render={({ field, fieldState }) => (
+                    <>
+                      <CustomCalendar
+                        {...field}
+                        name="fechaCorte"
+                        control={control}
+                        setValue={setValue}
+                        calendarRef={calendarRef}
+                        isFieldEnabled={false}
+                        value={
+                          field.value
+                            ? new Date(field.value as string | Date)
+                            : null
+                        }
+                        onChange={field.onChange}
+                      />
+
+                      {fieldState.error && (
+                        <small className="p-error block mt-2 flex align-items-center">
+                          <i className="pi pi-exclamation-circle mr-2"></i>
+                          {fieldState.error.message}
+                        </small>
+                      )}
+                    </>
                   )}
                 />
                 {errors.fechaCorte && (

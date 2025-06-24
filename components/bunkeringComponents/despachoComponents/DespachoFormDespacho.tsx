@@ -7,6 +7,7 @@ import { InputText } from "primereact/inputtext";
 import { Calendar } from "primereact/calendar";
 import { classNames } from "primereact/utils";
 import { useMemo } from "react";
+import CustomCalendar from "@/components/common/CustomCalendar";
 
 interface DespachoFormDespachoProps {
   control: any;
@@ -28,6 +29,8 @@ interface DespachoFormDespachoProps {
   contratos: any[];
   truncateText: (text: string, maxLength: number) => string;
   register: any;
+  setValue: any;
+  calendarRef: any;
 }
 
 export const DespachoFormDespacho = ({
@@ -43,6 +46,8 @@ export const DespachoFormDespacho = ({
   contratos,
   truncateText,
   register,
+  setValue,
+  calendarRef,
 }: DespachoFormDespachoProps) => {
   const idContratoValue = watch("idContrato")?.id;
   const productosFiltrados = useMemo(() => {
@@ -431,6 +436,45 @@ export const DespachoFormDespacho = ({
                       !isFieldEnabledDespacho("fechaSalida", estadoDespacho)
                     }
                   />
+                  {fieldState.error && (
+                    <small className="p-error block mt-2 flex align-items-center">
+                      <i className="pi pi-exclamation-circle mr-2"></i>
+                      {fieldState.error.message}
+                    </small>
+                  )}
+                </>
+              )}
+            />
+          </div>
+        </div>
+        <div className="col-12 md:col-6 lg:col-3">
+          <div className="p-3 bg-white border-round shadow-1">
+            <label className="block font-medium text-900 mb-2 flex align-items-center">
+              <i className="pi pi-calendar-minus text-primary mr-2"></i>
+              Fecha Salida
+            </label>
+            <Controller
+              name="fechaSalida"
+              control={control}
+              render={({ field, fieldState }) => (
+                <>
+                  <CustomCalendar
+                    {...field}
+                    name="fechaSalida"
+                    control={control}
+                    setValue={setValue}
+                    calendarRef={calendarRef}
+                    isFieldEnabled={
+                      !isFieldEnabledDespacho("fechaSalida", estadoDespacho)
+                    }
+                    value={
+                      field.value
+                        ? new Date(field.value as string | Date)
+                        : null
+                    }
+                    onChange={field.onChange}
+                  />
+
                   {fieldState.error && (
                     <small className="p-error block mt-2 flex align-items-center">
                       <i className="pi pi-exclamation-circle mr-2"></i>

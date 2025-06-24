@@ -61,6 +61,9 @@ const TorreDestilacionForm = ({
     control,
   } = useForm<FormData>({
     resolver: zodResolver(torreDestilacionSchema),
+    defaultValues: {
+      capacidad: 0,
+    },
   });
 
   const fetchData = useCallback(async () => {
