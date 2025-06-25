@@ -28,7 +28,7 @@ const AppMenuRefineria = () => {
 
       items: [
         {
-          label: "Congifuración",
+          label: "Configuración",
           icon: "pi pi-fw pi-cog",
           items: [
             {
@@ -48,7 +48,7 @@ const AppMenuRefineria = () => {
             },
             {
               label: "Linea de Despacho",
-              icon: "pi pi-fw pi-plus",
+              icon: "pi pi-fw pi-list",
               to: "/refineria/configuracion/linea-despacho",
             },
             {
@@ -113,12 +113,12 @@ const AppMenuRefineria = () => {
           items: [
             {
               label: "Recepción",
-              icon: "pi pi-fw pi-plus",
+              icon: "pi pi-fw pi-truck",
               to: "/refineria/recepcion",
             },
             {
               label: "Despacho",
-              icon: "pi pi-fw pi-plus",
+              icon: "pi pi-fw pi-truck",
               to: "/refineria/despacho",
             },
           ],
@@ -130,12 +130,12 @@ const AppMenuRefineria = () => {
           items: [
             {
               label: "Chequeo Cantidad",
-              icon: "pi pi-fw pi-plus",
+              icon: "pi pi-fw pi-check-circle",
               to: "/refineria/chequeo-cantidad",
             },
             {
               label: "Corte de Refinación",
-              icon: "pi pi-fw pi-plus",
+              icon: "pi pi-fw pi-table",
               to: "/refineria/corte-refinacion",
             },
           ],
@@ -146,7 +146,7 @@ const AppMenuRefineria = () => {
           items: [
             {
               label: "Chequeo Calidad",
-              icon: "pi pi-fw pi-plus",
+              icon: "pi pi-fw pi-check-circle",
               to: "/refineria/chequeo-calidad",
             },
           ],
