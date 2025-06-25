@@ -108,7 +108,7 @@ const AppMenuRefineria = () => {
           ],
         },
         {
-          label: "Logistica",
+          label: "Logística",
           icon: "pi pi-fw pi-briefcase",
           items: [
             {
