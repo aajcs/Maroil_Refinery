@@ -19,6 +19,8 @@ import { ProgressSpinner } from "primereact/progressspinner";
 
 import { useRefineryData } from "@/hooks/useRefineryData";
 import CustomCalendar from "@/components/common/CustomCalendar";
+import { handleFormError } from "@/utils/errorHandlers";
+import { Toast } from "primereact/toast";
 
 type FormData = z.infer<typeof chequeoCantidadSchema>;
 
@@ -33,12 +35,15 @@ interface ChequeoCantidadFormProps {
     summary: string,
     detail: string
   ) => void;
+    toast: React.RefObject<Toast> | null;
+  
   onDuplicate?: boolean;
   setOnDuplicate?: (onDuplicate: boolean) => void;
 }
 
 const ChequeoCantidadForm = ({
   chequeoCantidad,
+  toast,
   hideChequeoCantidadFormDialog,
   chequeoCantidads,
   setChequeoCantidads,
@@ -221,12 +226,8 @@ const ChequeoCantidadForm = ({
 
       hideChequeoCantidadFormDialog();
     } catch (error) {
-      console.error("Error en operación de calidad:", error);
-      showToast(
-        "error",
-        "Error",
-        error instanceof Error ? error.message : "Error desconocido"
-      );
+                handleFormError(error, toast); // Pasamos la referencia del toast
+      
     } finally {
       setSubmitting(false);
       if (onDuplicate && setOnDuplicate) {

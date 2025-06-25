@@ -266,6 +266,7 @@ const AbonoList = ({ tipoAbono }: AbonoListProps) => {
             setAbonos={setAbonos}
             setAbono={setAbono}
             showToast={showToast}
+            toast={toast}
           />
         }
       ></Dialog>

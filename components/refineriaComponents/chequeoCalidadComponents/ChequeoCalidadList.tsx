@@ -304,6 +304,7 @@ const ChequeoCalidadList = () => {
             showToast={showToast}
             onDuplicate={onDuplicate}
             setOnDuplicate={setOnDuplicate}
+            toast={toast}
           />
         )}
       >

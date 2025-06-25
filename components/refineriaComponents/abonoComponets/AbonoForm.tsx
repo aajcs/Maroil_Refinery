@@ -20,6 +20,7 @@ import { useRefineryData } from "@/hooks/useRefineryData";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { Calendar } from "primereact/calendar";
 import { log } from "console";
+import { handleFormError } from "@/utils/errorHandlers";
 
 type FormData = z.infer<typeof abonoSchema>;
 
@@ -35,6 +36,8 @@ interface AbonoFormProps {
     summary: string,
     detail: string
   ) => void;
+    toast: React.RefObject<Toast> | null;
+  
 }
 
 const estatusValues = ["true", "false"];
@@ -42,6 +45,7 @@ const tipoValues = ["Cliente", "Proveedor"]; // Valores para el campo "tipo"
 
 const AbonoForm = ({
   abono,
+  toast,
   hideAbonoFormDialog,
   abonos,
   tipoAbono,
@@ -52,7 +56,6 @@ const AbonoForm = ({
     const { contratos, loading} = useRefineryData(
       activeRefineria?.id || ""
     );
-  const toast = useRef<Toast | null>(null);
 const estado_operacionOptions = [
   { label: "Efectivo", value: "Efectivo" },
   { label: "Cheque", value: "Cheque" },
@@ -110,12 +113,8 @@ const estado_operacionOptions = [
       }
       hideAbonoFormDialog();
     } catch (error) {
-      console.error("Error al crear/modificar abono:", error);
-      showToast(
-        "error",
-        "Error",
-        error instanceof Error ? error.message : "Ocurrió un error inesperado"
-      );
+      handleFormError(error, toast); // Pasamos la referencia del toast
+      
     } finally {
       setSubmitting(false); // Desactivar el estado de envío
     }

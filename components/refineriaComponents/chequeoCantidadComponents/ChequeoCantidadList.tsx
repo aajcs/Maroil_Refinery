@@ -301,6 +301,7 @@ const ChequeoCantidadList = () => {
             showToast={showToast}
             onDuplicate={onDuplicate}
             setOnDuplicate={setOnDuplicate}
+            toast={toast}
           />
         )}
       >
