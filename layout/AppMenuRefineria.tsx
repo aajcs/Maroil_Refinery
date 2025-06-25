@@ -80,7 +80,7 @@ const AppMenuRefineria = () => {
 
              {
               label: "Abono Egreso",
-              icon: "pi pi-fw pi-plus",
+              icon: "pi pi-fw pi-receipt",
               to: "/refineria/finanzas/abono-egreso",
             },
 
@@ -91,7 +91,7 @@ const AppMenuRefineria = () => {
             },
             {
               label: "Abono Ingreso",
-              icon: "pi pi-fw pi-plus",
+              icon: "pi pi-fw pi-receipt",
               to: "/refineria/finanzas/abono-ingreso",
             },
 
