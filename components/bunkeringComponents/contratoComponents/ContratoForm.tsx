@@ -25,6 +25,7 @@ import {
   updateContratoBK,
 } from "@/app/api/bunkering/contratoBKService";
 import { useBunkeringData } from "@/hooks/useBunkeringData";
+import { handleFormError } from "@/utils/errorHandlers";
 
 type FormData = z.infer<typeof contratoBKSchema>;
 
@@ -130,12 +131,9 @@ function ContratoForm({
       }
       hideContratoFormDialog();
     } catch (error) {
-      console.error("Error al crear/modificar contrato:", error);
-      showToast(
-        "error",
-        "Error",
-        error instanceof Error ? error.message : "Ocurrió un error inesperado"
-      );
+     
+      handleFormError(error, toast); // Pasamos la referencia del toast
+     
     } finally {
       setSubmitting(false); // Desactivar el estado de envío
     }

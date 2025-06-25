@@ -14,6 +14,7 @@ import { useRefineriaStore } from "@/store/refineriaStore";
 import { Checkbox } from "primereact/checkbox";
 import { InputNumber } from "primereact/inputnumber";
 import { ColorPicker } from "primereact/colorpicker";
+import { handleFormError } from "@/utils/errorHandlers";
 
 type FormData = z.infer<typeof productoSchema>;
 
@@ -93,12 +94,7 @@ const ProductoForm = ({
       }
       hideProductoFormDialog();
     } catch (error) {
-      console.error("Error al crear/modificar producto:", error);
-      showToast(
-        "error",
-        "Error",
-        error instanceof Error ? error.message : "Ocurrió un error inesperado"
-      );
+      handleFormError(error, toast); // Pasamos la referencia del toast
     } finally {
       setSubmitting(false); // Desactivar el estado de envío
     }
