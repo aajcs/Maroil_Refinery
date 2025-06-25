@@ -7,16 +7,18 @@ import { timeAgo } from "../utils/dateUtils";
 import { Avatar } from "primereact/avatar";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { Tag } from "primereact/tag";
-import { Notification } from "@/libs/interfaces";
+import { useSocket } from "@/hooks/useSocket";
 
 interface AppNotificationDropdownProps {
   session: any;
 }
 
 const AppNotificationDropdown = ({ session }: AppNotificationDropdownProps) => {
+  const { notification } = useSocket(); // Obtén recepcionModificado desde el socket
   console.log(session?.user?.usuario._id);
   const { notifications, loading } = useNotifications(
-    session?.user?.usuario._id
+    session?.user?.usuario._id,
+    notification || undefined // Pasa la notificación modificada al hook
   );
   const { total = 0, notifications: notificaciones = [] } = notifications || {};
   const notificationRef = useRef(null);

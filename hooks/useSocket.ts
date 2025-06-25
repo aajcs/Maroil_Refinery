@@ -18,15 +18,17 @@ interface UseSocketReturn {
 }
 
 export const useSocket = (): UseSocketReturn => {
-  //const serverPath = "http://localhost:8080";
-  const serverPath = "https://api-maroil-refinery-2500582bacd8.herokuapp.com";
+  const serverPath = "http://localhost:8082";
+  //const serverPath = "https://api-maroil-refinery-2500582bacd8.herokuapp.com";
   const [online, setOnline] = useState(false);
   const [socket, setSocket] = useState<Socket | null>(null);
   const [recepcionModificado, setRecepcionModificado] =
     useState<Recepcion | null>(null);
+  console.log("recepcionModificado", recepcionModificado);
   const [refineriaModificado, setRefineriaModificado] =
     useState<Refineria | null>(null);
   const [notification, setNotification] = useState<any | null>(null);
+  console.log(notification);
 
   const conectarSocket = useCallback(async () => {
     const session = await getSession();
@@ -85,7 +87,7 @@ export const useSocket = (): UseSocketReturn => {
 
   useEffect(() => {
     // Escucha un nuevo evento "mensaje" del servidor
-    socket?.on("mensaje", (data) => {
+    socket?.on("welcome", (data) => {
       console.log("Mensaje recibido del servidor:", data);
       // Aquí puedes actualizar el estado o realizar otra acción según lo recibido.
     });
@@ -108,7 +110,7 @@ export const useSocket = (): UseSocketReturn => {
 
   useEffect(() => {
     socket?.on("new-notification", (notification) => {
-      console.log("Refinería modificada:", notification);
+      console.log("notificacion:", notification);
       setNotification(notification);
       // Aquí puedes actualizar el estado o realizar otra acción según lo recibido.
     });
