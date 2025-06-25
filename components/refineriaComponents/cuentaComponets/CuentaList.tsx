@@ -339,6 +339,7 @@ const CuentaList = ({ tipoCuenta }: CuentaListProps) => {
            
             
             showToast={showToast}
+            toast={toast}
           />
         }
       ></Dialog>
