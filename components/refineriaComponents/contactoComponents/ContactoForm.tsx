@@ -56,6 +56,9 @@ const ContactoForm = ({
     control,
   } = useForm<FormData>({
     resolver: zodResolver(contactoSchema),
+    defaultValues: {
+      telefono: 0,
+    },
   });
 
   useEffect(() => {
