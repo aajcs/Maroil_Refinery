@@ -594,7 +594,7 @@ const DespachoForm = ({
                     <div className="p-2 bg-white border-round shadow-1 surface-card">
                       <label className="block font-medium text-900 mb-3 flex align-items-center">
                         <i className="pi pi-chart-line mr-2 text-primary"></i>
-                        Cantidad Recibida
+                        Cantidad Despachada
                       </label>
                       <Controller
                         name="cantidadRecibida"

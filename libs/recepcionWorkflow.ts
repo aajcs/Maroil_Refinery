@@ -20,7 +20,7 @@ export const estadoRecepcionOptions = [
   { label: "Programado", value: "PROGRAMADO" }, // Cuando está agendado
   { label: "En Tránsito", value: "EN_TRANSITO" }, // Reemplaza "En Recepción" para cuando viene en camino
   { label: "En Refineria", value: "EN_REFINERIA" }, // Cuando llega físicamente
-  { label: "Recepción Completa", value: "COMPLETADO" }, // Finalización exitosa
+  { label: "Recepción Completada", value: "COMPLETADO" }, // Finalización exitosa
   { label: "Cancelado", value: "CANCELADO" }, // Si no se presenta
 ];
 
