@@ -28,6 +28,7 @@ interface ProductoFormProps {
     summary: string,
     detail: string
   ) => void;
+     toast: React.RefObject<Toast> | null;
 }
 
 const estatusValues = ["true", "false"];
@@ -35,14 +36,14 @@ const tipoMaterialValues = ["Materia Prima", "Derivado"];
 
 const ProductoForm = ({
   producto,
+  toast,
   hideProductoFormDialog,
   productos,
   setProductos,
   showToast,
 }: ProductoFormProps) => {
   const { activeRefineria } = useRefineriaStore();
-  const toast = useRef<Toast | null>(null);
-
+ 
   const [submitting, setSubmitting] = useState(false);
   const {
     register,

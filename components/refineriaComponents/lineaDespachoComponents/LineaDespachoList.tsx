@@ -273,6 +273,8 @@ const LineaDespachoList = () => {
             setLineaDespachos={setLineaDespachos}
             setLineaDespacho={setLineaDespacho}
             showToast={showToast}
+            toast={toast}
+
           />
         )}
       ></Dialog>

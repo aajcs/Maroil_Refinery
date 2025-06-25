@@ -17,6 +17,7 @@ import {
 } from "@/app/api/lineaDespachoService";
 import { useRefineryData } from "@/hooks/useRefineryData";
 import { ProgressSpinner } from "primereact/progressspinner";
+import { handleFormError } from "@/utils/errorHandlers";
 
 type FormData = z.infer<typeof lineaDespachoSchema>;
 
@@ -31,12 +32,14 @@ interface LineaDespachoFormProps {
     summary: string,
     detail: string
   ) => void;
+  toast: React.RefObject<Toast> | null;
 }
 
 const estatusValues = ["Activo", "Inactivo", "Mantenimiento"];
 
 const LineaDespachoForm = ({
   lineaDespacho,
+  toast,
   hideLineaDespachoFormDialog,
   lineaDespachos,
   setLineaDespachos,
@@ -100,13 +103,9 @@ const LineaDespachoForm = ({
       }
       hideLineaDespachoFormDialog();
     } catch (error) {
-      console.error("Error al crear/modificar lineaDespacho:", error);
-      showToast(
-        "error",
-        "Error",
-        error instanceof Error ? error.message : "Ocurrió un error inesperado"
-      );
-    } finally {
+           handleFormError(error, toast); // Pasamos la referencia del toast
+      
+        } finally {
       setSubmitting(false); // Desactivar el estado de envío
     }
   };

@@ -15,6 +15,7 @@ import { Toast } from "primereact/toast";
 import { Dropdown } from "primereact/dropdown";
 import { useRefineriaStore } from "@/store/refineriaStore";
 import { Checkbox } from "primereact/checkbox";
+import { handleFormError } from "@/utils/errorHandlers";
 
 type FormData = z.infer<typeof lineaRecepcionSchema>;
 
@@ -29,6 +30,7 @@ interface LineaRecepcionFormProps {
     summary: string,
     detail: string
   ) => void;
+  toast: React.RefObject<Toast> | null;
 }
 
 const estatusValues = ["Activo", "Inactivo", "Mantenimiento"];
@@ -91,12 +93,8 @@ const LineaRecepcionForm = ({
       }
       hideLineaRecepcionFormDialog();
     } catch (error) {
-      console.error("Error al crear/modificar lineaRecepcion:", error);
-      showToast(
-        "error",
-        "Error",
-        error instanceof Error ? error.message : "Ocurrió un error inesperado"
-      );
+          handleFormError(error, toast); // Pasamos la referencia del toast
+      
     } finally {
       setSubmitting(false); // Desactivar el estado de envío
     }

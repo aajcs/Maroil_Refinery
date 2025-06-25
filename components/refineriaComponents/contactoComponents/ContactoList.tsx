@@ -260,6 +260,7 @@ const ContactoList = () => {
             setContactos={setContactos}
             setContacto={setContacto}
             showToast={showToast}
+            toast={toast}
           />
         }
       ></Dialog>

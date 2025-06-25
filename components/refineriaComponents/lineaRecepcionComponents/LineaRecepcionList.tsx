@@ -259,6 +259,8 @@ const LineaRecepcionList = () => {
             setLineaRecepcions={setLineaRecepcions}
             setLineaRecepcion={setLineaRecepcion}
             showToast={showToast}
+            toast={toast}
+
           />
         )}
       ></Dialog>

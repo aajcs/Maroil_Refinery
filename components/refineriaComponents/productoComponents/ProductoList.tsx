@@ -15,6 +15,7 @@ import { formatDateFH } from "@/utils/dateUtils";
 import { deleteProducto, getProductos } from "@/app/api/productoService";
 import CustomActionButtons from "@/components/common/CustomActionButtons";
 import AuditHistoryDialog from "@/components/common/AuditHistoryDialog";
+import { handleFormError } from "@/utils/errorHandlers";
 
 const ProductoList = () => {
   const { activeRefineria } = useRefineriaStore();
@@ -49,8 +50,7 @@ const ProductoList = () => {
         console.error("La estructura de productosDB no es la esperada");
       }
     } catch (error) {
-      console.error("Error al obtener los productos:", error);
-    } finally {
+      handleFormError(error, toast); // Pasamos la referencia del toast    } finally {
       setLoading(false);
     }
   };
@@ -266,6 +266,7 @@ const ProductoList = () => {
             setProductos={setProductos}
             setProducto={setProducto}
             showToast={showToast}
+            toast={toast}
           />
         )}
       ></Dialog>

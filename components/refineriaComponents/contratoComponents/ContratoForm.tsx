@@ -20,6 +20,7 @@ import CustomCalendar from "@/components/common/CustomCalendar";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Dialog } from "primereact/dialog";
 import { useRefineryPrecios } from "@/hooks/useRefineryPrecios";
+import { handleFormError } from "@/utils/errorHandlers";
 
 type FormData = z.infer<typeof contratoSchema>;
 
@@ -34,6 +35,8 @@ interface ContratoFormProps {
     summary: string,
     detail: string
   ) => void;
+  toast: React.RefObject<Toast> | null;
+  
   tipoContrato?: string;
   contratoFormDialog: boolean;
 }
@@ -53,6 +56,7 @@ const estado_contratoOptions = [
 
 function ContratoForm({
   contrato,
+  toast,
   hideContratoFormDialog,
   contratos,
   setContratos,
@@ -66,7 +70,6 @@ function ContratoForm({
   );
   const { brent: brentOnline, oilDerivate } = useRefineryPrecios();
 
-  const toast = useRef<Toast | null>(null);
   const calendarRef = useRef<Calendar>(null);
   const [items, setItems] = useState(contrato?.idItems || []);
 
@@ -127,12 +130,7 @@ function ContratoForm({
       }
       hideContratoFormDialog();
     } catch (error) {
-      console.error("Error al crear/modificar contrato:", error);
-      showToast(
-        "error",
-        "Error",
-        error instanceof Error ? error.message : "Ocurrió un error inesperado"
-      );
+    handleFormError(error, toast); // Pasamos la referencia del toast
     } finally {
       setSubmitting(false); // Desactivar el estado de envío
     }

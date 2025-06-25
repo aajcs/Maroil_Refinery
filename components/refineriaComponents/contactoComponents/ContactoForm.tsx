@@ -14,6 +14,7 @@ import { useRefineriaStore } from "@/store/refineriaStore";
 import { Checkbox } from "primereact/checkbox";
 import { InputTextarea } from "primereact/inputtextarea";
 import { InputNumber } from "primereact/inputnumber";
+import { handleFormError } from "@/utils/errorHandlers";
 
 type FormData = z.infer<typeof contactoSchema>;
 
@@ -28,6 +29,8 @@ interface ContactoFormProps {
     summary: string,
     detail: string
   ) => void;
+  toast: React.RefObject<Toast> | null;
+  
 }
 
 const estatusValues = ["true", "false"];
@@ -35,13 +38,13 @@ const tipoValues = ["Cliente", "Proveedor"]; // Valores para el campo "tipo"
 
 const ContactoForm = ({
   contacto,
+  toast,
   hideContactoFormDialog,
   contactos,
   setContactos,
   showToast,
 }: ContactoFormProps) => {
   const { activeRefineria } = useRefineriaStore();
-  const toast = useRef<Toast | null>(null);
 
   const [submitting, setSubmitting] = useState(false);
   const {
@@ -88,12 +91,8 @@ const ContactoForm = ({
       }
       hideContactoFormDialog();
     } catch (error) {
-      console.error("Error al crear/modificar contacto:", error);
-      showToast(
-        "error",
-        "Error",
-        error instanceof Error ? error.message : "Ocurrió un error inesperado"
-      );
+          handleFormError(error, toast); // Pasamos la referencia del toast
+     
     } finally {
       setSubmitting(false); // Desactivar el estado de envío
     }

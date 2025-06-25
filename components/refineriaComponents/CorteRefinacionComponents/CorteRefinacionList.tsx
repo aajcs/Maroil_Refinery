@@ -301,6 +301,8 @@ const CorteRefinacionList = () => {
           corteRefinacions={corteRefinacions}
           setCorteRefinacions={setCorteRefinacions}
           showToast={showToast}
+                    toast={toast}
+
         />
       </Dialog>
     </div>

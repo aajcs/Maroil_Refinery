@@ -353,6 +353,7 @@ const ContratoList = ({ tipoContrato }: ContratoListProps) => {
           setContrato={setContrato}
           showToast={showToast}
           tipoContrato={tipoContrato}
+          toast={toast}
         />
       )}
 

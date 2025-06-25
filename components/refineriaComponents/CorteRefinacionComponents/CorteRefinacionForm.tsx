@@ -22,6 +22,7 @@ import {
   updateCorteRefinacion,
 } from "@/app/api/corteRefinacionService";
 import CustomCalendar from "@/components/common/CustomCalendar";
+import { handleFormError } from "@/utils/errorHandlers";
 
 type FormData = z.infer<typeof corteRefinacionSchema>;
 
@@ -35,10 +36,13 @@ interface CorteRefinacionFormProps {
     summary: string,
     detail: string
   ) => void;
+    toast: React.RefObject<Toast> | null;
+  
 }
 
 const CorteRefinacionForm = ({
   corteRefinacion,
+  toast,
   hideCorteRefinacionFormDialog,
   corteRefinacions,
   setCorteRefinacions,
@@ -149,12 +153,8 @@ const CorteRefinacionForm = ({
 
       hideCorteRefinacionFormDialog();
     } catch (error) {
-      console.error(error);
-      showToast(
-        "error",
-        "Error",
-        error instanceof Error ? error.message : "Error inesperado"
-      );
+     handleFormError(error, toast); // Pasamos la referencia del toast
+      
     } finally {
       setSubmitting(false);
     }

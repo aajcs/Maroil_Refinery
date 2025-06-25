@@ -33,6 +33,8 @@ import {
   getValidTransitionsCarga,
 } from "@/libs/despachoWorkflow";
 import { DespachoFormDespacho } from "./DespachoFormDespacho";
+import { handleFormError } from "@/utils/errorHandlers";
+import { Toast } from "primereact/toast";
 
 type FormData = z.infer<typeof despachoSchema>;
 
@@ -48,10 +50,13 @@ interface DespachoFormProps {
     summary: string,
     detail: string
   ) => void;
+  toast: React.RefObject<Toast> | null;
+  
 }
 
 const DespachoForm = ({
   despacho,
+  toast,
   hideDespachoFormDialog,
   despachoFormDialog,
   despachos,
@@ -156,12 +161,8 @@ const DespachoForm = ({
       }
       hideDespachoFormDialog();
     } catch (error) {
-      console.log(error);
-      showToast(
-        "error",
-        "Error",
-        error instanceof Error ? error.message : "Error desconocido"
-      );
+                 handleFormError(error, toast); // Pasamos la referencia del toast
+      
     } finally {
       setSubmitting(false);
     }

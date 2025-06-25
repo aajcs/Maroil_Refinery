@@ -287,6 +287,7 @@ const DespachoList = () => {
           setDespachos={setDespachos}
           setDespacho={setDespacho}
           showToast={showToast}
+          toast={toast}
         />
       )}
     </div>
