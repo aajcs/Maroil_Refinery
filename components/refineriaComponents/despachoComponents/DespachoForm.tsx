@@ -106,7 +106,7 @@ const DespachoForm = ({
       const productos = contrato.idItems.map((item: any) => {
         const despachosProducto = despachos.filter(
           (despacho) =>
-            despacho.idContratoItems?.producto.id === item.producto.id &&
+            despacho.idContratoItems?.producto.id === item.producto?.id &&
             despacho.idContratoItems?.idTipoProducto === item.idTipoProducto.id
         );
 
