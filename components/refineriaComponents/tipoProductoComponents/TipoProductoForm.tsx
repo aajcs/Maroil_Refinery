@@ -21,6 +21,7 @@ import { tipoProductoSchema } from "@/libs/zods";
 import { MultiSelect } from "primereact/multiselect";
 import { Rendimiento } from "@/libs/interfaces";
 import { Dialog } from "primereact/dialog";
+import { handleFormError } from "@/utils/errorHandlers";
 
 type FormData = z.infer<typeof tipoProductoSchema>;
 
@@ -35,6 +36,7 @@ interface TipoProductoFormProps {
     summary: string,
     detail: string
   ) => void;
+    toast: React.RefObject<Toast> | null;
   tipoProductoFormDialog: boolean;
 }
 
@@ -43,6 +45,7 @@ const clasificacionValues = ["Liviano", "Mediano", "Pesado"];
 
 const TipoProductoForm = ({
   tipoProducto,
+  toast,
   hideTipoProductoFormDialog,
   tipoProductos,
   setTipoProductos,
@@ -51,7 +54,6 @@ const TipoProductoForm = ({
 }: TipoProductoFormProps) => {
   const { activeRefineria } = useRefineriaStore();
   const { productos, loading } = useRefineryData(activeRefineria?.id || "");
-  const toast = useRef<Toast | null>(null);
   const [selectedRendimientos, setSelectedRendimientos] = useState<
     Rendimiento[]
   >([]);
@@ -133,12 +135,7 @@ const TipoProductoForm = ({
       }
       hideTipoProductoFormDialog();
     } catch (error) {
-      console.error("Error al crear/modificar tipoProducto:", error);
-      showToast(
-        "error",
-        "Error",
-        error instanceof Error ? error.message : "Ocurrió un error inesperado"
-      );
+      handleFormError(error, toast); // Pasamos la referencia del toast
     } finally {
       setSubmitting(false);
     }

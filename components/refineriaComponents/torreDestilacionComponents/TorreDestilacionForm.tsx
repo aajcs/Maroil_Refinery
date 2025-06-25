@@ -18,6 +18,7 @@ import { Material, Producto } from "@/libs/interfaces";
 import { getProductos } from "@/app/api/productoService";
 import { MultiSelect } from "primereact/multiselect";
 import { InputNumber } from "primereact/inputnumber";
+import { handleFormError } from "@/utils/errorHandlers";
 
 type FormData = z.infer<typeof torreDestilacionSchema>;
 
@@ -32,11 +33,13 @@ interface TorreDestilacionFormProps {
     summary: string,
     detail: string
   ) => void;
+   toast: React.RefObject<Toast> | null;
 }
 
 const estatusValues = ["true", "false"];
 
 const TorreDestilacionForm = ({
+  toast,
   torreDestilacion,
   hideTorreDestilacionFormDialog,
   torresDestilacion,
@@ -44,7 +47,7 @@ const TorreDestilacionForm = ({
   showToast,
 }: TorreDestilacionFormProps) => {
   const { activeRefineria } = useRefineriaStore();
-  const toast = useRef<Toast | null>(null);
+
   const [productos, setProductos] = useState<Producto[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -128,11 +131,7 @@ const TorreDestilacionForm = ({
       }
       hideTorreDestilacionFormDialog();
     } catch (error) {
-      showToast(
-        "error",
-        "Error",
-        error instanceof Error ? error.message : "Ocurrió un error inesperado"
-      );
+     handleFormError(error, toast); // Pasamos la referencia del toast
     } finally {
       setSubmitting(false);
     }

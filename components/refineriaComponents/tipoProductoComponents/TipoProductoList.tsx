@@ -347,6 +347,7 @@ const TipoProductoList = () => {
           setTipoProductos={setTipoProductos}
           setTipoProducto={setTipoProducto}
           showToast={showToast}
+          toast={toast}
         />
       )}
     </div>

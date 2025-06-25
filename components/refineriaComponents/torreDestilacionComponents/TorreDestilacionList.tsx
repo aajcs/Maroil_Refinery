@@ -385,6 +385,7 @@ const TorreDestilacionList = () => {
             setTorresDestilacion={setTorresDestilacion}
             setTorreDestilacion={setTorreDestilacion}
             showToast={showToast}
+            toast={toast}
           />
         )}
       ></Dialog>

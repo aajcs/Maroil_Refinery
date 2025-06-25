@@ -29,6 +29,7 @@ const RecepcionList = () => {
     useState<Recepcion | null>(null);
   const dt = useRef(null);
   const toast = useRef<Toast | null>(null);
+  
 
   useEffect(() => {
     fetchRecepcions();
@@ -282,6 +283,7 @@ const RecepcionList = () => {
           setRecepcions={setRecepcions}
           setRecepcion={setRecepcion}
           showToast={showToast}
+          toast={toast}
         />
       )}
     </div>

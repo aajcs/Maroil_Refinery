@@ -34,6 +34,8 @@ import { ProgressBar } from "primereact/progressbar";
 import CustomCalendar from "@/components/common/CustomCalendar";
 import { Dialog } from "primereact/dialog";
 import { Recepcion } from "@/libs/interfaces";
+import { handleFormError } from "@/utils/errorHandlers";
+import { Toast } from "primereact/toast";
 
 type FormData = z.infer<typeof recepcionSchema>;
 
@@ -47,12 +49,14 @@ interface RecepcionFormProps {
   showToast: (
     severity: "success" | "error" | "warn",
     summary: string,
-    detail: string
+    detail: string,    
   ) => void;
+  toast: React.RefObject<Toast> | null;
 }
 
 const RecepcionForm = ({
   recepcion,
+  toast,
   hideRecepcionFormDialog,
   recepcionFormDialog,
   recepcions,
@@ -164,12 +168,8 @@ const RecepcionForm = ({
       }
       hideRecepcionFormDialog();
     } catch (error) {
-      console.log(error);
-      showToast(
-        "error",
-        "Error",
-        error instanceof Error ? error.message : "Error desconocido"
-      );
+    handleFormError(error, toast); // Pasamos la referencia del toast
+      
     } finally {
       setSubmitting(false);
     }
