@@ -164,11 +164,11 @@ const UsuarioForm = ({
   const rolValues = ["superAdmin", "admin", "operador", "user", "lectura"];
 
   const departamentoValues = [
-    "Administración",
+    "Finanzas",
     "Operaciones",
-    "Mantenimiento",
-    "Logística",
-    "Seguridad",
+    "Logistica",
+    "Laboratorio",
+    "Gerencia",
   ];
 
   const accesoValues = ["completo", "limitado", "ninguno"];

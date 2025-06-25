@@ -17,6 +17,7 @@ import { signOut, useSession } from "next-auth/react";
 import { User } from "next-auth";
 import { useSocket } from "@/hooks/useSocket";
 import { useRefineriaStore } from "@/store/refineriaStore";
+import AppNotificationDropdown from "./AppNotificationDropdown";
 interface ExtendedUser extends User {
   usuario: {
     nombre: string;
@@ -107,7 +108,6 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
       >
         <span></span>
       </button>
-
       <ul className="topbar-menu">
         {tabs.map((item, i) => {
           return (
@@ -136,7 +136,9 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
               // </li>
             ))}
       </ul>
-
+      <div className="topbar-search">
+        <AppNotificationDropdown session={session} />
+      </div>
       <div className="topbar-profile">
         <StyleClass
           nodeRef={searchRef}

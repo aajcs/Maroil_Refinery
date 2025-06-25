@@ -74,6 +74,7 @@ const ChequeoCalidadList = () => {
   };
 
   const handleDeleteChequeoCalidad = async () => {
+    console.log("Chequeo de Calidad a eliminar:", chequeoCalidad);
     if (chequeoCalidad?.id) {
       await deleteChequeoCalidad(chequeoCalidad.id);
       setChequeoCalidads(

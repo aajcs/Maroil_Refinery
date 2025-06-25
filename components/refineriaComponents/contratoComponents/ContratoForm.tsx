@@ -114,6 +114,7 @@ function ContratoForm({
         );
         setContratos(updatedContratos);
         showToast("success", "Éxito", "Contrato actualizado");
+        console.log("updatedContrato", updatedContrato);
       } else {
         if (!activeRefineria)
           throw new Error("No se ha seleccionado una refinería");

@@ -34,3 +34,27 @@ export const formatDuration = (
 
   return `${days}d ${remainingHours}h ${remainingMinutes}m ${remainingSeconds}s`;
 };
+export const timeAgo = (dateString: Date | string) => {
+  if (!dateString) {
+    return "Fecha no disponible";
+  }
+
+  const now = new Date().getTime();
+  const past = new Date(dateString).getTime();
+  const milliseconds = now - past;
+
+  const seconds = Math.floor(milliseconds / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+
+  if (seconds < 60) {
+    return `hace ${seconds} segundos`;
+  } else if (minutes < 60) {
+    return `hace ${minutes} minutos`;
+  } else if (hours < 24) {
+    return `hace ${hours} horas`;
+  } else {
+    return `hace ${days} días`;
+  }
+};

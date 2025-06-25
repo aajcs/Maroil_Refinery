@@ -136,3 +136,18 @@ export interface Producto {
   modificadoPor: UserReference;
   historial: HistorialCambio[];
 }
+
+export interface Notification {
+  _id: string;
+  userId: UserReference;
+  title: string;
+  message: string;
+  type: "in-app" | "email" | "sms"; // Tipos de notificación posibles
+  read: boolean;
+  link?: string; // Enlace opcional asociado a la notificación
+  eliminado: boolean;
+  createdBy: UserReference;
+  historial: HistorialCambio[];
+  createdAt: string;
+  updatedAt: string;
+}

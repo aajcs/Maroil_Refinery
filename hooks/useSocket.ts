@@ -14,6 +14,7 @@ interface UseSocketReturn {
   desconectarSocket: () => void;
   recepcionModificado: Recepcion | null;
   refineriaModificado: Refineria | null;
+  notification: any | null;
 }
 
 export const useSocket = (): UseSocketReturn => {
@@ -25,6 +26,7 @@ export const useSocket = (): UseSocketReturn => {
     useState<Recepcion | null>(null);
   const [refineriaModificado, setRefineriaModificado] =
     useState<Refineria | null>(null);
+  const [notification, setNotification] = useState<any | null>(null);
 
   const conectarSocket = useCallback(async () => {
     const session = await getSession();
@@ -95,6 +97,7 @@ export const useSocket = (): UseSocketReturn => {
       // Actualizar la lista de refinerías en el cliente
     });
   }, [socket]);
+
   useEffect(() => {
     socket?.on("recepcion-modificada", (recepcion) => {
       console.log("Recepcion Modificada", recepcion);
@@ -103,6 +106,13 @@ export const useSocket = (): UseSocketReturn => {
     });
   }, [socket]);
 
+  useEffect(() => {
+    socket?.on("new-notification", (notification) => {
+      console.log("Refinería modificada:", notification);
+      setNotification(notification);
+      // Aquí puedes actualizar el estado o realizar otra acción según lo recibido.
+    });
+  }, [socket]);
   return {
     socket,
     online,
@@ -110,5 +120,6 @@ export const useSocket = (): UseSocketReturn => {
     desconectarSocket,
     recepcionModificado,
     refineriaModificado,
+    notification,
   };
 };
