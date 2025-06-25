@@ -267,6 +267,7 @@ const TanqueList = () => {
             setTanques={setTanques}
             setTanque={setTanque}
             showToast={showToast}
+            toast={toast}
           />
         )}
       ></Dialog>

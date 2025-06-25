@@ -12,6 +12,8 @@ import { Toast } from "primereact/toast";
 import { Dropdown } from "primereact/dropdown";
 import { useRouter } from "next/navigation";
 import { InputNumber } from "primereact/inputnumber";
+import { AxiosError } from "axios";
+import { handleFormError } from "@/utils/errorHandlers";
 
 type FormData = z.infer<typeof refineriaSchema>;
 
@@ -109,6 +111,7 @@ const RefineriaForm = ({
       } else {
         // Crear una nueva refinería
         const refineriaCreada = await createRefineria(data);
+        console.log("Refinería creada:", refineriaCreada);
 
         // Actualizar el estado local con la nueva refinería
         // setRefinerias([...refinerias, refineriaCreada]);
@@ -126,14 +129,31 @@ const RefineriaForm = ({
         router.push("/todas-refinerias/list");
       }
     } catch (error) {
-      // Mostrar notificación de error si algo falla
-      toast.current?.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Ocurrió un error al procesar la solicitud",
-        life: 3000,
-      });
-      console.error("Error al procesar la solicitud:", error);
+      // const axiosError = error as AxiosError<any>;
+      // let detail = "Ocurrió un error al procesar la solicitud";
+      // let summary = "Error";
+
+      // // Si el backend envía un mensaje específico, úsalo
+      // if (axiosError.response?.data?.error) {
+      //   detail = axiosError.response.data.error;
+      // }
+      // if (axiosError.response?.data?.message) {
+      //   summary = axiosError.response.data.message;
+      // }
+
+      // toast.current?.show({
+      //   severity: "error",
+      //   summary,
+      //   detail,
+      //   life: 3000,
+      // });
+
+      // if (axiosError.response?.data) {
+      //   console.error("Error data from server:", axiosError.response.data);
+      // } else {
+      //   console.error("Error al procesar la solicitud:", error);
+      // }
+      handleFormError(error, toast); // Pasamos la referencia del toast
     } finally {
       // Redirigir después de que todo esté completo
       setSubmitting(false);

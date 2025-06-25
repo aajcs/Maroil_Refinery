@@ -16,6 +16,7 @@ import { InputSwitch } from "primereact/inputswitch";
 import { useRefineryData } from "@/hooks/useRefineryData";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { InputNumber } from "primereact/inputnumber";
+import { handleFormError } from "@/utils/errorHandlers";
 
 type FormData = z.infer<typeof tanqueSchema>;
 
@@ -30,6 +31,7 @@ interface TanqueFormProps {
     summary: string,
     detail: string
   ) => void;
+  toast: React.RefObject<Toast> | null;
 }
 const materiales = [
   "Nafta",
@@ -46,10 +48,10 @@ const TanqueForm = ({
   tanques,
   setTanques,
   showToast,
+  toast,
 }: TanqueFormProps) => {
   const { activeRefineria } = useRefineriaStore();
   const { productos, loading } = useRefineryData(activeRefineria?.id as string);
-  const toast = useRef<Toast | null>(null);
 
   const [submitting, setSubmitting] = useState(false);
   const {
@@ -101,12 +103,7 @@ const TanqueForm = ({
       }
       hideTanqueFormDialog();
     } catch (error) {
-      console.error("Error al crear/modificar tanque:", error);
-      showToast(
-        "error",
-        "Error",
-        error instanceof Error ? error.message : "Ocurrió un error inesperado"
-      );
+      handleFormError(error, toast); // Pasamos la referencia del toast
     } finally {
       setSubmitting(false); // Desactivar el estado de envío
     }
