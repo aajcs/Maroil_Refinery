@@ -37,13 +37,13 @@ const estatusValues = ["Activo", "Inactivo", "Mantenimiento"];
 
 const LineaRecepcionForm = ({
   lineaRecepcion,
+  toast,
   hideLineaRecepcionFormDialog,
   lineaRecepcions,
   setLineaRecepcions,
   showToast,
 }: LineaRecepcionFormProps) => {
   const { activeRefineria } = useRefineriaStore();
-  const toast = useRef<Toast | null>(null);
 
   const [submitting, setSubmitting] = useState(false);
   const {
@@ -93,7 +93,7 @@ const LineaRecepcionForm = ({
       }
       hideLineaRecepcionFormDialog();
     } catch (error) {
-          handleFormError(error, toast); // Pasamos la referencia del toast
+    handleFormError(error, toast); // Pasamos la referencia del toast
       
     } finally {
       setSubmitting(false); // Desactivar el estado de envío
