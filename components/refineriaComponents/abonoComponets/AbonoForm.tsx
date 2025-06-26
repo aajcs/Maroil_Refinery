@@ -21,6 +21,7 @@ import { ProgressSpinner } from "primereact/progressspinner";
 import { Calendar } from "primereact/calendar";
 import { log } from "console";
 import { handleFormError } from "@/utils/errorHandlers";
+import CustomCalendar from "@/components/common/CustomCalendar";
 
 type FormData = z.infer<typeof abonoSchema>;
 
@@ -37,6 +38,7 @@ interface AbonoFormProps {
     detail: string
   ) => void;
     toast: React.RefObject<Toast> | null;
+    
   
 }
 
@@ -56,6 +58,8 @@ const AbonoForm = ({
     const { contratos, loading} = useRefineryData(
       activeRefineria?.id || ""
     );
+      const calendarRef = useRef<Calendar>(null);
+    
 const estado_operacionOptions = [
   { label: "Efectivo", value: "Efectivo" },
   { label: "Cheque", value: "Cheque" },
@@ -272,7 +276,7 @@ const estado_operacionOptions = [
             </div> 
 
 {/* Campo: Fecha de Abono */}
-            <div className="col-12 md:col-6 lg:col-4 xl:col-3">
+            {/* <div className="col-12 md:col-6 lg:col-4 xl:col-3">
               <div className="p-2 bg-white border-round shadow-1 surface-card">
                 <label className="block font-medium text-900 mb-3 flex align-items-center">
                   <i className="pi pi-calendar mr-2 text-primary"></i>
@@ -299,7 +303,51 @@ const estado_operacionOptions = [
                   </small>
                 )}
               </div>
-            </div>
+            </div> */}
+            {/* Campo: Fecha de Abono */}
+                        <div className="col-12 md:col-6 lg:col-4 xl:col-3">
+                          <div className="p-2 bg-white border-round shadow-1 surface-card">
+                            <label className="block font-medium text-900 mb-3 flex align-items-center">
+                              <i className="pi pi-calendar mr-2 text-primary"></i>
+                              Fecha de Abono
+                            </label>
+                            <Controller
+                              name="fecha"
+                              control={control}
+                              render={({ field, fieldState }) => (
+                                <>
+                                  <CustomCalendar
+                                    {...field}
+                                    name="fecha"
+                                    control={control}
+                                    setValue={setValue}
+                                    calendarRef={calendarRef}
+                                    isFieldEnabled={false}
+                                    value={
+                                      field.value
+                                        ? new Date(field.value as string | Date)
+                                        : null
+                                    }
+                                    onChange={field.onChange}
+                                  />
+            
+                                  {fieldState.error && (
+                                    <small className="p-error block mt-2 flex align-items-center">
+                                      <i className="pi pi-exclamation-circle mr-2"></i>
+                                      {fieldState.error.message}
+                                    </small>
+                                  )}
+                                </>
+                              )}
+                            />
+                            {errors.fecha && (
+                              <small className="p-error block mt-2 flex align-items-center">
+                                <i className="pi pi-exclamation-circle mr-2"></i>
+                                {errors.fecha.message}
+                              </small>
+                            )}
+                          </div>
+                        </div>
                 
                  {/* Campo: Estado de Contrato */}
                    <div className="col-12 md:col-6 lg:col-4 xl:col-3">

@@ -417,7 +417,7 @@ const ChequeoCantidadForm = ({
                         control={control}
                         setValue={setValue}
                         calendarRef={calendarRef}
-                        isFieldEnabled={true}
+                        isFieldEnabled={false}
                         value={
                           field.value
                             ? new Date(field.value as string | Date)
