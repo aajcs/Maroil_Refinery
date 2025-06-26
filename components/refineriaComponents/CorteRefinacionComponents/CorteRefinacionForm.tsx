@@ -343,7 +343,7 @@ const CorteRefinacionForm = ({
               })}
             </div>
             {/* Fecha de Corte */}
-            <div className="col-12 md:col-6 lg:col-4">
+            {/* <div className="col-12 md:col-6 lg:col-4">
               <div className="p-2 bg-white border-round shadow-1 surface-card">
                 <label className="block font-medium text-900 mb-3 flex align-items-center">
                   <i className="pi pi-calendar mr-2 text-primary"></i>
@@ -385,7 +385,52 @@ const CorteRefinacionForm = ({
                   </small>
                 )}
               </div>
-            </div>
+            </div> */}
+           {/* Campo: Fecha de Corte */}
+                      <div className="col-12 md:col-6 lg:col-4 xl:col-3">
+                        <div className="p-2 bg-white border-round shadow-1 surface-card">
+                          <label className="block font-medium text-900 mb-3 flex align-items-center">
+                            <i className="pi pi-calendar mr-2 text-primary"></i>
+                            Fecha de Corte
+                          </label>
+                          <Controller
+                            name="fechaCorte"
+                            control={control}
+                            render={({ field, fieldState }) => (
+                              <>
+                                <CustomCalendar
+                                  {...field}
+                                  name="fechaCorte"
+                                  control={control}
+                                  setValue={setValue}
+                                  calendarRef={calendarRef}
+                                  isFieldEnabled={false}
+                                  value={
+                                    field.value
+                                      ? new Date(field.value as string | Date)
+                                      : null
+                                  }
+                                  onChange={field.onChange}
+                                />
+          
+                                {fieldState.error && (
+                                  <small className="p-error block mt-2 flex align-items-center">
+                                    <i className="pi pi-exclamation-circle mr-2"></i>
+                                    {fieldState.error.message}
+                                  </small>
+                                )}
+                              </>
+                            )}
+                          />
+                          {errors.fechaCorte && (
+                            <small className="p-error block mt-2 flex align-items-center">
+                              <i className="pi pi-exclamation-circle mr-2"></i>
+                              {errors.fechaCorte.message}
+                            </small>
+                          )}
+                        </div>
+                      </div>
+
             {/* Observación */}
             <div className="col-12 md:col-6 lg:col-4">
               <div className="p-2 bg-white border-round shadow-1 surface-card">
