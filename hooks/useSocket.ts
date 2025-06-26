@@ -1,11 +1,10 @@
-import { Recepcion, Refineria, Usuario } from "@/libs/interfaces";
+import { Recepcion, Refineria } from "@/libs/interfaces";
 import { getSession } from "next-auth/react";
 import { useCallback, useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
 
 interface ExtendedUser {
   token: string;
-  usuario: Usuario;
 }
 
 interface UseSocketReturn {
@@ -19,8 +18,8 @@ interface UseSocketReturn {
 }
 
 export const useSocket = (): UseSocketReturn => {
-  const serverPath = "http://localhost:8082";
-  //const serverPath = "https://api-maroil-refinery-2500582bacd8.herokuapp.com";
+  //const serverPath = "http://localhost:8080";
+  const serverPath = "https://api-maroil-refinery-2500582bacd8.herokuapp.com";
   const [online, setOnline] = useState(false);
   const [socket, setSocket] = useState<Socket | null>(null);
   const [recepcionModificado, setRecepcionModificado] =
@@ -39,7 +38,6 @@ export const useSocket = (): UseSocketReturn => {
     }
 
     const token = (session.user as ExtendedUser)?.token;
-    const userId = (session.user as ExtendedUser)?.usuario?.id;
     if (!token) {
       console.error("No se encontró el token en la sesión");
       return;
@@ -57,10 +55,6 @@ export const useSocket = (): UseSocketReturn => {
     socketTemp.on("connect", () => {
       console.log("Connected to server");
       setOnline(true);
-      if (userId) {
-        socketTemp.emit("join-user-room", userId);
-        console.log("Emitido join-user-room con userId:", userId);
-      }
     });
 
     socketTemp.on("disconnect", () => {

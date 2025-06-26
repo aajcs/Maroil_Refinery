@@ -1,6 +1,8 @@
 import { useEffect } from "react";
 import { getMessaging, getToken } from "firebase/messaging";
 import { initializeApp } from "firebase/app";
+import apiClient from "@/app/api/apiClient";
+import { useSession } from "next-auth/react";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCY6v4KIMlFWRc9jjCqtZVStCrjVfOx50E",
@@ -14,30 +16,30 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 const FCMSetup = () => {
+  const { data: session } = useSession();
+
   useEffect(() => {
     const setupFCM = async () => {
       try {
-        const messaging = getMessaging(app);
+        if (session?.user) {
+          const messaging = getMessaging(app);
 
-        // Solicitar permisos
-        const permission = await Notification.requestPermission();
+          // Solicitar permisos
+          const permission = await Notification.requestPermission();
 
-        if (permission === "granted") {
-          // Obtener token FCM
-          const token = await getToken(messaging, {
-            vapidKey:
-              "BAt0qzq_29FehDspXF44THssvagrCEBELNbae6gJe3cMRG_KsODiwiG4E3hdo5eEId7RS6isQqxEkxqO_fSp7eg",
-          });
-
-          if (token) {
-            console.log("Token FCM:", token);
-
-            // Enviar token al backend Express
-            await fetch("http://localhost:8082/api/save-token", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ token }),
+          if (permission === "granted") {
+            // Obtener token FCM
+            const token = await getToken(messaging, {
+              vapidKey:
+                "BAt0qzq_29FehDspXF44THssvagrCEBELNbae6gJe3cMRG_KsODiwiG4E3hdo5eEId7RS6isQqxEkxqO_fSp7eg",
             });
+
+            if (token) {
+              console.log("Token FCM:", token);
+
+              // Enviar token al backend
+              await apiClient.post("/save-token", { token });
+            }
           }
         }
       } catch (error) {
@@ -46,7 +48,7 @@ const FCMSetup = () => {
     };
 
     setupFCM();
-  }, []);
+  }, [session]);
 
   return null;
 };

@@ -74,7 +74,6 @@ export default function RootLayout({
         <SessionProvider>
           <PrimeReactProvider>
             <LayoutProvider>
-              {" "}
               <AppInitializer /> {/* <-- Aquí va */}
               {children}
             </LayoutProvider>
