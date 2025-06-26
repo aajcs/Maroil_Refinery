@@ -339,12 +339,13 @@ const TipoProductoForm = ({
                       control={control}
                       render={({ field }) => (
                         <InputNumber
-                          id={field.name}
                           value={field.value}
                           onValueChange={(e) => field.onChange(e.value)}
-                          className={classNames("w-full", {
-                            "p-invalid": errors.azufre,
-                          })}
+                          min={0}
+                          max={100}
+                          suffix="%"
+                          className="w-full"
+                          locale="es"
                         />
                       )}
                     />
