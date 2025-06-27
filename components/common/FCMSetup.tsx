@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { getMessaging, getToken } from "firebase/messaging";
+import { getMessaging, getToken, onMessage } from "firebase/messaging";
 import { initializeApp } from "firebase/app";
 import apiClient from "@/app/api/apiClient";
 import { useSession } from "next-auth/react";
@@ -60,7 +60,20 @@ const FCMSetup = () => {
 
     setupFCM();
   }, [session]);
+  useEffect(() => {
+    if (typeof window !== "undefined" && session?.user) {
+      const messaging = getMessaging(app);
 
+      const unsubscribe = onMessage(messaging, (payload) => {
+        console.log("Notificación en primer plano:", payload);
+
+        // Aquí puedes actualizar el estado de tu app o mostrar un toast
+        // PERO NO MOSTRAR UNA NOTIFICACIÓN - Firebase ya lo maneja
+      });
+
+      return () => unsubscribe();
+    }
+  }, [session]);
   return null;
 };
 

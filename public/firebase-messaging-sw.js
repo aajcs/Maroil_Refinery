@@ -1,8 +1,8 @@
 importScripts(
-  "https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"
+  "https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"
 );
 importScripts(
-  "https://www.gstatic.com/firebasejs/9.0.0/firebase-messaging-compat.js"
+  "https://www.gstatic.com/firebasejs/9.22.0/firebase-messaging-compat.js"
 );
 
 const firebaseConfig = {
@@ -18,13 +18,26 @@ firebase.initializeApp(firebaseConfig);
 const messaging = firebase.messaging();
 
 // Manejar notificaciones en segundo plano
-messaging.onBackgroundMessage((payload) => {
+messaging.setBackgroundMessageHandler(async (payload) => {
   console.log("[Firebase] Notificación en segundo plano:", payload);
 
   const { title, body, image } = payload.notification || {};
   // Use unique tag based on notification ID
   const tag = payload.data?._id || payload.data?.id || "default-tag";
+  const data = payload.data || {};
+  // Evitar mostrar notificación si la app está en primer plano
+  const clientList = await clients.matchAll({
+    type: "window",
+    includeUncontrolled: true,
+  });
+  const isAppInForeground = clientList.some(
+    (client) => client.visibilityState === "visible"
+  );
 
+  if (isAppInForeground) {
+    console.log("App en primer plano - No mostrar notificación");
+    return;
+  }
   const notificationOptions = {
     body,
     icon: "/icon-192x192.png",
