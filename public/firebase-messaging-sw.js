@@ -17,22 +17,6 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const messaging = firebase.messaging();
 
-// Configuración de notificaciones
-messaging.onMessage((payload) => {
-  console.log("Notificación en primer plano:", payload);
-
-  const { title, body, image } = payload.notification || {};
-  const notificationOptions = {
-    body,
-    icon: "/icon-192x192.png", // Usa el icono de tu PWA
-    image: image, // Muestra imagen si viene en el payload
-    data: payload.data, // Mantén los datos para el click
-  };
-
-  // Mostrar notificación
-  new Notification(title || "Nueva notificación", notificationOptions);
-});
-
 // Manejar notificaciones en segundo plano
 messaging.onBackgroundMessage((payload) => {
   console.log("[Firebase] Notificación en segundo plano:", payload);
@@ -47,10 +31,20 @@ messaging.onBackgroundMessage((payload) => {
     data: payload.data, // Mantén los datos originales
   };
 
-  return self.registration.showNotification(
-    title || "Nueva notificación",
-    notificationOptions
-  );
+  // Mostrar notificación solo si no hay ventana enfocada
+  return self.clients
+    .matchAll({ type: "window", includeUncontrolled: true })
+    .then((clientList) => {
+      const windowFocused = clientList.some(
+        (client) => client.visibilityState === "visible"
+      );
+      if (!windowFocused) {
+        return self.registration.showNotification(
+          title || "Nueva notificación",
+          notificationOptions
+        );
+      }
+    });
 });
 
 // Manejar clic en notificación
