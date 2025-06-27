@@ -1,8 +1,8 @@
 importScripts(
-  "https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"
+  "https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"
 );
 importScripts(
-  "https://www.gstatic.com/firebasejs/9.22.0/firebase-messaging-compat.js"
+  "https://www.gstatic.com/firebasejs/9.0.0/firebase-messaging-compat.js"
 );
 
 const firebaseConfig = {
@@ -17,27 +17,27 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const messaging = firebase.messaging();
 
+// Configuración de notificaciones
+messaging.onMessage((payload) => {
+  console.log("Notificación en primer plano:", payload);
+
+  const { title, body, image } = payload.notification || {};
+  const notificationOptions = {
+    body,
+    icon: "/icon-192x192.png", // Usa el icono de tu PWA
+    image: image, // Muestra imagen si viene en el payload
+    data: payload.data, // Mantén los datos para el click
+  };
+
+  // Mostrar notificación
+  new Notification(title || "Nueva notificación", notificationOptions);
+});
+
 // Manejar notificaciones en segundo plano
-messaging.setBackgroundMessageHandler(async (payload) => {
+messaging.onBackgroundMessage((payload) => {
   console.log("[Firebase] Notificación en segundo plano:", payload);
 
   const { title, body, image } = payload.notification || {};
-  // Use unique tag based on notification ID
-  const tag = payload.data?._id || payload.data?.id || "default-tag";
-  const data = payload.data || {};
-  // Evitar mostrar notificación si la app está en primer plano
-  const clientList = await clients.matchAll({
-    type: "window",
-    includeUncontrolled: true,
-  });
-  const isAppInForeground = clientList.some(
-    (client) => client.visibilityState === "visible"
-  );
-
-  if (isAppInForeground) {
-    console.log("App en primer plano - No mostrar notificación");
-    return;
-  }
   const notificationOptions = {
     body,
     icon: "/icon-192x192.png",
@@ -45,27 +45,12 @@ messaging.setBackgroundMessageHandler(async (payload) => {
     image: image,
     vibrate: [200, 100, 200], // Vibración para dispositivos móviles
     data: payload.data, // Mantén los datos originales
-    tag, // ensure uniqueness
   };
 
-  // Mostrar notificación solo si no hay ventana enfocada
-  return self.clients
-    .matchAll({ type: "window", includeUncontrolled: true })
-    .then((clientList) => {
-      const windowFocused = clientList.some(
-        (client) => client.visibilityState === "visible"
-      );
-      if (!windowFocused) {
-        self.registration.getNotifications({ tag }).then((existing) => {
-          if (!existing.length) {
-            self.registration.showNotification(
-              title || "Nueva notificación",
-              notificationOptions
-            );
-          }
-        });
-      }
-    });
+  return self.registration.showNotification(
+    title || "Nueva notificación",
+    notificationOptions
+  );
 });
 
 // Manejar clic en notificación
