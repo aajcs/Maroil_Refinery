@@ -22,6 +22,9 @@ messaging.onBackgroundMessage((payload) => {
   console.log("[Firebase] Notificación en segundo plano:", payload);
 
   const { title, body, image } = payload.notification || {};
+  // Use unique tag based on notification ID
+  const tag = payload.data?._id || payload.data?.id || "default-tag";
+
   const notificationOptions = {
     body,
     icon: "/icon-192x192.png",
@@ -29,6 +32,7 @@ messaging.onBackgroundMessage((payload) => {
     image: image,
     vibrate: [200, 100, 200], // Vibración para dispositivos móviles
     data: payload.data, // Mantén los datos originales
+    tag, // ensure uniqueness
   };
 
   // Mostrar notificación solo si no hay ventana enfocada
@@ -39,10 +43,14 @@ messaging.onBackgroundMessage((payload) => {
         (client) => client.visibilityState === "visible"
       );
       if (!windowFocused) {
-        return self.registration.showNotification(
-          title || "Nueva notificación",
-          notificationOptions
-        );
+        self.registration.getNotifications({ tag }).then((existing) => {
+          if (!existing.length) {
+            self.registration.showNotification(
+              title || "Nueva notificación",
+              notificationOptions
+            );
+          }
+        });
       }
     });
 });

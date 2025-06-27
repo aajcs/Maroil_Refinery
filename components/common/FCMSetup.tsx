@@ -22,24 +22,35 @@ const FCMSetup = () => {
     const setupFCM = async () => {
       try {
         if (session?.user) {
+          // Only request token once if not already granted and stored
+          if (
+            Notification.permission === "granted" &&
+            localStorage.getItem("fcmToken")
+          ) {
+            return;
+          }
+
           const messaging = getMessaging(app);
 
-          // Solicitar permisos
-          const permission = await Notification.requestPermission();
+          // Solicitar permisos si no ha sido concedido
+          if (Notification.permission !== "granted") {
+            const permission = await Notification.requestPermission();
+            if (permission !== "granted") return;
+          }
 
-          if (permission === "granted") {
-            // Obtener token FCM
-            const token = await getToken(messaging, {
-              vapidKey:
-                "BAt0qzq_29FehDspXF44THssvagrCEBELNbae6gJe3cMRG_KsODiwiG4E3hdo5eEId7RS6isQqxEkxqO_fSp7eg",
-            });
+          // Obtener token FCM
+          const token = await getToken(messaging, {
+            vapidKey:
+              "BAt0qzq_29FehDspXF44THssvagrCEBELNbae6gJe3cMRG_KsODiwiG4E3hdo5eEId7RS6isQqxEkxqO_fSp7eg",
+          });
 
-            if (token) {
-              console.log("Token FCM:", token);
+          if (token) {
+            console.log("Token FCM:", token);
+            // Store token to avoid duplicate requests
+            localStorage.setItem("fcmToken", token);
 
-              // Enviar token al backend
-              await apiClient.post("/save-token", { token });
-            }
+            // Enviar token al backend
+            await apiClient.post("/save-token", { token });
           }
         }
       } catch (error) {
