@@ -17,28 +17,71 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const messaging = firebase.messaging();
 
-// Manejar notificaciones en primer plano
+// Configuración de notificaciones
 messaging.onMessage((payload) => {
   console.log("Notificación en primer plano:", payload);
-  // Mostrar notificación manualmente
-  const { title, body } = payload.notification;
-  new Notification(title, { body });
+
+  const { title, body, image } = payload.notification || {};
+  const notificationOptions = {
+    body,
+    icon: "/icon-192x192.png", // Usa el icono de tu PWA
+    image: image, // Muestra imagen si viene en el payload
+    data: payload.data, // Mantén los datos para el click
+  };
+
+  // Mostrar notificación
+  new Notification(title || "Nueva notificación", notificationOptions);
 });
 
 // Manejar notificaciones en segundo plano
 messaging.onBackgroundMessage((payload) => {
-  console.log("Notificación en segundo plano:", payload);
-  const { title, body } = payload.notification;
+  console.log("[Firebase] Notificación en segundo plano:", payload);
+
+  const { title, body, image } = payload.notification || {};
   const notificationOptions = {
     body,
-    icon: "/icon.png",
+    icon: "/icon-192x192.png",
+    badge: "/badge-96x96.png",
+    image: image,
+    vibrate: [200, 100, 200], // Vibración para dispositivos móviles
+    data: payload.data, // Mantén los datos originales
   };
 
-  self.registration.showNotification(title, notificationOptions);
+  return self.registration.showNotification(
+    title || "Nueva notificación",
+    notificationOptions
+  );
 });
 
 // Manejar clic en notificación
 self.addEventListener("notificationclick", (event) => {
+  console.log("Notificación clickeada", event.notification.data);
   event.notification.close();
-  event.waitUntil(clients.openWindow("https://tudominio.com"));
+
+  // Usa el link del payload o uno por defecto
+  const urlToOpen = new URL(
+    event.notification.data?.link || "/",
+    self.location.origin
+  ).href;
+
+  event.waitUntil(
+    clients.matchAll({ type: "window" }).then((clientList) => {
+      // Busca si ya hay una pestaña abierta con esta URL
+      for (const client of clientList) {
+        if (client.url === urlToOpen && "focus" in client) {
+          return client.focus();
+        }
+      }
+
+      // Si no hay ninguna, abre una nueva
+      if (clients.openWindow) {
+        return clients.openWindow(urlToOpen);
+      }
+    })
+  );
+});
+
+// Manejar cierre de notificación (opcional)
+self.addEventListener("notificationclose", (event) => {
+  console.log("Notificación cerrada", event.notification);
 });
