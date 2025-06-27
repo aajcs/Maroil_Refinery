@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { getMessaging, getToken, onMessage } from "firebase/messaging";
+import { getMessaging, getToken } from "firebase/messaging";
 import { initializeApp } from "firebase/app";
 import apiClient from "@/app/api/apiClient";
 import { useSession } from "next-auth/react";
@@ -22,35 +22,24 @@ const FCMSetup = () => {
     const setupFCM = async () => {
       try {
         if (session?.user) {
-          // Only request token once if not already granted and stored
-          if (
-            Notification.permission === "granted" &&
-            localStorage.getItem("fcmToken")
-          ) {
-            return;
-          }
-
           const messaging = getMessaging(app);
 
-          // Solicitar permisos si no ha sido concedido
-          if (Notification.permission !== "granted") {
-            const permission = await Notification.requestPermission();
-            if (permission !== "granted") return;
-          }
+          // Solicitar permisos
+          const permission = await Notification.requestPermission();
 
-          // Obtener token FCM
-          const token = await getToken(messaging, {
-            vapidKey:
-              "BAt0qzq_29FehDspXF44THssvagrCEBELNbae6gJe3cMRG_KsODiwiG4E3hdo5eEId7RS6isQqxEkxqO_fSp7eg",
-          });
+          if (permission === "granted") {
+            // Obtener token FCM
+            const token = await getToken(messaging, {
+              vapidKey:
+                "BAt0qzq_29FehDspXF44THssvagrCEBELNbae6gJe3cMRG_KsODiwiG4E3hdo5eEId7RS6isQqxEkxqO_fSp7eg",
+            });
 
-          if (token) {
-            console.log("Token FCM:", token);
-            // Store token to avoid duplicate requests
-            localStorage.setItem("fcmToken", token);
+            if (token) {
+              console.log("Token FCM:", token);
 
-            // Enviar token al backend
-            await apiClient.post("/save-token", { token });
+              // Enviar token al backend
+              await apiClient.post("/save-token", { token });
+            }
           }
         }
       } catch (error) {
@@ -60,20 +49,7 @@ const FCMSetup = () => {
 
     setupFCM();
   }, [session]);
-  useEffect(() => {
-    if (typeof window !== "undefined" && session?.user) {
-      const messaging = getMessaging(app);
 
-      const unsubscribe = onMessage(messaging, (payload) => {
-        console.log("Notificación en primer plano:", payload);
-
-        // Aquí puedes actualizar el estado de tu app o mostrar un toast
-        // PERO NO MOSTRAR UNA NOTIFICACIÓN - Firebase ya lo maneja
-      });
-
-      return () => unsubscribe();
-    }
-  }, [session]);
   return null;
 };
 
