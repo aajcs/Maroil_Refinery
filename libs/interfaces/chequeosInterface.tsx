@@ -50,7 +50,10 @@ export interface ChequeoCantidad {
       _id?: string;
       nombre?: string;
       id: string;
+      nombreChofer?: string;
+      placa?: string;
       [key: string]: any;
+
     };
   };
   _id: string;

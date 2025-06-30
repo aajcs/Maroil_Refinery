@@ -150,8 +150,10 @@ const ChequeoCantidadList = () => {
           setOnDuplicate(true);
           setChequeoCantidadFormDialog(true);
         }}
-        pdfTemplate={ChequeoCantidadTemplate}
-        pdfFileName={`ChequeCantidad${rowData.numeroChequeoCantidad}.pdf`}
+        pdfTemplate={(props) => (
+          <ChequeoCantidadTemplate data={props.data} logoUrl="/logo.png" />
+        )}
+        pdfFileName={`ChequeoCantidad${rowData.numeroChequeoCantidad}.pdf`}
         pdfDownloadText="Descargar Chequeo"
       />
     </>

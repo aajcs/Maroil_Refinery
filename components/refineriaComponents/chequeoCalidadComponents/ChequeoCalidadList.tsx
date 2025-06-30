@@ -19,6 +19,7 @@ import {
 } from "@/app/api/chequeoCalidadService";
 import CustomActionButtons from "@/components/common/CustomActionButtons";
 import { ChequeoCalidad } from "@/libs/interfaces";
+import ChequeoCalidadTemplate from "@/components/pdf/templates/ChequeoCalidadTemplate";
 
 const ChequeoCalidadList = () => {
   const { activeRefineria } = useRefineriaStore();
@@ -147,6 +148,9 @@ const ChequeoCalidadList = () => {
         setOnDuplicate(true);
         setChequeoCalidadFormDialog(true);
       }}
+        pdfTemplate={ChequeoCalidadTemplate}
+        pdfFileName={`ChequeoCalidad${rowData.numeroChequeoCalidad}.pdf`}
+        pdfDownloadText="Descargar Chequeo"
     />
   );
 

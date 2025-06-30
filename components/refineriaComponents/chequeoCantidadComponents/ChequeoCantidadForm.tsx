@@ -52,7 +52,9 @@ const ChequeoCantidadForm = ({
   setOnDuplicate,
 }: ChequeoCantidadFormProps) => {
   const { activeRefineria } = useRefineriaStore();
-  const { productos, operadors, tanques, recepcions, despachos, loading } =
+  console.log("Chequeo de Cantidad", chequeoCantidad);
+  
+    const { productos, operadors, tanques, recepcions, despachos, loading } =
     useRefineryData(activeRefineria?.id || "");
   const calendarRef = useRef<Calendar>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -95,8 +97,11 @@ const ChequeoCantidadForm = ({
         recepcions.map((recepcion) => ({
           label: `Recepción - ${recepcion.idGuia}`,
           value: {
-            id: recepcion.id,
-            idGuia: recepcion.idGuia,
+          id: recepcion.id,
+          idGuia: recepcion.idGuia,
+          placa: recepcion.placa,
+          nombreChofer: recepcion.nombreChofer,
+          // _id: recepcion.id,
           },
         }))
       );
@@ -107,6 +112,8 @@ const ChequeoCantidadForm = ({
           value: {
             id: despacho.id,
             idGuia: despacho.idGuia,
+            placa: despacho.placa,
+           nombreChofer: despacho.nombreChofer,
             _id: despacho.id,
           },
         }))
@@ -235,6 +242,7 @@ const ChequeoCantidadForm = ({
       }
     }
   };
+  console.log ("Chequeo de Cantidad Form Data", watch());
   return (
     <div>
       <form onSubmit={handleSubmit(onSubmit)}>

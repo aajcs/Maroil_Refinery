@@ -135,6 +135,8 @@ const ChequeoCalidadForm = ({
           value: {
             id: recepcion.id,
             idGuia: recepcion.idGuia,
+             placa: recepcion.placa,
+          nombreChofer: recepcion.nombreChofer,
           },
         }))
       );
@@ -146,6 +148,8 @@ const ChequeoCalidadForm = ({
             id: despacho.id,
             idGuia: despacho.idGuia,
             _id: despacho.id,
+            placa: despacho.placa,
+          nombreChofer: despacho.nombreChofer,
           },
         }))
       );
