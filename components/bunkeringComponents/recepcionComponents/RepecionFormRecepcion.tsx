@@ -146,7 +146,7 @@ export const RepecionFormRecepcion = ({
           <div className="p-3 bg-white border-round shadow-1">
             <label className="block font-medium text-900 mb-2 flex align-items-center">
               <i className="pi pi-file text-primary mr-2"></i>
-              Número de Contrato
+              Número de Contratosd
             </label>
             <Controller
               name="idContrato"
@@ -157,18 +157,20 @@ export const RepecionFormRecepcion = ({
                     id="idContrato.id"
                     value={field.value}
                     onChange={(e) => field.onChange(e.value)}
-                    options={contratos.map((contrato) => ({
-                      label: `${contrato.numeroContrato} - ${truncateText(
-                        contrato.descripcion || "Sin descripción",
-                        30
-                      )}`,
-                      value: {
-                        id: contrato.id,
-                        numeroContrato: contrato.numeroContrato,
-                        idItems: contrato.idItems,
-                        _id: contrato._id,
-                      },
-                    }))}
+                    options={contratos
+                      .filter((c) => c.tipoContrato === "Compra")
+                      .map((contrato) => ({
+                        label: `${contrato.numeroContrato} - ${truncateText(
+                          contrato.descripcion || "Sin descripción",
+                          30
+                        )}`,
+                        value: {
+                          id: contrato.id,
+                          numeroContrato: contrato.numeroContrato,
+                          idItems: contrato.idItems,
+                          _id: contrato._id,
+                        },
+                      }))}
                     placeholder="Seleccionar un proveedor"
                     className={classNames("w-full", {
                       "p-invalid": fieldState.error,
