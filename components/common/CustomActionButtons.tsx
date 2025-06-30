@@ -1,5 +1,6 @@
 import React from "react";
 import { Button } from "primereact/button";
+import PDFGenerator from "../pdf/PDFGenerator";
 
 interface CustomActionButtonsProps<T> {
   rowData: T; // Datos de la fila
@@ -7,6 +8,12 @@ interface CustomActionButtonsProps<T> {
   onEdit?: (rowData: T) => void; // Acción para editar
   onDelete?: (rowData: T) => void; // Acción para eliminar
   onDuplicate?: (rowData: T) => void; // Acción para copiar
+  /** Plantilla dinámica para generar el PDF */
+  pdfTemplate?: React.ComponentType<{ data: T }>;
+  /** Nombre de archivo para descarga */
+  pdfFileName?: string;
+  /** Texto del botón de descarga */
+  pdfDownloadText?: string;
 }
 
 const CustomActionButtons = <T,>({
@@ -15,6 +22,9 @@ const CustomActionButtons = <T,>({
   onEdit,
   onDelete,
   onDuplicate,
+  pdfTemplate: Template,
+  pdfFileName = "documento.pdf",
+  pdfDownloadText = "Descargar PDF",
 }: CustomActionButtonsProps<T>) => {
   return (
     <div className="flex gap-1  flex-column justify-content-center align-items-center sm:flex-row ">
@@ -73,6 +83,15 @@ const CustomActionButtons = <T,>({
           onClick={() => {
             onDuplicate(rowData);
           }}
+        />
+      )}
+      {/* Botón PDF dinámico */}
+      {Template && (
+        <PDFGenerator
+          template={Template}
+          data={rowData}
+          fileName={pdfFileName}
+          downloadText={pdfDownloadText}
         />
       )}
     </div>

@@ -20,6 +20,8 @@ import {
 } from "@/app/api/chequeoCantidadService";
 import CustomActionButtons from "@/components/common/CustomActionButtons";
 
+import ChequeoCantidadTemplate from "@/components/pdf/templates/ChequeoCantidadTemplate";
+
 const ChequeoCantidadList = () => {
   const { activeRefineria } = useRefineriaStore();
   const [chequeoCantidads, setChequeoCantidads] = useState<ChequeoCantidad[]>(
@@ -127,27 +129,32 @@ const ChequeoCantidadList = () => {
   );
 
   const actionBodyTemplate = (rowData: ChequeoCantidad) => (
-    <CustomActionButtons
-      rowData={rowData}
-      onInfo={(data) => {
-        setSelectedAuditChequeoCantidad(data);
+    <>
+      <CustomActionButtons
+        rowData={rowData}
+        onInfo={(data) => {
+          setSelectedAuditChequeoCantidad(data);
 
-        setAuditDialogVisible(true);
-      }}
-      onEdit={(data) => {
-        setChequeoCantidad(data);
-        setChequeoCantidadFormDialog(true);
-      }}
-      onDelete={(data) => {
-        setChequeoCantidad(data);
-        setDeleteProductDialog(true);
-      }}
-      onDuplicate={(data) => {
-        setChequeoCantidad(data);
-        setOnDuplicate(true);
-        setChequeoCantidadFormDialog(true);
-      }}
-    />
+          setAuditDialogVisible(true);
+        }}
+        onEdit={(data) => {
+          setChequeoCantidad(data);
+          setChequeoCantidadFormDialog(true);
+        }}
+        onDelete={(data) => {
+          setChequeoCantidad(data);
+          setDeleteProductDialog(true);
+        }}
+        onDuplicate={(data) => {
+          setChequeoCantidad(data);
+          setOnDuplicate(true);
+          setChequeoCantidadFormDialog(true);
+        }}
+        pdfTemplate={ChequeoCantidadTemplate}
+        pdfFileName={`ChequeCantidad${rowData.numeroChequeoCantidad}.pdf`}
+        pdfDownloadText="Descargar Chequeo"
+      />
+    </>
   );
 
   const showToast = (
