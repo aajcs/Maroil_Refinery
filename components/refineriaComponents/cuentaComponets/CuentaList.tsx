@@ -238,25 +238,57 @@ const CuentaList = ({ tipoCuenta }: CuentaListProps) => {
       >
         <Column body={actionBodyTemplate} headerStyle={{ minWidth: "10rem" }} />
         <Column field="numeroCuenta" header="N° Cuenta" sortable />
+          <Column
+          field="idContrato.numeroContrato"
+          header="N° Contrato"
+          sortable
+        />
         <Column
           header="Abonos"
           body={abonosBodyTemplate}
           style={{ minWidth: "250px" }}
         />
-        <Column field="tipoCuenta" header="Tipo de Cuenta" sortable />
+        {/* <Column field="tipoCuenta" header="Tipo de Cuenta" sortable /> */}
         <Column
           field="montoTotalContrato"
           header="Monto Total Contrato"
           sortable
+          body={(rowData: Cuenta) =>
+        rowData.montoTotalContrato != null
+          ? rowData.montoTotalContrato.toLocaleString("de-DE", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+            })
+          : ""
+          }
         />
-        <Column field="totalAbonado" header="Total Abonado" sortable />
-        <Column field="balancePendiente" header="Balance Pendiente" sortable />
         <Column
-          field="idContrato.numeroContrato"
-          header="N° Contrato"
+          field="totalAbonado"
+          header="Total Abonado"
           sortable
+          body={(rowData: Cuenta) =>
+        rowData.totalAbonado != null
+          ? rowData.totalAbonado.toLocaleString("de-DE", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+            })
+          : ""
+          }
         />
-        
+        <Column
+          field="balancePendiente"
+          header="Balance Pendiente"
+          sortable
+          body={(rowData: Cuenta) =>
+        rowData.balancePendiente != null
+          ? rowData.balancePendiente.toLocaleString("de-DE", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+            })
+          : ""
+          }
+        />
+      
         {/* <Column field="createdBy.nombre" header="Creado Por" sortable />
         <Column
           field="createdAt"
