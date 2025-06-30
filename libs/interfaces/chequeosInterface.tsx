@@ -52,6 +52,9 @@ export interface ChequeoCantidad {
       id: string;
       nombreChofer?: string;
       placa?: string;
+      numeroRecepcion?: string;
+      cantidadRecibida?: number;
+      cantidadEnviada?: number;
       [key: string]: any;
 
     };
