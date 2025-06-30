@@ -37,7 +37,7 @@ interface ChequeoCalidadFormProps {
   ) => void;
   onDuplicate?: boolean;
   toast: React.RefObject<Toast> | null;
-  
+
   setOnDuplicate?: (onDuplicate: boolean) => void;
 }
 
@@ -130,28 +130,32 @@ const ChequeoCalidadForm = ({
       );
     } else if (tipo === "Recepcion") {
       setDynamicOptions(
-        recepcions.map((recepcion) => ({
-          label: `Recepción - ${recepcion.idGuia}`,
-          value: {
-            id: recepcion.id,
-            idGuia: recepcion.idGuia,
-             placa: recepcion.placa,
-          nombreChofer: recepcion.nombreChofer,
-          },
-        }))
+        recepcions
+          .filter((r) => r.estadoCarga !== "FINALIZADO")
+          .map((recepcion) => ({
+            label: `Recepción - ${recepcion.idGuia}`,
+            value: {
+              id: recepcion.id,
+              idGuia: recepcion.idGuia,
+              placa: recepcion.placa,
+              nombreChofer: recepcion.nombreChofer,
+            },
+          }))
       );
     } else if (tipo === "Despacho") {
       setDynamicOptions(
-        despachos.map((despacho) => ({
-          label: `Despacho - ${despacho.idGuia}`,
-          value: {
-            id: despacho.id,
-            idGuia: despacho.idGuia,
-            _id: despacho.id,
-            placa: despacho.placa,
-          nombreChofer: despacho.nombreChofer,
-          },
-        }))
+        despachos
+          .filter((d) => d.estadoCarga !== "FINALIZADO")
+          .map((despacho) => ({
+            label: `Despacho - ${despacho.idGuia}`,
+            value: {
+              id: despacho.id,
+              idGuia: despacho.idGuia,
+              _id: despacho.id,
+              placa: despacho.placa,
+              nombreChofer: despacho.nombreChofer,
+            },
+          }))
       );
     } else {
       setDynamicOptions([]);
@@ -253,8 +257,7 @@ const ChequeoCalidadForm = ({
 
       hideChequeoCalidadFormDialog();
     } catch (error) {
-    handleFormError(error, toast); // Pasamos la referencia del toast
-      
+      handleFormError(error, toast); // Pasamos la referencia del toast
     } finally {
       setSubmitting(false);
       if (onDuplicate && setOnDuplicate) {

@@ -95,7 +95,7 @@ const ChequeoCantidadForm = ({
     } else if (tipo === "Recepcion") {
       setDynamicOptions(
         recepcions
-          .filter((r) => r.estadoCarga === "FINALIZADO")
+          .filter((r) => r.estadoCarga !== "FINALIZADO")
           .map((recepcion) => ({
             label: `Recepción - ${recepcion.idGuia}`,
             value: {
@@ -110,7 +110,7 @@ const ChequeoCantidadForm = ({
     } else if (tipo === "Despacho") {
       setDynamicOptions(
         despachos
-          .filter((d) => d.estadoCarga === "FINALIZADO")
+          .filter((d) => d.estadoCarga !== "FINALIZADO")
           .map((despacho) => ({
             label: `Despacho - ${despacho.idGuia}`,
             value: {

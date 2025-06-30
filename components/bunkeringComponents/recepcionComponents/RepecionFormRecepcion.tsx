@@ -146,7 +146,7 @@ export const RepecionFormRecepcion = ({
           <div className="p-3 bg-white border-round shadow-1">
             <label className="block font-medium text-900 mb-2 flex align-items-center">
               <i className="pi pi-file text-primary mr-2"></i>
-              Número de Contratosd
+              Número de Contrato
             </label>
             <Controller
               name="idContrato"
