@@ -35,8 +35,8 @@ interface ChequeoCantidadFormProps {
     summary: string,
     detail: string
   ) => void;
-    toast: React.RefObject<Toast> | null;
-  
+  toast: React.RefObject<Toast> | null;
+
   onDuplicate?: boolean;
   setOnDuplicate?: (onDuplicate: boolean) => void;
 }
@@ -53,8 +53,8 @@ const ChequeoCantidadForm = ({
 }: ChequeoCantidadFormProps) => {
   const { activeRefineria } = useRefineriaStore();
   console.log("Chequeo de Cantidad", chequeoCantidad);
-  
-    const { productos, operadors, tanques, recepcions, despachos, loading } =
+
+  const { productos, operadors, tanques, recepcions, despachos, loading } =
     useRefineryData(activeRefineria?.id || "");
   const calendarRef = useRef<Calendar>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -97,11 +97,11 @@ const ChequeoCantidadForm = ({
         recepcions.map((recepcion) => ({
           label: `Recepción - ${recepcion.idGuia}`,
           value: {
-          id: recepcion.id,
-          idGuia: recepcion.idGuia,
-          placa: recepcion.placa,
-          nombreChofer: recepcion.nombreChofer,
-          // _id: recepcion.id,
+            id: recepcion.id,
+            idGuia: recepcion.idGuia,
+            nombreChofer: recepcion.nombreChofer,
+            placa: recepcion.placa,
+            // _id: recepcion.id,
           },
         }))
       );
@@ -112,8 +112,8 @@ const ChequeoCantidadForm = ({
           value: {
             id: despacho.id,
             idGuia: despacho.idGuia,
+            nombreChofer: despacho.nombreChofer,
             placa: despacho.placa,
-           nombreChofer: despacho.nombreChofer,
             _id: despacho.id,
           },
         }))
@@ -233,8 +233,7 @@ const ChequeoCantidadForm = ({
 
       hideChequeoCantidadFormDialog();
     } catch (error) {
-                handleFormError(error, toast); // Pasamos la referencia del toast
-      
+      handleFormError(error, toast); // Pasamos la referencia del toast
     } finally {
       setSubmitting(false);
       if (onDuplicate && setOnDuplicate) {
@@ -242,7 +241,7 @@ const ChequeoCantidadForm = ({
       }
     }
   };
-  console.log ("Chequeo de Cantidad Form Data", watch());
+  console.log("Chequeo de Cantidad Form Data", watch("aplicar"));
   return (
     <div>
       <form onSubmit={handleSubmit(onSubmit)}>
