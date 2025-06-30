@@ -94,29 +94,33 @@ const ChequeoCantidadForm = ({
       );
     } else if (tipo === "Recepcion") {
       setDynamicOptions(
-        recepcions.map((recepcion) => ({
-          label: `Recepción - ${recepcion.idGuia}`,
-          value: {
-            id: recepcion.id,
-            idGuia: recepcion.idGuia,
-            nombreChofer: recepcion.nombreChofer,
-            placa: recepcion.placa,
-            // _id: recepcion.id,
-          },
-        }))
+        recepcions
+          .filter((r) => r.estadoCarga !== "FINALIZADO")
+          .map((recepcion) => ({
+            label: `Recepción - ${recepcion.idGuia}`,
+            value: {
+              id: recepcion.id,
+              idGuia: recepcion.idGuia,
+              nombreChofer: recepcion.nombreChofer,
+              placa: recepcion.placa,
+              // _id: recepcion.id,
+            },
+          }))
       );
     } else if (tipo === "Despacho") {
       setDynamicOptions(
-        despachos.map((despacho) => ({
-          label: `Despacho - ${despacho.idGuia}`,
-          value: {
-            id: despacho.id,
-            idGuia: despacho.idGuia,
-            nombreChofer: despacho.nombreChofer,
-            placa: despacho.placa,
-            _id: despacho.id,
-          },
-        }))
+        despachos
+          .filter((d) => d.estadoCarga !== "FINALIZADO")
+          .map((despacho) => ({
+            label: `Despacho - ${despacho.idGuia}`,
+            value: {
+              id: despacho.id,
+              idGuia: despacho.idGuia,
+              nombreChofer: despacho.nombreChofer,
+              placa: despacho.placa,
+              _id: despacho.id,
+            },
+          }))
       );
     } else {
       setDynamicOptions([]);

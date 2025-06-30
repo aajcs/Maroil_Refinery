@@ -156,18 +156,20 @@ export const DespachoFormDespacho = ({
                     id="idContrato.id"
                     value={field.value}
                     onChange={(e) => field.onChange(e.value)}
-                    options={contratos.map((contrato) => ({
-                      label: `${contrato.numeroContrato} - ${truncateText(
-                        contrato.descripcion || "Sin descripción",
-                        30
-                      )}`,
-                      value: {
-                        id: contrato.id,
-                        numeroContrato: contrato.numeroContrato,
-                        idItems: contrato.idItems,
-                        _id: contrato._id,
-                      },
-                    }))}
+                    options={contratos
+                      .filter((c) => c.tipoContrato === "Venta")
+                      .map((contrato) => ({
+                        label: `${contrato.numeroContrato} - ${truncateText(
+                          contrato.descripcion || "Sin descripción",
+                          30
+                        )}`,
+                        value: {
+                          id: contrato.id,
+                          numeroContrato: contrato.numeroContrato,
+                          idItems: contrato.idItems,
+                          _id: contrato._id,
+                        },
+                      }))}
                     placeholder="Seleccionar un proveedor"
                     className={classNames("w-full", {
                       "p-invalid": fieldState.error,
