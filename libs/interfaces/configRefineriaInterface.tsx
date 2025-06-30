@@ -11,6 +11,8 @@ export interface Refineria {
   createdBy: UserReference;
   modificadoPor: UserReference;
   historial: HistorialCambio[];
+  nit: string;
+img:string;
 }
 
 // Definir tipo de usuario para auditoría

@@ -20,8 +20,8 @@ interface ChequeoCantidadTemplateProps {
 const styles = StyleSheet.create({
   ...globalStyles,
   page: {
-    padding: 24, // Reducido de 32 a 24
-    fontSize: 10, // Reducido de 11 a 10
+    padding: 24,
+    fontSize: 10,
     fontFamily: "Helvetica",
     backgroundColor: "#fff",
   },
@@ -29,10 +29,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-start",
-    marginBottom: 14, // Reducido de 24 a 14
+    marginBottom: 14,
     borderBottomWidth: 1,
     borderBottomColor: "#3498db",
-    paddingBottom: 6, // Reducido de 12 a 6
+    paddingBottom: 6,
   },
   logoSection: {
     width: "45%",
@@ -40,20 +40,20 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
   },
   logo: {
-    width: 48, // Reducido de 60 a 48
-    height: 48, // Reducido de 60 a 48
-    marginBottom: 4, // Reducido
+    width: 48,
+    height: 48,
+    marginBottom: 4,
     marginLeft: 2,
   },
   refineryName: {
-    fontSize: 12, // Reducido de 15 a 12
+    fontSize: 12,
     fontWeight: "bold",
     color: "#2c3e50",
     marginLeft: 2,
     marginBottom: 1,
   },
   productName: {
-    fontSize: 9, // Reducido de 11 a 9
+    fontSize: 9,
     color: "#555",
     marginLeft: 2,
     marginBottom: 1,
@@ -64,23 +64,23 @@ const styles = StyleSheet.create({
     flexDirection: "column",
   },
   operationNumber: {
-    fontSize: 14, // Reducido de 18 a 14
+    fontSize: 14,
     fontWeight: "bold",
     color: "#3498db",
-    marginBottom: 4, // Reducido
+    marginBottom: 4,
   },
   reportDate: {
-    fontSize: 8, // Reducido de 10 a 8
+    fontSize: 8,
     color: "#888",
-    marginBottom: 4, // Reducido
+    marginBottom: 4,
   },
   statusBadge: {
-    padding: 3, // Reducido
+    padding: 3,
     borderRadius: 4,
     fontWeight: "bold",
     textAlign: "center",
-    fontSize: 8, // Reducido de 10 a 8
-    minWidth: 60, // Reducido
+    fontSize: 8,
+    minWidth: 60,
   },
   statusApproved: {
     backgroundColor: "#e8f5e9",
@@ -98,42 +98,42 @@ const styles = StyleSheet.create({
     border: "1px solid #c62828",
   },
   section: {
-    marginTop: 10, // Reducido de 18 a 10
-    marginBottom: 6, // Reducido de 10 a 6
+    marginTop: 10,
+    marginBottom: 6,
   },
   sectionDivider: {
     height: 1,
     backgroundColor: "#eee",
-    marginVertical: 8, // Reducido de 15 a 8
+    marginVertical: 8,
   },
   sectionTitle: {
     backgroundColor: "#f5f5f5",
-    padding: 5, // Reducido de 8 a 5
+    padding: 5,
     borderRadius: 4,
-    marginBottom: 6, // Reducido de 10 a 6
+    marginBottom: 6,
     fontWeight: "bold",
-    fontSize: 11, // Reducido de 13 a 11
+    fontSize: 11,
     color: "#222",
   },
   row: {
     flexDirection: "row",
-    marginBottom: 4, // Reducido de 8 a 4
+    marginBottom: 4,
   },
   label: {
     width: "40%",
     fontWeight: "bold",
     color: "#555",
-    fontSize: 9, // Reducido de 11 a 9
+    fontSize: 9,
   },
   value: {
     width: "60%",
-    fontSize: 9, // Reducido de 11 a 9
+    fontSize: 9,
   },
   quantityInfo: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: 8, // Reducido de 15 a 8
-    padding: 6, // Reducido de 10 a 6
+    marginTop: 8,
+    padding: 6,
     backgroundColor: "#f9f9f9",
     borderRadius: 4,
     borderWidth: 1,
@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
   quantityBox: {
     width: "48%",
     textAlign: "center",
-    padding: 6, // Reducido de 10 a 6
+    padding: 6,
     borderRadius: 4,
   },
   expected: {
@@ -155,18 +155,18 @@ const styles = StyleSheet.create({
   },
   differenceText: {
     fontWeight: "bold",
-    fontSize: 10, // Reducido de 13 a 10
+    fontSize: 10,
     textAlign: "center",
-    marginTop: 6, // Reducido de 10 a 6
+    marginTop: 6,
   },
   differenceNote: {
-    fontSize: 8, // Reducido de 10 a 8
+    fontSize: 8,
     color: "#666",
     textAlign: "center",
-    marginTop: 1, // Reducido de 2 a 1
+    marginTop: 1,
   },
   signatureContainer: {
-    marginTop: 20, // Reducido de 40 a 20
+    marginTop: 20,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-end",
@@ -175,23 +175,23 @@ const styles = StyleSheet.create({
   signatureBox: {
     width: "45%",
     textAlign: "center",
-    fontSize: 9, // Reducido de 11 a 9
+    fontSize: 9,
   },
   signatureLabel: {
-    marginBottom: 10, // Reducido de 18 a 10
+    marginBottom: 10,
     fontWeight: "bold",
   },
   signatureLine: {
-    marginVertical: 10, // Reducido de 18 a 10
-    fontSize: 12, // Reducido de 14 a 12
+    marginVertical: 10,
+    fontSize: 12,
   },
   footer: {
     position: "absolute",
-    bottom: 16, // Reducido de 24 a 16
-    left: 24, // Reducido de 32 a 24
-    right: 24, // Reducido de 32 a 24
+    bottom: 16,
+    left: 24,
+    right: 24,
     textAlign: "center",
-    fontSize: 8, // Reducido de 9 a 8
+    fontSize: 8,
     color: "#888",
   },
 });
@@ -217,98 +217,98 @@ const ChequeoCantidadTemplate: React.FC<ChequeoCantidadTemplateProps> = ({
     }
   };
 
-  const renderTipoEspecifico = () => {
-    switch (data.aplicar.tipo.toLowerCase()) {
-      case "tanque":
-        return (
-          <>
-            <View style={styles.row}>
-              <Text style={styles.label}>Tanque:</Text>
-              <Text style={styles.value}>
-                {data.aplicar.idReferencia.nombre}
-              </Text>
-            </View>
-            <View style={styles.row}>
-              <Text style={styles.label}>ID Tanque:</Text>
-              <Text style={styles.value}>{data.aplicar.idReferencia.id}</Text>
-            </View>
-          </>
-        );
-      case "recepcion":
-        return (
-          <>
-        <View style={styles.row}>
-          <Text style={styles.label}>ID Guía:</Text>
-          <Text style={styles.value}>
-            {data.aplicar.idReferencia.idGuia}
-          </Text>
-        </View>
-        
-        <View style={styles.row}>
-          <Text style={styles.label}>Número de Recepción:</Text>
-          <Text style={styles.value}>{data.aplicar.idReferencia.numeroRecepcion}</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.label}>Chofer:</Text>
-          <Text style={styles.value}>{data.aplicar.idReferencia.nombreChofer}</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.label}>Placa:</Text>
-          <Text style={styles.value}>{data.aplicar.idReferencia.placa}</Text>
-        </View>
-          </>
-        );
-            case "despacho":
-        return (
-          <>
-        <View style={styles.row}>
-          <Text style={styles.label}>N° Despacho:</Text>
-          <Text style={styles.value}>
-            {data.aplicar.idReferencia.idGuia}
-          </Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.label}>ID Despacho:</Text>
-          <Text style={styles.value}>{data.aplicar.idReferencia.id}</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.label}>Chofer:</Text>
-          <Text style={styles.value}>{data.aplicar.idReferencia.nombreChofer}</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.label}>Placa:</Text>
-          <Text style={styles.value}>{data.aplicar.idReferencia.placa}</Text>
-        </View>
-          </>
-        );
-      default:
-        return (
+const renderTipoEspecifico = () => {
+  switch (data.aplicar.tipo.toLowerCase()) {
+    case "tanque":
+      return (
+        <>
           <View style={styles.row}>
-            <Text style={styles.label}>Referencia:</Text>
+            <Text style={styles.label}>Tanque:</Text>
             <Text style={styles.value}>
-              {JSON.stringify(data.aplicar.idReferencia)}
+              {data.aplicar.idReferencia.nombre}
             </Text>
           </View>
-        );
-    }
-  };
-
-  const diferencia = data.numeroChequeoCantidad - data.cantidad;
-  const porcentajeDiferencia = (
-    (Math.abs(diferencia) / data.numeroChequeoCantidad) *
-    100
-  ).toFixed(2);
-  const diferenciaTexto = `${Math.abs(diferencia)} (${porcentajeDiferencia}%)`;
-
+          <View style={styles.row}>
+            <Text style={styles.label}>ID Tanque:</Text>
+            <Text style={styles.value}>{data.aplicar.idReferencia.id}</Text>
+          </View>
+        </>
+      );
+    case "recepcion":
+      return (
+        <>
+          <View style={styles.row}>
+            <Text style={styles.label}>ID Guía:</Text>
+            <Text style={styles.value}>
+              {data.aplicar.idReferencia.idGuia}
+            </Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.label}>Número de Recepción:</Text>
+            <Text style={styles.value}>{data.aplicar.idReferencia.numeroRecepcion}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.label}>Chofer:</Text>
+            <Text style={styles.value}>{data.aplicar.idReferencia.nombreChofer}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.label}>Placa:</Text>
+            <Text style={styles.value}>{data.aplicar.idReferencia.placa}</Text>
+          </View>
+        </>
+      );
+    case "despacho":
+      return (
+        <>
+          <View style={styles.row}>
+            <Text style={styles.label}>ID Guía:</Text>
+            <Text style={styles.value}>
+              {data.aplicar.idReferencia.idGuia}
+            </Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.label}>Número de Despacho:</Text>
+            <Text style={styles.value}>{data.aplicar.idReferencia.numeroDespacho}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.label}>Chofer:</Text>
+            <Text style={styles.value}>{data.aplicar.idReferencia.nombreChofer}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.label}>Placa:</Text>
+            <Text style={styles.value}>{data.aplicar.idReferencia.placa}</Text>
+          </View>
+        </>
+      );
+    default:
+      return (
+        <View style={styles.row}>
+          <Text style={styles.label}>Referencia:</Text>
+          <Text style={styles.value}>
+            {JSON.stringify(data.aplicar.idReferencia)}
+          </Text>
+        </View>
+      );
+  }
+};
+console.log("Logo:", data.idRefineria.img);
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        {/* Encabezado mejorado */}
+        {/* Encabezado */}
         <View style={styles.headerContainer}>
-          <View style={styles.logoSection}>
-            <Image src={logoUrl} style={styles.logo} />
-            <Text style={styles.refineryName}>{data.idRefineria.nombre}</Text>
-          </View>
+              <View style={styles.logoSection}>
+                {/* Si tu imagen está en base64, asegúrate de que el string incluya el prefijo correcto */}
+                <Image
+                  src={
+                    data.idRefineria.img && (data.idRefineria.img.startsWith("http") || data.idRefineria.img.startsWith("data:image"))
+                      ? data.idRefineria.img
+                      : "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcRySSMU9Jhl6Uul6j_Y4raxmNj7y129zSrTBZgVoMDQSk1lsmVvL4GhALZ6p-fpFAMIRvKvgLO6g66LhjfLFEeHS29uIGSHBe0n2k-z5LM"
+                  }
+                  style={styles.logo}
+                />
+                <Text style={styles.refineryName}>{data.idRefineria.nombre}</Text>
+              </View>
           <View style={styles.reportInfo}>
             <Text style={{ ...styles.operationNumber, fontSize: 10 }}>
               Operación N° {data.numeroChequeoCantidad}
@@ -331,7 +331,7 @@ const ChequeoCantidadTemplate: React.FC<ChequeoCantidadTemplateProps> = ({
         {/* Información principal */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Detalles del Chequeo</Text>
-           <View style={styles.row}>
+          <View style={styles.row}>
             <Text style={styles.label}>Tipo:</Text>
             <Text style={{ ...styles.value, textTransform: "capitalize" }}>
               {data.aplicar.tipo}
@@ -342,62 +342,79 @@ const ChequeoCantidadTemplate: React.FC<ChequeoCantidadTemplateProps> = ({
             <Text style={styles.value}>{data.idProducto?.nombre || "N/A"}</Text>
           </View>
           {renderTipoEspecifico()}
-          <View style={styles.row}>
-            {/* <Text style={styles.label}>Estado:</Text>
-            <Text style={{ ...styles.value, textTransform: "capitalize" }}>
-              {data.estado}
-            </Text> */}
-          </View>
-          <View style={styles.row}>
-            {/* <Text style={styles.label}>Registro eliminado:</Text>
-            <Text style={styles.value}>{data.eliminado ? "Sí" : "No"}</Text> */}
-          </View>
         </View>
 
         <View style={styles.sectionDivider} />
 
-        {/* Información de cantidades */}
+         {/* Información de cantidades */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Verificación de Cantidades (Bbl)</Text>
-          <View style={styles.quantityInfo}>
-            <View style={[styles.quantityBox, styles.expected]}>
-              <Text style={{ fontWeight: "bold", fontSize: 11, marginBottom: 2 }}>
-          Cantidad Esperada
-              </Text>
-              <Text style={{ fontSize: 14, fontWeight: "bold" }}>
-          {data.aplicar.idReferencia.cantidadEnviada !== undefined
-            ? data.aplicar.idReferencia.cantidadEnviada.toLocaleString("es-VE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-            : "N/A"}
-              </Text>
+          {data.aplicar.tipo.toLowerCase() === "tanque" ? (
+            <View style={{ alignItems: "center", justifyContent: "center", marginVertical: 16 }}>
+              <View style={{ 
+                backgroundColor: "#e3f2fd", 
+                border: "1px solid #bbdefb", 
+                borderRadius: 6, 
+                paddingVertical: 14, 
+                paddingHorizontal: 32, 
+                minWidth: 180,
+                alignItems: "center",
+                justifyContent: "center"
+              }}>
+                <Text style={{ fontWeight: "bold", fontSize: 13, marginBottom: 6, textAlign: "center" }}>
+                  Cantidad
+                </Text>
+                <Text style={{ fontSize: 22, fontWeight: "bold", color: "#222", textAlign: "center" }}>
+                  {data.cantidad?.toLocaleString("es-VE", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) ?? "N/A"}
+                </Text>
+                <Text style={{ fontSize: 10, color: "#555", marginTop: 4, textAlign: "center" }}>
+                  Barriles
+                </Text>
+              </View>
             </View>
-            <View style={[styles.quantityBox, styles.actual]}>
-              <Text style={{ fontWeight: "bold", fontSize: 11, marginBottom: 2 }}>
-          Cantidad Recibida
+          ) : (
+            <>
+              <View style={styles.quantityInfo}>
+                <View style={[styles.quantityBox, styles.expected]}>
+                  <Text style={{ fontWeight: "bold", fontSize: 11, marginBottom: 2 }}>
+                    Cantidad Esperada
+                  </Text>
+                  <Text style={{ fontSize: 14, fontWeight: "bold" }}>
+                    {data.aplicar.idReferencia.cantidadEnviada !== undefined
+                      ? data.aplicar.idReferencia.cantidadEnviada.toLocaleString("es-VE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                      : "N/A"}
+                  </Text>
+                </View>
+                <View style={[styles.quantityBox, styles.actual]}>
+                  <Text style={{ fontWeight: "bold", fontSize: 11, marginBottom: 2 }}>
+                    Cantidad Recibida
+                  </Text>
+                  <Text style={{ fontSize: 14, fontWeight: "bold" }}>
+                    {data.aplicar.idReferencia.cantidadRecibida !== undefined
+                      ? data.aplicar.idReferencia.cantidadRecibida.toLocaleString("es-VE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                      : "N/A"}
+                  </Text>
+                </View>
+              </View>
+              <Text style={{ ...styles.differenceText, fontSize: 11, marginTop: 6 }}>
+                Diferencia: 
+                {data.aplicar.idReferencia.cantidadEnviada !== undefined && data.aplicar.idReferencia.cantidadRecibida !== undefined
+                  ? `${data.aplicar.idReferencia.cantidadRecibida - data.aplicar.idReferencia.cantidadEnviada >= 0 ? "+" : "-"}${Math.abs(data.aplicar.idReferencia.cantidadRecibida - data.aplicar.idReferencia.cantidadEnviada).toLocaleString("es-VE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (${((Math.abs(data.aplicar.idReferencia.cantidadRecibida - data.aplicar.idReferencia.cantidadEnviada) / (data.aplicar.idReferencia.cantidadEnviada || 1)) * 100).toFixed(2).replace('.', ',')}%) Barriles`
+                  : "N/A"}
               </Text>
-              <Text style={{ fontSize: 14, fontWeight: "bold" }}>
-          {data.aplicar.idReferencia.cantidadRecibida !== undefined
-            ? data.aplicar.idReferencia.cantidadRecibida.toLocaleString("es-VE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-            : "N/A"}
+              <Text style={{ ...styles.differenceNote, fontSize: 9 }}>
+                {data.aplicar.idReferencia.cantidadEnviada !== undefined && data.aplicar.idReferencia.cantidadRecibida !== undefined ? (
+                  data.aplicar.idReferencia.cantidadEnviada > data.aplicar.idReferencia.cantidadRecibida ? (
+                    <Text style={{ color: "#c62828", fontWeight: "bold" }}>Faltante</Text>
+                  ) : data.aplicar.idReferencia.cantidadEnviada < data.aplicar.idReferencia.cantidadRecibida ? (
+                    <Text style={{ color: "#2e7d32", fontWeight: "bold" }}>Sobrante</Text>
+                  ) : (
+                    <Text style={{ color: "#666" }}>(Exacto)</Text>
+                  )
+                ) : null}
               </Text>
-            </View>
-          </View>
-          <Text style={{ ...styles.differenceText, fontSize: 11, marginTop: 6 }}>
-            Diferencia: 
-            {data.aplicar.idReferencia.cantidadEnviada !== undefined && data.aplicar.idReferencia.cantidadRecibida !== undefined
-              ? `${data.aplicar.idReferencia.cantidadRecibida - data.aplicar.idReferencia.cantidadEnviada >= 0 ? "+" : "-"}${Math.abs(data.aplicar.idReferencia.cantidadRecibida - data.aplicar.idReferencia.cantidadEnviada).toLocaleString("es-VE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (${((Math.abs(data.aplicar.idReferencia.cantidadRecibida - data.aplicar.idReferencia.cantidadEnviada) / (data.aplicar.idReferencia.cantidadEnviada || 1)) * 100).toFixed(2).replace('.', ',')}%) Barriles`
-              : "N/A"}
-          </Text>
-          <Text style={{ ...styles.differenceNote, fontSize: 9 }}>
-            {data.aplicar.idReferencia.cantidadEnviada !== undefined && data.aplicar.idReferencia.cantidadRecibida !== undefined ? (
-              data.aplicar.idReferencia.cantidadEnviada > data.aplicar.idReferencia.cantidadRecibida ? (
-          <Text style={{ color: "#c62828", fontWeight: "bold" }}>Faltante</Text>
-              ) : data.aplicar.idReferencia.cantidadEnviada < data.aplicar.idReferencia.cantidadRecibida ? (
-          <Text style={{ color: "#2e7d32", fontWeight: "bold" }}>Sobrante</Text>
-              ) : (
-          <Text style={{ color: "#666" }}>(Exacto)</Text>
-              )
-            ) : null}
-          </Text>
+            </>
+          )}
         </View>
 
         <View style={styles.sectionDivider} />
@@ -413,49 +430,17 @@ const ChequeoCantidadTemplate: React.FC<ChequeoCantidadTemplateProps> = ({
             <Text style={[styles.label, { width: "30%", fontSize: 9 }]}>Correo:</Text>
             <Text style={[styles.value, { width: "70%", fontSize: 9 }]}>{data.createdBy.correo}</Text>
           </View>
-          {/* Se removió la información de creado/actualizado para compactar la sección de usuario */}
         </View>
 
-        {/* Espacio entre usuario y firmas */}
         <View style={{ height: 26 }} />
 
-        {/* Firmas mejoradas con borde y esquinas redondeadas en 2 cuadros */}
+        {/* Firmas */}
         <View style={styles.signatureContainer}>
-          <View
-            style={[
-              styles.signatureBox,
-              {
-          borderWidth: 1,
-          borderColor: "#b0bec5",
-          borderRadius: 8,
-          paddingVertical: 14,
-          paddingHorizontal: 8,
-          marginRight: 8,
-          backgroundColor: "#fafbfc",
-          minHeight: 60,
-          justifyContent: "center",
-              },
-            ]}
-          >
+          <View style={styles.signatureBox}>
             <Text style={styles.signatureLabel}>Responsable de Verificación</Text>
             <Text style={styles.signatureLine}>___________________________</Text>
           </View>
-          <View
-            style={[
-              styles.signatureBox,
-              {
-          borderWidth: 1,
-          borderColor: "#b0bec5",
-          borderRadius: 8,
-          paddingVertical: 14,
-          paddingHorizontal: 8,
-          marginLeft: 8,
-          backgroundColor: "#fafbfc",
-          minHeight: 60,
-          justifyContent: "center",
-              },
-            ]}
-          >
+          <View style={styles.signatureBox}>
             <Text style={styles.signatureLabel}>Supervisor</Text>
             <Text style={styles.signatureLine}>___________________________</Text>
           </View>

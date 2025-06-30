@@ -55,12 +55,14 @@ export interface ChequeoCantidad {
       numeroRecepcion?: string;
       cantidadRecibida?: number;
       cantidadEnviada?: number;
+      numeroDespacho?: string;
       [key: string]: any;
 
     };
   };
   _id: string;
   idRefineria: Refineria;
+  
 
   idProducto: {
     _id: string;
