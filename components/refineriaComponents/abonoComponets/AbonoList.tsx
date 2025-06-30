@@ -167,7 +167,7 @@ const AbonoList = ({ tipoAbono }: AbonoListProps) => {
   <Column field="tipoOperacion" header="Tipo Operación" sortable />
   <Column field="referencia" header="Referencia" />
   <Column field="idContrato.numeroContrato" header="N° Contrato" />
-  <Column field="idRefineria.nombre" header="Refinería" />
+  {/* <Column field="idRefineria.nombre" header="Refinería" /> */}
   <Column field="createdBy.nombre" header="Creado Por" />
   <Column field="createdAt" header="Fecha de Creación" body={(rowData: Abono) => formatDateFH(rowData.createdAt)} />
   <Column field="updatedAt" header="Última Actualización" body={(rowData: Abono) => formatDateFH(rowData.updatedAt)} />
