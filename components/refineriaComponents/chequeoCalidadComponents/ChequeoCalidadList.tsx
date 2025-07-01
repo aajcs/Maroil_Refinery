@@ -148,7 +148,9 @@ const ChequeoCalidadList = () => {
         setOnDuplicate(true);
         setChequeoCalidadFormDialog(true);
       }}
-        pdfTemplate={ChequeoCalidadTemplate}
+        pdfTemplate={(props) => (
+          <ChequeoCalidadTemplate {...props} logoUrl="/logo.png" />
+        )}
         pdfFileName={`ChequeoCalidad${rowData.numeroChequeoCalidad}.pdf`}
         pdfDownloadText="Descargar Chequeo"
     />
