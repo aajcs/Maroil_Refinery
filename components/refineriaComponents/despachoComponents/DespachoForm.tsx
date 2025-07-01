@@ -35,6 +35,7 @@ import {
 import { DespachoFormDespacho } from "./DespachoFormDespacho";
 import { handleFormError } from "@/utils/errorHandlers";
 import { Toast } from "primereact/toast";
+import { timeAgo } from "@/utils/dateUtils";
 
 type FormData = z.infer<typeof despachoSchema>;
 
@@ -51,7 +52,6 @@ interface DespachoFormProps {
     detail: string
   ) => void;
   toast: React.RefObject<Toast> | null;
-  
 }
 
 const DespachoForm = ({
@@ -64,7 +64,7 @@ const DespachoForm = ({
   showToast,
 }: DespachoFormProps) => {
   const { activeRefineria } = useRefineriaStore();
-
+  console.log("despacho?.idChequeoCalidad?.numeroChequeoCalidad", despacho);
   const { tanques, contratos, lineaDespachos, loading } = useRefineryData(
     activeRefineria?.id || ""
   );
@@ -161,8 +161,7 @@ const DespachoForm = ({
       }
       hideDespachoFormDialog();
     } catch (error) {
-                 handleFormError(error, toast); // Pasamos la referencia del toast
-      
+      handleFormError(error, toast); // Pasamos la referencia del toast
     } finally {
       setSubmitting(false);
     }
@@ -366,7 +365,82 @@ const DespachoForm = ({
                         )}
                       />
                     </div>
+                    <div className="p-3 bg-white border-round shadow-1 surface-card">
+                      <div className="flex flex-column md:flex-row align-items-center justify-content-between">
+                        {/* Información de Chequeo de Calidad */}
+                        <div className="mb-3 md:mb-0">
+                          <h3 className="text-xl font-bold text-900 mb-2 flex align-items-center">
+                            <i className="pi pi-check-circle text-primary mr-2"></i>
+                            Chequeo de Calidad
+                          </h3>
+                          <div className="flex flex-column gap-1">
+                            <span className="text-700">
+                              <strong>Número:</strong>{" "}
+                              {despacho?.idChequeoCalidad
+                                ?.numeroChequeoCalidad || "N/A"}
+                            </span>
+                            <span className="text-700">
+                              <strong>Estatus:</strong>{" "}
+                              <span
+                                className={classNames("font-bold", {
+                                  "text-yellow-500":
+                                    despacho?.idChequeoCalidad &&
+                                    !["aprobado", "rechazado"].includes(
+                                      despacho?.idChequeoCalidad?.estado
+                                    ),
+                                  "text-green-500":
+                                    despacho?.idChequeoCalidad?.estado ===
+                                    "aprobado",
+                                  "text-red-500":
+                                    despacho?.idChequeoCalidad?.estado ===
+                                    "rechazado",
+                                })}
+                              >
+                                {despacho?.idChequeoCalidad?.estado ||
+                                  "Pendiente"}
+                              </span>
+                            </span>
+                            <span className="text-700">
+                              <strong>Fecha:</strong>{" "}
+                              {despacho?.idChequeoCalidad?.fechaChequeo
+                                ? timeAgo(
+                                    despacho.idChequeoCalidad.fechaChequeo
+                                  )
+                                : "N/A"}
+                            </span>
+                          </div>
+                        </div>
 
+                        {/* Información de Chequeo de Cantidad */}
+                        <div>
+                          <h3 className="text-xl font-bold text-900 mb-2 flex align-items-center">
+                            <i className="pi pi-chart-bar text-primary mr-2"></i>
+                            Chequeo de Cantidad
+                          </h3>
+                          <div className="flex flex-column gap-1">
+                            <span className="text-700">
+                              <strong>Número:</strong>{" "}
+                              {despacho?.idChequeoCantidad
+                                ?.numeroChequeoCantidad || "N/A"}
+                            </span>
+                            <span className="text-700">
+                              <strong>Cantidad:</strong>{" "}
+                              {despacho?.idChequeoCantidad?.cantidad != null
+                                ? `${despacho.idChequeoCantidad.cantidad} Bbl`
+                                : "N/A"}
+                            </span>
+                            <span className="text-700">
+                              <strong>Fecha:</strong>{" "}
+                              {despacho?.idChequeoCantidad?.fechaChequeo
+                                ? timeAgo(
+                                    despacho.idChequeoCantidad.fechaChequeo
+                                  )
+                                : "N/A"}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                     {/* Dropdown Mobile */}
                     <div className="lg:hidden mt-3">
                       <Controller
