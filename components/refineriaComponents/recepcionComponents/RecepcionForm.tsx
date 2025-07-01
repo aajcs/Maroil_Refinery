@@ -49,7 +49,7 @@ interface RecepcionFormProps {
   showToast: (
     severity: "success" | "error" | "warn",
     summary: string,
-    detail: string,    
+    detail: string
   ) => void;
   toast: React.RefObject<Toast> | null;
 }
@@ -64,7 +64,7 @@ const RecepcionForm = ({
   showToast,
 }: RecepcionFormProps) => {
   const { activeRefineria } = useRefineriaStore();
-
+  console.log("despacho?.idChequeoCalidad?.numeroChequeoCalidad", recepcion);
   const { tanques, contratos, lineaRecepcions, loading } = useRefineryData(
     activeRefineria?.id || ""
   );
@@ -168,8 +168,7 @@ const RecepcionForm = ({
       }
       hideRecepcionFormDialog();
     } catch (error) {
-    handleFormError(error, toast); // Pasamos la referencia del toast
-      
+      handleFormError(error, toast); // Pasamos la referencia del toast
     } finally {
       setSubmitting(false);
     }
