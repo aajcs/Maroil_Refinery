@@ -64,7 +64,10 @@ const DespachoForm = ({
   showToast,
 }: DespachoFormProps) => {
   const { activeRefineria } = useRefineriaStore();
-  console.log("despacho?.idChequeoCalidad?.numeroChequeoCalidad", despacho);
+  console.log(
+    "despacho?.idChequeoCalidad?.numeroChequeoCalidad",
+    despacho.idChequeoCantidad
+  );
   const { tanques, contratos, lineaDespachos, loading } = useRefineryData(
     activeRefineria?.id || ""
   );
@@ -97,6 +100,9 @@ const DespachoForm = ({
       Object.keys(despacho).forEach((key) =>
         setValue(key as keyof FormData, despacho[key])
       );
+    }
+    if (despacho?.idChequeoCantidad) {
+      setValue("cantidadRecibida", despacho.idChequeoCantidad.cantidad);
     }
   }, [despacho, setValue]);
 
