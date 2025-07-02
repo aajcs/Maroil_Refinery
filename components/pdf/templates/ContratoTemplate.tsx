@@ -23,6 +23,18 @@ const styles = StyleSheet.create({
     fontFamily: "Helvetica",
     backgroundColor: "#fff",
   },
+  titleContainer: {
+    flex: 1,
+    marginLeft: 8,
+  },
+  contractTitle: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#2c3e50',
+    textAlign: 'center',
+    marginBottom: 4,
+    textTransform: 'uppercase',
+  },
   headerContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -246,22 +258,28 @@ const ContratoTemplate: React.FC<ContratoTemplateProps> = ({
     <Document>
       {/* Página 1: Datos generales */}
       <Page size="A4" orientation="portrait" style={styles.page}>
-        {/* Encabezado */}
-        <View style={styles.headerContainer}>
-          <Image src={refineryLogo} style={styles.logo} />
-          <View>
-            <Text style={styles.refineryName}>{data.idRefineria?.nombre || "Refinería"}</Text>
-            <Text style={styles.operationNumber}>
-              Contrato N° {data.numeroContrato}
-            </Text>
-            <Text style={styles.reportDate}>
-              Estado: {data.estadoContrato}
-            </Text>
-            <View style={[styles.statusBadge, getStatusStyle(data.estadoContrato)]}>
-              <Text>{data.estadoContrato?.toUpperCase()}</Text>
-            </View>
-          </View>
-        </View>
+       {/* Encabezado */}
+<View style={styles.headerContainer}>
+  <Image src={refineryLogo} style={styles.logo} />
+  <View style={styles.titleContainer}>
+   
+    
+    <Text style={styles.refineryName}>{data.idRefineria?.nombre || "Refinería"}</Text>
+    <View style={{flexDirection: 'row', alignItems: 'center'}}>
+      <Text style={styles.reportDate}>
+        Estado: {data.estadoContrato}
+      </Text>
+      <View style={[styles.statusBadge, getStatusStyle(data.estadoContrato)]}>
+        <Text>{data.estadoContrato?.toUpperCase()}</Text>
+      </View>
+      
+    </View>
+  </View>
+   {/* Nuevo título del contrato */}
+    <Text style={styles.contractTitle}>
+      CONTRATO DE {data.tipoContrato?.toUpperCase() || "COMPRA/VENTA"} N° {data.numeroContrato}
+    </Text>
+</View>
 
         {/* Datos del contacto */}
         <View style={styles.section}>
