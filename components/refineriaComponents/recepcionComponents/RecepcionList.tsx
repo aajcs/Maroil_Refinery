@@ -14,6 +14,7 @@ import { formatDateFH } from "@/utils/dateUtils";
 import RecepcionForm from "./RecepcionForm";
 import CustomActionButtons from "@/components/common/CustomActionButtons";
 import AuditHistoryDialog from "@/components/common/AuditHistoryDialog";
+import RecepcionTemplate from "@/components/pdf/templates/recepcionTemplate";
 const RecepcionList = () => {
   const { activeRefineria } = useRefineriaStore();
   const [recepcions, setRecepcions] = useState<Recepcion[]>([]);
@@ -128,6 +129,12 @@ const RecepcionList = () => {
         data;
         setDeleteProductDialog(true);
       }}
+
+       pdfTemplate={(props) => (
+          <RecepcionTemplate data={props.data} logoUrl="/layout/images/avatarHombre.png" />
+        )}
+        pdfFileName={`Recepcion${rowData.numeroRecepcion}.pdf`}
+        pdfDownloadText="Descargar Recepcion"
     />
   );
   const showToast = (
