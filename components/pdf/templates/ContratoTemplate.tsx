@@ -18,53 +18,53 @@ interface ContratoTemplateProps {
 
 const styles = StyleSheet.create({
   page: {
-    padding: 24,
-    fontSize: 10,
+    padding: 18,
+    fontSize: 9,
     fontFamily: "Helvetica",
     backgroundColor: "#fff",
   },
   headerContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 14,
+    marginBottom: 10,
     borderBottomWidth: 1,
     borderBottomColor: "#3498db",
-    paddingBottom: 6,
+    paddingBottom: 4,
   },
   logo: {
-    width: 48,
-    height: 48,
-    marginRight: 10,
+    width: 38,
+    height: 38,
+    marginRight: 8,
   },
   refineryName: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: "bold",
     color: "#2c3e50",
-    marginBottom: 2,
+    marginBottom: 1,
     textAlign: "left",
   },
   operationNumber: {
-    fontSize: 12,
+    fontSize: 10,
     fontWeight: "bold",
     color: "#3498db",
-    marginBottom: 2,
+    marginBottom: 1,
     textAlign: "left",
   },
   reportDate: {
-    fontSize: 9,
+    fontSize: 8,
     color: "#888",
-    marginBottom: 2,
+    marginBottom: 1,
     textAlign: "left",
   },
   statusBadge: {
-    padding: 3,
+    padding: 2,
     borderRadius: 4,
     fontWeight: "bold",
     textAlign: "center",
-    fontSize: 9,
-    minWidth: 60,
-    marginTop: 2,
-    marginBottom: 2,
+    fontSize: 8,
+    minWidth: 48,
+    marginTop: 1,
+    marginBottom: 1,
     alignSelf: "flex-start",
   },
   statusActive: {
@@ -83,35 +83,56 @@ const styles = StyleSheet.create({
     border: "1px solid #c62828",
   },
   section: {
-    marginTop: 10,
-    marginBottom: 8,
+    marginTop: 6,
+    marginBottom: 5,
   },
   sectionTitle: {
     backgroundColor: "#f5f5f5",
-    padding: 5,
-    borderRadius: 4,
-    marginBottom: 6,
+    padding: 3,
+    borderRadius: 3,
+    marginBottom: 3,
     fontWeight: "bold",
-    fontSize: 11,
+    fontSize: 9,
     color: "#222",
     textAlign: "left",
   },
-  row: {
+  tableBox: {
+    borderWidth: 1,
+    borderColor: "#3498db",
+    borderRadius: 6,
+    marginBottom: 8,
+    marginTop: 4,
+    backgroundColor: "#fafdff",
+    overflow: "hidden",
+  },
+  tableRow: {
     flexDirection: "row",
-    marginBottom: 4,
+    borderTopWidth: 1,
+    borderTopColor: "#bbdefb",
+  },
+  tableRowFirst: {
+    borderTopWidth: 0,
+  },
+  tableLabel: {
+    flex: 2,
+    borderRightWidth: 1,
+    borderRightColor: "#e3f2fd",
+    padding: 3,
+    justifyContent: "center",
     alignItems: "flex-start",
-  },
-  label: {
-    width: "38%",
-    fontWeight: "bold",
-    color: "#555",
-    fontSize: 9,
+    fontSize: 8,
+    color: "#333",
     textAlign: "left",
-    paddingRight: 6,
+    fontWeight: "bold",
   },
-  value: {
-    width: "62%",
-    fontSize: 9,
+  tableValue: {
+    flex: 2,
+    padding: 3,
+    justifyContent: "center",
+    alignItems: "flex-start",
+    fontSize: 8,
+    color: "#222",
+    fontWeight: 500,
     textAlign: "left",
   },
   tableHeader: {
@@ -124,21 +145,21 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   tableCell: {
-    padding: 4,
-    fontSize: 9,
+    padding: 2,
+    fontSize: 8,
     borderRightWidth: 1,
     borderRightColor: "#bbb",
     textAlign: "center",
     overflow: "hidden",
   },
   tableCellLast: {
-    padding: 4,
-    fontSize: 9,
+    padding: 2,
+    fontSize: 8,
     textAlign: "center",
     overflow: "hidden",
   },
   signatureContainer: {
-    marginTop: 30,
+    marginTop: 18,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-end",
@@ -147,23 +168,23 @@ const styles = StyleSheet.create({
   signatureBox: {
     width: "45%",
     textAlign: "center",
-    fontSize: 9,
+    fontSize: 8,
   },
   signatureLabel: {
-    marginBottom: 10,
+    marginBottom: 6,
     fontWeight: "bold",
   },
   signatureLine: {
-    marginVertical: 10,
-    fontSize: 12,
+    marginVertical: 6,
+    fontSize: 10,
   },
   footer: {
     position: "absolute",
-    bottom: 16,
-    left: 24,
-    right: 24,
+    bottom: 10,
+    left: 18,
+    right: 18,
     textAlign: "center",
-    fontSize: 8,
+    fontSize: 7,
     color: "#888",
   },
 });
@@ -190,15 +211,15 @@ const formatDecimal = (value: number | string | undefined) => {
   });
 };
 
+const formatDate = (dateString: string) => {
+  if (!dateString) return "N/A";
+  return format(new Date(dateString), "dd/MM/yyyy HH:mm", { locale: es });
+};
+
 const ContratoTemplate: React.FC<ContratoTemplateProps> = ({
   data,
   logoUrl,
 }) => {
-  const formatDate = (dateString: string) => {
-    return format(new Date(dateString), "dd/MM/yyyy HH:mm", { locale: es });
-  };
-
-  // Selecciona el logo de la refinería si existe, si no usa el prop logoUrl, si no, usa el default
   const refineryLogo =
     data.idRefineria?.img &&
     (data.idRefineria.img.startsWith("http") || data.idRefineria.img.startsWith("data:image"))
@@ -206,16 +227,28 @@ const ContratoTemplate: React.FC<ContratoTemplateProps> = ({
       : logoUrl ||
         "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcRySSMU9Jhl6Uul6j_Y4raxmNj7y129zSrTBZgVoMDQSk1lsmVvL4GhALZ6p-fpFAMIRvKvgLO6g66LhjfLFEeHS29uIGSHBe0n2k-z5LM";
 
+  const renderTableRows = (rows: { label: string; value: string }[]) =>
+    rows.map((item, idx) => (
+      <View
+        key={item.label}
+        style={[
+          styles.tableRow,
+          idx === 0 ? styles.tableRowFirst : {},
+          { backgroundColor: idx % 2 === 0 ? "#fafdff" : "#f0f6fa" },
+        ]}
+      >
+        <Text style={styles.tableLabel}>{item.label}</Text>
+        <Text style={styles.tableValue}>{item.value}</Text>
+      </View>
+    ));
+
   return (
     <Document>
-      {/* PRIMERA PÁGINA: DATOS DEL CONTACTO Y CONDICIONES DEL CONTRATO */}
+      {/* Página 1: Datos generales */}
       <Page size="A4" orientation="portrait" style={styles.page}>
         {/* Encabezado */}
         <View style={styles.headerContainer}>
-          <Image
-            src={refineryLogo}
-            style={styles.logo}
-          />
+          <Image src={refineryLogo} style={styles.logo} />
           <View>
             <Text style={styles.refineryName}>{data.idRefineria?.nombre || "Refinería"}</Text>
             <Text style={styles.operationNumber}>
@@ -233,105 +266,63 @@ const ContratoTemplate: React.FC<ContratoTemplateProps> = ({
         {/* Datos del contacto */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Datos del Contacto</Text>
-          <View style={styles.row}>
-            <Text style={styles.label}>Nombre:</Text>
-            <Text style={styles.value}>{data.idContacto?.nombre || "N/A"}</Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.label}>Identificación Fiscal:</Text>
-            <Text style={styles.value}>{data.idContacto?.identificacionFiscal || "N/A"}</Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.label}>Representante Legal:</Text>
-            <Text style={styles.value}>{data.idContacto?.representanteLegal || "N/A"}</Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.label}>Teléfono:</Text>
-            <Text style={styles.value}>{data.idContacto?.telefono || "N/A"}</Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.label}>Correo:</Text>
-            <Text style={styles.value}>{data.idContacto?.correo || "N/A"}</Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.label}>Dirección:</Text>
-            <Text style={styles.value}>{data.idContacto?.direccion || "N/A"}</Text>
+          <View style={styles.tableBox}>
+            {renderTableRows([
+              { label: "Nombre", value: data.idContacto?.nombre || "N/A" },
+              { label: "Identificación Fiscal", value: data.idContacto?.identificacionFiscal || "N/A" },
+              { label: "Representante Legal", value: data.idContacto?.representanteLegal || "N/A" },
+              { label: "Teléfono", value: data.idContacto?.telefono || "N/A" },
+              { label: "Correo", value: data.idContacto?.correo || "N/A" },
+              { label: "Dirección", value: data.idContacto?.direccion || "N/A" },
+            ])}
           </View>
         </View>
 
         {/* Condiciones del contrato */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Condiciones del Contrato</Text>
-          <View style={styles.row}>
-            <Text style={styles.label}>Tipo de Contrato:</Text>
-            <Text style={styles.value}>{data.tipoContrato}</Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.label}>Descripción:</Text>
-            <Text style={styles.value}>{data.descripcion}</Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.label}>Estado de Entrega:</Text>
-            <Text style={styles.value}>{data.estadoEntrega}</Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.label}>Condición de Pago:</Text>
-            <Text style={styles.value}>
-              {data.condicionesPago?.tipo}{" "}
-              {data.condicionesPago && typeof data.condicionesPago.plazo === "number" && data.condicionesPago.plazo > 0
-                ? `- ${data.condicionesPago.plazo} días`
-                : ""}
-            </Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.label}>Fecha de Inicio:</Text>
-            <Text style={styles.value}>{formatDate(data.fechaInicio)}</Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.label}>Fecha de Fin:</Text>
-            <Text style={styles.value}>{formatDate(data.fechaFin)}</Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.label}>Precio Brent Acordado:</Text>
-            <Text style={styles.value}>{formatDecimal(data.brent)}</Text>
+          <View style={styles.tableBox}>
+            {renderTableRows([
+              { label: "Tipo de Contrato", value: data.tipoContrato || "N/A" },
+              { label: "Descripción", value: data.descripcion || "N/A" },
+              { label: "Estado de Entrega", value: data.estadoEntrega || "N/A" },
+              {
+                label: "Condición de Pago",
+                value:
+                  (data.condicionesPago?.tipo || "N/A") +
+                  (data.condicionesPago && typeof data.condicionesPago.plazo === "number" && data.condicionesPago.plazo > 0
+                    ? ` - ${data.condicionesPago.plazo} días`
+                    : ""),
+              },
+              { label: "Fecha de Inicio", value: formatDate(data.fechaInicio) },
+              { label: "Fecha de Fin", value: formatDate(data.fechaFin) },
+              { label: "Precio Brent Acordado", value: formatDecimal(data.brent) },
+            ])}
           </View>
         </View>
 
         {/* Totales */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Totales</Text>
-          <View style={styles.row}>
-            <Text style={styles.label}>Monto Total:</Text>
-            <Text style={styles.value}>{formatDecimal(data.montoTotal)}</Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.label}>Monto Pagado:</Text>
-            <Text style={styles.value}>{formatDecimal(data.montoPagado)}</Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.label}>Monto Pendiente:</Text>
-            <Text style={styles.value}>{formatDecimal(data.montoPendiente)}</Text>
+          <View style={styles.tableBox}>
+            {renderTableRows([
+              { label: "Monto Total", value: formatDecimal(data.montoTotal) },
+              { label: "Monto Pagado", value: formatDecimal(data.montoPagado) },
+              { label: "Monto Pendiente", value: formatDecimal(data.montoPendiente) },
+            ])}
           </View>
         </View>
 
         {/* Información de usuario y fechas */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Usuario</Text>
-          <View style={styles.row}>
-            <Text style={styles.label}>Creado por:</Text>
-            <Text style={styles.value}>{data.createdBy?.nombre}</Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.label}>Correo:</Text>
-            <Text style={styles.value}>{data.createdBy?.correo}</Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.label}>Creación:</Text>
-            <Text style={styles.value}>{formatDate(data.createdAt)}</Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.label}>Actualización:</Text>
-            <Text style={styles.value}>{formatDate(data.updatedAt)}</Text>
+          <View style={styles.tableBox}>
+            {renderTableRows([
+              { label: "Creado por", value: data.createdBy?.nombre || "N/A" },
+              { label: "Correo", value: data.createdBy?.correo || "N/A" },
+              { label: "Creación", value: formatDate(data.createdAt) },
+              { label: "Actualización", value: formatDate(data.updatedAt) },
+            ])}
           </View>
         </View>
 
@@ -340,15 +331,9 @@ const ContratoTemplate: React.FC<ContratoTemplateProps> = ({
         </Text>
       </Page>
 
-      {/* SEGUNDA PÁGINA: PRODUCTOS Y MONTOS */}
-      <Page size="A4" orientation="landscape" style={styles.page}>
-        <View style={{ alignItems: "center", marginBottom: 10 }}>
-          <Text style={{ fontSize: 18, fontWeight: "bold", color: "#2c3e50" }}>
-            Productos del Contrato
-          </Text>
-        </View>
-
-        {/* Tabla de productos - Características */}
+      {/* Página 2: Productos */}
+      <Page size="A4" orientation="portrait" style={styles.page}>
+        {/* Características de los Productos */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Características de los Productos</Text>
           <View style={styles.tableHeader}>
@@ -377,7 +362,7 @@ const ContratoTemplate: React.FC<ContratoTemplateProps> = ({
           ))}
         </View>
 
-        {/* Tabla de productos - Valores Monetarios */}
+        {/* Valores Monetarios de los Productos */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Valores Monetarios de los Productos</Text>
           <View style={styles.tableHeader}>
@@ -436,7 +421,7 @@ const ContratoTemplate: React.FC<ContratoTemplateProps> = ({
           })()}
         </View>
 
-        {/* Firmas al final de la segunda página */}
+        {/* Firmas */}
         <View style={styles.signatureContainer}>
           <View style={styles.signatureBox}>
             <Text style={styles.signatureLabel}>Representante Legal</Text>
