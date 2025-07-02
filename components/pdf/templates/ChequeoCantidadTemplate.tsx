@@ -228,10 +228,7 @@ const renderTipoEspecifico = () => {
               {data.aplicar.idReferencia.nombre}
             </Text>
           </View>
-          <View style={styles.row}>
-            <Text style={styles.label}>ID Tanque:</Text>
-            <Text style={styles.value}>{data.aplicar.idReferencia.id}</Text>
-          </View>
+          
         </>
       );
     case "recepcion":
@@ -248,7 +245,7 @@ const renderTipoEspecifico = () => {
             <Text style={styles.value}>{data.aplicar.idReferencia.numeroRecepcion}</Text>
           </View>
           <View style={styles.row}>
-            <Text style={styles.label}>Chofer:</Text>
+            <Text style={styles.label}>Nombre de Chofer:</Text>
             <Text style={styles.value}>{data.aplicar.idReferencia.nombreChofer}</Text>
           </View>
           <View style={styles.row}>
@@ -271,11 +268,11 @@ const renderTipoEspecifico = () => {
             <Text style={styles.value}>{data.aplicar.idReferencia.numeroDespacho}</Text>
           </View>
           <View style={styles.row}>
-            <Text style={styles.label}>Chofer:</Text>
+            <Text style={styles.label}>Nombre de Chofer:</Text>
             <Text style={styles.value}>{data.aplicar.idReferencia.nombreChofer}</Text>
           </View>
           <View style={styles.row}>
-            <Text style={styles.label}>Placa:</Text>
+            <Text style={styles.label}>Número de Placa:</Text>
             <Text style={styles.value}>{data.aplicar.idReferencia.placa}</Text>
           </View>
         </>

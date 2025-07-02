@@ -359,7 +359,7 @@ const ChequeoCalidadTemplate: React.FC<ChequeoCalidadTemplateProps> = ({
           </View>
           {/* Estado de aprobación de calidad */}
           <View style={{ flexDirection: "row", marginTop: 2 }}>
-            <Text style={styles.label}>¿Aprobado?</Text>
+            <Text style={styles.label}>Resultado del Chequeo</Text>
             <View style={[
               styles.statusBadge,
               data.estado?.toLowerCase() === "aprobado" ? styles.statusApproved : styles.statusRejected,
