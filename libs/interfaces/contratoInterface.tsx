@@ -105,13 +105,17 @@ export interface Contrato {
   brent?: number;
   montoTotal?: number;
   montoTransporte?: number;
+  convenio?: number;
+  montoTotalContrato?: number; // Monto total del contrato, calculado como suma de todos los items
+  montoPagado?: number; // Monto total pagado hasta la fecha
+  montoPendiente?: number; // Monto pendiente de pago
 
   // Referencias
   idRefineria: Refineria;
-  idContacto: {
-    id: string;
-    nombre: string;
-  };
+  idContacto: Contacto; // Referencia al contacto asociado
+
+    
+  
   idItems: ContratoItem[];
 
   // Nuevos campos
@@ -126,6 +130,11 @@ export interface Contrato {
 export interface Contacto {
   id: string;
   nombre: string;
+  identificacionFiscal: string;
+  correo: string;
+  representanteLegal: string;
+  telefono: string;
+  direccion: string;
   estado: boolean;
   eliminado: boolean;
   ubicacion: string;
@@ -137,4 +146,5 @@ export interface Contacto {
   createdBy: UserReference;
   modificadoPor: UserReference;
   historial: HistorialCambio[];
+
 }

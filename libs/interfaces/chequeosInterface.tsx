@@ -14,7 +14,11 @@ export interface ChequeoCalidad {
       _id?: string;
       nombre?: string;
       id: string;
+          numeroDespacho?: string;
       [key: string]: any;
+  
+
+
     };
   };
   _id: string;

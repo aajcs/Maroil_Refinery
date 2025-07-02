@@ -19,6 +19,7 @@ import { formatDateFH } from "@/utils/dateUtils";
 import { Contrato } from "@/libs/interfaces";
 import CustomActionButtons from "@/components/common/CustomActionButtons";
 import AuditHistoryDialog from "@/components/common/AuditHistoryDialog";
+import ContratoTemplate from "@/components/pdf/templates/ContratoTemplate";
 interface ContratoListProps {
   tipoContrato: string;
 }
@@ -26,6 +27,7 @@ interface ContratoListProps {
 const ContratoList = ({ tipoContrato }: ContratoListProps) => {
   const { activeRefineria } = useRefineriaStore();
   const [contratos, setContratos] = useState<Contrato[]>([]);
+  console.log("Contratos:", contratos);
   const [contrato, setContrato] = useState<Contrato | null>(null);
   const [filters, setFilters] = useState<DataTableFilterMeta>({});
   const [loading, setLoading] = useState(true);
@@ -140,6 +142,12 @@ const ContratoList = ({ tipoContrato }: ContratoListProps) => {
         data;
         setDeleteProductDialog(true);
       }}
+
+       pdfTemplate={(props) => (
+          <ContratoTemplate data={props.data} logoUrl="/layout/images/avatarHombre.png" />
+        )}
+        pdfFileName={`Contrato${rowData.numeroContrato}.pdf`}
+        pdfDownloadText="Descargar Contrato"
     />
   );
 

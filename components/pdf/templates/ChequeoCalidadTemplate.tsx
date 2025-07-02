@@ -9,9 +9,14 @@ import {
 } from "@react-pdf/renderer";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
+import { ChequeoCalidad } from "@/libs/interfaces";
 
 // Puedes importar estilos globales si los tienes
 // import { styles as globalStyles } from "@/utils/pdfStyles";
+interface ChequeoCalidadTemplateProps {
+  data: ChequeoCalidad;
+  logoUrl: string;
+}
 
 const styles = StyleSheet.create({
   // ...globalStyles,
@@ -179,14 +184,13 @@ const styles = StyleSheet.create({
   },
 });
 
-const ChequeoCalidadTemplate: React.FC<{
-  data: any;
-  logoUrl: string;
-}> = ({ data, logoUrl }) => {
+const ChequeoCalidadTemplate: React.FC<ChequeoCalidadTemplateProps> = ({
+  data,
+  logoUrl,
+}) => {
   const formatDate = (dateString: string) => {
     return format(new Date(dateString), "dd/MM/yyyy HH:mm", { locale: es });
   };
-
   const getStatusStyle = () => {
     switch (data.estado?.toLowerCase()) {
       case "aprobado":
