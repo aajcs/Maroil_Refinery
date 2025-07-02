@@ -10,7 +10,7 @@ import {
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 
-interface RecepcionTemplateProps {
+interface DespachoTemplateProps {
   data: any;
   logoUrl: string;
 }
@@ -195,7 +195,7 @@ const getEstadoColor = (estado: string) => {
   }
 };
 
-const RecepcionTemplate: React.FC<RecepcionTemplateProps> = ({
+const DespachoTemplate: React.FC<DespachoTemplateProps> = ({
   data,
   logoUrl,
 }) => {
@@ -203,14 +203,10 @@ const RecepcionTemplate: React.FC<RecepcionTemplateProps> = ({
   const producto = contrato.idItems?.[0] || data.idContratoItems || {};
 
   // Chequeo de calidad/cantidad y estado
-  const chequeoCalidad = producto || {};
-  const chequeoCantidad = {
-    cantidadEsperada: data.cantidadEnviada,
-    cantidadRecibida: data.cantidadRecibida,
-    aprobado: data.estadoRecepcion?.toLowerCase() === "aprobado",
-  };
+  const chequeoCalidad = data.idChequeoCalidad || {};
+  const chequeoCantidad = data.idChequeoCantidad || {};
 
-  // Selecciona el logo de la refinería si existe, si no usa el prop logoUrl, si no, usa el default
+  // Selecciona el logo de la refinería desde idRefineria.img si existe, si no usa el prop logoUrl, si no, usa el default
   const refineryLogo =
     data.idRefineria?.img &&
     (data.idRefineria.img.startsWith("http") || data.idRefineria.img.startsWith("data:image"))
@@ -230,24 +226,23 @@ const RecepcionTemplate: React.FC<RecepcionTemplateProps> = ({
           <View>
             <Text style={styles.refineryName}>{data.idRefineria?.nombre || "Refinería"}</Text>
             <Text style={styles.operationNumber}>
-              Recepción N° {data.numeroRecepcion}
+              Despacho N° {data.numeroDespacho}
             </Text>
             <Text
               style={{
                 ...styles.reportDate,
-                color: getEstadoColor(data.estadoRecepcion),
+                color: getEstadoColor(data.estadoDespacho),
                 fontWeight: "bold",
               }}
             >
-              Estado: {data.estadoRecepcion}
+              Estado: {data.estadoDespacho}
             </Text>
           </View>
         </View>
 
-        {/* ...resto del template igual... */}
-        {/* Información de la Recepción */}
+        {/* Información del Despacho */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Datos de la Recepción</Text>
+          <Text style={styles.sectionTitle}>Datos del Despacho</Text>
           <View
             style={{
               borderWidth: 1,
@@ -284,17 +279,17 @@ const RecepcionTemplate: React.FC<RecepcionTemplateProps> = ({
             {/* Fila */}
             {[
               { label: "Número de Contrato", value: contrato.numeroContrato || "N/A" },
-              { label: "Producto que recibe", value: producto.producto?.nombre || producto.producto || "N/A" },
-              { label: "Cantidad Esperada", value: `${formatDecimal(data.cantidadEnviada)} Bbl` },
+              { label: "Producto que despacha", value: producto.producto?.nombre || producto.producto || "N/A" },
+              { label: "Cantidad Enviada", value: `${formatDecimal(data.cantidadEnviada)} Bbl` },
               { label: "Cantidad Recibida", value: `${formatDecimal(data.cantidadRecibida)} Bbl` },
               { label: "ID Guía", value: data.idGuia || "N/A" },
               { label: "Placa", value: data.placa || "N/A" },
               { label: "Nombre del Chofer", value: data.nombreChofer || "N/A" },
-              { label: "Fecha de Inicio de Recepción", value: formatDate(data.fechaInicioRecepcion) },
-              { label: "Fecha Fin de Recepción", value: formatDate(data.fechaFinRecepcion) },
-              { label: "Línea de Descarga", value: data.idLinea?.nombre || "N/A" },
-              { label: "Tanque Destino", value: data.idTanque?.nombre || "N/A" },
-            ].map((item, idx, arr) => (
+              { label: "Fecha de Inicio de Despacho", value: formatDate(data.fechaInicioDespacho) },
+              { label: "Fecha Fin de Despacho", value: formatDate(data.fechaFinDespacho) },
+              { label: "Línea de Despacho", value: data.idLineaDespacho?.nombre || "N/A" },
+              { label: "Tanque Origen", value: data.idTanque?.nombre || "N/A" },
+            ].map((item, idx) => (
               <View
                 key={item.label}
                 style={{
@@ -326,7 +321,6 @@ const RecepcionTemplate: React.FC<RecepcionTemplateProps> = ({
           </View>
         </View>
 
-        {/* ...resto del template igual... */}
         {/* Resultados de Calidad */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Resultados de Calidad</Text>
@@ -407,10 +401,10 @@ const RecepcionTemplate: React.FC<RecepcionTemplateProps> = ({
             <Text style={styles.label}>¿Aprobado?</Text>
             <View style={[
               styles.statusBadge,
-              chequeoCalidad.aprobado ? styles.statusApproved : styles.statusRejected,
+              chequeoCalidad.estado?.toLowerCase() === "aprobado" ? styles.statusApproved : styles.statusRejected,
             ]}>
               <Text>
-                {chequeoCalidad.aprobado ? "APROBADO" : "RECHAZADO"}
+                {chequeoCalidad.estado?.toLowerCase() === "aprobado" ? "APROBADO" : "RECHAZADO"}
               </Text>
             </View>
           </View>
@@ -420,19 +414,15 @@ const RecepcionTemplate: React.FC<RecepcionTemplateProps> = ({
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Chequeo de Cantidad</Text>
           <View style={styles.row}>
-            <Text style={styles.label}>Cantidad Esperada (Bbl):</Text>
-            <Text style={styles.value}>{formatDecimal(chequeoCantidad.cantidadEsperada)}</Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.label}>Cantidad Recibida (Bbl):</Text>
-            <Text style={styles.value}>{formatDecimal(chequeoCantidad.cantidadRecibida)}</Text>
+            <Text style={styles.label}>Cantidad (Bbl):</Text>
+            <Text style={styles.value}>{formatDecimal(chequeoCantidad.cantidad)}</Text>
           </View>
         </View>
 
         {/* Firmas */}
         <View style={styles.signatureContainer}>
           <View style={styles.signatureBox}>
-            <Text style={styles.signatureLabel}>Responsable Recepción</Text>
+            <Text style={styles.signatureLabel}>Responsable Despacho</Text>
             <Text style={styles.signatureLine}>___________________________</Text>
           </View>
           <View style={styles.signatureBox}>
@@ -449,4 +439,4 @@ const RecepcionTemplate: React.FC<RecepcionTemplateProps> = ({
   );
 };
 
-export default RecepcionTemplate;
+export default DespachoTemplate;

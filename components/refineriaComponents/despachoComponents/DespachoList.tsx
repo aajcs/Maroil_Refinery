@@ -15,6 +15,8 @@ import { formatDateFH } from "@/utils/dateUtils";
 import DespachoForm from "./DespachoForm";
 import CustomActionButtons from "@/components/common/CustomActionButtons";
 import AuditHistoryDialog from "@/components/common/AuditHistoryDialog";
+import DespachoTemplate from "@/components/pdf/templates/DespachoTemplate";
+
 const DespachoList = () => {
   const { activeRefineria } = useRefineriaStore();
   const [despachos, setDespachos] = useState<Despacho[]>([]);
@@ -128,6 +130,11 @@ const DespachoList = () => {
         data;
         setDeleteProductDialog(true);
       }}
+      pdfTemplate={(props) => (
+          <DespachoTemplate data={props.data} logoUrl="/layout/images/avatarHombre.png" />
+        )}
+        pdfFileName={`Despacho${rowData.numeroDespacho}.pdf`}
+        pdfDownloadText="Descargar Despacho"
     />
   );
   const showToast = (

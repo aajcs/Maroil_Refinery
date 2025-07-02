@@ -168,8 +168,6 @@ const styles = StyleSheet.create({
   },
 });
 
-
-
 const getStatusStyle = (estado: string) => {
   switch (estado?.toLowerCase()) {
     case "activo":
@@ -199,9 +197,14 @@ const ContratoTemplate: React.FC<ContratoTemplateProps> = ({
   const formatDate = (dateString: string) => {
     return format(new Date(dateString), "dd/MM/yyyy HH:mm", { locale: es });
   };
-  console.log("=== ContratoTemplate DATA ===", data);
-  console.log("=== ContratoTemplate DATA.idContacto ===", data?.idContacto);
 
+  // Selecciona el logo de la refinería si existe, si no usa el prop logoUrl, si no, usa el default
+  const refineryLogo =
+    data.idRefineria?.img &&
+    (data.idRefineria.img.startsWith("http") || data.idRefineria.img.startsWith("data:image"))
+      ? data.idRefineria.img
+      : logoUrl ||
+        "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcRySSMU9Jhl6Uul6j_Y4raxmNj7y129zSrTBZgVoMDQSk1lsmVvL4GhALZ6p-fpFAMIRvKvgLO6g66LhjfLFEeHS29uIGSHBe0n2k-z5LM";
 
   return (
     <Document>
@@ -210,10 +213,7 @@ const ContratoTemplate: React.FC<ContratoTemplateProps> = ({
         {/* Encabezado */}
         <View style={styles.headerContainer}>
           <Image
-            src={
-              logoUrl ||
-              "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcRySSMU9Jhl6Uul6j_Y4raxmNj7y129zSrTBZgVoMDQSk1lsmVvL4GhALZ6p-fpFAMIRvKvgLO6g66LhjfLFEeHS29uIGSHBe0n2k-z5LM"
-            }
+            src={refineryLogo}
             style={styles.logo}
           />
           <View>
@@ -377,8 +377,6 @@ const ContratoTemplate: React.FC<ContratoTemplateProps> = ({
           ))}
         </View>
 
-         // ...existing code...
-
         {/* Tabla de productos - Valores Monetarios */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Valores Monetarios de los Productos</Text>
@@ -395,7 +393,6 @@ const ContratoTemplate: React.FC<ContratoTemplateProps> = ({
             const precioUnitario = Number(item.precioUnitario) || 0;
             const convenio = Number(item.convenio) || 0;
             const transporte = Number(item.montoTransporte) || 0;
-            // Subtotal = precioUnitario * cantidad
             const subtotal = precioUnitario * cantidad;
             return (
               <View style={{ flexDirection: "row", borderBottomWidth: 1, borderBottomColor: "#eee" }} key={item._id || idx}>
@@ -413,7 +410,7 @@ const ContratoTemplate: React.FC<ContratoTemplateProps> = ({
             );
           })}
 
-          {/* Suma de los valores monetarios (solo cantidad, precio unitario y subtotal) */}
+          {/* Suma de los valores monetarios */}
           {(() => {
             let totalCantidad = 0;
             let totalPrecioUnitario = 0;
@@ -421,7 +418,6 @@ const ContratoTemplate: React.FC<ContratoTemplateProps> = ({
             data.idItems?.forEach((item: any) => {
               const cantidad = Number(item.cantidad) || 0;
               const precioUnitario = Number(item.precioUnitario) || 0;
-              // Subtotal = precioUnitario * cantidad
               const subtotal = precioUnitario * cantidad;
               totalCantidad += cantidad;
               totalPrecioUnitario += precioUnitario;
@@ -439,7 +435,6 @@ const ContratoTemplate: React.FC<ContratoTemplateProps> = ({
             );
           })()}
         </View>
-
 
         {/* Firmas al final de la segunda página */}
         <View style={styles.signatureContainer}>

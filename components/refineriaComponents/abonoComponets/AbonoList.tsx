@@ -15,6 +15,8 @@ import { formatDateFH } from "@/utils/dateUtils";
 import { Abono } from "@/libs/interfaces/contratoInterface";
 import CustomActionButtons from "@/components/common/CustomActionButtons";
 import AuditHistoryDialog from "@/components/common/AuditHistoryDialog";
+import AbonoTemplate from "@/components/pdf/templates/AbonoTemplate";
+
 
 interface AbonoListProps {
   tipoAbono: string;
@@ -133,6 +135,12 @@ const AbonoList = ({ tipoAbono }: AbonoListProps) => {
         data;
         setDeleteProductDialog(true);
       }}
+
+       pdfTemplate={(props) => (
+          <AbonoTemplate data={props.data} logoUrl="/layout/images/avatarHombre.png" />
+        )}
+        pdfFileName={`Despacho${rowData.numeroAbono}.pdf`}
+        pdfDownloadText="Descargar Despacho"
     />
   );
 
