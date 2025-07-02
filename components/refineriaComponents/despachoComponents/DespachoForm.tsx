@@ -64,10 +64,7 @@ const DespachoForm = ({
   showToast,
 }: DespachoFormProps) => {
   const { activeRefineria } = useRefineriaStore();
-  console.log(
-    "despacho?.idChequeoCalidad?.numeroChequeoCalidad",
-    despacho.idChequeoCantidad
-  );
+
   const { tanques, contratos, lineaDespachos, loading } = useRefineryData(
     activeRefineria?.id || ""
   );
