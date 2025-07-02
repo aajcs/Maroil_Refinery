@@ -245,207 +245,155 @@ const RecepcionTemplate: React.FC<RecepcionTemplateProps> = ({
           <View
             style={{
               borderWidth: 1,
-              borderColor: "#bbb",
-              borderRadius: 4,
-              marginBottom: 10,
-              marginTop: 6,
+              borderColor: "#3498db",
+              borderRadius: 8,
+              marginBottom: 14,
+              marginTop: 8,
+              backgroundColor: "#fafdff",
+              overflow: "hidden",
             }}
           >
             {/* Encabezados */}
             <View style={{ flexDirection: "row", backgroundColor: "#e3f2fd" }}>
-              <View style={{ flex: 2, borderRightWidth: 1, borderRightColor: "#bbdefb", padding: 4 }}>
-                <Text style={{ fontWeight: "bold", fontSize: 9, color: "#222" }}>DATO</Text>
+              <View style={{
+                flex: 2,
+                borderRightWidth: 1,
+                borderRightColor: "#bbdefb",
+                padding: 6,
+                justifyContent: "center",
+                alignItems: "center",
+              }}>
+                <Text style={{ fontWeight: "bold", fontSize: 10, color: "#1976d2", letterSpacing: 0.5 }}>Información</Text>
               </View>
-              <View style={{ flex: 2, padding: 4, textAlign: "center" }}>
-                <Text style={{ fontWeight: "bold", fontSize: 9, color: "#222" }}>VALOR</Text>
-              </View>
-            </View>
-            {/* Fila Número de Contrato */}
-            <View style={{ flexDirection: "row", borderTopWidth: 1, borderTopColor: "#bbb" }}>
-              <View style={{ flex: 2, borderRightWidth: 1, borderRightColor: "#bbb", padding: 4 }}>
-                <Text style={{ fontSize: 9 }}>Número de Contrato</Text>
-              </View>
-              <View style={{ flex: 2, padding: 4, textAlign: "center" }}>
-                <Text style={{ fontSize: 9 }}>{contrato.numeroContrato || "N/A"}</Text>
-              </View>
-            </View>
-            {/* Fila Producto que recibe */}
-            <View style={{ flexDirection: "row", borderTopWidth: 1, borderTopColor: "#bbb" }}>
-              <View style={{ flex: 2, borderRightWidth: 1, borderRightColor: "#bbb", padding: 4 }}>
-                <Text style={{ fontSize: 9 }}>Producto que recibe</Text>
-              </View>
-              <View style={{ flex: 2, padding: 4, textAlign: "center" }}>
-                <Text style={{ fontSize: 9 }}>{producto.producto?.nombre || producto.producto || "N/A"}</Text>
+              <View style={{
+                flex: 2,
+                padding: 6,
+                textAlign: "center",
+                justifyContent: "center",
+                alignItems: "center",
+              }}>
+                <Text style={{ fontWeight: "bold", fontSize: 10, color: "#1976d2", letterSpacing: 0.5 }}>VALOR</Text>
               </View>
             </View>
-            {/* Fila Cantidad Esperada */}
-            <View style={{ flexDirection: "row", borderTopWidth: 1, borderTopColor: "#bbb" }}>
-              <View style={{ flex: 2, borderRightWidth: 1, borderRightColor: "#bbb", padding: 4 }}>
-                <Text style={{ fontSize: 9 }}>Cantidad Esperada</Text>
+            {/* Fila */}
+            {[
+              { label: "Número de Contrato", value: contrato.numeroContrato || "N/A" },
+              { label: "Producto que recibe", value: producto.producto?.nombre || producto.producto || "N/A" },
+              { label: "Cantidad Esperada", value: `${formatDecimal(data.cantidadEnviada)} Bbl` },
+              { label: "Cantidad Recibida", value: `${formatDecimal(data.cantidadRecibida)} Bbl` },
+              { label: "ID Guía", value: data.idGuia || "N/A" },
+              { label: "Placa", value: data.placa || "N/A" },
+              { label: "Nombre del Chofer", value: data.nombreChofer || "N/A" },
+              { label: "Fecha de Inicio de Recepción", value: formatDate(data.fechaInicioRecepcion) },
+              { label: "Fecha Fin de Recepción", value: formatDate(data.fechaFinRecepcion) },
+              { label: "Línea de Descarga", value: data.idLinea?.nombre || "N/A" },
+              { label: "Tanque Destino", value: data.idTanque?.nombre || "N/A" },
+            ].map((item, idx, arr) => (
+              <View
+                key={item.label}
+                style={{
+                  flexDirection: "row",
+                  backgroundColor: idx % 2 === 0 ? "#fafdff" : "#f0f6fa",
+                  borderTopWidth: idx === 0 ? 1 : 0,
+                  borderTopColor: "#bbdefb",
+                }}
+              >
+                <View style={{
+                  flex: 2,
+                  borderRightWidth: 1,
+                  borderRightColor: "#e3f2fd",
+                  padding: 6,
+                  justifyContent: "center",
+                }}>
+                  <Text style={{ fontSize: 9, color: "#333" }}>{item.label}</Text>
+                </View>
+                <View style={{
+                  flex: 2,
+                  padding: 6,
+                  textAlign: "center",
+                  justifyContent: "center",
+                }}>
+                  <Text style={{ fontSize: 9, color: "#222", fontWeight: 500 }}>{item.value}</Text>
+                </View>
               </View>
-              <View style={{ flex: 2, padding: 4, textAlign: "center" }}>
-                <Text style={{ fontSize: 9 }}>{formatDecimal(data.cantidadEnviada)} Bbl</Text>
-              </View>
-            </View>
-            {/* Fila Cantidad Recibida */}
-            <View style={{ flexDirection: "row", borderTopWidth: 1, borderTopColor: "#bbb" }}>
-              <View style={{ flex: 2, borderRightWidth: 1, borderRightColor: "#bbb", padding: 4 }}>
-                <Text style={{ fontSize: 9 }}>Cantidad Recibida</Text>
-              </View>
-              <View style={{ flex: 2, padding: 4, textAlign: "center" }}>
-                <Text style={{ fontSize: 9 }}>{formatDecimal(data.cantidadRecibida)} Bbl</Text>
-              </View>
-            </View>
-            {/* Fila ID Guía */}
-            <View style={{ flexDirection: "row", borderTopWidth: 1, borderTopColor: "#bbb" }}>
-              <View style={{ flex: 2, borderRightWidth: 1, borderRightColor: "#bbb", padding: 4 }}>
-                <Text style={{ fontSize: 9 }}>ID Guía</Text>
-              </View>
-              <View style={{ flex: 2, padding: 4, textAlign: "center" }}>
-                <Text style={{ fontSize: 9 }}>{data.idGuia || "N/A"}</Text>
-              </View>
-            </View>
-            {/* Fila Placa */}
-            <View style={{ flexDirection: "row", borderTopWidth: 1, borderTopColor: "#bbb" }}>
-              <View style={{ flex: 2, borderRightWidth: 1, borderRightColor: "#bbb", padding: 4 }}>
-                <Text style={{ fontSize: 9 }}>Placa</Text>
-              </View>
-              <View style={{ flex: 2, padding: 4, textAlign: "center" }}>
-                <Text style={{ fontSize: 9 }}>{data.placa || "N/A"}</Text>
-              </View>
-            </View>
-            {/* Fila Nombre del Chofer */}
-            <View style={{ flexDirection: "row", borderTopWidth: 1, borderTopColor: "#bbb" }}>
-              <View style={{ flex: 2, borderRightWidth: 1, borderRightColor: "#bbb", padding: 4 }}>
-                <Text style={{ fontSize: 9 }}>Nombre del Chofer</Text>
-              </View>
-              <View style={{ flex: 2, padding: 4, textAlign: "center" }}>
-                <Text style={{ fontSize: 9 }}>{data.nombreChofer || "N/A"}</Text>
-              </View>
-            </View>
-            {/* Fila Fecha de Inicio de Recepción */}
-            <View style={{ flexDirection: "row", borderTopWidth: 1, borderTopColor: "#bbb" }}>
-              <View style={{ flex: 2, borderRightWidth: 1, borderRightColor: "#bbb", padding: 4 }}>
-                <Text style={{ fontSize: 9 }}>Fecha de Inicio de Recepción</Text>
-              </View>
-              <View style={{ flex: 2, padding: 4, textAlign: "center" }}>
-                <Text style={{ fontSize: 9 }}>{formatDate(data.fechaInicioRecepcion)}</Text>
-              </View>
-            </View>
-            {/* Fila Fecha Fin de Recepción */}
-            <View style={{ flexDirection: "row", borderTopWidth: 1, borderTopColor: "#bbb" }}>
-              <View style={{ flex: 2, borderRightWidth: 1, borderRightColor: "#bbb", padding: 4 }}>
-                <Text style={{ fontSize: 9 }}>Fecha Fin de Recepción</Text>
-              </View>
-              <View style={{ flex: 2, padding: 4, textAlign: "center" }}>
-                <Text style={{ fontSize: 9 }}>{formatDate(data.fechaFinRecepcion)}</Text>
-              </View>
-            </View>
-            {/* Fila Línea de Descarga */}
-            <View style={{ flexDirection: "row", borderTopWidth: 1, borderTopColor: "#bbb" }}>
-              <View style={{ flex: 2, borderRightWidth: 1, borderRightColor: "#bbb", padding: 4 }}>
-                <Text style={{ fontSize: 9 }}>Línea de Descarga</Text>
-              </View>
-              <View style={{ flex: 2, padding: 4, textAlign: "center" }}>
-                <Text style={{ fontSize: 9 }}>{data.idLinea?.nombre || "N/A"}</Text>
-              </View>
-            </View>
-            {/* Fila Tanque Destino */}
-            <View style={{ flexDirection: "row", borderTopWidth: 1, borderTopColor: "#bbb" }}>
-              <View style={{ flex: 2, borderRightWidth: 1, borderRightColor: "#bbb", padding: 4 }}>
-                <Text style={{ fontSize: 9 }}>Tanque Destino</Text>
-              </View>
-              <View style={{ flex: 2, padding: 4, textAlign: "center" }}>
-                <Text style={{ fontSize: 9 }}>{data.idTanque?.nombre || "N/A"}</Text>
-              </View>
-            </View>
+            ))}
           </View>
         </View>
 
-        {/* Resultados de Calidad */}
+         {/* Resultados de Calidad */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Resultados de Calidad</Text>
           <View
             style={{
               borderWidth: 1,
-              borderColor: "#bbb",
-              borderRadius: 4,
-              marginBottom: 10,
-              marginTop: 6,
+              borderColor: "#3498db",
+              borderRadius: 8,
+              marginBottom: 14,
+              marginTop: 8,
+              backgroundColor: "#fafdff",
+              overflow: "hidden",
             }}
           >
             {/* Encabezados */}
             <View style={{ flexDirection: "row", backgroundColor: "#e3f2fd" }}>
-              <View style={{ flex: 2, borderRightWidth: 1, borderRightColor: "#bbdefb", padding: 4 }}>
-                <Text style={{ fontWeight: "bold", fontSize: 9, color: "#222" }}>PARÁMETRO</Text>
+              <View style={{
+                flex: 2,
+                borderRightWidth: 1,
+                borderRightColor: "#bbdefb",
+                padding: 6,
+                justifyContent: "center",
+                alignItems: "center",
+              }}>
+                <Text style={{ fontWeight: "bold", fontSize: 10, color: "#1976d2", letterSpacing: 0.5 }}>PARÁMETRO</Text>
               </View>
-              <View style={{ flex: 1, borderRightWidth: 1, borderRightColor: "#bbdefb", padding: 4, textAlign: "center" }}>
-                <Text style={{ fontWeight: "bold", fontSize: 9, color: "#222" }}>VALOR</Text>
-              </View>
-              <View style={{ flex: 1, padding: 4, textAlign: "center" }}>
-                <Text style={{ fontWeight: "bold", fontSize: 9, color: "#222" }}>UNIDAD</Text>
-              </View>
-            </View>
-            {/* Fila Gravedad API */}
-            <View style={{ flexDirection: "row", borderTopWidth: 1, borderTopColor: "#bbb" }}>
-              <View style={{ flex: 2, borderRightWidth: 1, borderRightColor: "#bbb", padding: 4 }}>
-                <Text style={{ fontSize: 9 }}>Gravedad API</Text>
-              </View>
-              <View style={{ flex: 1, borderRightWidth: 1, borderRightColor: "#bbb", padding: 4, textAlign: "center" }}>
-                <Text style={{ fontSize: 9 }}>{chequeoCalidad.gravedadAPI !== undefined ? chequeoCalidad.gravedadAPI : "N/A"}</Text>
-              </View>
-              <View style={{ flex: 1, padding: 4, textAlign: "center" }}>
-                <Text style={{ fontSize: 9 }}>°API</Text>
+              <View style={{
+                flex: 2,
+                padding: 6,
+                textAlign: "center",
+                justifyContent: "center",
+                alignItems: "center",
+              }}>
+                <Text style={{ fontWeight: "bold", fontSize: 10, color: "#1976d2", letterSpacing: 0.5 }}>VALOR</Text>
               </View>
             </View>
-            {/* Fila Azufre */}
-            <View style={{ flexDirection: "row", borderTopWidth: 1, borderTopColor: "#bbb" }}>
-              <View style={{ flex: 2, borderRightWidth: 1, borderRightColor: "#bbb", padding: 4 }}>
-                <Text style={{ fontSize: 9 }}>% de Azufre</Text>
+            {/* Filas */}
+            {[
+              { label: "Gravedad API", value: chequeoCalidad.gravedadAPI !== undefined ? chequeoCalidad.gravedadAPI : "N/A", unidad: "°API" },
+              { label: "% de Azufre", value: chequeoCalidad.azufre !== undefined ? chequeoCalidad.azufre : "N/A", unidad: "%" },
+              { label: "Contenido de Agua", value: chequeoCalidad.contenidoAgua !== undefined ? chequeoCalidad.contenidoAgua : "N/A", unidad: "%" },
+              { label: "Punto de Inflamación", value: chequeoCalidad.puntoDeInflamacion !== undefined ? chequeoCalidad.puntoDeInflamacion : "N/A", unidad: "°C" },
+              { label: "Índice de Cetano", value: chequeoCalidad.cetano !== undefined ? chequeoCalidad.cetano : "N/A", unidad: "" },
+            ].map((item, idx) => (
+              <View
+                key={item.label}
+                style={{
+                  flexDirection: "row",
+                  backgroundColor: idx % 2 === 0 ? "#fafdff" : "#f0f6fa",
+                  borderTopWidth: idx === 0 ? 1 : 0,
+                  borderTopColor: "#bbdefb",
+                }}
+              >
+                <View style={{
+                  flex: 2,
+                  borderRightWidth: 1,
+                  borderRightColor: "#e3f2fd",
+                  padding: 6,
+                  justifyContent: "center",
+                }}>
+                  <Text style={{ fontSize: 9, color: "#333" }}>{item.label}</Text>
+                </View>
+                <View style={{
+                  flex: 2,
+                  padding: 6,
+                  textAlign: "center",
+                  justifyContent: "center",
+                }}>
+                  <Text style={{ fontSize: 9, color: "#222", fontWeight: 500 }}>
+                    {item.value} {item.unidad}
+                  </Text>
+                </View>
               </View>
-              <View style={{ flex: 1, borderRightWidth: 1, borderRightColor: "#bbb", padding: 4, textAlign: "center" }}>
-                <Text style={{ fontSize: 9 }}>{chequeoCalidad.azufre !== undefined ? chequeoCalidad.azufre : "N/A"}</Text>
-              </View>
-              <View style={{ flex: 1, padding: 4, textAlign: "center" }}>
-                <Text style={{ fontSize: 9 }}>%</Text>
-              </View>
-            </View>
-            {/* Fila Agua */}
-            <View style={{ flexDirection: "row", borderTopWidth: 1, borderTopColor: "#bbb" }}>
-              <View style={{ flex: 2, borderRightWidth: 1, borderRightColor: "#bbb", padding: 4 }}>
-                <Text style={{ fontSize: 9 }}>Contenido de Agua</Text>
-              </View>
-              <View style={{ flex: 1, borderRightWidth: 1, borderRightColor: "#bbb", padding: 4, textAlign: "center" }}>
-                <Text style={{ fontSize: 9 }}>{chequeoCalidad.contenidoAgua !== undefined ? chequeoCalidad.contenidoAgua : "N/A"}</Text>
-              </View>
-              <View style={{ flex: 1, padding: 4, textAlign: "center" }}>
-                <Text style={{ fontSize: 9 }}>%</Text>
-              </View>
-            </View>
-            {/* Fila Punto de Inflamación */}
-            <View style={{ flexDirection: "row", borderTopWidth: 1, borderTopColor: "#bbb" }}>
-              <View style={{ flex: 2, borderRightWidth: 1, borderRightColor: "#bbb", padding: 4 }}>
-                <Text style={{ fontSize: 9 }}>Punto de Inflamación</Text>
-              </View>
-              <View style={{ flex: 1, borderRightWidth: 1, borderRightColor: "#bbb", padding: 4, textAlign: "center" }}>
-                <Text style={{ fontSize: 9 }}>{chequeoCalidad.puntoDeInflamacion !== undefined ? chequeoCalidad.puntoDeInflamacion : "N/A"}</Text>
-              </View>
-              <View style={{ flex: 1, padding: 4, textAlign: "center" }}>
-                <Text style={{ fontSize: 9 }}>°C</Text>
-              </View>
-            </View>
-            {/* Fila Índice de Cetano */}
-            <View style={{ flexDirection: "row", borderTopWidth: 1, borderTopColor: "#bbb" }}>
-              <View style={{ flex: 2, borderRightWidth: 1, borderRightColor: "#bbb", padding: 4 }}>
-                <Text style={{ fontSize: 9 }}>Índice de Cetano</Text>
-              </View>
-              <View style={{ flex: 1, borderRightWidth: 1, borderRightColor: "#bbb", padding: 4, textAlign: "center" }}>
-                <Text style={{ fontSize: 9 }}>{chequeoCalidad.cetano !== undefined ? chequeoCalidad.cetano : "N/A"}</Text>
-              </View>
-              <View style={{ flex: 1, padding: 4, textAlign: "center" }}>
-                <Text style={{ fontSize: 9 }}></Text>
-              </View>
-            </View>
+            ))}
           </View>
           {/* Estado de aprobación de calidad */}
           <View style={styles.row}>
@@ -460,6 +408,7 @@ const RecepcionTemplate: React.FC<RecepcionTemplateProps> = ({
             </View>
           </View>
         </View>
+
 
         {/* Chequeo de Cantidad */}
         <View style={styles.section}>
