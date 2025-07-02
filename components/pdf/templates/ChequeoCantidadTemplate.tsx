@@ -9,7 +9,6 @@ import {
 } from "@react-pdf/renderer";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { styles as globalStyles } from "@/utils/pdfStyles";
 import { ChequeoCantidad } from "@/libs/interfaces";
 
 interface ChequeoCantidadTemplateProps {
@@ -18,7 +17,6 @@ interface ChequeoCantidadTemplateProps {
 }
 
 const styles = StyleSheet.create({
-  ...globalStyles,
   page: {
     padding: 24,
     fontSize: 10,
@@ -27,60 +25,47 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
+    alignItems: "center",
     marginBottom: 14,
     borderBottomWidth: 1,
     borderBottomColor: "#3498db",
     paddingBottom: 6,
   },
-  logoSection: {
-    width: "45%",
-    flexDirection: "column",
-    alignItems: "flex-start",
-  },
   logo: {
     width: 48,
     height: 48,
-    marginBottom: 4,
-    marginLeft: 2,
+    marginRight: 10,
   },
   refineryName: {
-    fontSize: 12,
-    fontWeight: "bold",
-    color: "#2c3e50",
-    marginLeft: 2,
-    marginBottom: 1,
-  },
-  productName: {
-    fontSize: 9,
-    color: "#555",
-    marginLeft: 2,
-    marginBottom: 1,
-  },
-  reportInfo: {
-    width: "55%",
-    alignItems: "flex-end",
-    flexDirection: "column",
-  },
-  operationNumber: {
     fontSize: 14,
     fontWeight: "bold",
+    color: "#2c3e50",
+    marginBottom: 2,
+    textAlign: "left",
+  },
+  operationNumber: {
+    fontSize: 12,
+    fontWeight: "bold",
     color: "#3498db",
-    marginBottom: 4,
+    marginBottom: 2,
+    textAlign: "left",
   },
   reportDate: {
-    fontSize: 8,
+    fontSize: 9,
     color: "#888",
-    marginBottom: 4,
+    marginBottom: 2,
+    textAlign: "left",
   },
   statusBadge: {
     padding: 3,
     borderRadius: 4,
     fontWeight: "bold",
     textAlign: "center",
-    fontSize: 8,
+    fontSize: 9,
     minWidth: 60,
+    marginTop: 2,
+    marginBottom: 2,
+    alignSelf: "flex-start",
   },
   statusApproved: {
     backgroundColor: "#e8f5e9",
@@ -99,12 +84,7 @@ const styles = StyleSheet.create({
   },
   section: {
     marginTop: 10,
-    marginBottom: 6,
-  },
-  sectionDivider: {
-    height: 1,
-    backgroundColor: "#eee",
-    marginVertical: 8,
+    marginBottom: 8,
   },
   sectionTitle: {
     backgroundColor: "#f5f5f5",
@@ -114,59 +94,36 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 11,
     color: "#222",
+    textAlign: "left",
   },
-  row: {
-    flexDirection: "row",
-    marginBottom: 4,
-  },
-  label: {
-    width: "40%",
-    fontWeight: "bold",
-    color: "#555",
-    fontSize: 9,
-  },
-  value: {
-    width: "60%",
-    fontSize: 9,
-  },
-  quantityInfo: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 8,
-    padding: 6,
-    backgroundColor: "#f9f9f9",
-    borderRadius: 4,
+  tableContainer: {
     borderWidth: 1,
-    borderColor: "#e0e0e0",
+    borderColor: "#3498db",
+    borderRadius: 8,
+    marginBottom: 14,
+    marginTop: 8,
+    backgroundColor: "#fafdff",
+    overflow: "hidden",
   },
-  quantityBox: {
-    width: "48%",
-    textAlign: "center",
+  tableRow: {
+    flexDirection: "row",
+    borderTopColor: "#bbdefb",
+  },
+  tableCellLabel: {
+    flex: 2,
+    borderRightWidth: 1,
+    borderRightColor: "#e3f2fd",
     padding: 6,
-    borderRadius: 4,
+    justifyContent: "center",
   },
-  expected: {
-    backgroundColor: "#e3f2fd",
-    border: "1px solid #bbdefb",
-  },
-  actual: {
-    backgroundColor: "#e8f5e9",
-    border: "1px solid #c8e6c9",
-  },
-  differenceText: {
-    fontWeight: "bold",
-    fontSize: 10,
-    textAlign: "center",
-    marginTop: 6,
-  },
-  differenceNote: {
-    fontSize: 8,
-    color: "#666",
-    textAlign: "center",
-    marginTop: 1,
+  tableCellValue: {
+    flex: 2,
+    padding: 6,
+    textAlign: "left",
+    justifyContent: "center",
   },
   signatureContainer: {
-    marginTop: 20,
+    marginTop: 30,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-end",
@@ -196,240 +153,309 @@ const styles = StyleSheet.create({
   },
 });
 
+const formatDate = (dateString: string) => {
+  return format(new Date(dateString), "dd/MM/yyyy HH:mm", { locale: es });
+};
+
+const getStatusStyle = (estado: string) => {
+  switch (estado?.toLowerCase()) {
+    case "aprobado":
+      return styles.statusApproved;
+    case "pendiente":
+      return styles.statusPending;
+    case "rechazado":
+      return styles.statusRejected;
+    default:
+      return styles.statusApproved;
+  }
+};
+
 const ChequeoCantidadTemplate: React.FC<ChequeoCantidadTemplateProps> = ({
   data,
   logoUrl,
 }) => {
-  const formatDate = (dateString: string) => {
-    return format(new Date(dateString), "dd/MM/yyyy HH:mm", { locale: es });
-  };
+  // Construye las filas de detalles del chequeo según el tipo
+  const detallesChequeoRows = [
+    { label: "Tipo", value: data.aplicar.tipo },
+    { label: "Producto chequeado", value: data.idProducto?.nombre || "N/A" },
+    ...(data.aplicar.tipo.toLowerCase() === "tanque"
+      ? [
+          { label: "Tanque", value: data.aplicar.idReferencia.nombre },
+          { label: "ID Tanque", value: data.aplicar.idReferencia.id },
+        ]
+      : data.aplicar.tipo.toLowerCase() === "recepcion"
+      ? [
+          { label: "ID Guía", value: data.aplicar.idReferencia.idGuia },
+          { label: "Número de Recepción", value: data.aplicar.idReferencia.numeroRecepcion },
+          { label: "Chofer", value: data.aplicar.idReferencia.nombreChofer },
+          { label: "Placa", value: data.aplicar.idReferencia.placa },
+        ]
+      : data.aplicar.tipo.toLowerCase() === "despacho"
+      ? [
+          { label: "ID Guía", value: data.aplicar.idReferencia.idGuia },
+          { label: "Número de Despacho", value: data.aplicar.idReferencia.numeroDespacho },
+          { label: "Chofer", value: data.aplicar.idReferencia.nombreChofer },
+          { label: "Placa", value: data.aplicar.idReferencia.placa },
+        ]
+      : [
+          { label: "Referencia", value: JSON.stringify(data.aplicar.idReferencia) },
+        ]),
+  ];
 
-  const getStatusStyle = () => {
-    switch (data.estado.toLowerCase()) {
-      case "aprobado":
-        return styles.statusApproved;
-      case "pendiente":
-        return styles.statusPending;
-      case "rechazado":
-        return styles.statusRejected;
-      default:
-        return styles.statusApproved;
-    }
-  };
+  // Cantidades para tabla
+  const cantidadEsperada = data.aplicar.idReferencia?.cantidadEnviada;
+  const cantidadRecibida = data.aplicar.idReferencia?.cantidadRecibida;
+  const diferencia =
+    cantidadEsperada !== undefined && cantidadRecibida !== undefined
+      ? cantidadRecibida - cantidadEsperada
+      : undefined;
+  const diferenciaPorcentaje =
+    cantidadEsperada !== undefined && cantidadRecibida !== undefined
+      ? ((Math.abs(diferencia ?? 0) / (cantidadEsperada || 1)) * 100)
+      : undefined;
 
-const renderTipoEspecifico = () => {
-  switch (data.aplicar.tipo.toLowerCase()) {
-    case "tanque":
-      return (
-        <>
-          <View style={styles.row}>
-            <Text style={styles.label}>Tanque:</Text>
-            <Text style={styles.value}>
-              {data.aplicar.idReferencia.nombre}
-            </Text>
-          </View>
-          
-        </>
-      );
-    case "recepcion":
-      return (
-        <>
-          <View style={styles.row}>
-            <Text style={styles.label}>ID Guía:</Text>
-            <Text style={styles.value}>
-              {data.aplicar.idReferencia.idGuia}
-            </Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.label}>Número de Recepción:</Text>
-            <Text style={styles.value}>{data.aplicar.idReferencia.numeroRecepcion}</Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.label}>Nombre de Chofer:</Text>
-            <Text style={styles.value}>{data.aplicar.idReferencia.nombreChofer}</Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.label}>Placa:</Text>
-            <Text style={styles.value}>{data.aplicar.idReferencia.placa}</Text>
-          </View>
-        </>
-      );
-    case "despacho":
-      return (
-        <>
-          <View style={styles.row}>
-            <Text style={styles.label}>ID Guía:</Text>
-            <Text style={styles.value}>
-              {data.aplicar.idReferencia.idGuia}
-            </Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.label}>Número de Despacho:</Text>
-            <Text style={styles.value}>{data.aplicar.idReferencia.numeroDespacho}</Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.label}>Nombre de Chofer:</Text>
-            <Text style={styles.value}>{data.aplicar.idReferencia.nombreChofer}</Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.label}>Número de Placa:</Text>
-            <Text style={styles.value}>{data.aplicar.idReferencia.placa}</Text>
-          </View>
-        </>
-      );
-    default:
-      return (
-        <View style={styles.row}>
-          <Text style={styles.label}>Referencia:</Text>
-          <Text style={styles.value}>
-            {JSON.stringify(data.aplicar.idReferencia)}
-          </Text>
-        </View>
-      );
-  }
-};
-console.log("Logo:", data.idRefineria.img);
   return (
     <Document>
       <Page size="A4" style={styles.page}>
         {/* Encabezado */}
         <View style={styles.headerContainer}>
-              <View style={styles.logoSection}>
-                {/* Si tu imagen está en base64, asegúrate de que el string incluya el prefijo correcto */}
-                <Image
-                  src={
-                    data.idRefineria.img && (data.idRefineria.img.startsWith("http") || data.idRefineria.img.startsWith("data:image"))
-                      ? data.idRefineria.img
-                      : "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcRySSMU9Jhl6Uul6j_Y4raxmNj7y129zSrTBZgVoMDQSk1lsmVvL4GhALZ6p-fpFAMIRvKvgLO6g66LhjfLFEeHS29uIGSHBe0n2k-z5LM"
-                  }
-                  style={styles.logo}
-                />
-                <Text style={styles.refineryName}>{data.idRefineria.nombre}</Text>
-              </View>
-          <View style={styles.reportInfo}>
-            <Text style={{ ...styles.operationNumber, fontSize: 10 }}>
+          <Image
+            src={
+              data.idRefineria.img &&
+              (data.idRefineria.img.startsWith("http") ||
+                data.idRefineria.img.startsWith("data:image"))
+                ? data.idRefineria.img
+                : logoUrl ||
+                  "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcRySSMU9Jhl6Uul6j_Y4raxmNj7y129zSrTBZgVoMDQSk1lsmVvL4GhALZ6p-fpFAMIRvKvgLO6g66LhjfLFEeHS29uIGSHBe0n2k-z5LM"
+            }
+            style={styles.logo}
+          />
+          <View>
+            <Text style={styles.refineryName}>{data.idRefineria.nombre}</Text>
+            <Text style={styles.operationNumber}>
               Operación N° {data.numeroChequeoCantidad}
             </Text>
             <Text style={styles.reportDate}>
               Fecha: {formatDate(data.fechaChequeo)}
             </Text>
-            <View style={[styles.statusBadge, getStatusStyle()]}>
-              <Text>{data.estado.toUpperCase()}</Text>
+            <View style={[styles.statusBadge, getStatusStyle(data.estado)]}>
+              <Text>{data.estado?.toUpperCase()}</Text>
             </View>
           </View>
         </View>
 
-        <View style={{ alignItems: "center", marginBottom: 18 }}>
-          <Text style={{ fontSize: 18, fontWeight: "bold", color: "#2c3e50" }}>
+        <View style={{ alignItems: "center", marginBottom: 10 }}>
+          <Text style={{ fontSize: 13, fontWeight: "bold", color: "#2c3e50" }}>
             Chequeo de Cantidad
           </Text>
         </View>
 
-        {/* Información principal */}
+        {/* Información principal con visual de tabla */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Detalles del Chequeo</Text>
-          <View style={styles.row}>
-            <Text style={styles.label}>Tipo:</Text>
-            <Text style={{ ...styles.value, textTransform: "capitalize" }}>
-              {data.aplicar.tipo}
-            </Text>
+          <View style={styles.tableContainer}>
+            {detallesChequeoRows.map((item, idx) => (
+              <View
+                key={item.label}
+                style={{
+                  flexDirection: "row",
+                  backgroundColor: idx % 2 === 0 ? "#fafdff" : "#f0f6fa",
+                  borderTopWidth: idx === 0 ? 1 : 0,
+                  borderTopColor: "#bbdefb",
+                }}
+              >
+                <View style={styles.tableCellLabel}>
+                  <Text style={{ fontSize: 9, color: "#333" }}>{item.label}</Text>
+                </View>
+                <View style={styles.tableCellValue}>
+                  <Text style={{ fontSize: 9, color: "#222", fontWeight: 500 }}>{item.value}</Text>
+                </View>
+              </View>
+            ))}
           </View>
-          <View style={styles.row}>
-            <Text style={styles.label}>Producto chequeado:</Text>
-            <Text style={styles.value}>{data.idProducto?.nombre || "N/A"}</Text>
-          </View>
-          {renderTipoEspecifico()}
         </View>
 
-        <View style={styles.sectionDivider} />
-
-         {/* Información de cantidades */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Verificación de Cantidades (Bbl)</Text>
-          {data.aplicar.tipo.toLowerCase() === "tanque" ? (
-            <View style={{ alignItems: "center", justifyContent: "center", marginVertical: 16 }}>
-              <View style={{ 
-                backgroundColor: "#e3f2fd", 
-                border: "1px solid #bbdefb", 
-                borderRadius: 6, 
-                paddingVertical: 14, 
-                paddingHorizontal: 32, 
-                minWidth: 180,
-                alignItems: "center",
-                justifyContent: "center"
-              }}>
-                <Text style={{ fontWeight: "bold", fontSize: 13, marginBottom: 6, textAlign: "center" }}>
-                  Cantidad
-                </Text>
-                <Text style={{ fontSize: 22, fontWeight: "bold", color: "#222", textAlign: "center" }}>
-                  {data.cantidad?.toLocaleString("es-VE", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) ?? "N/A"}
-                </Text>
-                <Text style={{ fontSize: 10, color: "#555", marginTop: 4, textAlign: "center" }}>
-                  Bbl
-                </Text>
-              </View>
-            </View>
-          ) : (
-            <>
-              <View style={styles.quantityInfo}>
-                <View style={[styles.quantityBox, styles.expected]}>
-                  <Text style={{ fontWeight: "bold", fontSize: 11, marginBottom: 2 }}>
-                    Cantidad Esperada
-                  </Text>
-                  <Text style={{ fontSize: 14, fontWeight: "bold" }}>
-                    {data.aplicar.idReferencia.cantidadEnviada !== undefined
-                      ? data.aplicar.idReferencia.cantidadEnviada.toLocaleString("es-VE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-                      : "N/A"}
-                  </Text>
+          <View style={styles.tableContainer}>
+            {data.aplicar.tipo.toLowerCase() === "tanque" ? (
+              <View
+                style={{
+                  flexDirection: "row",
+                  backgroundColor: "#fafdff",
+                  borderTopWidth: 1,
+                  borderTopColor: "#bbdefb",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <View style={{
+                  flex: 2,
+                  borderRightWidth: 1,
+                  borderRightColor: "#e3f2fd",
+                  padding: 6,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}>
+                  <Text style={{ fontSize: 11, fontWeight: "bold", color: "#333", textAlign: "center" }}>Cantidad</Text>
                 </View>
-                <View style={[styles.quantityBox, styles.actual]}>
-                  <Text style={{ fontWeight: "bold", fontSize: 11, marginBottom: 2 }}>
-                    Cantidad Recibida
+                <View style={{
+                  flex: 2,
+                  padding: 6,
+                  justifyContent: "center",
+                  alignItems: "center",
+                  flexDirection: "row",
+                }}>
+                  <Text style={{ fontSize: 18, fontWeight: "bold", color: "#222", textAlign: "center" }}>
+                    {data.cantidad?.toLocaleString("es-VE", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) ?? "N/A"}
                   </Text>
-                  <Text style={{ fontSize: 14, fontWeight: "bold" }}>
-                    {data.aplicar.idReferencia.cantidadRecibida !== undefined
-                      ? data.aplicar.idReferencia.cantidadRecibida.toLocaleString("es-VE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-                      : "N/A"}
-                  </Text>
+                  <Text style={{ fontSize: 12, color: "#555", marginLeft: 6, alignSelf: "center" }}>Bbl</Text>
                 </View>
               </View>
-              <Text style={{ ...styles.differenceText, fontSize: 11, marginTop: 6 }}>
-                Diferencia: 
-                {data.aplicar.idReferencia.cantidadEnviada !== undefined && data.aplicar.idReferencia.cantidadRecibida !== undefined
-                  ? `${data.aplicar.idReferencia.cantidadRecibida - data.aplicar.idReferencia.cantidadEnviada >= 0 ? "+" : "-"}${Math.abs(data.aplicar.idReferencia.cantidadRecibida - data.aplicar.idReferencia.cantidadEnviada).toLocaleString("es-VE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (${((Math.abs(data.aplicar.idReferencia.cantidadRecibida - data.aplicar.idReferencia.cantidadEnviada) / (data.aplicar.idReferencia.cantidadEnviada || 1)) * 100).toFixed(2).replace('.', ',')}%) Bbl`
-                  : "N/A"}
-              </Text>
-              <Text style={{ ...styles.differenceNote, fontSize: 9 }}>
-                {data.aplicar.idReferencia.cantidadEnviada !== undefined && data.aplicar.idReferencia.cantidadRecibida !== undefined ? (
-                  data.aplicar.idReferencia.cantidadEnviada > data.aplicar.idReferencia.cantidadRecibida ? (
-                    <Text style={{ color: "#c62828", fontWeight: "bold" }}>Faltante</Text>
-                  ) : data.aplicar.idReferencia.cantidadEnviada < data.aplicar.idReferencia.cantidadRecibida ? (
-                    <Text style={{ color: "#2e7d32", fontWeight: "bold" }}>Sobrante</Text>
-                  ) : (
-                    <Text style={{ color: "#666" }}>(Exacto)</Text>
-                  )
-                ) : null}
-              </Text>
-            </>
-          )}
+            ) : (
+              <>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    backgroundColor: "#fafdff",
+                    borderTopWidth: 1,
+                    borderTopColor: "#bbdefb",
+                    alignItems: "center",
+                  }}
+                >
+                  <View style={{
+                    flex: 2,
+                    borderRightWidth: 1,
+                    borderRightColor: "#e3f2fd",
+                    padding: 6,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}>
+                    <Text style={{ fontSize: 9, color: "#333", textAlign: "center" }}>Cantidad Esperada</Text>
+                  </View>
+                  <View style={{
+                    flex: 2,
+                    padding: 6,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}>
+                    <Text style={{ fontSize: 13, fontWeight: "bold", color: "#222", textAlign: "center" }}>
+                      {cantidadEsperada !== undefined
+                        ? cantidadEsperada.toLocaleString("es-VE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                        : "N/A"}
+                    </Text>
+                    <Text style={{ fontSize: 10, color: "#555", marginLeft: 6, alignSelf: "center" }}>Bbl</Text>
+                  </View>
+                </View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    backgroundColor: "#f0f6fa",
+                    borderTopWidth: 1,
+                    borderTopColor: "#bbdefb",
+                    alignItems: "center",
+                  }}
+                >
+                  <View style={{
+                    flex: 2,
+                    borderRightWidth: 1,
+                    borderRightColor: "#e3f2fd",
+                    padding: 6,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}>
+                    <Text style={{ fontSize: 9, color: "#333", textAlign: "center" }}>Cantidad Recibida</Text>
+                  </View>
+                  <View style={{
+                    flex: 2,
+                    padding: 6,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}>
+                    <Text style={{ fontSize: 13, fontWeight: "bold", color: "#222", textAlign: "center" }}>
+                      {cantidadRecibida !== undefined
+                        ? cantidadRecibida.toLocaleString("es-VE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                        : "N/A"}
+                    </Text>
+                    <Text style={{ fontSize: 10, color: "#555", marginLeft: 6, alignSelf: "center" }}>Bbl</Text>
+                  </View>
+                </View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    backgroundColor: "#fafdff",
+                    borderTopWidth: 1,
+                    borderTopColor: "#bbdefb",
+                    alignItems: "center",
+                  }}
+                >
+                  <View style={{
+                    flex: 2,
+                    borderRightWidth: 1,
+                    borderRightColor: "#e3f2fd",
+                    padding: 6,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}>
+                    <Text style={{ fontSize: 9, color: "#333", textAlign: "center" }}>Diferencia</Text>
+                  </View>
+                  <View style={{
+                    flex: 2,
+                    padding: 6,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}>
+                    <Text style={{ fontSize: 11, fontWeight: "bold", color: "#222", textAlign: "center" }}>
+                      {diferencia !== undefined
+                        ? `${diferencia >= 0 ? "+" : "-"}${Math.abs(diferencia).toLocaleString("es-VE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (${diferenciaPorcentaje !== undefined ? diferenciaPorcentaje.toFixed(2).replace('.', ',') : "0,00"}%)`
+                        : "N/A"}
+                    </Text>
+                    <Text style={{ fontSize: 10, color: "#555", marginLeft: 6, alignSelf: "center" }}>Bbl</Text>
+                    <Text style={{ fontSize: 9, color: "#666", marginTop: 2, textAlign: "center", width: "100%" }}>
+                      {diferencia !== undefined
+                        ? diferencia < 0
+                          ? "Faltante"
+                          : diferencia > 0
+                          ? "Sobrante"
+                          : "(Exacto)"
+                        : ""}
+                    </Text>
+                  </View>
+                </View>
+              </>
+            )}
+          </View>
         </View>
 
-        <View style={styles.sectionDivider} />
-
-        {/* Información de usuario y fechas (compacta) */}
-        <View style={[styles.section, { marginBottom: 0, marginTop: 0, paddingVertical: 0 }]}>
-          <Text style={[styles.sectionTitle, { fontSize: 11, marginBottom: 6, padding: 4 }]}>Datos Usuario</Text>
-          <View style={[styles.row, { marginBottom: 2 }]}>
-            <Text style={[styles.label, { width: "30%", fontSize: 9 }]}>Creado Por:</Text>
-            <Text style={[styles.value, { width: "70%", fontSize: 9 }]}>{data.createdBy.nombre}</Text>
-          </View>
-          <View style={[styles.row, { marginBottom: 2 }]}>
-            <Text style={[styles.label, { width: "30%", fontSize: 9 }]}>Correo:</Text>
-            <Text style={[styles.value, { width: "70%", fontSize: 9 }]}>{data.createdBy.correo}</Text>
+        {/* Información de usuario y fechas */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Datos Usuario</Text>
+          <View style={styles.tableContainer}>
+            {[
+              { label: "Creado Por", value: data.createdBy.nombre },
+              { label: "Correo", value: data.createdBy.correo },
+              { label: "Fecha de creación", value: formatDate(data.createdAt) },
+              { label: "Última actualización", value: formatDate(data.updatedAt) },
+            ].map((item, idx) => (
+              <View
+                key={item.label}
+                style={{
+                  flexDirection: "row",
+                  backgroundColor: idx % 2 === 0 ? "#fafdff" : "#f0f6fa",
+                  borderTopWidth: idx === 0 ? 1 : 0,
+                  borderTopColor: "#bbdefb",
+                }}
+              >
+                <View style={styles.tableCellLabel}>
+                  <Text style={{ fontSize: 9, color: "#333" }}>{item.label}</Text>
+                </View>
+                <View style={styles.tableCellValue}>
+                  <Text style={{ fontSize: 9, color: "#222", fontWeight: 500 }}>{item.value}</Text>
+                </View>
+              </View>
+            ))}
           </View>
         </View>
-
-        <View style={{ height: 26 }} />
 
         {/* Firmas */}
         <View style={styles.signatureContainer}>

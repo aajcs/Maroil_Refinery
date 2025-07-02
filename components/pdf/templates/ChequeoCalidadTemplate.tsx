@@ -18,62 +18,54 @@ interface ChequeoCalidadTemplateProps {
 
 const styles = StyleSheet.create({
   page: {
-    padding: 16,
-    fontSize: 9,
+    padding: 24,
+    fontSize: 10,
     fontFamily: "Helvetica",
     backgroundColor: "#fff",
-    lineHeight: 1.15,
   },
   headerContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    marginBottom: 8,
+    alignItems: "center",
+    marginBottom: 14,
     borderBottomWidth: 1,
     borderBottomColor: "#3498db",
-    paddingBottom: 4,
-  },
-  logoSection: {
-    width: "40%",
-    flexDirection: "column",
-    alignItems: "flex-start",
+    paddingBottom: 6,
   },
   logo: {
-    width: 36,
-    height: 36,
-    marginBottom: 2,
-    marginLeft: 1,
+    width: 48,
+    height: 48,
+    marginRight: 10,
   },
   refineryName: {
-    fontSize: 10,
+    fontSize: 14,
     fontWeight: "bold",
     color: "#2c3e50",
-    marginLeft: 1,
-    marginBottom: 1,
-  },
-  reportInfo: {
-    width: "60%",
-    alignItems: "flex-end",
-    flexDirection: "column",
+    marginBottom: 2,
+    textAlign: "left",
   },
   operationNumber: {
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: "bold",
     color: "#3498db",
     marginBottom: 2,
+    textAlign: "left",
   },
   reportDate: {
-    fontSize: 7,
+    fontSize: 9,
     color: "#888",
     marginBottom: 2,
+    textAlign: "left",
   },
   statusBadge: {
-    padding: 2,
+    padding: 3,
     borderRadius: 4,
     fontWeight: "bold",
     textAlign: "center",
-    fontSize: 7,
-    minWidth: 50,
+    fontSize: 9,
+    minWidth: 60,
+    marginTop: 2,
+    marginBottom: 2,
+    alignSelf: "flex-start",
   },
   statusApproved: {
     backgroundColor: "#e8f5e9",
@@ -91,29 +83,25 @@ const styles = StyleSheet.create({
     border: "1px solid #c62828",
   },
   section: {
-    marginTop: 6,
-    marginBottom: 4,
-  },
-  sectionDivider: {
-    height: 1,
-    backgroundColor: "#eee",
-    marginVertical: 5,
+    marginTop: 10,
+    marginBottom: 8,
   },
   sectionTitle: {
     backgroundColor: "#f5f5f5",
-    padding: 3,
-    borderRadius: 3,
-    marginBottom: 4,
+    padding: 5,
+    borderRadius: 4,
+    marginBottom: 6,
     fontWeight: "bold",
-    fontSize: 9,
+    fontSize: 11,
     color: "#222",
+    textAlign: "left",
   },
   tableContainer: {
     borderWidth: 1,
     borderColor: "#3498db",
-    borderRadius: 6,
-    marginBottom: 8,
-    marginTop: 4,
+    borderRadius: 8,
+    marginBottom: 14,
+    marginTop: 8,
     backgroundColor: "#fafdff",
     overflow: "hidden",
   },
@@ -125,13 +113,13 @@ const styles = StyleSheet.create({
     flex: 2,
     borderRightWidth: 1,
     borderRightColor: "#bbdefb",
-    padding: 4,
+    padding: 6,
     justifyContent: "center",
     alignItems: "center",
   },
   tableHeaderCellValor: {
     flex: 2,
-    padding: 4,
+    padding: 6,
     textAlign: "center",
     justifyContent: "center",
     alignItems: "center",
@@ -144,27 +132,17 @@ const styles = StyleSheet.create({
     flex: 2,
     borderRightWidth: 1,
     borderRightColor: "#e3f2fd",
-    padding: 4,
+    padding: 6,
     justifyContent: "center",
   },
   tableCellValue: {
     flex: 2,
-    padding: 4,
-    textAlign: "center",
+    padding: 6,
+    textAlign: "left",
     justifyContent: "center",
   },
-  label: {
-    width: "40%",
-    fontWeight: "bold",
-    color: "#555",
-    fontSize: 8,
-  },
-  value: {
-    width: "60%",
-    fontSize: 8,
-  },
   signatureContainer: {
-    marginTop: 12,
+    marginTop: 30,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-end",
@@ -173,47 +151,48 @@ const styles = StyleSheet.create({
   signatureBox: {
     width: "45%",
     textAlign: "center",
-    fontSize: 8,
+    fontSize: 9,
   },
   signatureLabel: {
-    marginBottom: 6,
+    marginBottom: 10,
     fontWeight: "bold",
   },
   signatureLine: {
-    marginVertical: 6,
-    fontSize: 10,
+    marginVertical: 10,
+    fontSize: 12,
   },
   footer: {
     position: "absolute",
-    bottom: 10,
-    left: 16,
-    right: 16,
+    bottom: 16,
+    left: 24,
+    right: 24,
     textAlign: "center",
-    fontSize: 7,
+    fontSize: 8,
     color: "#888",
   },
 });
+
+const formatDate = (dateString: string) => {
+  return format(new Date(dateString), "dd/MM/yyyy HH:mm", { locale: es });
+};
+
+const getStatusStyle = (estado: string) => {
+  switch (estado?.toLowerCase()) {
+    case "aprobado":
+      return styles.statusApproved;
+    case "pendiente":
+      return styles.statusPending;
+    case "rechazado":
+      return styles.statusRejected;
+    default:
+      return styles.statusApproved;
+  }
+};
 
 const ChequeoCalidadTemplate: React.FC<ChequeoCalidadTemplateProps> = ({
   data,
   logoUrl,
 }) => {
-  const formatDate = (dateString: string) => {
-    return format(new Date(dateString), "dd/MM/yyyy HH:mm", { locale: es });
-  };
-  const getStatusStyle = () => {
-    switch (data.estado?.toLowerCase()) {
-      case "aprobado":
-        return styles.statusApproved;
-      case "pendiente":
-        return styles.statusPending;
-      case "rechazado":
-        return styles.statusRejected;
-      default:
-        return styles.statusApproved;
-    }
-  };
-
   // Construye las filas de detalles del chequeo según el tipo
   const detallesChequeoRows = [
     { label: "Tipo", value: data.aplicar.tipo },
@@ -247,28 +226,27 @@ const ChequeoCalidadTemplate: React.FC<ChequeoCalidadTemplateProps> = ({
       <Page size="A4" style={styles.page}>
         {/* Encabezado */}
         <View style={styles.headerContainer}>
-          <View style={styles.logoSection}>
-            <Image
-              src={
-                data.idRefineria.img &&
-                (data.idRefineria.img.startsWith("http") ||
-                  data.idRefineria.img.startsWith("data:image"))
-                  ? data.idRefineria.img
-                  : "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcRySSMU9Jhl6Uul6j_Y4raxmNj7y129zSrTBZgVoMDQSk1lsmVvL4GhALZ6p-fpFAMIRvKvgLO6g66LhjfLFEeHS29uIGSHBe0n2k-z5LM"
-              }
-              style={styles.logo}
-            />
+          <Image
+            src={
+              data.idRefineria.img &&
+              (data.idRefineria.img.startsWith("http") ||
+                data.idRefineria.img.startsWith("data:image"))
+                ? data.idRefineria.img
+                : logoUrl ||
+                  "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcRySSMU9Jhl6Uul6j_Y4raxmNj7y129zSrTBZgVoMDQSk1lsmVvL4GhALZ6p-fpFAMIRvKvgLO6g66LhjfLFEeHS29uIGSHBe0n2k-z5LM"
+            }
+            style={styles.logo}
+          />
+          <View>
             <Text style={styles.refineryName}>{data.idRefineria.nombre}</Text>
-          </View>
-          <View style={styles.reportInfo}>
-            <Text style={{ ...styles.operationNumber, fontSize: 9 }}>
+            <Text style={styles.operationNumber}>
               Operación N° {data.numeroChequeoCalidad}
             </Text>
             <Text style={styles.reportDate}>
               Fecha: {formatDate(data.fechaChequeo)}
             </Text>
-            <View style={[styles.statusBadge, getStatusStyle()]}>
-              <Text>{data.estado.toUpperCase()}</Text>
+            <View style={[styles.statusBadge, getStatusStyle(data.estado)]}>
+              <Text>{data.estado?.toUpperCase()}</Text>
             </View>
           </View>
         </View>
@@ -286,10 +264,10 @@ const ChequeoCalidadTemplate: React.FC<ChequeoCalidadTemplateProps> = ({
             {/* Encabezados */}
             <View style={styles.tableHeader}>
               <View style={styles.tableHeaderCell}>
-                <Text style={{ fontWeight: "bold", fontSize: 8, color: "#1976d2", letterSpacing: 0.5 }}>DATO</Text>
+                <Text style={{ fontWeight: "bold", fontSize: 9, color: "#1976d2", letterSpacing: 0.5 }}>DATO</Text>
               </View>
               <View style={styles.tableHeaderCellValor}>
-                <Text style={{ fontWeight: "bold", fontSize: 8, color: "#1976d2", letterSpacing: 0.5 }}>VALOR</Text>
+                <Text style={{ fontWeight: "bold", fontSize: 9, color: "#1976d2", letterSpacing: 0.5 }}>VALOR</Text>
               </View>
             </View>
             {/* Filas */}
@@ -304,17 +282,15 @@ const ChequeoCalidadTemplate: React.FC<ChequeoCalidadTemplateProps> = ({
                 }}
               >
                 <View style={styles.tableCellLabel}>
-                  <Text style={{ fontSize: 8, color: "#333" }}>{item.label}</Text>
+                  <Text style={{ fontSize: 9, color: "#333" }}>{item.label}</Text>
                 </View>
                 <View style={styles.tableCellValue}>
-                  <Text style={{ fontSize: 8, color: "#222", fontWeight: 500 }}>{item.value}</Text>
+                  <Text style={{ fontSize: 9, color: "#222", fontWeight: 500 }}>{item.value}</Text>
                 </View>
               </View>
             ))}
           </View>
         </View>
-
-        <View style={styles.sectionDivider} />
 
         {/* Resultados de Calidad */}
         <View style={styles.section}>
@@ -323,10 +299,10 @@ const ChequeoCalidadTemplate: React.FC<ChequeoCalidadTemplateProps> = ({
             {/* Encabezados */}
             <View style={styles.tableHeader}>
               <View style={styles.tableHeaderCell}>
-                <Text style={{ fontWeight: "bold", fontSize: 8, color: "#1976d2", letterSpacing: 0.5 }}>PARÁMETRO</Text>
+                <Text style={{ fontWeight: "bold", fontSize: 9, color: "#1976d2", letterSpacing: 0.5 }}>PARÁMETRO</Text>
               </View>
               <View style={styles.tableHeaderCellValor}>
-                <Text style={{ fontWeight: "bold", fontSize: 8, color: "#1976d2", letterSpacing: 0.5 }}>VALOR</Text>
+                <Text style={{ fontWeight: "bold", fontSize: 9, color: "#1976d2", letterSpacing: 0.5 }}>VALOR</Text>
               </View>
             </View>
             {/* Filas */}
@@ -347,10 +323,10 @@ const ChequeoCalidadTemplate: React.FC<ChequeoCalidadTemplateProps> = ({
                 }}
               >
                 <View style={styles.tableCellLabel}>
-                  <Text style={{ fontSize: 8, color: "#333" }}>{item.label}</Text>
+                  <Text style={{ fontSize: 9, color: "#333" }}>{item.label}</Text>
                 </View>
                 <View style={styles.tableCellValue}>
-                  <Text style={{ fontSize: 8, color: "#222", fontWeight: 500 }}>
+                  <Text style={{ fontSize: 9, color: "#222", fontWeight: 500 }}>
                     {item.value} {item.unidad}
                   </Text>
                 </View>
@@ -359,19 +335,17 @@ const ChequeoCalidadTemplate: React.FC<ChequeoCalidadTemplateProps> = ({
           </View>
           {/* Estado de aprobación de calidad */}
           <View style={{ flexDirection: "row", marginTop: 2 }}>
-            <Text style={styles.label}>Resultado del Chequeo</Text>
+            <Text style={{ fontWeight: "bold", fontSize: 9, color: "#555", width: "40%" }}>Resultado del Chequeo</Text>
             <View style={[
               styles.statusBadge,
               data.estado?.toLowerCase() === "aprobado" ? styles.statusApproved : styles.statusRejected,
             ]}>
-              <Text style={{ fontSize: 8 }}>
+              <Text style={{ fontSize: 9 }}>
                 {data.estado?.toLowerCase() === "aprobado" ? "APROBADO" : "RECHAZADO"}
               </Text>
             </View>
           </View>
         </View>
-
-        <View style={styles.sectionDivider} />
 
         {/* Información de usuario y fechas */}
         <View style={styles.section}>
@@ -379,10 +353,10 @@ const ChequeoCalidadTemplate: React.FC<ChequeoCalidadTemplateProps> = ({
           <View style={styles.tableContainer}>
             <View style={styles.tableHeader}>
               <View style={styles.tableHeaderCell}>
-                <Text style={{ fontWeight: "bold", fontSize: 8, color: "#1976d2", letterSpacing: 0.5 }}>INFORMACIÓN</Text>
+                <Text style={{ fontWeight: "bold", fontSize: 9, color: "#1976d2", letterSpacing: 0.5 }}>INFORMACIÓN</Text>
               </View>
               <View style={styles.tableHeaderCellValor}>
-                <Text style={{ fontWeight: "bold", fontSize: 8, color: "#1976d2", letterSpacing: 0.5 }}>VALOR</Text>
+                <Text style={{ fontWeight: "bold", fontSize: 9, color: "#1976d2", letterSpacing: 0.5 }}>VALOR</Text>
               </View>
             </View>
             {[
@@ -401,10 +375,10 @@ const ChequeoCalidadTemplate: React.FC<ChequeoCalidadTemplateProps> = ({
                 }}
               >
                 <View style={styles.tableCellLabel}>
-                  <Text style={{ fontSize: 8, color: "#333" }}>{item.label}</Text>
+                  <Text style={{ fontSize: 9, color: "#333" }}>{item.label}</Text>
                 </View>
                 <View style={styles.tableCellValue}>
-                  <Text style={{ fontSize: 8, color: "#222", fontWeight: 500 }}>{item.value}</Text>
+                  <Text style={{ fontSize: 9, color: "#222", fontWeight: 500 }}>{item.value}</Text>
                 </View>
               </View>
             ))}
