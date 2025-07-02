@@ -379,7 +379,7 @@ const ChequeoCalidadTemplate: React.FC<ChequeoCalidadTemplateProps> = ({
           <View style={styles.tableContainer}>
             <View style={styles.tableHeader}>
               <View style={styles.tableHeaderCell}>
-                <Text style={{ fontWeight: "bold", fontSize: 8, color: "#1976d2", letterSpacing: 0.5 }}>DATO</Text>
+                <Text style={{ fontWeight: "bold", fontSize: 8, color: "#1976d2", letterSpacing: 0.5 }}>INFORMACIÓN</Text>
               </View>
               <View style={styles.tableHeaderCellValor}>
                 <Text style={{ fontWeight: "bold", fontSize: 8, color: "#1976d2", letterSpacing: 0.5 }}>VALOR</Text>

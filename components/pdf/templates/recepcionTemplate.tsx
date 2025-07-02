@@ -263,7 +263,7 @@ const RecepcionTemplate: React.FC<RecepcionTemplateProps> = ({
                 justifyContent: "center",
                 alignItems: "center",
               }}>
-                <Text style={{ fontWeight: "bold", fontSize: 10, color: "#1976d2", letterSpacing: 0.5 }}>Información</Text>
+                <Text style={{ fontWeight: "bold", fontSize: 10, color: "#1976d2", letterSpacing: 0.5 }}>INFORMACIÓN</Text>
               </View>
               <View style={{
                 flex: 2,

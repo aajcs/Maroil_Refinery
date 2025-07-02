@@ -368,7 +368,7 @@ console.log("Logo:", data.idRefineria.img);
                   {data.cantidad?.toLocaleString("es-VE", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) ?? "N/A"}
                 </Text>
                 <Text style={{ fontSize: 10, color: "#555", marginTop: 4, textAlign: "center" }}>
-                  Barriles
+                  Bbl
                 </Text>
               </View>
             </View>
@@ -399,7 +399,7 @@ console.log("Logo:", data.idRefineria.img);
               <Text style={{ ...styles.differenceText, fontSize: 11, marginTop: 6 }}>
                 Diferencia: 
                 {data.aplicar.idReferencia.cantidadEnviada !== undefined && data.aplicar.idReferencia.cantidadRecibida !== undefined
-                  ? `${data.aplicar.idReferencia.cantidadRecibida - data.aplicar.idReferencia.cantidadEnviada >= 0 ? "+" : "-"}${Math.abs(data.aplicar.idReferencia.cantidadRecibida - data.aplicar.idReferencia.cantidadEnviada).toLocaleString("es-VE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (${((Math.abs(data.aplicar.idReferencia.cantidadRecibida - data.aplicar.idReferencia.cantidadEnviada) / (data.aplicar.idReferencia.cantidadEnviada || 1)) * 100).toFixed(2).replace('.', ',')}%) Barriles`
+                  ? `${data.aplicar.idReferencia.cantidadRecibida - data.aplicar.idReferencia.cantidadEnviada >= 0 ? "+" : "-"}${Math.abs(data.aplicar.idReferencia.cantidadRecibida - data.aplicar.idReferencia.cantidadEnviada).toLocaleString("es-VE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (${((Math.abs(data.aplicar.idReferencia.cantidadRecibida - data.aplicar.idReferencia.cantidadEnviada) / (data.aplicar.idReferencia.cantidadEnviada || 1)) * 100).toFixed(2).replace('.', ',')}%) Bbl`
                   : "N/A"}
               </Text>
               <Text style={{ ...styles.differenceNote, fontSize: 9 }}>
