@@ -29,15 +29,15 @@ const Tooltip = ({
       position: "fixed",
       left: position.x + 10, // Pequeño offset para no cubrir el cursor
       top: position.y + 10,
-      backgroundColor: "white",
-      padding: "8px",
-      border: "1px solid #ccc",
-      borderRadius: "4px",
-      boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+      // backgroundColor: "white",
+      // padding: "8px",
+      // border: "1px solid #ccc",
+      // borderRadius: "4px",
+      // boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
       zIndex: 1000,
       pointerEvents: "none",
       minWidth: "200px",
-      transform: "translate(0, -100%)", // Para que aparezca arriba del cursor
+      transform: "translate(-100%, -100%)", // Para que aparezca arriba del cursor
     }}
   >
     <div className="col-12">

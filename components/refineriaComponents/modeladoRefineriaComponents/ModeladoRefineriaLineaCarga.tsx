@@ -27,13 +27,13 @@ const Tooltip = ({
   <div
     style={{
       position: "fixed",
-      left: position.x + 10, // Pequeño offset para no cubrir el cursor
-      top: position.y + 10,
-      backgroundColor: "white",
-      padding: "8px",
-      border: "1px solid #ccc",
-      borderRadius: "4px",
-      boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+      left: position.x - 10, // Pequeño offset para no cubrir el cursor
+      top: position.y - 10,
+      // backgroundColor: "white",
+      // padding: "8px",
+      // border: "1px solid #ccc",
+      // borderRadius: "4px",
+      // boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
       zIndex: 1000,
       pointerEvents: "none",
       minWidth: "200px",

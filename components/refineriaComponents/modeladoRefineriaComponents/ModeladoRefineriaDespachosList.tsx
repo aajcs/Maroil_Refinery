@@ -16,7 +16,7 @@ interface ModeladoRefineriaDespachosListProps {
 
 const ModeladoRefineriaDespachosList = ({
   despachos,
-  responsiveCols,
+  responsiveCols = true,
 }: ModeladoRefineriaDespachosListProps) => {
   return (
     <div className="col-12 ">
