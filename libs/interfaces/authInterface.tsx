@@ -33,4 +33,5 @@ export interface Usuario {
   historial: HistorialCambio[];
   idRefineria?: Refineria[];
   departamento?: string[];
+  img?: string;
 }

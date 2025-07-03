@@ -29,3 +29,8 @@ export const loginUser = async (data: any) => {
   const response = await apiClient.post("/auth/login", data);
   return response.data;
 };
+
+export const googleSingIn = async (data: any) => {
+  const response = await apiClient.post("/auth/google", data);
+  return response.data;
+};

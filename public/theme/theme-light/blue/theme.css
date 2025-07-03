@@ -1804,6 +1804,7 @@
   .p-password-panel .p-password-meter .p-password-strength.strong {
     background: #29c76f;
   }
+
   .p-radiobutton {
     position: relative;
     display: inline-flex;

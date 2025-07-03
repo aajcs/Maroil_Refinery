@@ -142,3 +142,30 @@
   color: inherit !important;
   text-decoration: none !important;
 }
+
+.p-password-input {
+  width: 100% !important;
+}
+.p-icon-field {
+  width: 100% !important;
+}
+.p-icon-field {
+  position: relative;
+}
+.p-icon-field > .p-input-icon {
+  position: absolute;
+  top: 50%;
+  margin-top: -0.5rem;
+}
+.p-fluid .p-icon-field-left,
+.p-fluid .p-icon-field-right {
+  width: 100%;
+}
+.p-icon-field-left > .p-input-icon:first-of-type {
+  left: 0.75rem;
+  color: #6b7280;
+}
+.p-icon-field-right > .p-input-icon:last-of-type {
+  right: 0.75rem;
+  color: #6b7280;
+}

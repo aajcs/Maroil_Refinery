@@ -28,6 +28,7 @@ interface ExtendedUser extends User {
 
 const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
   const { data: session } = useSession();
+  console.log("Session data:", session);
   const { activeRefineria } = useRefineriaStore();
 
   const { online, desconectarSocket } = useSocket();
@@ -154,7 +155,17 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
             className="topbar-profile-button p-link"
             type="button"
           >
-            <img alt="avatar" src="/layout/images/avatarHombre.png" />
+            <img
+              alt="avatar"
+              src={
+                session?.user?.usuario?.img
+                  ? session.user.usuario.img
+                  : "/layout/images/avatarHombre.png"
+              }
+              className="p-avatar p-avatar-image p-avatar-circle topbar-profile-avatar"
+              style={{ width: "3rem", height: "3rem", marginRight: "0.5rem" }}
+            />
+
             <span className="profile-details">
               <span className="profile-name">
                 {session?.user?.usuario?.nombre}
