@@ -24,11 +24,11 @@ export const useSocket = (): UseSocketReturn => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [recepcionModificado, setRecepcionModificado] =
     useState<Recepcion | null>(null);
-  console.log("recepcionModificado", recepcionModificado);
+  // console.log("recepcionModificado", recepcionModificado);
   const [refineriaModificado, setRefineriaModificado] =
     useState<Refineria | null>(null);
   const [notification, setNotification] = useState<any | null>(null);
-  console.log(notification);
+  // console.log(notification);
 
   const conectarSocket = useCallback(async () => {
     const session = await getSession();

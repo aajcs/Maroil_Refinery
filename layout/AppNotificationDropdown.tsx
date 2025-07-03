@@ -15,7 +15,7 @@ interface AppNotificationDropdownProps {
 
 const AppNotificationDropdown = ({ session }: AppNotificationDropdownProps) => {
   const { notification } = useSocket(); // Obtén recepcionModificado desde el socket
-  console.log(session?.user?.usuario._id);
+  // console.log(session?.user?.usuario._id);
   const { notifications, loading } = useNotifications(
     session?.user?.usuario._id,
     notification || undefined // Pasa la notificación modificada al hook
