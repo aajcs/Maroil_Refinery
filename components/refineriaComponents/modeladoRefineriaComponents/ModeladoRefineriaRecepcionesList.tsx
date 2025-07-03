@@ -11,17 +11,21 @@ import { ProgressBar } from "primereact/progressbar";
 
 interface ModeladoRefineriaRecepcionesListProps {
   recepciones: Recepcion[];
+  responsiveCols?: boolean;
 }
 
 const ModeladoRefineriaRecepcionesList = ({
   recepciones,
+  responsiveCols = true,
 }: ModeladoRefineriaRecepcionesListProps) => {
   return (
     <div className="">
-      <div className="grid  ">
+      <div className="grid">
         {recepciones.map((recepcion) => (
           <div
-            className="col-12 md:col-6 lg:col-4 xl:col-3 p-2"
+            className={`col-12 ${
+              responsiveCols ? "md:col-6 lg:col-4 xl:col-3" : ""
+            } p-2`}
             key={recepcion.id}
           >
             <div className="p-3 surface-card border-round shadow-2">

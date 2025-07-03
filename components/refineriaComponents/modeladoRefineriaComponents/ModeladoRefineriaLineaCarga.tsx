@@ -40,7 +40,12 @@ const Tooltip = ({
       transform: "translate(0, -100%)", // Para que aparezca arriba del cursor
     }}
   >
-    <ModeladoRefineriaRecepcionesList recepciones={[recepcion]} />
+    <div className="col-12">
+      <ModeladoRefineriaRecepcionesList
+        responsiveCols={false}
+        recepciones={[recepcion]}
+      />
+    </div>
   </div>
 );
 

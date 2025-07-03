@@ -221,7 +221,7 @@ const ModeladoBunkeringTorre: React.FC<ModeladoBunkeringTorreProps> = ({
                 fill="#1a1a1a"
                 fontSize="16"
                 fontWeight="700"
-                text-decoration="underline"
+                textDecoration="underline"
               >
                 {section.name || "Sección sin nombre"}
               </text>

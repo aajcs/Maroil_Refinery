@@ -446,7 +446,7 @@ const ModeladoBunkeringTanque = ({
                 x="240"
                 y="65"
                 fontSize="18"
-                text-anchor="end"
+                textAnchor="end"
                 fill="#2d3436"
                 font-weight="600"
               >
@@ -461,7 +461,7 @@ const ModeladoBunkeringTanque = ({
                 x="240"
                 y="85"
                 fontSize="18"
-                text-anchor="end"
+                textAnchor="end"
                 fill="#2d3436"
                 font-weight="600"
               >
@@ -476,7 +476,7 @@ const ModeladoBunkeringTanque = ({
                 x="240"
                 y="105"
                 fontSize="18"
-                text-anchor="end"
+                textAnchor="end"
                 fill="#2d3436"
                 font-weight="600"
               >
@@ -503,7 +503,7 @@ const ModeladoBunkeringTanque = ({
                 x="240"
                 y="125"
                 fontSize="18"
-                text-anchor="end"
+                textAnchor="end"
                 fill="#6c757d"
                 font-style="italic"
                 font-weight="600"
@@ -518,7 +518,7 @@ const ModeladoBunkeringTanque = ({
                 x="240"
                 y="145"
                 fontSize="18"
-                text-anchor="end"
+                textAnchor="end"
                 fill="#2d3436"
                 font-weight="600"
               >
@@ -531,7 +531,7 @@ const ModeladoBunkeringTanque = ({
                 x="240"
                 y="160"
                 fontSize="18"
-                text-anchor="end"
+                textAnchor="end"
                 fill="#2d3436"
                 // font-weight="600"
               >
@@ -568,7 +568,7 @@ const ModeladoBunkeringTanque = ({
               dx="2"
               dy="2"
               stdDeviation="2"
-              flood-color="rgba(0,0,0,0.1)"
+              floodColor="rgba(0,0,0,0.1)"
             />
           </filter>
         </defs>

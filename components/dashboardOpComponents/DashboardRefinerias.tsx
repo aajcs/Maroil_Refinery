@@ -9,73 +9,49 @@ import { getRecepcions } from "@/app/api/recepcionService";
 import { Bunkering, Recepcion } from "@/libs/interfaces";
 import { getBunkerings } from "@/app/api/bunkering/bunkeringService";
 import { useSession } from "next-auth/react";
+import { ProgressSpinner } from "primereact/progressspinner";
+import { Button } from "primereact/button";
+// import NoDataIllustration from "@/assets/images/no-data.svg";
 
 const DashboardRefinerias = () => {
   const { data: session } = useSession();
-  console.log("Session data:", session);
   const user = session?.user;
-  console.log("Usuario:", user?.usuario?.acceso);
-
   const [refinerias, setRefinerias] = useState<any[]>([]);
   const [recepcions, setRecepcions] = useState<Recepcion[]>([]);
   const [bunkerings, setBunkerings] = useState<Bunkering[]>([]);
-  // const setActiveRefineriaId = useRefineriaStore(
-  //   (state) => state.setActiveRefineriaId
-  // );
+  const [loading, setLoading] = useState(true);
   const { activeRefineria, setActiveRefineria } = useRefineriaStore();
   const router = useRouter();
-  // Filtrado de refinerías según el acceso del usuario
-  useEffect(() => {
-    const fetchRefinerias = async () => {
-      try {
-        const data = await getRefinerias();
-        let { refinerias: dataRefinerias } = data;
-        if (!Array.isArray(dataRefinerias)) {
-          console.error("La respuesta no es un array:", dataRefinerias);
-          dataRefinerias = [];
-        }
 
-        if (user?.usuario?.acceso === "completo") {
-          setRefinerias(dataRefinerias);
-        } else if (
-          user?.usuario?.acceso === "limitado" &&
-          Array.isArray(user?.usuario?.idRefineria)
-        ) {
-          const refineriasFiltradas = dataRefinerias.filter((refineria: any) =>
-            user?.usuario?.idRefineria?.some(
-              (refineriaObj: any) => refineriaObj.id === refineria.id
-            )
-          );
-          setRefinerias(refineriasFiltradas);
-        } else {
-          setRefinerias([]);
-        }
-      } catch (error) {
-        console.error("Error al obtener las refinerías:", error);
-      }
-    };
-
-    if (user?.usuario?.acceso) {
-      fetchRefinerias();
+  // fetch refinerías, can be called on mount and on reload
+  const fetchRefinerias = async () => {
+    setLoading(true);
+    try {
+      const data = await getRefinerias();
+      let { refinerias: dataRefinerias } = data;
+      if (!Array.isArray(dataRefinerias)) dataRefinerias = [];
+      if (user?.usuario?.acceso === "completo") setRefinerias(dataRefinerias);
+      else if (
+        user?.usuario?.acceso === "limitado" &&
+        Array.isArray(user?.usuario?.idRefineria)
+      ) {
+        setRefinerias(
+          dataRefinerias.filter((r: { id: string | undefined }) =>
+            user?.usuario?.idRefineria?.some((idObj) => idObj.id === r.id)
+          )
+        );
+      } else setRefinerias([]);
+    } catch (error) {
+      console.error("Error al obtener las refinerías:", error);
+      setRefinerias([]);
+    } finally {
+      setLoading(false);
     }
+  };
+  useEffect(() => {
+    if (user?.usuario?.acceso) fetchRefinerias();
   }, [user]);
-  // useEffect(() => {
-  //   const fetchRefinerias = async () => {
-  //     try {
-  //       const data = await getRefinerias();
-  //       const { refinerias: dataRefinerias } = data;
-  //       if (Array.isArray(dataRefinerias)) {
-  //         setRefinerias(dataRefinerias);
-  //       } else {
-  //         console.error("La respuesta no es un array:", dataRefinerias);
-  //       }
-  //     } catch (error) {
-  //       console.error("Error al obtener las refinerías:", error);
-  //     }
-  //   };
 
-  //   fetchRefinerias();
-  // }, []);
   useEffect(() => {
     const fetchBunkerings = async () => {
       try {
@@ -118,9 +94,48 @@ const DashboardRefinerias = () => {
     setActiveRefineria(refineria);
     router.push("/bunkering");
   };
+
+  // show spinner while loading
+  if (loading) {
+    return (
+      <div
+        className="flex justify-content-center align-items-center"
+        style={{ height: "300px" }}
+      >
+        <ProgressSpinner />
+      </div>
+    );
+  }
+
+  // empty state if no refinerías
+  if (!loading && refinerias.length === 0) {
+    return (
+      <div
+        className="flex flex-column align-items-center justify-content-center"
+        style={{ height: "300px" }}
+      >
+        <img
+          src="/layout/images/pages/auth/access-denied.svg"
+          alt="Sin datos"
+          width={120}
+        />
+        <h3 className="mt-3">No tienes refinerías</h3>
+        <p className="text-500">
+          Contacta al administrador para solicitar acceso.
+        </p>
+        <Button
+          label="Recargar"
+          icon="pi pi-refresh"
+          onClick={fetchRefinerias}
+          className="mt-2"
+        />
+      </div>
+    );
+  }
   return (
     <div className="grid">
-      {Array.isArray(refinerias) && refinerias.length > 0 ? (
+      {Array.isArray(refinerias) &&
+        refinerias.length > 0 &&
         refinerias.map((refineria) => (
           <div
             className="col-12 md:col-6 lg:col-4 xl:col-3 p-2 clickable"
@@ -151,13 +166,9 @@ const DashboardRefinerias = () => {
               </div>
             </div>
           </div>
-        ))
-      ) : (
-        <div className="col-12 text-center p-4">
-          <p className="text-500 italic">No hay refinerías disponibles</p>
-        </div>
-      )}
-      {Array.isArray(bunkerings) && bunkerings.length > 0 ? (
+        ))}
+      {Array.isArray(bunkerings) &&
+        bunkerings.length > 0 &&
         bunkerings.map((bunkering) => (
           <div
             className="col-12 md:col-6 lg:col-4 xl:col-3 p-2 clickable"
@@ -188,12 +199,7 @@ const DashboardRefinerias = () => {
               </div>
             </div>
           </div>
-        ))
-      ) : (
-        <div className="col-12 text-center p-4">
-          <p className="text-500 italic">No hay bunkerings disponibles</p>
-        </div>
-      )}
+        ))}
       <div className="col-12">
         {/* <RecepcionDashboard recepcions={recepcions} /> */}
         {/* {GraficaRecepcionesPorRefineria ? (
