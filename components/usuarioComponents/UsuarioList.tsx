@@ -192,6 +192,7 @@ const UsuarioList = () => {
         ></Column>
         <Column field="nombre" header="Nombre" sortable></Column>
         <Column field="correo" header="Correo" sortable></Column>
+        <Column field="telefono" header="Teléfono" sortable></Column>
         <Column field="rol" header="Rol" sortable></Column>
         <Column
           field="departamento"

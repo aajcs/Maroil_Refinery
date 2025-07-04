@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { InputText } from "primereact/inputtext";
@@ -15,6 +15,7 @@ import { Refineria } from "@/libs/interfaces";
 import { getRefinerias } from "@/app/api/refineriaService";
 import { MultiSelect } from "primereact/multiselect";
 import { ProgressSpinner } from "primereact/progressspinner";
+import { InputNumber } from "primereact/inputnumber";
 
 type FormData = z.infer<typeof profileSchema>;
 
@@ -43,6 +44,7 @@ const UsuarioForm = ({
     setValue,
     watch,
     reset,
+    control,
   } = useForm<FormData>({
     resolver: zodResolver(profileSchema),
   });
@@ -254,7 +256,37 @@ const UsuarioForm = ({
                   )}
                 </div>
               )}
-
+              {/* Campo: Teléfono */}
+              <div className="col-12 md:col-6 lg:col-4 xl:col-3">
+                <label className="block font-medium text-900 mb-2 flex align-items-center">
+                  Teléfono
+                </label>
+                <Controller
+                  name="telefono"
+                  control={control}
+                  render={({ field, fieldState }) => (
+                    <>
+                      <InputNumber
+                        id="telefono"
+                        value={field.value}
+                        onValueChange={(e) => field.onChange(e.value ?? 0)}
+                        useGrouping={false}
+                        // min={1000000} // Mínimo 7 dígitos
+                        // max={9999999999} // Máximo 10 dígitos
+                        className={classNames("w-full", {
+                          "p-invalid": fieldState.error,
+                        })}
+                      />
+                      {fieldState.error && (
+                        <small className="p-error block mt-2 flex align-items-center">
+                          <i className="pi pi-exclamation-circle mr-2"></i>
+                          {fieldState.error.message}
+                        </small>
+                      )}
+                    </>
+                  )}
+                />
+              </div>
               <div className="field mb-4 col-12 md:col-6">
                 <label htmlFor="rol" className="font-medium text-900">
                   Rol

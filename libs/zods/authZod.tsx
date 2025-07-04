@@ -1,4 +1,4 @@
-import { object, string } from "zod";
+import { number, object, string } from "zod";
 
 export const loginSchema = object({
   correo: string().email("Correo inválido"),
@@ -18,6 +18,11 @@ export const registerSchema = object({
 export const profileSchema = object({
   nombre: string().min(1, "El nombre es obligatorio"),
   correo: string().email("Correo electrónico inválido"),
+  telefono: number()
+    .min(1000000, { message: "El teléfono debe tener al menos 7 dígitos" })
+    .max(9999999999, {
+      message: "El teléfono no puede tener más de 10 dígitos",
+    }),
   password: string()
     .optional()
     .refine((val) => val === undefined || val.length >= 6, {

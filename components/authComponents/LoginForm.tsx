@@ -196,7 +196,6 @@ const LoginForm: Page = () => {
             outlined
             severity="secondary"
             className="flex-1"
-            // onClick={() => signIn("google")}
             onClick={handleGoogleLogin}
             disabled={submitting}
           >
@@ -212,6 +211,21 @@ const LoginForm: Page = () => {
             <i className="pi pi-microsoft mr-2"></i>
             Microsoft
           </Button>
+        </div>
+        <div className="text-center mt-4">
+          <p className="text-sm">
+            ¿No tienes una cuenta?{" "}
+            <a
+              href="/auth/register"
+              className="text-primary font-medium no-underline hover:underline"
+              onClick={(e) => {
+                e.preventDefault();
+                router.push("/auth/register");
+              }}
+            >
+              Regístrate
+            </a>
+          </p>
         </div>
 
         <div className="text-center text-color-secondary mt-5">

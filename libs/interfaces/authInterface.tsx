@@ -34,4 +34,5 @@ export interface Usuario {
   idRefineria?: Refineria[];
   departamento?: string[];
   img?: string;
+  telefono: string;
 }

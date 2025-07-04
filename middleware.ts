@@ -34,7 +34,7 @@ import { getToken } from "next-auth/jwt";
 import { NextRequest } from "next/server";
 
 const publicRoutes = ["/landing", "/prices"];
-const authRoutes = ["/auth/login", "/register"];
+const authRoutes = ["/auth/login", "/auth/register"];
 const apiAuthPrefix = "/api/auth";
 
 const protectedRoutes = [
