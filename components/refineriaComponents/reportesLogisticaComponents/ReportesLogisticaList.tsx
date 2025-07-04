@@ -4,7 +4,6 @@ import { Calendar } from "primereact/calendar";
 import { Dropdown } from "primereact/dropdown";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import { useRefineriaStore } from "@/store/refineriaStore";
-import axios from "axios";
 import ReporteLogistisca from "@/components/pdf/templates/reportesLogisticaTemplate";
 import { getRecepcionsFechas } from "@/app/api/recepcionService";
 
@@ -39,7 +38,7 @@ const ReportesLogisticaList: React.FC<ReportesLogisticaListProps> = ({
   const [fechaFin, setFechaFin] = useState<Date | null>(null);
   const [estadoRecepcion, setEstadoRecepcion] = useState<string>("TODOS");
   const [loading, setLoading] = useState(false);
-  const [reporteData, setReporteData] = useState<any>(null);
+  const [reporteData, setReporteData] = useState<any[]>([]);
   const [showPreview, setShowPreview] = useState(false);
 
   // --- HANDLER ---
@@ -52,11 +51,12 @@ const ReportesLogisticaList: React.FC<ReportesLogisticaListProps> = ({
         estadoRecepcion: estadoRecepcion,
       };
       console.log("Parámetros para el backend:", params);
-      const data = await getRecepcionsFechas(params); // <-- Cambia aquí
+      const data = await getRecepcionsFechas(params);
 
       console.log("Recepciones traídas del backend:", data);
 
-      const recepcionesFiltradas = (data.recepciones || []).filter((r: any) => {
+      // data es un array, no un objeto con .recepciones
+      const recepcionesFiltradas = (data || []).filter((r: any) => {
         const refineriaId = r.idRefineria?.id;
         const activeId = activeRefineria?.id;
         console.log(
@@ -70,19 +70,17 @@ const ReportesLogisticaList: React.FC<ReportesLogisticaListProps> = ({
         );
       });
 
-      setReporteData({
-        total: recepcionesFiltradas.length,
-        recepciones: recepcionesFiltradas,
-      });
+      setReporteData(recepcionesFiltradas);
       setShowPreview(true);
     } catch (e) {
-      setReporteData(null);
+      setReporteData([]);
       setShowPreview(true);
     }
     setLoading(false);
   };
+
   // --- TABLA DE VISTA PREVIA ---
-  const renderRecepcionesTable = (data: any) => (
+  const renderRecepcionesTable = (recepciones: any[]) => (
     <div
       className="overflow-x-auto mt-4"
       style={{ maxWidth: "1200px", margin: "0 auto" }}
@@ -91,19 +89,19 @@ const ReportesLogisticaList: React.FC<ReportesLogisticaListProps> = ({
         <thead>
           <tr className="bg-blue-50 text-blue-900">
             <th className="p-2 border-b">Fecha Llegada</th>
-            <th className="p-2 border-b">Contrato</th>
+            <th className="p-2 border-b">Contrato N.</th>
             <th className="p-2 border-b">Proveedor/Cliente</th>
             <th className="p-2 border-b">Producto</th>
-            <th className="p-2 border-b">Cantidad Recibida</th>
             <th className="p-2 border-b">Tanque</th>
             <th className="p-2 border-b">Línea</th>
             <th className="p-2 border-b">Chofer</th>
             <th className="p-2 border-b">Placa</th>
+            <th className="p-2 border-b">Cantidad Recibida</th>
             <th className="p-2 border-b">Estado Recepción</th>
           </tr>
         </thead>
         <tbody>
-          {data.recepciones.map((r: any, idx: number) => (
+          {recepciones.map((r: any, idx: number) => (
             <tr key={idx} className="hover:bg-blue-50">
               <td className="p-2 border-b">
                 {r.fechaLlegada
@@ -122,27 +120,32 @@ const ReportesLogisticaList: React.FC<ReportesLogisticaListProps> = ({
                     r.idContrato.idItems[0]?.producto?.nombre) ||
                   ""}
               </td>
-              <td className="p-2 border-b">{r.cantidadRecibida ?? ""}</td>
+              
               <td className="p-2 border-b">{r.idTanque?.nombre || ""}</td>
               <td className="p-2 border-b">{r.idLinea?.nombre || ""}</td>
               <td className="p-2 border-b">{r.nombreChofer || ""}</td>
               <td className="p-2 border-b">{r.placa || ""}</td>
+              <td className="p-2 border-b">{r.cantidadRecibida ?? ""}</td>
               <td className="p-2 border-b">{r.estadoRecepcion || ""}</td>
             </tr>
           ))}
         </tbody>
         <tfoot>
           <tr className="font-bold bg-blue-100">
-            <td className="p-2 border-t" colSpan={4}>
-              Total
-            </td>
+            <td className="p-2 border-t" colSpan={8}></td>
             <td className="p-2 border-t">
-              {data.recepciones.reduce(
-                (acc: number, r: any) => acc + Number(r.cantidadRecibida ?? 0),
-                0
-              )}
+              {recepciones
+          .reduce(
+            (acc: number, r: any) => acc + Number(r.cantidadRecibida ?? 0),
+            0
+          )
+          .toLocaleString("de-DE", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+            useGrouping: true,
+          })}
             </td>
-            <td className="p-2 border-t" colSpan={5}></td>
+            <td className="p-2 border-t"></td>
           </tr>
         </tfoot>
       </table>
@@ -152,7 +155,7 @@ const ReportesLogisticaList: React.FC<ReportesLogisticaListProps> = ({
   // --- RESET ---
   const handleVolver = () => {
     setReporteSeleccionado(null);
-    setReporteData(null);
+    setReporteData([]);
     setFechaInicio(null);
     setFechaFin(null);
     setEstadoRecepcion("TODOS");
@@ -187,7 +190,7 @@ const ReportesLogisticaList: React.FC<ReportesLogisticaListProps> = ({
                 style={{ minWidth: 220, fontWeight: 600, fontSize: 16 }}
                 onClick={() => {
                   setReporteSeleccionado(rep.key);
-                  setReporteData(null);
+                  setReporteData([]);
                   setFechaInicio(null);
                   setFechaFin(null);
                   setEstadoRecepcion("TODOS");
@@ -275,7 +278,7 @@ const ReportesLogisticaList: React.FC<ReportesLogisticaListProps> = ({
             </>
           ) : (
             <>
-              {reporteData && reporteData.recepciones.length > 0 ? (
+              {reporteData && reporteData.length > 0 ? (
                 <>
                   {renderRecepcionesTable(reporteData)}
                   <div className="flex justify-center mt-4">
