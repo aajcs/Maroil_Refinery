@@ -126,6 +126,11 @@ const AppMenuRefineria = () => {
               icon: "pi pi-fw pi-truck",
               to: "/refineria/despacho",
             },
+             {
+              label: "Reportes Logistica",
+              icon: "pi pi-fw pi-truck",
+              to: "/refineria/reportes-logistica",
+            },
           ],
         },
 
