@@ -127,29 +127,40 @@ const RegisterForm: Page = () => {
       if (!usuarioCreado.token) {
         throw new Error(usuarioCreado.message || "Error en el registro");
       }
+      if (usuarioCreado) {
+        // Autenticar automáticamente después del registro
+        const resAuth = await signIn("credentials", {
+          redirect: false,
+          correo: data.correo,
+          password: data.password,
+        });
 
-      // Autenticar automáticamente después del registro
-      const resAuth = await signIn("credentials", {
-        redirect: false,
-        correo: data.correo,
-        password: data.password,
-      });
+        if (resAuth?.error) {
+          setError(resAuth.error as string);
+          return;
+        }
 
-      if (resAuth?.error) {
-        setError(resAuth.error as string);
-        return;
-      }
-
-      if (resAuth?.ok) {
-        setSuccess("¡Registro exitoso! Redirigiendo...");
-        conectarSocket();
-        setTimeout(() => router.push("/"), 2000);
+        if (resAuth?.ok) {
+          setSuccess("¡Registro exitoso! Redirigiendo...");
+          conectarSocket();
+          setTimeout(() => router.push("/"), 2000);
+        }
       }
     } catch (err: any) {
       console.error("Registration failed:", err);
-      setError(
-        err.message || "Ocurrió un error inesperado. Inténtalo de nuevo."
-      );
+      // Manejo de error de Axios
+      if (
+        err.isAxiosError &&
+        err.response &&
+        err.response.data &&
+        err.response.data.message
+      ) {
+        setError(err.response.data.error);
+      } else {
+        setError(
+          err.message || "Ocurrió un error inesperado. Inténtalo de nuevo."
+        );
+      }
     } finally {
       setSubmitting(false);
     }
