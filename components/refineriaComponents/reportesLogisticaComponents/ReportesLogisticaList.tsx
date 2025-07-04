@@ -12,7 +12,7 @@ const ESTADOS_RECEPCION = [
   { label: "Todos", value: "TODOS" },
   { label: "Completado", value: "COMPLETADO" },
   { label: "En Refinería", value: "EN_REFINERIA" },
-  { label: "En Tránsito", value: "EN_TRANSITO" }
+  { label: "En Tránsito", value: "EN_TRANSITO" },
 ];
 
 const REPORTES = [
@@ -26,9 +26,13 @@ interface ReportesLogisticaListProps {
   tipoReporte: string;
 }
 
-const ReportesLogisticaList: React.FC<ReportesLogisticaListProps> = ({ tipoReporte }) => {
+const ReportesLogisticaList: React.FC<ReportesLogisticaListProps> = ({
+  tipoReporte,
+}) => {
   const { activeRefineria } = useRefineriaStore();
-  const [reporteSeleccionado, setReporteSeleccionado] = useState<string | null>(null);
+  const [reporteSeleccionado, setReporteSeleccionado] = useState<string | null>(
+    null
+  );
 
   // Estados comunes
   const [fechaInicio, setFechaInicio] = useState<Date | null>(null);
@@ -40,39 +44,49 @@ const ReportesLogisticaList: React.FC<ReportesLogisticaListProps> = ({ tipoRepor
 
   // --- HANDLER ---
   const handleGenerarReporteRecepciones = async () => {
-  setLoading(true);
-  try {
-    const params: any = {
-      fechaInicio: fechaInicio?.toISOString(),
-      fechaFin: fechaFin?.toISOString(),
-      estadoRecepcion: estadoRecepcion,
-    };
-    console.log("Parámetros para el backend:", params);
-    const data = await getRecepcionsFechas(); // <-- Cambia aquí
+    setLoading(true);
+    try {
+      const params: any = {
+        fechaInicio: fechaInicio?.toISOString(),
+        fechaFin: fechaFin?.toISOString(),
+        estadoRecepcion: estadoRecepcion,
+      };
+      console.log("Parámetros para el backend:", params);
+      const data = await getRecepcionsFechas(params); // <-- Cambia aquí
 
-    console.log("Recepciones traídas del backend:", data);
+      console.log("Recepciones traídas del backend:", data);
 
-    const recepcionesFiltradas = (data.recepciones || []).filter((r: any) => {
-      const refineriaId = r.idRefineria?.id;
-      const activeId = activeRefineria?.id;
-      console.log("r.idRefineria.id:", refineriaId, "activeRefineria.id:", activeId);
-      return refineriaId && activeId && String(refineriaId) === String(activeId);
-    });
+      const recepcionesFiltradas = (data.recepciones || []).filter((r: any) => {
+        const refineriaId = r.idRefineria?.id;
+        const activeId = activeRefineria?.id;
+        console.log(
+          "r.idRefineria.id:",
+          refineriaId,
+          "activeRefineria.id:",
+          activeId
+        );
+        return (
+          refineriaId && activeId && String(refineriaId) === String(activeId)
+        );
+      });
 
-    setReporteData({
-      total: recepcionesFiltradas.length,
-      recepciones: recepcionesFiltradas,
-    });
-    setShowPreview(true);
-  } catch (e) {
-    setReporteData(null);
-    setShowPreview(true);
-  }
-  setLoading(false);
-};
+      setReporteData({
+        total: recepcionesFiltradas.length,
+        recepciones: recepcionesFiltradas,
+      });
+      setShowPreview(true);
+    } catch (e) {
+      setReporteData(null);
+      setShowPreview(true);
+    }
+    setLoading(false);
+  };
   // --- TABLA DE VISTA PREVIA ---
   const renderRecepcionesTable = (data: any) => (
-    <div className="overflow-x-auto mt-4" style={{ maxWidth: "1200px", margin: "0 auto" }}>
+    <div
+      className="overflow-x-auto mt-4"
+      style={{ maxWidth: "1200px", margin: "0 auto" }}
+    >
       <table className="min-w-[900px] w-full text-sm border border-200">
         <thead>
           <tr className="bg-blue-50 text-blue-900">
@@ -91,12 +105,21 @@ const ReportesLogisticaList: React.FC<ReportesLogisticaListProps> = ({ tipoRepor
         <tbody>
           {data.recepciones.map((r: any, idx: number) => (
             <tr key={idx} className="hover:bg-blue-50">
-              <td className="p-2 border-b">{r.fechaLlegada ? new Date(r.fechaLlegada).toLocaleString() : ""}</td>
-              <td className="p-2 border-b">{r.idContrato?.numeroContrato || ""}</td>
-              <td className="p-2 border-b">{r.idContrato?.idContacto?.nombre || ""}</td>
+              <td className="p-2 border-b">
+                {r.fechaLlegada
+                  ? new Date(r.fechaLlegada).toLocaleString()
+                  : ""}
+              </td>
+              <td className="p-2 border-b">
+                {r.idContrato?.numeroContrato || ""}
+              </td>
+              <td className="p-2 border-b">
+                {r.idContrato?.idContacto?.nombre || ""}
+              </td>
               <td className="p-2 border-b">
                 {r.idContratoItems?.producto?.nombre ||
-                  (Array.isArray(r.idContrato?.idItems) && r.idContrato.idItems[0]?.producto?.nombre) ||
+                  (Array.isArray(r.idContrato?.idItems) &&
+                    r.idContrato.idItems[0]?.producto?.nombre) ||
                   ""}
               </td>
               <td className="p-2 border-b">{r.cantidadRecibida ?? ""}</td>
@@ -110,9 +133,14 @@ const ReportesLogisticaList: React.FC<ReportesLogisticaListProps> = ({ tipoRepor
         </tbody>
         <tfoot>
           <tr className="font-bold bg-blue-100">
-            <td className="p-2 border-t" colSpan={4}>Total</td>
+            <td className="p-2 border-t" colSpan={4}>
+              Total
+            </td>
             <td className="p-2 border-t">
-              {data.recepciones.reduce((acc: number, r: any) => acc + Number(r.cantidadRecibida ?? 0), 0)}
+              {data.recepciones.reduce(
+                (acc: number, r: any) => acc + Number(r.cantidadRecibida ?? 0),
+                0
+              )}
             </td>
             <td className="p-2 border-t" colSpan={5}></td>
           </tr>
@@ -133,8 +161,14 @@ const ReportesLogisticaList: React.FC<ReportesLogisticaListProps> = ({ tipoRepor
 
   // --- RENDER ---
   return (
-    <div className="card surface-50 p-4 border-round shadow-2xl" style={{ maxWidth: 1300, margin: "0 auto" }}>
-      <h2 className="mb-4 text-2xl font-bold text-center text-primary" style={{ letterSpacing: 1 }}>
+    <div
+      className="card surface-50 p-4 border-round shadow-2xl"
+      style={{ maxWidth: 1300, margin: "0 auto" }}
+    >
+      <h2
+        className="mb-4 text-2xl font-bold text-center text-primary"
+        style={{ letterSpacing: 1 }}
+      >
         {tipoReporte}
       </h2>
 
@@ -171,7 +205,10 @@ const ReportesLogisticaList: React.FC<ReportesLogisticaListProps> = ({ tipoRepor
           {!showPreview ? (
             <>
               <div className="flex flex-wrap gap-4 justify-center mb-4">
-                <div className="flex flex-column gap-2" style={{ minWidth: 180 }}>
+                <div
+                  className="flex flex-column gap-2"
+                  style={{ minWidth: 180 }}
+                >
                   <label className="font-medium text-900">Fecha Inicio</label>
                   <Calendar
                     value={fechaInicio}
@@ -181,7 +218,10 @@ const ReportesLogisticaList: React.FC<ReportesLogisticaListProps> = ({ tipoRepor
                     className="w-full"
                   />
                 </div>
-                <div className="flex flex-column gap-2" style={{ minWidth: 180 }}>
+                <div
+                  className="flex flex-column gap-2"
+                  style={{ minWidth: 180 }}
+                >
                   <label className="font-medium text-900">Fecha Fin</label>
                   <Calendar
                     value={fechaFin}
@@ -191,8 +231,13 @@ const ReportesLogisticaList: React.FC<ReportesLogisticaListProps> = ({ tipoRepor
                     className="w-full"
                   />
                 </div>
-                <div className="flex flex-column gap-2" style={{ minWidth: 180 }}>
-                  <label className="font-medium text-900">Estado Recepción</label>
+                <div
+                  className="flex flex-column gap-2"
+                  style={{ minWidth: 180 }}
+                >
+                  <label className="font-medium text-900">
+                    Estado Recepción
+                  </label>
                   <Dropdown
                     value={estadoRecepcion}
                     options={ESTADOS_RECEPCION}
@@ -239,14 +284,21 @@ const ReportesLogisticaList: React.FC<ReportesLogisticaListProps> = ({ tipoRepor
                         document={
                           <ReporteLogistisca
                             data={reporteData}
-                            logoUrl={activeRefineria?.img || "/layout/images/avatarHombre.png"}
+                            logoUrl={
+                              activeRefineria?.img ||
+                              "/layout/images/avatarHombre.png"
+                            }
                           />
                         }
                         fileName={`ReporteRecepciones_${fechaInicio?.toLocaleDateString()}_${fechaFin?.toLocaleDateString()}_${estadoRecepcion}.pdf`}
                         className="p-button p-component p-button-success"
                       >
                         {({ loading }) =>
-                          loading ? <span>Generando PDF...</span> : <span>Descargar Reporte PDF</span>
+                          loading ? (
+                            <span>Generando PDF...</span>
+                          ) : (
+                            <span>Descargar Reporte PDF</span>
+                          )
                         }
                       </PDFDownloadLink>
                       <Button
@@ -266,7 +318,9 @@ const ReportesLogisticaList: React.FC<ReportesLogisticaListProps> = ({ tipoRepor
                 </>
               ) : (
                 <div className="flex flex-col items-center gap-3 justify-center mt-4">
-                  <span className="text-lg text-900 font-semibold mb-2">No hay información para mostrar en este reporte.</span>
+                  <span className="text-lg text-900 font-semibold mb-2">
+                    No hay información para mostrar en este reporte.
+                  </span>
                   <Button
                     label="Volver"
                     icon="pi pi-times"

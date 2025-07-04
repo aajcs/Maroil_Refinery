@@ -1,5 +1,4 @@
 import apiClient from "./apiClient";
-import axios from "axios";
 
 export const getRecepcion = async (id: string) => {
   const response = await apiClient.get(`/recepcion/${id}`);
@@ -10,12 +9,10 @@ export const getRecepcions = async () => {
   return response.data;
 };
 
-
-
 export async function getRecepcionsFechas(params?: any) {
-  const res = await axios.get("/api/recepcion/rango-fechas/", { params });
+  console.log(params);
+  const res = await apiClient.get("/recepcion/rango-fechas", { params });
   return res.data;
-
 }
 export const createRecepcion = async (data: any) => {
   console.log(data);
