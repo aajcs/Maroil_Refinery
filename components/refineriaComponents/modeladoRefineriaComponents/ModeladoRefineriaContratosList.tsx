@@ -8,6 +8,7 @@ import { Tooltip } from "primereact/tooltip";
 import { formatDateSinAnoFH } from "@/utils/dateUtils";
 import { truncateText } from "@/utils/funcionesUtiles";
 import { Contrato } from "@/libs/interfaces";
+import { Carousel } from "primereact/carousel";
 
 interface Producto {
   producto: { id: string; nombre: string; color: string };
@@ -26,19 +27,35 @@ const ModeladoRefineriaContratosList = ({
   contratos,
   onShowDialog,
 }: ModeladoRefineriaContratosListProps) => {
+  // Solo contratos de tipo Compra
+  const compraContratos = contratos.filter(
+    (contrato) => contrato.tipoContrato === "Compra"
+  );
+
+  // Renderiza cada card como item del carrusel
+  const contratoTemplate = (contrato: Contrato & { productos: Producto[] }) => (
+    <ContratoCard
+      key={contrato.id}
+      contrato={contrato}
+      onShowDialog={onShowDialog}
+    />
+  );
+
   return (
-    <div className="">
-      <div className="grid">
-        {contratos
-          .filter((contrato) => contrato.tipoContrato === "Compra")
-          .map((contrato) => (
-            <ContratoCard
-              key={contrato.id}
-              contrato={contrato}
-              onShowDialog={onShowDialog}
-            />
-          ))}
-      </div>
+    <div className="col-12">
+      <Carousel
+        value={compraContratos}
+        itemTemplate={contratoTemplate}
+        numVisible={4}
+        numScroll={1}
+        circular
+        showIndicators
+        showNavigators
+        responsiveOptions={[
+          { breakpoint: "1400px", numVisible: 2, numScroll: 1 },
+          { breakpoint: "900px", numVisible: 1, numScroll: 1 },
+        ]}
+      />
     </div>
   );
 };
@@ -65,14 +82,17 @@ const ContratoCard = ({
   }, [contrato]);
 
   return (
-    <div className="col-12 md:col-6 lg:col-4 xl:col-3 p-1">
+    <div className="col-12  p-1">
       <div
         className="h-full p-2 surface-card border-round shadow-2 flex flex-column"
         style={{
           maxHeight: expanded ? undefined : CARD_MAX_HEIGHT,
+          minHeight: 180,
           overflow: "visible",
           transition: "max-height 0.3s",
           position: "relative",
+          width: "100%",
+          minWidth: 280,
         }}
       >
         <div
