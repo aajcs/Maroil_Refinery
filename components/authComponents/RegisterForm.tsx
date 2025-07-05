@@ -155,7 +155,7 @@ const RegisterForm: Page = () => {
         err.response.data &&
         err.response.data.message
       ) {
-        setError(err.response.data.error);
+        setError(err.response.data.message);
       } else {
         setError(
           err.message || "Ocurrió un error inesperado. Inténtalo de nuevo."

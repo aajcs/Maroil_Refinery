@@ -98,6 +98,7 @@ const TanqueForm = ({
           idRefineria: activeRefineria.id,
           idProducto: data.idProducto.id,
         });
+        console.log("Nuevo tanque creado:", newTanque);
         setTanques([...tanques, newTanque]);
         showToast("success", "Éxito", "Tanque creado");
       }
@@ -108,7 +109,6 @@ const TanqueForm = ({
       setSubmitting(false); // Desactivar el estado de envío
     }
   };
-  console.log("watch", watch());
   if (loading) {
     return (
       <div
