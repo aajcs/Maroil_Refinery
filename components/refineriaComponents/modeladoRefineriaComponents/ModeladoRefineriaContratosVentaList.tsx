@@ -5,6 +5,9 @@ import { Button } from "primereact/button";
 import { ProgressBar } from "primereact/progressbar";
 import { formatDateSinAnoFH } from "@/utils/dateUtils";
 import { Contrato } from "@/libs/interfaces";
+import React, { useRef, useEffect, useState } from "react";
+import { Tooltip } from "primereact/tooltip";
+import { truncateText } from "@/utils/funcionesUtiles";
 
 interface Producto {
   producto: { id: string; nombre: string; color: string };
@@ -20,6 +23,149 @@ interface ModeladoRefineriaContratosVentaListProps {
   onShowDialogDespachos?: (contrato: Producto) => void;
 }
 
+const ContratoVentaCard = ({
+  contrato,
+  onShowDialogDespachos,
+}: {
+  contrato: Contrato & { productos: Producto[] };
+  onShowDialogDespachos?: (product: Producto) => void;
+}) => {
+  const [expanded, setExpanded] = useState(false);
+  const [showExpand, setShowExpand] = useState(false);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const CARD_MAX_HEIGHT = 220;
+  useEffect(() => {
+    if (contentRef.current) {
+      setShowExpand(contentRef.current.scrollHeight > CARD_MAX_HEIGHT - 60);
+    }
+  }, [contrato]);
+  return (
+    <div className="col-12 md:col-6 lg:col-4 xl:col-3 p-1">
+      <div
+        className="h-full p-2 surface-card border-round shadow-2 flex flex-column"
+        style={{
+          maxHeight: expanded ? undefined : CARD_MAX_HEIGHT,
+          overflow: "visible",
+          transition: "max-height 0.3s",
+          position: "relative",
+        }}
+      >
+        <div
+          ref={contentRef}
+          className={
+            "flex flex-column gap-2" + (expanded ? "" : " overflow-auto")
+          }
+          style={{
+            maxHeight: expanded ? undefined : CARD_MAX_HEIGHT - 60,
+            overflowY: expanded ? "visible" : "auto",
+            transition: "max-height 0.3s",
+          }}
+        >
+          <div className="flex justify-content-between align-items-start">
+            <div className="flex flex-column">
+              <span className="text-lg font-bold white-space-normal">
+                {expanded
+                  ? contrato.descripcion.toLocaleUpperCase()
+                  : truncateText(contrato.descripcion.toLocaleUpperCase(), 40)}
+              </span>
+              <span className="text-sm text-500 mt-1">
+                {`(${contrato.idContacto.nombre})`}
+              </span>
+            </div>
+            <div className="flex flex-column text-right">
+              <span className="text-sm font-semibold">
+                Nº: {contrato.numeroContrato}
+              </span>
+              <span className="text-xs text-green-500">
+                Act-{formatDateSinAnoFH(contrato.updatedAt)}
+              </span>
+            </div>
+          </div>
+          <hr className="my-0" />
+          <div className="text-sm">
+            <span className="font-medium">Inicio:</span>{" "}
+            {formatDateSinAnoFH(contrato.fechaInicio)}
+            {" - "}
+            <span className="font-medium">Fin:</span>{" "}
+            {formatDateSinAnoFH(contrato.fechaFin)}
+          </div>
+          <hr className="my-0" />
+          <div className="flex flex-column gap-2">
+            {contrato.productos.map((item) => (
+              <div
+                key={item.producto.id}
+                className="flex align-items-center gap-2"
+              >
+                <span className="font-bold min-w-8rem">
+                  {item.producto.nombre}
+                </span>
+                <div className="flex-grow-1">
+                  <ProgressBar
+                    value={item.porcentajeDespacho}
+                    showValue={false}
+                    style={{ minWidth: "10rem", height: "0.6rem" }}
+                    color={`#${item.producto.color}`}
+                  />
+                  <div className="flex justify-content-between text-xs mt-1">
+                    <span>{item.cantidad.toLocaleString("de-DE")}Bbl</span>
+                    <span className="text-green-800">
+                      {item.cantidadDespachada.toLocaleString("de-DE")}Bbl
+                    </span>
+                    <span className="text-red-800">
+                      {item.cantidadFaltanteDespacho.toLocaleString("de-DE")}
+                      Bbl
+                    </span>
+                  </div>
+                </div>
+                {onShowDialogDespachos && (
+                  <Button
+                    icon="pi pi-search"
+                    onClick={() => onShowDialogDespachos(item)}
+                    className="p-button-sm p-button-text p-button-rounded"
+                    tooltip="Mostrar todas las Recepciones"
+                    tooltipOptions={{ position: "top" }}
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+        {showExpand && (
+          <>
+            <button
+              type="button"
+              onClick={() => setExpanded(!expanded)}
+              className="p-button p-button-text p-button-sm p-0 border-circle bg-white shadow-1"
+              style={{
+                position: "absolute",
+                bottom: -14, // la mitad del alto (28px/2)
+                right: -14, // la mitad del ancho (28px/2)
+                zIndex: 2,
+                width: 28,
+                height: 28,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                boxShadow: "0 1px 4px rgba(0,0,0,0.08)",
+              }}
+              aria-label={expanded ? "Mostrar menos" : "Mostrar más"}
+              tabIndex={0}
+              data-pr-tooltip={expanded ? "Mostrar menos" : "Mostrar más"}
+              data-pr-position="left"
+              id={`expand-btn-venta-${contrato.id}`}
+            >
+              <i
+                className={`pi pi-${expanded ? "chevron-up" : "chevron-down"}`}
+              />
+            </button>
+            <Tooltip target={`#expand-btn-venta-${contrato.id}`} />
+          </>
+        )}
+      </div>
+    </div>
+  );
+};
+
 const ModeladoRefineriaContratosVentaList = ({
   contratos,
   onShowDialog,
@@ -29,87 +175,13 @@ const ModeladoRefineriaContratosVentaList = ({
     <div className="col-12">
       <div className="grid">
         {contratos
-          .filter((contrato) => contrato.tipoContrato === "Venta") // Filtrar por tipoContrato
+          .filter((contrato) => contrato.tipoContrato === "Venta")
           .map((contrato) => (
-            <div
+            <ContratoVentaCard
               key={contrato.id}
-              className="col-12 md:col-6 lg:col-4 xl:col-3 p-2"
-            >
-              <div className="p-3 surface-card border-round shadow-2">
-                <div className="flex justify-content-between align-items-start">
-                  <div className="flex flex-column">
-                    <span className="text-lg font-bold white-space-normal">
-                      {contrato.descripcion.toLocaleUpperCase()}
-                    </span>
-                    <span className="text-sm text-500 mt-1">
-                      {`(${contrato.idContacto.nombre})`}
-                    </span>
-                  </div>
-                  <div className="flex flex-column text-right">
-                    <span className="text-sm font-semibold">
-                      Nº: {contrato.numeroContrato}
-                    </span>
-                    <span className="text-xs text-green-500">
-                      Act-{formatDateSinAnoFH(contrato.updatedAt)}
-                    </span>
-                  </div>
-                </div>
-                <hr className="my-2" />
-                <div className="text-sm">
-                  <span className="font-medium">Inicio:</span>{" "}
-                  {formatDateSinAnoFH(contrato.fechaInicio)}
-                  {" - "}
-                  <span className="font-medium">Fin:</span>{" "}
-                  {formatDateSinAnoFH(contrato.fechaFin)}
-                </div>
-                <hr className="my-2" />
-                <div className="flex flex-column gap-2">
-                  {contrato.productos.map((item) => (
-                    <div
-                      key={item.producto.id}
-                      className="flex align-items-center gap-2"
-                    >
-                      <span className="font-bold min-w-8rem">
-                        {item.producto.nombre}
-                      </span>
-                      <div className="flex-grow-1">
-                        <ProgressBar
-                          value={item.porcentajeDespacho}
-                          showValue={false}
-                          // className="h-1rem"
-                          style={{ minWidth: "10rem", height: "0.6rem" }}
-                          color={`#${item.producto.color}`}
-                        />
-                        <div className="flex justify-content-between text-xs mt-1">
-                          <span>
-                            {item.cantidad.toLocaleString("de-DE")}Bbl
-                          </span>
-                          <span className="text-green-800">
-                            {item.cantidadDespachada.toLocaleString("de-DE")}Bbl
-                          </span>
-                          <span className="text-red-800">
-                            {item.cantidadFaltanteDespacho.toLocaleString(
-                              "de-DE"
-                            )}
-                            Bbl
-                          </span>
-                        </div>
-                      </div>
-
-                      {onShowDialogDespachos && (
-                        <Button
-                          icon="pi pi-search"
-                          onClick={() => onShowDialogDespachos(item)}
-                          className="p-button-sm p-button-text p-button-rounded"
-                          tooltip="Mostrar todas las Recepciones"
-                          tooltipOptions={{ position: "top" }}
-                        />
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
+              contrato={contrato}
+              onShowDialogDespachos={onShowDialogDespachos}
+            />
           ))}
       </div>
     </div>
