@@ -105,25 +105,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#fafdff",
     overflow: "hidden",
   },
-  tableHeader: {
-    flexDirection: "row",
-    backgroundColor: "#e3f2fd",
-  },
-  tableHeaderCell: {
-    flex: 2,
-    borderRightWidth: 1,
-    borderRightColor: "#bbdefb",
-    padding: 6,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  tableHeaderCellValor: {
-    flex: 2,
-    padding: 6,
-    textAlign: "center",
-    justifyContent: "center",
-    alignItems: "center",
-  },
   tableRow: {
     flexDirection: "row",
     borderTopColor: "#bbdefb",
@@ -257,20 +238,10 @@ const ChequeoCalidadTemplate: React.FC<ChequeoCalidadTemplateProps> = ({
           </Text>
         </View>
 
-        {/* Información principal con nueva estética */}
+        {/* Información principal SIN encabezados de tabla */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Detalles del Chequeo</Text>
           <View style={styles.tableContainer}>
-            {/* Encabezados */}
-            <View style={styles.tableHeader}>
-              <View style={styles.tableHeaderCell}>
-                <Text style={{ fontWeight: "bold", fontSize: 9, color: "#1976d2", letterSpacing: 0.5 }}>DATO</Text>
-              </View>
-              <View style={styles.tableHeaderCellValor}>
-                <Text style={{ fontWeight: "bold", fontSize: 9, color: "#1976d2", letterSpacing: 0.5 }}>VALOR</Text>
-              </View>
-            </View>
-            {/* Filas */}
             {detallesChequeoRows.map((item, idx) => (
               <View
                 key={item.label}
@@ -292,20 +263,10 @@ const ChequeoCalidadTemplate: React.FC<ChequeoCalidadTemplateProps> = ({
           </View>
         </View>
 
-        {/* Resultados de Calidad */}
+        {/* Resultados de Calidad SIN encabezados de tabla */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Resultados de Calidad</Text>
           <View style={styles.tableContainer}>
-            {/* Encabezados */}
-            <View style={styles.tableHeader}>
-              <View style={styles.tableHeaderCell}>
-                <Text style={{ fontWeight: "bold", fontSize: 9, color: "#1976d2", letterSpacing: 0.5 }}>PARÁMETRO</Text>
-              </View>
-              <View style={styles.tableHeaderCellValor}>
-                <Text style={{ fontWeight: "bold", fontSize: 9, color: "#1976d2", letterSpacing: 0.5 }}>VALOR</Text>
-              </View>
-            </View>
-            {/* Filas */}
             {[
               { label: "Gravedad API", value: data.gravedadAPI !== undefined ? data.gravedadAPI : "N/A", unidad: "°API" },
               { label: "% de Azufre", value: data.azufre !== undefined ? data.azufre : "N/A", unidad: "%" },
@@ -347,18 +308,10 @@ const ChequeoCalidadTemplate: React.FC<ChequeoCalidadTemplateProps> = ({
           </View>
         </View>
 
-        {/* Información de usuario y fechas */}
+        {/* Información de usuario y fechas SIN encabezados de tabla */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Información del Usuario</Text>
           <View style={styles.tableContainer}>
-            <View style={styles.tableHeader}>
-              <View style={styles.tableHeaderCell}>
-                <Text style={{ fontWeight: "bold", fontSize: 9, color: "#1976d2", letterSpacing: 0.5 }}>INFORMACIÓN</Text>
-              </View>
-              <View style={styles.tableHeaderCellValor}>
-                <Text style={{ fontWeight: "bold", fontSize: 9, color: "#1976d2", letterSpacing: 0.5 }}>VALOR</Text>
-              </View>
-            </View>
             {[
               { label: "Realizado por", value: data.createdBy.nombre },
               { label: "Correo", value: data.createdBy.correo },

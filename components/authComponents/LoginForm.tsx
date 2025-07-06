@@ -94,9 +94,8 @@ const LoginForm: Page = () => {
           </div>
           <h1 className="font-bold text-3xl text-900 m-0">MAROIL Refinery</h1>
           <p className="text-color-secondary mt-2">
-            Bienvenido a la{" "}
-            <strong className="text-primary">Maroil Refinery</strong>
-          </p>
+            Bienvenido a Maroil Refinery
+            </p>
         </div>
 
         <form
