@@ -59,6 +59,7 @@ const handler = NextAuth({
     async jwt({ token, user, account }) {
       if (user) token.user = user;
       if (account?.provider === "google") {
+        token.access_token = account.access_token; // Guarda el access_token
         try {
           // const response = await fetch(
           //   `${process.env.BACKEND_API_URL}/auth/google`,
@@ -86,7 +87,7 @@ const handler = NextAuth({
             //   token.email = googleUser.email;
             //   token.name = googleUser.name;
             token.user = response;
-            (token.user as any).access_token = account.access_token;
+            token.access_token = account.access_token;
           }
           console.log(token);
         } catch (error) {
@@ -97,8 +98,9 @@ const handler = NextAuth({
     },
     async session({ session, token }) {
       session.user = token.user as any;
-      session.user.access_token =
-        typeof token.access_token === "string" ? token.access_token : undefined;
+      if (token.access_token && typeof token.access_token === "string") {
+        session.user.access_token = token.access_token; // Expón el access_token en la sesión
+      }
       return session;
     },
     // async signIn({ user, account, profile }) {

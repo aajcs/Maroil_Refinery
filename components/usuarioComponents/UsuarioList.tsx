@@ -186,10 +186,7 @@ const UsuarioList = () => {
         filters={filters}
         loading={loading}
       >
-        <Column
-          body={actionBodyTemplate}
-          headerStyle={{ minWidth: "10rem" }}
-        ></Column>
+        <Column body={actionBodyTemplate}></Column>
         <Column field="nombre" header="Nombre" sortable></Column>
         <Column field="correo" header="Correo" sortable></Column>
         <Column field="telefono" header="Teléfono" sortable></Column>
