@@ -172,10 +172,7 @@ const RefineriaList = () => {
         filters={filters}
         loading={loading}
       >
-        <Column
-          body={actionBodyTemplate}
-          headerStyle={{ minWidth: "10rem" }}
-        ></Column>
+        <Column body={actionBodyTemplate}></Column>
         {/* <Column
           field="img"
           header="Imagen"
@@ -188,28 +185,24 @@ const RefineriaList = () => {
           header="Nombre"
           sortable
           headerClassName="white-space-nowrap"
-          style={{ width: "25%" }}
         ></Column>
         <Column
           field="procesamientoDia"
           header="Procesamiento por día"
           sortable
           headerClassName="white-space-nowrap"
-          style={{ width: "25%" }}
         ></Column>
         <Column
           field="ubicacion"
           header="Ubicación"
           sortable
           headerClassName="white-space-nowrap"
-          style={{ width: "25%" }}
         ></Column>
         <Column
           field="nit"
           header="NIT"
           sortable
           headerClassName="white-space-nowrap"
-          style={{ width: "25%" }}
         ></Column>
         {/* 
         <Column
