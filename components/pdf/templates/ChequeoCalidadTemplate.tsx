@@ -181,7 +181,7 @@ const ChequeoCalidadTemplate: React.FC<ChequeoCalidadTemplateProps> = ({
     ...(data.aplicar.tipo.toLowerCase() === "tanque"
       ? [
           { label: "Tanque", value: data.aplicar.idReferencia.nombre },
-          { label: "ID Tanque", value: data.aplicar.idReferencia.id },
+        //  { label: "ID Tanque", value: data.aplicar.idReferencia.id },
         ]
       : data.aplicar.tipo.toLowerCase() === "recepcion"
       ? [
