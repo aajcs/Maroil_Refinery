@@ -7,6 +7,8 @@ declare module "next-auth" {
   interface Session {
     user: {
       usuario?: Usuario;
+      token?: string;
+      access_token?: string; // Agregado para manejar el token de Google
     } & DefaultSession["user"];
   }
 }
@@ -84,6 +86,7 @@ const handler = NextAuth({
             //   token.email = googleUser.email;
             //   token.name = googleUser.name;
             token.user = response;
+            (token.user as any).access_token = account.access_token;
           }
           console.log(token);
         } catch (error) {
@@ -94,6 +97,8 @@ const handler = NextAuth({
     },
     async session({ session, token }) {
       session.user = token.user as any;
+      session.user.access_token =
+        typeof token.access_token === "string" ? token.access_token : undefined;
       return session;
     },
     // async signIn({ user, account, profile }) {

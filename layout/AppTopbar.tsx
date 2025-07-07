@@ -24,6 +24,7 @@ interface ExtendedUser extends User {
     rol: string;
   };
   token: string;
+  access_token?: string; // Agregado para manejar el token de Google
 }
 
 const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
@@ -34,6 +35,18 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
   const { online, desconectarSocket } = useSocket();
 
   const handleSignOut = async () => {
+    // Revoca el token de Google si existe
+    const accessToken = session?.user?.access_token;
+    if (accessToken) {
+      try {
+        await fetch(
+          `https://accounts.google.com/o/oauth2/revoke?token=${accessToken}`
+        );
+        console.log("Token de Google revocado correctamente.");
+      } catch (e) {
+        console.error("Error al revocar el token de Google:", e);
+      }
+    }
     await signOut();
     desconectarSocket();
   };
