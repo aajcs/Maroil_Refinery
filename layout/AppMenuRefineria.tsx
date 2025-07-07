@@ -105,6 +105,7 @@ const AppMenuRefineria = () => {
               icon: "pi pi-fw pi-money-bill",
               to: "/refineria/finanzas/cuenta-cobrar",
             },
+            
               {
               label: "Reportes Financieros",
               icon: "pi pi-fw pi-money-bill",
