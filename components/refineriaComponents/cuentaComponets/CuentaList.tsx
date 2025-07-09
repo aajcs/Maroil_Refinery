@@ -17,10 +17,11 @@ import CustomActionButtons from "@/components/common/CustomActionButtons";
 import AuditHistoryDialog from "@/components/common/AuditHistoryDialog";
 import { Accordion, AccordionTab } from "primereact/accordion";
 import AbonoForm from "../abonoComponets/AbonoForm";
+import { ProgressSpinner } from "primereact/progressspinner";
+import { motion } from "framer-motion";
 interface CuentaListProps {
   tipoCuenta: string;
 }
-
 
 const CuentaList = ({ tipoCuenta }: CuentaListProps) => {
   const { activeRefineria } = useRefineriaStore();
@@ -48,7 +49,9 @@ const CuentaList = ({ tipoCuenta }: CuentaListProps) => {
       const cuentasDB = await getCuentas();
       if (cuentasDB && Array.isArray(cuentasDB.cuentas)) {
         const filteredCuentas = cuentasDB.cuentas.filter(
-          (cuenta: Cuenta)  => cuenta.idRefineria?.id === activeRefineria?.id && cuenta.tipoCuenta === tipoCuenta
+          (cuenta: Cuenta) =>
+            cuenta.idRefineria?.id === activeRefineria?.id &&
+            cuenta.tipoCuenta === tipoCuenta
         );
         setCuentas(filteredCuentas);
       } else {
@@ -220,8 +223,25 @@ const CuentaList = ({ tipoCuenta }: CuentaListProps) => {
       </AccordionTab>
     </Accordion>
   );
+  if (loading) {
+    return (
+      <div className="flex justify-content-center align-items-center h-screen">
+        <ProgressSpinner />
+      </div>
+    );
+  }
   return (
-    <div className="card">
+    <motion.div
+      initial={{
+        opacity: 0,
+        scale: 0.95,
+        y: 40,
+        filter: "blur(8px)",
+      }}
+      animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
+      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+      className="card"
+    >
       <Toast ref={toast} />
       <DataTable
         ref={dt}
@@ -235,10 +255,12 @@ const CuentaList = ({ tipoCuenta }: CuentaListProps) => {
         filters={filters}
         loading={loading}
         emptyMessage="No hay cuentas disponibles"
+        rowClassName={() => "animated-row"}
+        size="small"
       >
         <Column body={actionBodyTemplate} headerStyle={{ minWidth: "10rem" }} />
         <Column field="numeroCuenta" header="N° Cuenta" sortable />
-          <Column
+        <Column
           field="idContrato.numeroContrato"
           header="N° Contrato"
           sortable
@@ -254,12 +276,12 @@ const CuentaList = ({ tipoCuenta }: CuentaListProps) => {
           header="Monto Total Contrato"
           sortable
           body={(rowData: Cuenta) =>
-        rowData.montoTotalContrato != null
-          ? rowData.montoTotalContrato.toLocaleString("de-DE", {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-            })
-          : ""
+            rowData.montoTotalContrato != null
+              ? rowData.montoTotalContrato.toLocaleString("de-DE", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })
+              : ""
           }
         />
         <Column
@@ -267,12 +289,12 @@ const CuentaList = ({ tipoCuenta }: CuentaListProps) => {
           header="Total Abonado"
           sortable
           body={(rowData: Cuenta) =>
-        rowData.totalAbonado != null
-          ? rowData.totalAbonado.toLocaleString("de-DE", {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-            })
-          : ""
+            rowData.totalAbonado != null
+              ? rowData.totalAbonado.toLocaleString("de-DE", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })
+              : ""
           }
         />
         <Column
@@ -280,15 +302,15 @@ const CuentaList = ({ tipoCuenta }: CuentaListProps) => {
           header="Balance Pendiente"
           sortable
           body={(rowData: Cuenta) =>
-        rowData.balancePendiente != null
-          ? rowData.balancePendiente.toLocaleString("de-DE", {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-            })
-          : ""
+            rowData.balancePendiente != null
+              ? rowData.balancePendiente.toLocaleString("de-DE", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })
+              : ""
           }
         />
-      
+
         {/* <Column field="createdBy.nombre" header="Creado Por" sortable />
         <Column
           field="createdAt"
@@ -364,18 +386,14 @@ const CuentaList = ({ tipoCuenta }: CuentaListProps) => {
         onHide={hideCuentaFormDialog}
         content={
           <AbonoForm
-
-          tipoAbono={tipoCuenta}
-         
+            tipoAbono={tipoCuenta}
             hideAbonoFormDialog={hideCuentaFormDialog}
-           
-            
             showToast={showToast}
             toast={toast}
           />
         }
       ></Dialog>
-    </div>
+    </motion.div>
   );
 };
 

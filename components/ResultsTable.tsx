@@ -172,6 +172,8 @@ export default function ResultsTable({ results }: ResultsTableProps) {
                 };
               })}
             className="p-datatable-sm"
+            rowClassName={() => "animated-row"}
+            size="small"
           >
             <Column field="product" header="Producto" />
             <Column

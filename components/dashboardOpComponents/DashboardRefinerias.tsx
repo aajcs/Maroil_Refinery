@@ -12,6 +12,7 @@ import { useSession } from "next-auth/react";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { Button } from "primereact/button";
 // import NoDataIllustration from "@/assets/images/no-data.svg";
+import { motion } from "framer-motion";
 
 const DashboardRefinerias = () => {
   const { data: session } = useSession();
@@ -136,36 +137,49 @@ const DashboardRefinerias = () => {
     <div className="grid">
       {Array.isArray(refinerias) &&
         refinerias.length > 0 &&
-        refinerias.map((refineria) => (
-          <div
-            className="col-12 md:col-6 lg:col-4 xl:col-3 p-2 clickable"
+        refinerias.map((refineria, idx) => (
+          <motion.div
             key={refineria.id}
+            className="col-12 md:col-6 lg:col-4 xl:col-3 p-2 clickable"
             onClick={() => handleDivClick(refineria)}
+            initial={{ opacity: 0, y: 40, scale: 0.96, filter: "blur(8px)" }}
+            animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+            transition={{
+              duration: 0.6,
+              delay: idx * 0.08,
+              ease: [0.22, 1, 0.36, 1],
+            }}
+            whileHover={{
+              scale: 1.03,
+              // boxShadow: "0 8px 32px 0 rgba(0,0,0,0.12)",
+            }}
+            whileTap={{ scale: 0.98 }}
+            style={{ cursor: "pointer" }}
           >
             <div className="card h-full flex flex-column surface-card hover:surface-hover transition-colors transition-duration-300">
-              <div className="flex flex-column md:flex-row align-items-center p-3">
+              <div className="flex flex-column md:flex-row align-items-center ">
                 <img
                   src={refineria.img}
                   alt={refineria.nombre}
                   width={100}
                   height={100}
-                  // className="w-40 h-40 object-cover rounded-lg"
-                  // className="w-10rem h-10rem object-cover mb-3 md:mb-0 md:mr-3 shadow-4"
+                  className="rounded-lg shadow-4 object-cover mb-3 md:mb-0 md:mr-3 card p-0"
+                  style={{ background: "#f4f6fa" }}
                 />
                 <div className="ml-3">
-                  <span className="text-primary block white-space-nowrap">
+                  <span className="text-primary block white-space-nowrap text-xs font-medium opacity-80">
                     {refineria.ubicacion}
                   </span>
-                  <span className="text-primary block text-4xl font-bold">
+                  <span className="text-primary block text-2xl md:text-3xl font-bold mb-1">
                     {refineria.nombre}
                   </span>
-                  <span className="text-primary block white-space-nowrap">
+                  <span className="text-primary block white-space-nowrap text-xs opacity-70">
                     {refineria.nit}
                   </span>
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
         ))}
       {Array.isArray(bunkerings) &&
         bunkerings.length > 0 &&

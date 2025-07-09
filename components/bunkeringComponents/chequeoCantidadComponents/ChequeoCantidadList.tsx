@@ -175,6 +175,8 @@ const ChequeoCantidadList = () => {
         filters={filters}
         loading={loading}
         emptyMessage="No hay chequeos de cantidad disponibles"
+        rowClassName={() => "animated-row"}
+        size="small"
       >
         <Column body={actionBodyTemplate} />
         <Column

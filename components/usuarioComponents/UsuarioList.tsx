@@ -185,6 +185,8 @@ const UsuarioList = () => {
         rowsPerPageOptions={[10, 25, 50]}
         filters={filters}
         loading={loading}
+        rowClassName={() => "animated-row"}
+        size="small"
       >
         <Column body={actionBodyTemplate}></Column>
         <Column field="nombre" header="Nombre" sortable></Column>

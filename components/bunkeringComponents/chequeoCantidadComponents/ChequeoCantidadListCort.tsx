@@ -23,6 +23,7 @@ const ChequeoCantidadListCort = ({
         value={chequeoCantidad}
         rows={10}
         emptyMessage="No hay chequeoCantidads disponibles"
+        rowClassName={() => "animated-row"}
         size="small"
       >
         <Column field="operador" header="Operador" sortable />

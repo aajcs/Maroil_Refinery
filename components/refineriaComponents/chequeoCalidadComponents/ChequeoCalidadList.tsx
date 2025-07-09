@@ -20,6 +20,8 @@ import {
 import CustomActionButtons from "@/components/common/CustomActionButtons";
 import { ChequeoCalidad } from "@/libs/interfaces";
 import ChequeoCalidadTemplate from "@/components/pdf/templates/ChequeoCalidadTemplate";
+import { ProgressSpinner } from "primereact/progressspinner";
+import { motion } from "framer-motion";
 
 const ChequeoCalidadList = () => {
   const { activeRefineria } = useRefineriaStore();
@@ -148,11 +150,11 @@ const ChequeoCalidadList = () => {
         setOnDuplicate(true);
         setChequeoCalidadFormDialog(true);
       }}
-        pdfTemplate={(props) => (
-          <ChequeoCalidadTemplate {...props} logoUrl="/logo.png" />
-        )}
-        pdfFileName={`ChequeoCalidad${rowData.numeroChequeoCalidad}.pdf`}
-        pdfDownloadText="Descargar Chequeo"
+      pdfTemplate={(props) => (
+        <ChequeoCalidadTemplate {...props} logoUrl="/logo.png" />
+      )}
+      pdfFileName={`ChequeoCalidad${rowData.numeroChequeoCalidad}.pdf`}
+      pdfDownloadText="Descargar Chequeo"
     />
   );
 
@@ -164,8 +166,25 @@ const ChequeoCalidadList = () => {
     toast.current?.show({ severity, summary, detail, life: 3000 });
   };
 
+  if (loading) {
+    return (
+      <div className="flex justify-content-center align-items-center h-screen">
+        <ProgressSpinner />
+      </div>
+    );
+  }
   return (
-    <div className="card">
+    <motion.div
+      initial={{
+        opacity: 0,
+        scale: 0.95,
+        y: 40,
+        filter: "blur(8px)",
+      }}
+      animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
+      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+      className="card"
+    >
       <Toast ref={toast} />
 
       <DataTable
@@ -180,6 +199,8 @@ const ChequeoCalidadList = () => {
         filters={filters}
         loading={loading}
         emptyMessage="No hay chequeos de calidad disponibles"
+        rowClassName={() => "animated-row"}
+        size="small"
       >
         <Column body={actionBodyTemplate} />
         <Column
@@ -324,7 +345,7 @@ const ChequeoCalidadList = () => {
           showToast={showToast}
         /> */}
       </Dialog>
-    </div>
+    </motion.div>
   );
 };
 

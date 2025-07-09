@@ -759,6 +759,7 @@ function ContratoForm({
                   responsiveLayout="scroll"
                   scrollable
                   className="datatable-responsive"
+                  rowClassName={() => "animated-row"}
                   size="small"
                   editMode="cell"
                 >

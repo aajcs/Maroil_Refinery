@@ -190,6 +190,8 @@ const TanqueList = () => {
         filters={filters}
         loading={loading}
         emptyMessage="No hay tanques disponibles"
+        rowClassName={() => "animated-row"}
+        size="small"
       >
         <Column
           field="idEmbarcacion.nombre"

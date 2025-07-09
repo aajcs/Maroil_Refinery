@@ -44,6 +44,7 @@ const ChequeoCalidadListCort = ({
         rows={10}
         emptyMessage="No hay chequeoCalidads disponibles"
         size="small"
+        rowClassName={() => "animated-row"}
       >
         <Column body={actionCardTemplate} />
 

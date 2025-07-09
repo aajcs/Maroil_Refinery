@@ -364,6 +364,8 @@ function ComprasCard() {
           value={mezcla}
           editMode="row"
           onRowEditComplete={onRowEditComplete}
+          rowClassName={() => "animated-row"}
+          size="small"
         >
           <Column
             field="nombre"

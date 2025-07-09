@@ -20,6 +20,8 @@ import { Contrato } from "@/libs/interfaces";
 import CustomActionButtons from "@/components/common/CustomActionButtons";
 import AuditHistoryDialog from "@/components/common/AuditHistoryDialog";
 import ContratoTemplate from "@/components/pdf/templates/ContratoTemplate";
+import { ProgressSpinner } from "primereact/progressspinner";
+import { motion } from "framer-motion";
 interface ContratoListProps {
   tipoContrato: string;
 }
@@ -142,12 +144,14 @@ const ContratoList = ({ tipoContrato }: ContratoListProps) => {
         data;
         setDeleteProductDialog(true);
       }}
-
-       pdfTemplate={(props) => (
-          <ContratoTemplate data={props.data} logoUrl="/layout/images/avatarHombre.png" />
-        )}
-        pdfFileName={`Contrato${rowData.numeroContrato}.pdf`}
-        pdfDownloadText="Descargar Contrato"
+      pdfTemplate={(props) => (
+        <ContratoTemplate
+          data={props.data}
+          logoUrl="/layout/images/avatarHombre.png"
+        />
+      )}
+      pdfFileName={`Contrato${rowData.numeroContrato}.pdf`}
+      pdfDownloadText="Descargar Contrato"
     />
   );
 
@@ -185,8 +189,25 @@ const ContratoList = ({ tipoContrato }: ContratoListProps) => {
       </div>
     );
   };
+  if (loading) {
+    return (
+      <div className="flex justify-content-center align-items-center h-screen">
+        <ProgressSpinner />
+      </div>
+    );
+  }
   return (
-    <div className="card">
+    <motion.div
+      initial={{
+        opacity: 0,
+        scale: 0.95,
+        y: 40,
+        filter: "blur(8px)",
+      }}
+      animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
+      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+      className="card"
+    >
       <Toast ref={toast} />
 
       <DataTable
@@ -204,6 +225,8 @@ const ContratoList = ({ tipoContrato }: ContratoListProps) => {
         filters={filters}
         loading={loading}
         emptyMessage="No hay contratos disponibles"
+        rowClassName={() => "animated-row"}
+        size="small"
       >
         <Column expander style={{ width: "3em" }} />
         <Column body={actionBodyTemplate} headerStyle={{ minWidth: "10rem" }} />
@@ -365,7 +388,7 @@ const ContratoList = ({ tipoContrato }: ContratoListProps) => {
       )}
 
       {/* </Dialog> */}
-    </div>
+    </motion.div>
   );
 };
 

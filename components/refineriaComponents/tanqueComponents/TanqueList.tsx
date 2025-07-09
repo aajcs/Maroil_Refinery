@@ -15,6 +15,8 @@ import { Tanque } from "@/libs/interfaces";
 import { formatDateFH } from "@/utils/dateUtils";
 import AuditHistoryDialog from "@/components/common/AuditHistoryDialog";
 import CustomActionButtons from "@/components/common/CustomActionButtons";
+import { motion } from "framer-motion";
+import { ProgressSpinner } from "primereact/progressspinner";
 
 const TanqueList = () => {
   const { activeRefineria } = useRefineriaStore();
@@ -153,8 +155,25 @@ const TanqueList = () => {
     toast.current?.show({ severity, summary, detail, life: 3000 });
   };
 
+  if (loading) {
+    return (
+      <div className="flex justify-content-center align-items-center h-screen">
+        <ProgressSpinner />
+      </div>
+    );
+  }
   return (
-    <div className="card">
+    <motion.div
+      initial={{
+        opacity: 0,
+        scale: 0.95,
+        y: 40,
+        filter: "blur(8px)",
+      }}
+      animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
+      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+      className="card"
+    >
       <Toast ref={toast} />
       <DataTable
         ref={dt}
@@ -168,6 +187,8 @@ const TanqueList = () => {
         filters={filters}
         loading={loading}
         emptyMessage="No hay tanques disponibles"
+        rowClassName={() => "animated-row"}
+        size="small"
       >
         <Column body={actionBodyTemplate} headerStyle={{ minWidth: "10rem" }} />
         <Column field="nombre" header="Nombre" sortable />
@@ -271,7 +292,7 @@ const TanqueList = () => {
           />
         )}
       ></Dialog>
-    </div>
+    </motion.div>
   );
 };
 

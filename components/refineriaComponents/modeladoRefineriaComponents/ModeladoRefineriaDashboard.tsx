@@ -20,9 +20,41 @@ import ModeladoRefineriaContratosVentaList from "./ModeladoRefineriaContratosVen
 
 import { TabPanel, TabView } from "primereact/tabview";
 import { InputSwitch } from "primereact/inputswitch";
-// import CalculoTorreDestilacion from "./CalculoTorreDestilacion";
-// import RefineryAnalysis from "./RefineryAnalysis";
-// import TorreProduction from "./TorreProduction";
+import { motion } from "framer-motion";
+
+const AnimatedTitle = ({ text }: { text: string }) => {
+  const container = {
+    hidden: {},
+    show: {
+      transition: {
+        staggerChildren: 0.04,
+      },
+    },
+  };
+  const letter = {
+    hidden: { opacity: 0, y: 40, scale: 0.7, filter: "blur(8px)" },
+    show: { opacity: 1, y: 0, scale: 1, filter: "blur(0px)" },
+  };
+  return (
+    <motion.h1
+      className="text-2xl font-bold mb-3"
+      variants={container}
+      initial="hidden"
+      animate="show"
+      style={{ display: "flex", flexWrap: "wrap" }}
+    >
+      {text.split("").map((char, i) => (
+        <motion.span
+          key={i}
+          variants={letter}
+          style={{ display: "inline-block" }}
+        >
+          {char === " " ? "\u00A0" : char}
+        </motion.span>
+      ))}
+    </motion.h1>
+  );
+};
 
 const ModeladoRefineriaDashboard = () => {
   const { activeRefineria } = useRefineriaStore();
@@ -166,47 +198,95 @@ const ModeladoRefineriaDashboard = () => {
       <div className="flex flex-wrap ">
         <TabView className="w-full">
           <TabPanel header="Compras de Crudos" leftIcon="pi pi-wallet mr-2">
-            <ModeladoRefineriaContratosList
-              contratos={recepcionesPorContrato}
-              onShowDialog={showDialog}
-            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.85, y: 40, filter: "blur(12px)" }}
+              animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
+              transition={{
+                duration: 0.7,
+                type: "spring",
+                bounce: 0.35,
+                delay: 0.2,
+              }}
+            >
+              <ModeladoRefineriaContratosList
+                contratos={recepcionesPorContrato}
+                onShowDialog={showDialog}
+              />
+            </motion.div>
           </TabPanel>
           <TabPanel
             header="Ventas de Productos"
             leftIcon="pi pi-briefcase mr-2"
           >
-            <ModeladoRefineriaContratosVentaList
-              contratos={recepcionesPorContrato}
-              onShowDialogDespachos={onShowDialogDespachos}
-            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.85, y: 40, filter: "blur(12px)" }}
+              animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
+              transition={{
+                duration: 0.7,
+                type: "spring",
+                bounce: 0.35,
+                delay: 0.2,
+              }}
+            >
+              <ModeladoRefineriaContratosVentaList
+                contratos={recepcionesPorContrato}
+                onShowDialogDespachos={onShowDialogDespachos}
+              />
+            </motion.div>
           </TabPanel>
           <TabPanel header="Recepciones" leftIcon="pi pi-truck mr-2">
-            <div>
-              {/* Switch para alternar entre recepciones */}
-              <div className="flex align-items-center gap-3 mb-3">
-                <span>Mostrar Recepciones en Tránsito</span>
-                <InputSwitch
-                  checked={checked}
-                  onChange={(e) => setChecked(e.value)}
-                />
-                <span>Mostrar Recepciones en Refinería</span>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.85, y: 40, filter: "blur(12px)" }}
+              animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
+              transition={{
+                duration: 0.7,
+                type: "spring",
+                bounce: 0.35,
+                delay: 0.2,
+              }}
+            >
+              <div>
+                {/* Switch para alternar entre recepciones */}
+                <div className="flex align-items-center gap-3 mb-3">
+                  <span>Mostrar Recepciones en Tránsito</span>
+                  <InputSwitch
+                    checked={checked}
+                    onChange={(e) => setChecked(e.value)}
+                  />
+                  <span>Mostrar Recepciones en Refinería</span>
+                </div>
+
+                {/* Mostrar el componente según el estado del switch */}
+                {checked ? (
+                  <ModeladoRefineriaRecepcionesList
+                    recepciones={recepcionesEnRefineria}
+                  />
+                ) : (
+                  <ModeladoRefineriaRecepcionesList
+                    recepciones={recepcionesEnTransito}
+                  />
+                )}
               </div>
-
-              {/* Mostrar el componente según el estado del switch */}
-              {checked ? (
-                <ModeladoRefineriaRecepcionesList
-                  recepciones={recepcionesEnRefineria}
-                />
-              ) : (
-                <ModeladoRefineriaRecepcionesList
-                  recepciones={recepcionesEnTransito}
-                />
-              )}
-            </div>
+            </motion.div>
           </TabPanel>
-
           <TabPanel header="Despacho" leftIcon="pi pi-truck mr-2">
-            <ModeladoRefineriaDespachosList despachos={despachos} />
+            <motion.div
+              initial={{
+                opacity: 0,
+                scale: 0.85,
+                y: -40,
+                filter: "blur(12px)",
+              }}
+              animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
+              transition={{
+                duration: 0.7,
+                type: "spring",
+                bounce: 0.35,
+                delay: 0.3,
+              }}
+            >
+              <ModeladoRefineriaDespachosList despachos={despachos} />
+            </motion.div>
           </TabPanel>
         </TabView>
 
@@ -222,8 +302,25 @@ const ModeladoRefineriaDashboard = () => {
         {/* Línea de recepción */}
 
         <div className="col-12 md:col-6 lg:col-2">
-          <div className="card p-3 lg-h-fullScreen">
-            <h1 className="text-2xl font-bold mb-3">Recepción de tractomula</h1>
+          <motion.div
+            initial={{
+              opacity: 0,
+              y: 80,
+              scale: 0.85,
+              rotate: -8,
+              filter: "blur(16px) grayscale(60%)",
+            }}
+            animate={{
+              opacity: 1,
+              y: 0,
+              scale: 1,
+              rotate: 0,
+              filter: "blur(0px) grayscale(0%)",
+            }}
+            transition={{ duration: 0.9, type: "spring", bounce: 0.45 }}
+            className="card p-3 lg-h-fullScreen"
+          >
+            <AnimatedTitle text="Recepción de tractomula" />
 
             {lineaRecepcions.map((lineaRecepcion) => (
               <div key={lineaRecepcion.id} className="mb-2">
@@ -233,12 +330,17 @@ const ModeladoRefineriaDashboard = () => {
                 />
               </div>
             ))}
-          </div>
+          </motion.div>
         </div>
         {/* Almacenamiento Crudo */}
         <div className="col-12 md:col-6 lg:col-2">
-          <div className="card p-3 lg-h-fullScreen">
-            <h1 className="text-2xl font-bold mb-3">Almacenamiento Crudo</h1>
+          <motion.div
+            initial={{ opacity: 0, y: 40, scale: 0.95, filter: "blur(8px)" }}
+            animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+            transition={{ duration: 0.7, type: "spring", bounce: 0.35 }}
+            className="card p-3 lg-h-fullScreen"
+          >
+            <AnimatedTitle text="Almacenamiento Crudo" />
             {tanques
               .filter((tanque) => tanque.almacenamientoMateriaPrimaria)
               .map((tanque) => (
@@ -252,13 +354,18 @@ const ModeladoRefineriaDashboard = () => {
                   />
                 </div>
               ))}
-          </div>
+          </motion.div>
         </div>
 
         {/* Torres de Procesamiento */}
         <div className="col-12 md:col-6 lg:col-3">
-          <div className="card p-3 lg-h-fullScreen">
-            <h1 className="text-2xl font-bold mb-3">Torres de Procesamiento</h1>
+          <motion.div
+            initial={{ opacity: 0, y: 40, scale: 0.95, filter: "blur(8px)" }}
+            animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+            transition={{ duration: 0.7, type: "spring", bounce: 0.35 }}
+            className="card p-3 lg-h-fullScreen"
+          >
+            <AnimatedTitle text="Torres de Procesamiento" />
             <div className="grid">
               {torresDestilacion.map((torre) => (
                 <div key={torre.id} className="col-12 md:col-12">
@@ -269,15 +376,18 @@ const ModeladoRefineriaDashboard = () => {
                 </div>
               ))}
             </div>
-          </div>
+          </motion.div>
         </div>
 
         {/* Almacenamiento de Productos */}
         <div className="col-12 md:col-6 lg:col-3">
-          <div className="card p-3 lg-h-fullScreen">
-            <h1 className="text-2xl font-bold mb-3">
-              Almacenamiento de Productos
-            </h1>
+          <motion.div
+            initial={{ opacity: 0, y: 40, scale: 0.95, filter: "blur(8px)" }}
+            animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+            transition={{ duration: 0.7, type: "spring", bounce: 0.35 }}
+            className="card p-3 lg-h-fullScreen"
+          >
+            <AnimatedTitle text="Almacenamiento de Productos" />
             <div className="grid">
               {tanquesFiltradosOrdenados.map((tanque) => (
                 <div key={tanque.id} className="mb-2">
@@ -291,13 +401,18 @@ const ModeladoRefineriaDashboard = () => {
                 </div>
               ))}
             </div>
-          </div>
+          </motion.div>
         </div>
 
         {/* Línea de Despacho */}
         <div className="col-12 md:col-6 lg:col-2">
-          <div className="card p-3 lg-h-fullScreen">
-            <h1 className="text-2xl font-bold mb-3">Línea de Despacho</h1>
+          <motion.div
+            initial={{ opacity: 0, y: 40, scale: 0.95, filter: "blur(8px)" }}
+            animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+            transition={{ duration: 0.7, type: "spring", bounce: 0.35 }}
+            className="card p-3 lg-h-fullScreen"
+          >
+            <AnimatedTitle text="Línea de Despacho" />
 
             {lineaDespachos.map((lineaDespacho) => (
               <div key={lineaDespacho.id} className="mb-2">
@@ -307,7 +422,7 @@ const ModeladoRefineriaDashboard = () => {
                 />
               </div>
             ))}
-          </div>
+          </motion.div>
         </div>
 
         {/* {refinacions.map((refinacion) => (

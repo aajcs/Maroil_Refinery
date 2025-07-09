@@ -19,6 +19,8 @@ import {
   getTipoProductos,
 } from "@/app/api/tipoProductoService";
 import { Accordion, AccordionTab } from "primereact/accordion";
+import { ProgressSpinner } from "primereact/progressspinner";
+import { motion } from "framer-motion";
 
 const TipoProductoList = () => {
   const { activeRefineria } = useRefineriaStore();
@@ -203,8 +205,25 @@ const TipoProductoList = () => {
       </Accordion>
     );
   };
+  if (loading) {
+    return (
+      <div className="flex justify-content-center align-items-center h-screen">
+        <ProgressSpinner />
+      </div>
+    );
+  }
   return (
-    <div className="card">
+    <motion.div
+      initial={{
+        opacity: 0,
+        scale: 0.95,
+        y: 40,
+        filter: "blur(8px)",
+      }}
+      animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
+      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+      className="card"
+    >
       <Toast ref={toast} />
       <DataTable
         ref={dt}
@@ -218,6 +237,8 @@ const TipoProductoList = () => {
         filters={filters}
         loading={loading}
         emptyMessage="No hay tipoProductos disponibles"
+        rowClassName={() => "animated-row"}
+        size="small"
       >
         <Column body={actionBodyTemplate} headerStyle={{ minWidth: "10rem" }} />
         <Column field="idProducto.nombre" header="Producto" />
@@ -350,7 +371,7 @@ const TipoProductoList = () => {
           toast={toast}
         />
       )}
-    </div>
+    </motion.div>
   );
 };
 

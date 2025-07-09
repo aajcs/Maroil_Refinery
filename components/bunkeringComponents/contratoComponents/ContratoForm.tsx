@@ -131,9 +131,7 @@ function ContratoForm({
       }
       hideContratoFormDialog();
     } catch (error) {
-     
       handleFormError(error, toast); // Pasamos la referencia del toast
-     
     } finally {
       setSubmitting(false); // Desactivar el estado de envío
     }
@@ -780,6 +778,7 @@ function ContratoForm({
                   responsiveLayout="scroll"
                   scrollable
                   className="datatable-responsive"
+                  rowClassName={() => "animated-row"}
                   size="small"
                   editMode="cell"
                 >
@@ -810,122 +809,126 @@ function ContratoForm({
                     editor={(options) => idTipoProductoEditor(options)}
                     onCellEditComplete={(e) => {
                       const { newValue, rowData, rowIndex } = e;
-                        updateRowDataTipoProducto(
+                      updateRowDataTipoProducto(
                         { rowData, rowIndex },
                         newValue
-                        );
-                      }}
-                      />
+                      );
+                    }}
+                  />
 
-                      <Column
-                      field="clasificacion"
-                      header="Clasificación"
-                      editor={(options) => (
-                        <InputText
+                  <Column
+                    field="clasificacion"
+                    header="Clasificación"
+                    editor={(options) => (
+                      <InputText
                         value={options.value}
                         onChange={(e) =>
                           updateItem(
-                          options.rowIndex,
-                          "clasificacion",
-                          e.target.value
+                            options.rowIndex,
+                            "clasificacion",
+                            e.target.value
                           )
                         }
-                        />
-                      )}
                       />
-                      <Column
-                      field="gravedadAPI"
-                      header="API (°API)"
-                      body={(rowData: any) => `${rowData.gravedadAPI} °API`}
-                      editor={(options) => (
-                        <InputNumber
+                    )}
+                  />
+                  <Column
+                    field="gravedadAPI"
+                    header="API (°API)"
+                    body={(rowData: any) => `${rowData.gravedadAPI} °API`}
+                    editor={(options) => (
+                      <InputNumber
                         value={options.value}
                         onValueChange={(e) =>
                           updateItem(options.rowIndex, "gravedadAPI", e.value)
                         }
-                        />
-                      )}
                       />
-                      <Column
-                      field="azufre"
-                      header="Azufre (%)"
-                      body={(rowData: any) => `${rowData.azufre} %`}
-                      editor={(options) => (
-                        <InputNumber
+                    )}
+                  />
+                  <Column
+                    field="azufre"
+                    header="Azufre (%)"
+                    body={(rowData: any) => `${rowData.azufre} %`}
+                    editor={(options) => (
+                      <InputNumber
                         value={options.value}
                         onValueChange={(e) =>
                           updateItem(options.rowIndex, "azufre", e.value)
                         }
                         suffix="%"
-                        />
-                      )}
                       />
+                    )}
+                  />
 
-                      <Column
-                      field="contenidoAgua"
-                      header="Contenido de Agua (%)"
-                      body={(rowData: any) => `${rowData.contenidoAgua} %`}
-                      editor={(options) => (
-                        <InputNumber
+                  <Column
+                    field="contenidoAgua"
+                    header="Contenido de Agua (%)"
+                    body={(rowData: any) => `${rowData.contenidoAgua} %`}
+                    editor={(options) => (
+                      <InputNumber
                         value={options.value}
                         onValueChange={(e) =>
                           updateItem(options.rowIndex, "contenidoAgua", e.value)
                         }
                         suffix="%"
-                        />
-                      )}
                       />
+                    )}
+                  />
 
-                      <Column
-                      field="puntoDeInflamacion"
-                      header="Punto De Inflamación (°C)"
-                      body={(rowData: any) => `${rowData.puntoDeInflamacion} °C`}
-                      editor={(options) => (
-                        <InputNumber
+                  <Column
+                    field="puntoDeInflamacion"
+                    header="Punto De Inflamación (°C)"
+                    body={(rowData: any) => `${rowData.puntoDeInflamacion} °C`}
+                    editor={(options) => (
+                      <InputNumber
                         value={options.value}
                         onValueChange={(e) =>
                           updateItem(
-                          options.rowIndex,
-                          "puntoDeInflamacion",
-                          e.value
+                            options.rowIndex,
+                            "puntoDeInflamacion",
+                            e.value
                           )
                         }
                         suffix="°C"
-                        />
-                      )}
                       />
-                      <Column
-                      field="cantidad"
-                      header="Cantidad (Bbl)"
-                      body={(rowData: any) => `${rowData.cantidad} Bbl`}
-                      editor={(options) => (
-                        <InputNumber
+                    )}
+                  />
+                  <Column
+                    field="cantidad"
+                    header="Cantidad (Bbl)"
+                    body={(rowData: any) => `${rowData.cantidad} Bbl`}
+                    editor={(options) => (
+                      <InputNumber
                         value={options.value}
                         onValueChange={(e) =>
                           updateItem(options.rowIndex, "cantidad", e.value)
                         }
                         suffix=" Bbl"
-                        />
-                      )}
                       />
+                    )}
+                  />
 
-                      <Column
-                      field="convenio"
-                      header="Convenio ($)"
-                      body={(rowData: any) => `$${rowData.convenio ?? 0}`}
-                      editor={(options) => (
-                        <InputNumber
+                  <Column
+                    field="convenio"
+                    header="Convenio ($)"
+                    body={(rowData: any) => `$${rowData.convenio ?? 0}`}
+                    editor={(options) => (
+                      <InputNumber
                         value={options.value ?? 0}
                         onValueChange={(e) => {
-                          updateItem(options.rowIndex, "convenio", e.value ?? 0);
+                          updateItem(
+                            options.rowIndex,
+                            "convenio",
+                            e.value ?? 0
+                          );
                           options.editorCallback!(e.value ?? 0);
                         }}
                         mode="currency"
                         currency="USD"
                         locale="en-US"
-                        />
-                      )}
-                      onCellEditComplete={(e) => {
+                      />
+                    )}
+                    onCellEditComplete={(e) => {
                       const {
                         rowData,
                         newValue,

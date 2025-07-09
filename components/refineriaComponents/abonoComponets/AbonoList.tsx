@@ -16,7 +16,8 @@ import { Abono } from "@/libs/interfaces/contratoInterface";
 import CustomActionButtons from "@/components/common/CustomActionButtons";
 import AuditHistoryDialog from "@/components/common/AuditHistoryDialog";
 import AbonoTemplate from "@/components/pdf/templates/AbonoTemplate";
-
+import { ProgressSpinner } from "primereact/progressspinner";
+import { motion } from "framer-motion";
 
 interface AbonoListProps {
   tipoAbono: string;
@@ -31,8 +32,9 @@ const AbonoList = ({ tipoAbono }: AbonoListProps) => {
   const [deleteProductDialog, setDeleteProductDialog] = useState(false);
   const [abonoFormDialog, setAbonoFormDialog] = useState(false);
   const [auditDialogVisible, setAuditDialogVisible] = useState(false);
-  const [selectedAuditAbono, setSelectedAuditAbono] =
-    useState<Abono | null>(null);
+  const [selectedAuditAbono, setSelectedAuditAbono] = useState<Abono | null>(
+    null
+  );
   const router = useRouter();
   const dt = useRef(null);
   const toast = useRef<Toast | null>(null);
@@ -48,7 +50,7 @@ const AbonoList = ({ tipoAbono }: AbonoListProps) => {
         const filteredAbonos = abonosDB.abonos.filter(
           (abono: Abono) =>
             abono.idRefineria?.id === activeRefineria?.id &&
-            abono.tipoAbono === tipoAbono 
+            abono.tipoAbono === tipoAbono
         );
         setAbonos(filteredAbonos);
       } else {
@@ -135,12 +137,14 @@ const AbonoList = ({ tipoAbono }: AbonoListProps) => {
         data;
         setDeleteProductDialog(true);
       }}
-
-       pdfTemplate={(props) => (
-          <AbonoTemplate data={props.data} logoUrl="/layout/images/avatarHombre.png" />
-        )}
-        pdfFileName={`Despacho${rowData.numeroAbono}.pdf`}
-        pdfDownloadText="Descargar Despacho"
+      pdfTemplate={(props) => (
+        <AbonoTemplate
+          data={props.data}
+          logoUrl="/layout/images/avatarHombre.png"
+        />
+      )}
+      pdfFileName={`Despacho${rowData.numeroAbono}.pdf`}
+      pdfDownloadText="Descargar Despacho"
     />
   );
 
@@ -151,9 +155,25 @@ const AbonoList = ({ tipoAbono }: AbonoListProps) => {
   ) => {
     toast.current?.show({ severity, summary, detail, life: 3000 });
   };
-
+  if (loading) {
+    return (
+      <div className="flex justify-content-center align-items-center h-screen">
+        <ProgressSpinner />
+      </div>
+    );
+  }
   return (
-    <div className="card">
+    <motion.div
+      initial={{
+        opacity: 0,
+        scale: 0.95,
+        y: 40,
+        filter: "blur(8px)",
+      }}
+      animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
+      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+      className="card"
+    >
       <Toast ref={toast} />
       <DataTable
         ref={dt}
@@ -167,18 +187,33 @@ const AbonoList = ({ tipoAbono }: AbonoListProps) => {
         filters={filters}
         loading={loading}
         emptyMessage="No hay abonos disponibles"
+        rowClassName={() => "animated-row"}
+        size="small"
       >
         <Column body={actionBodyTemplate} headerStyle={{ minWidth: "10rem" }} />
-  <Column field="numeroAbono" header="N° Abono" sortable />
-  <Column field="monto" header="Monto" sortable />
-  <Column field="fecha" header="Fecha" body={(rowData: Abono) => formatDateFH(rowData.fecha)} sortable />
-  <Column field="tipoOperacion" header="Tipo Operación" sortable />
-  <Column field="referencia" header="Referencia" />
-  <Column field="idContrato.numeroContrato" header="N° Contrato" />
-  {/* <Column field="idRefineria.nombre" header="Refinería" /> */}
-  <Column field="createdBy.nombre" header="Creado Por" />
-  <Column field="createdAt" header="Fecha de Creación" body={(rowData: Abono) => formatDateFH(rowData.createdAt)} />
-  <Column field="updatedAt" header="Última Actualización" body={(rowData: Abono) => formatDateFH(rowData.updatedAt)} />
+        <Column field="numeroAbono" header="N° Abono" sortable />
+        <Column field="monto" header="Monto" sortable />
+        <Column
+          field="fecha"
+          header="Fecha"
+          body={(rowData: Abono) => formatDateFH(rowData.fecha)}
+          sortable
+        />
+        <Column field="tipoOperacion" header="Tipo Operación" sortable />
+        <Column field="referencia" header="Referencia" />
+        <Column field="idContrato.numeroContrato" header="N° Contrato" />
+        {/* <Column field="idRefineria.nombre" header="Refinería" /> */}
+        <Column field="createdBy.nombre" header="Creado Por" />
+        <Column
+          field="createdAt"
+          header="Fecha de Creación"
+          body={(rowData: Abono) => formatDateFH(rowData.createdAt)}
+        />
+        <Column
+          field="updatedAt"
+          header="Última Actualización"
+          body={(rowData: Abono) => formatDateFH(rowData.updatedAt)}
+        />
         {/* <Column
           field="estado"
           header="Estado"
@@ -278,7 +313,7 @@ const AbonoList = ({ tipoAbono }: AbonoListProps) => {
           />
         }
       ></Dialog>
-    </div>
+    </motion.div>
   );
 };
 

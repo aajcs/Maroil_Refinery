@@ -173,6 +173,8 @@ const ChequeoCalidadList = () => {
         filters={filters}
         loading={loading}
         emptyMessage="No hay chequeos de calidad disponibles"
+        rowClassName={() => "animated-row"}
+        size="small"
       >
         <Column body={actionBodyTemplate} />
         <Column

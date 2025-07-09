@@ -219,6 +219,8 @@ const TipoProductoList = () => {
         filters={filters}
         loading={loading}
         emptyMessage="No hay tipoProductos disponibles"
+        rowClassName={() => "animated-row"}
+        size="small"
       >
         <Column body={actionBodyTemplate} headerStyle={{ minWidth: "10rem" }} />
         <Column field="idProducto.nombre" header="Producto" />

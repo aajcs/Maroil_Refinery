@@ -21,6 +21,8 @@ import {
 import CustomActionButtons from "@/components/common/CustomActionButtons";
 
 import ChequeoCantidadTemplate from "@/components/pdf/templates/ChequeoCantidadTemplate";
+import { ProgressSpinner } from "primereact/progressspinner";
+import { motion } from "framer-motion";
 
 const ChequeoCantidadList = () => {
   const { activeRefineria } = useRefineriaStore();
@@ -151,7 +153,10 @@ const ChequeoCantidadList = () => {
           setChequeoCantidadFormDialog(true);
         }}
         pdfTemplate={(props) => (
-          <ChequeoCantidadTemplate data={props.data} logoUrl="/layout/images/avatarHombre.png" />
+          <ChequeoCantidadTemplate
+            data={props.data}
+            logoUrl="/layout/images/avatarHombre.png"
+          />
         )}
         pdfFileName={`ChequeoCantidad${rowData.numeroChequeoCantidad}.pdf`}
         pdfDownloadText="Descargar Chequeo"
@@ -166,9 +171,25 @@ const ChequeoCantidadList = () => {
   ) => {
     toast.current?.show({ severity, summary, detail, life: 3000 });
   };
-
+  if (loading) {
+    return (
+      <div className="flex justify-content-center align-items-center h-screen">
+        <ProgressSpinner />
+      </div>
+    );
+  }
   return (
-    <div className="card">
+    <motion.div
+      initial={{
+        opacity: 0,
+        scale: 0.95,
+        y: 40,
+        filter: "blur(8px)",
+      }}
+      animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
+      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+      className="card"
+    >
       <Toast ref={toast} />
 
       <DataTable
@@ -183,6 +204,8 @@ const ChequeoCantidadList = () => {
         filters={filters}
         loading={loading}
         emptyMessage="No hay chequeos de cantidad disponibles"
+        rowClassName={() => "animated-row"}
+        size="small"
       >
         <Column body={actionBodyTemplate} />
         <Column
@@ -323,7 +346,7 @@ const ChequeoCantidadList = () => {
           showToast={showToast}
         /> */}
       </Dialog>
-    </div>
+    </motion.div>
   );
 };
 

@@ -153,6 +153,8 @@ const DespachoList = () => {
         filters={filters}
         loading={loading}
         emptyMessage="No hay despachos disponibles"
+        rowClassName={() => "animated-row"}
+        size="small"
       >
         <Column body={actionBodyTemplate} />
         <Column field="idGuia" header="ID de la Guía" sortable />

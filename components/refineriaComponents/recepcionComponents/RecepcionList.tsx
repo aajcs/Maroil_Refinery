@@ -15,6 +15,8 @@ import RecepcionForm from "./RecepcionForm";
 import CustomActionButtons from "@/components/common/CustomActionButtons";
 import AuditHistoryDialog from "@/components/common/AuditHistoryDialog";
 import RecepcionTemplate from "@/components/pdf/templates/recepcionTemplate";
+import { ProgressSpinner } from "primereact/progressspinner";
+import { motion } from "framer-motion";
 const RecepcionList = () => {
   const { activeRefineria } = useRefineriaStore();
   const [recepcions, setRecepcions] = useState<Recepcion[]>([]);
@@ -30,7 +32,6 @@ const RecepcionList = () => {
     useState<Recepcion | null>(null);
   const dt = useRef(null);
   const toast = useRef<Toast | null>(null);
-  
 
   useEffect(() => {
     fetchRecepcions();
@@ -129,12 +130,14 @@ const RecepcionList = () => {
         data;
         setDeleteProductDialog(true);
       }}
-
-       pdfTemplate={(props) => (
-          <RecepcionTemplate data={props.data} logoUrl="/layout/images/avatarHombre.png" />
-        )}
-        pdfFileName={`Recepcion${rowData.numeroRecepcion}.pdf`}
-        pdfDownloadText="Descargar Recepcion"
+      pdfTemplate={(props) => (
+        <RecepcionTemplate
+          data={props.data}
+          logoUrl="/layout/images/avatarHombre.png"
+        />
+      )}
+      pdfFileName={`Recepcion${rowData.numeroRecepcion}.pdf`}
+      pdfDownloadText="Descargar Recepcion"
     />
   );
   const showToast = (
@@ -145,8 +148,25 @@ const RecepcionList = () => {
     toast.current?.show({ severity, summary, detail, life: 3000 });
   };
 
+  if (loading) {
+    return (
+      <div className="flex justify-content-center align-items-center h-screen">
+        <ProgressSpinner />
+      </div>
+    );
+  }
   return (
-    <div className="card">
+    <motion.div
+      initial={{
+        opacity: 0,
+        scale: 0.95,
+        y: 40,
+        filter: "blur(8px)",
+      }}
+      animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
+      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+      className="card"
+    >
       <Toast ref={toast} />
       <DataTable
         ref={dt}
@@ -160,6 +180,8 @@ const RecepcionList = () => {
         filters={filters}
         loading={loading}
         emptyMessage="No hay recepcions disponibles"
+        rowClassName={() => "animated-row"}
+        size="small"
       >
         <Column body={actionBodyTemplate} />
         <Column field="idGuia" header="ID de la Guía" sortable />
@@ -293,7 +315,7 @@ const RecepcionList = () => {
           toast={toast}
         />
       )}
-    </div>
+    </motion.div>
   );
 };
 

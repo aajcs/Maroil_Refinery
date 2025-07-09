@@ -173,6 +173,8 @@ const LineaDespachoList = () => {
         filters={filters}
         loading={loading}
         emptyMessage="No hay linea de despachos disponibles"
+        rowClassName={() => "animated-row"}
+        size="small"
       >
         <Column body={actionBodyTemplate} headerStyle={{ minWidth: "10rem" }} />
         <Column field="nombre" header="Nombre" />

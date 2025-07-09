@@ -50,12 +50,20 @@ const UsuarioForm = ({
   });
   useEffect(() => {
     if (usuario) {
-      setValue("nombre", usuario.nombre);
-      setValue("correo", usuario.correo);
-      setValue("password", usuario.password);
-      setValue("rol", usuario.rol);
-      setValue("acceso", usuario.acceso);
-      setValue("estado", usuario.estado);
+      const fields: (keyof FormData)[] = [
+        "nombre",
+        "correo",
+        "password",
+        "rol",
+        "acceso",
+        "estado",
+        "departamento",
+        "telefono",
+      ];
+      fields.forEach((field) => {
+        if (usuario[field] !== undefined) setValue(field, usuario[field]);
+      });
+      // Manejar idRefineria por separado para asegurar que sea un arreglo de IDs
       setValue(
         "idRefineria",
         usuario.idRefineria
@@ -63,8 +71,7 @@ const UsuarioForm = ({
               typeof ref === "object" && ref.id ? ref.id : ref
             )
           : []
-      ); // Asegurarse de que idRefineria sea un arreglo de IDs
-      setValue("departamento", usuario.departamento);
+      );
     }
   }, [usuario, setValue]);
   useEffect(() => {

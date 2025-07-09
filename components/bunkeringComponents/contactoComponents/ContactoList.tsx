@@ -159,6 +159,8 @@ const ContactoList = () => {
         filters={filters}
         loading={loading}
         emptyMessage="No hay contactos disponibles"
+        rowClassName={() => "animated-row"}
+        size="small"
       >
         <Column body={actionBodyTemplate} headerStyle={{ minWidth: "10rem" }} />
         <Column field="nombre" header="Razon Social" />

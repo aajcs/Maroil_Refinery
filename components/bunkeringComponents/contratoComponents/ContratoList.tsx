@@ -158,7 +158,12 @@ const ContratoList = ({ tipoContrato }: ContratoListProps) => {
     return (
       <div className="orders-subtable">
         <h5>Items for {data.name}</h5>
-        <DataTable value={data.idItems} responsiveLayout="scroll">
+        <DataTable
+          value={data.idItems}
+          responsiveLayout="scroll"
+          rowClassName={() => "animated-row"}
+          size="small"
+        >
           <Column field="producto.nombre" header="Producto" />
           <Column field="idTipoProducto.nombre" header="Tipo de Producto" />
           <Column field="clasificacion" header="Clasificación" />
@@ -199,6 +204,8 @@ const ContratoList = ({ tipoContrato }: ContratoListProps) => {
         filters={filters}
         loading={loading}
         emptyMessage="No hay contratos disponibles"
+        rowClassName={() => "animated-row"}
+        size="small"
       >
         <Column expander style={{ width: "3em" }} />
         <Column body={actionBodyTemplate} headerStyle={{ minWidth: "10rem" }} />
