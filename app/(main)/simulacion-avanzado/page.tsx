@@ -6,7 +6,7 @@ import SimulatorPage from "@/components/simuladorComponents/SimulatorPage";
 const SimulacionPage = () => {
   return (
     <>
-      <Simulador />
+      <SimulatorPage />
     </>
   );
 };

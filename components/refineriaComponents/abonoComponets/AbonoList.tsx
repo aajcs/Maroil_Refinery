@@ -163,58 +163,63 @@ const AbonoList = ({ tipoAbono }: AbonoListProps) => {
     );
   }
   return (
-    <motion.div
-      initial={{
-        opacity: 0,
-        scale: 0.95,
-        y: 40,
-        filter: "blur(8px)",
-      }}
-      animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
-      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-      className="card"
-    >
+    <>
       <Toast ref={toast} />
-      <DataTable
-        ref={dt}
-        value={abonos}
-        header={renderHeader()}
-        paginator
-        rows={10}
-        responsiveLayout="scroll"
-        currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} entradas"
-        rowsPerPageOptions={[10, 25, 50]}
-        filters={filters}
-        loading={loading}
-        emptyMessage="No hay abonos disponibles"
-        rowClassName={() => "animated-row"}
-        size="small"
+
+      <motion.div
+        initial={{
+          opacity: 0,
+          scale: 0.95,
+          y: 40,
+          filter: "blur(8px)",
+        }}
+        animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
+        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+        className="card"
       >
-        <Column body={actionBodyTemplate} headerStyle={{ minWidth: "10rem" }} />
-        <Column field="numeroAbono" header="N° Abono" sortable />
-        <Column field="monto" header="Monto" sortable />
-        <Column
-          field="fecha"
-          header="Fecha"
-          body={(rowData: Abono) => formatDateFH(rowData.fecha)}
-          sortable
-        />
-        <Column field="tipoOperacion" header="Tipo Operación" sortable />
-        <Column field="referencia" header="Referencia" />
-        <Column field="idContrato.numeroContrato" header="N° Contrato" />
-        {/* <Column field="idRefineria.nombre" header="Refinería" /> */}
-        <Column field="createdBy.nombre" header="Creado Por" />
-        <Column
-          field="createdAt"
-          header="Fecha de Creación"
-          body={(rowData: Abono) => formatDateFH(rowData.createdAt)}
-        />
-        <Column
-          field="updatedAt"
-          header="Última Actualización"
-          body={(rowData: Abono) => formatDateFH(rowData.updatedAt)}
-        />
-        {/* <Column
+        <DataTable
+          ref={dt}
+          value={abonos}
+          header={renderHeader()}
+          paginator
+          rows={10}
+          responsiveLayout="scroll"
+          currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} entradas"
+          rowsPerPageOptions={[10, 25, 50]}
+          filters={filters}
+          loading={loading}
+          emptyMessage="No hay abonos disponibles"
+          rowClassName={() => "animated-row"}
+          size="small"
+        >
+          <Column
+            body={actionBodyTemplate}
+            headerStyle={{ minWidth: "10rem" }}
+          />
+          <Column field="numeroAbono" header="N° Abono" sortable />
+          <Column field="monto" header="Monto" sortable />
+          <Column
+            field="fecha"
+            header="Fecha"
+            body={(rowData: Abono) => formatDateFH(rowData.fecha)}
+            sortable
+          />
+          <Column field="tipoOperacion" header="Tipo Operación" sortable />
+          <Column field="referencia" header="Referencia" />
+          <Column field="idContrato.numeroContrato" header="N° Contrato" />
+          {/* <Column field="idRefineria.nombre" header="Refinería" /> */}
+          <Column field="createdBy.nombre" header="Creado Por" />
+          <Column
+            field="createdAt"
+            header="Fecha de Creación"
+            body={(rowData: Abono) => formatDateFH(rowData.createdAt)}
+          />
+          <Column
+            field="updatedAt"
+            header="Última Actualización"
+            body={(rowData: Abono) => formatDateFH(rowData.updatedAt)}
+          />
+          {/* <Column
           field="estado"
           header="Estado"
         
@@ -240,80 +245,81 @@ const AbonoList = ({ tipoAbono }: AbonoListProps) => {
         
           style={{ width: "20%" }}
         /> */}
-      </DataTable>
+        </DataTable>
 
-      <Dialog
-        visible={deleteProductDialog}
-        style={{ width: "450px" }}
-        header="Confirmar"
-        modal
-        footer={
-          <>
-            <Button
-              label="No"
-              icon="pi pi-times"
-              text
-              onClick={hideDeleteProductDialog}
+        <Dialog
+          visible={deleteProductDialog}
+          style={{ width: "450px" }}
+          header="Confirmar"
+          modal
+          footer={
+            <>
+              <Button
+                label="No"
+                icon="pi pi-times"
+                text
+                onClick={hideDeleteProductDialog}
+              />
+              <Button
+                label="Sí"
+                icon="pi pi-check"
+                text
+                onClick={handleDeleteAbono}
+              />
+            </>
+          }
+          onHide={hideDeleteProductDialog}
+        >
+          <div className="flex align-items-center justify-content-center">
+            <i
+              className="pi pi-exclamation-triangle mr-3"
+              style={{ fontSize: "2rem" }}
             />
-            <Button
-              label="Sí"
-              icon="pi pi-check"
-              text
-              onClick={handleDeleteAbono}
-            />
-          </>
-        }
-        onHide={hideDeleteProductDialog}
-      >
-        <div className="flex align-items-center justify-content-center">
-          <i
-            className="pi pi-exclamation-triangle mr-3"
-            style={{ fontSize: "2rem" }}
-          />
-          {abono && (
-            <span>
-              ¿Estás seguro de que deseas eliminar <b>{abono.numeroAbono}</b>?
-            </span>
-          )}
-        </div>
-      </Dialog>
-      <AuditHistoryDialog
-        visible={auditDialogVisible}
-        onHide={() => setAuditDialogVisible(false)}
-        title={
-          <div className="mb-2 text-center md:text-left">
-            <div className="border-bottom-2 border-primary pb-2">
-              <h2 className="text-2xl font-bold text-900 mb-2 flex align-items-center justify-content-center md:justify-content-start">
-                <i className="pi pi-check-circle mr-3 text-primary text-3xl"></i>
-                Historial - {selectedAuditAbono?.numeroAbono}
-              </h2>
-            </div>
+            {abono && (
+              <span>
+                ¿Estás seguro de que deseas eliminar <b>{abono.numeroAbono}</b>?
+              </span>
+            )}
           </div>
-        }
-        createdBy={selectedAuditAbono?.createdBy!}
-        createdAt={selectedAuditAbono?.createdAt!}
-        historial={selectedAuditAbono?.historial}
-      />
-      <Dialog
-        visible={abonoFormDialog}
-        style={{ width: "850px" }}
-        header={`${abono ? "Editar" : "Agregar"} Abono`}
-        modal
-        onHide={hideAbonoFormDialog}
-        content={
-          <AbonoForm
-            abono={abono}
-            tipoAbono={tipoAbono}
-            hideAbonoFormDialog={hideAbonoFormDialog}
-            abonos={abonos}
-            setAbonos={setAbonos}
-            setAbono={setAbono}
-            showToast={showToast}
-            toast={toast}
-          />
-        }
-      ></Dialog>
-    </motion.div>
+        </Dialog>
+        <AuditHistoryDialog
+          visible={auditDialogVisible}
+          onHide={() => setAuditDialogVisible(false)}
+          title={
+            <div className="mb-2 text-center md:text-left">
+              <div className="border-bottom-2 border-primary pb-2">
+                <h2 className="text-2xl font-bold text-900 mb-2 flex align-items-center justify-content-center md:justify-content-start">
+                  <i className="pi pi-check-circle mr-3 text-primary text-3xl"></i>
+                  Historial - {selectedAuditAbono?.numeroAbono}
+                </h2>
+              </div>
+            </div>
+          }
+          createdBy={selectedAuditAbono?.createdBy!}
+          createdAt={selectedAuditAbono?.createdAt!}
+          historial={selectedAuditAbono?.historial}
+        />
+        <Dialog
+          visible={abonoFormDialog}
+          style={{ width: "850px" }}
+          header={`${abono ? "Editar" : "Agregar"} Abono`}
+          modal
+          onHide={hideAbonoFormDialog}
+          content={
+            <AbonoForm
+              abono={abono}
+              tipoAbono={tipoAbono}
+              hideAbonoFormDialog={hideAbonoFormDialog}
+              abonos={abonos}
+              setAbonos={setAbonos}
+              setAbono={setAbono}
+              showToast={showToast}
+              toast={toast}
+            />
+          }
+        ></Dialog>
+      </motion.div>
+    </>
   );
 };
 

@@ -161,80 +161,82 @@ const CorteRefinacionList = () => {
     );
   }
   return (
-    <motion.div
-      initial={{
-        opacity: 0,
-        scale: 0.95,
-        y: 40,
-        filter: "blur(8px)",
-      }}
-      animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
-      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-      className="card"
-    >
+    <>
       <Toast ref={toast} />
-
-      <DataTable
-        ref={dt}
-        value={corteRefinacions}
-        header={renderHeader()}
-        paginator
-        rows={10}
-        responsiveLayout="scroll"
-        currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} entradas"
-        rowsPerPageOptions={[10, 25, 50]}
-        filters={filters}
-        loading={loading}
-        emptyMessage="No hay cortes de refinación disponibles"
-        rowClassName={() => "animated-row"}
-        size="small"
+      <motion.div
+        initial={{
+          opacity: 0,
+          scale: 0.95,
+          y: 40,
+          filter: "blur(8px)",
+        }}
+        animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
+        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+        className="card"
       >
-        {/* Acciones */}
-        <Column body={actionBodyTemplate} />
+        <DataTable
+          ref={dt}
+          value={corteRefinacions}
+          header={renderHeader()}
+          paginator
+          rows={10}
+          responsiveLayout="scroll"
+          currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} entradas"
+          rowsPerPageOptions={[10, 25, 50]}
+          filters={filters}
+          loading={loading}
+          emptyMessage="No hay cortes de refinación disponibles"
+          rowClassName={() => "animated-row"}
+          size="small"
+        >
+          {/* Acciones */}
+          <Column body={actionBodyTemplate} />
 
-        {/* Número de Corte de Refinación */}
-        <Column
-          field="numeroCorteRefinacion"
-          header="Número de Corte"
-          sortable
-        />
+          {/* Número de Corte de Refinación */}
+          <Column
+            field="numeroCorteRefinacion"
+            header="Número de Corte"
+            sortable
+          />
 
-        {/* Torres de Destilación */}
-        <Column
-          header="Torres de Destilación"
-          body={(rowData: CorteRefinacion) =>
-            rowData.corteTorre?.map((torre) => (
-              <div key={torre._id}>
-                <strong>{torre.idTorre.nombre}</strong>
-                <ul>
-                  {torre.detalles.map((detalle) => (
-                    <li key={detalle._id}>
-                      Producto: {detalle.idProducto.nombre}, Tanque:{" "}
-                      {detalle.idTanque?.nombre}, Cantidad: {detalle.cantidad}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))
-          }
-        />
+          {/* Torres de Destilación */}
+          <Column
+            header="Torres de Destilación"
+            body={(rowData: CorteRefinacion) =>
+              rowData.corteTorre?.map((torre) => (
+                <div key={torre._id}>
+                  <strong>{torre.idTorre.nombre}</strong>
+                  <ul>
+                    {torre.detalles.map((detalle) => (
+                      <li key={detalle._id}>
+                        Producto: {detalle.idProducto.nombre}, Tanque:{" "}
+                        {detalle.idTanque?.nombre}, Cantidad: {detalle.cantidad}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))
+            }
+          />
 
-        {/* Fecha de Corte */}
-        <Column
-          field="fechaCorte"
-          header="Fecha de Corte"
-          sortable
-          body={(rowData: CorteRefinacion) =>
-            rowData.fechaCorte ? formatDateFH(rowData.fechaCorte) : "Sin Fecha"
-          }
-        />
+          {/* Fecha de Corte */}
+          <Column
+            field="fechaCorte"
+            header="Fecha de Corte"
+            sortable
+            body={(rowData: CorteRefinacion) =>
+              rowData.fechaCorte
+                ? formatDateFH(rowData.fechaCorte)
+                : "Sin Fecha"
+            }
+          />
 
-        {/* Observación */}
-        <Column field="observacion" header="Observación" sortable />
+          {/* Observación */}
+          <Column field="observacion" header="Observación" sortable />
 
-        {/* Operador */}
-        <Column field="idOperador.nombre" header="Operador" sortable />
-        {/* 
+          {/* Operador */}
+          <Column field="idOperador.nombre" header="Operador" sortable />
+          {/* 
         Estado
         <Column field="estado" header="Estado" sortable />
 
@@ -251,81 +253,84 @@ const CorteRefinacionList = () => {
           header="Última Actualización"
           body={(rowData: CorteRefinacion) => formatDateFH(rowData.updatedAt)}
         /> */}
-      </DataTable>
+        </DataTable>
 
-      {/* Diálogo para Confirmar Eliminación */}
-      <Dialog
-        visible={deleteDialog}
-        style={{ width: "450px" }}
-        header="Confirmar"
-        modal
-        footer={
-          <>
-            <Button
-              label="No"
-              icon="pi pi-times"
-              text
-              onClick={hideDeleteDialog}
+        {/* Diálogo para Confirmar Eliminación */}
+        <Dialog
+          visible={deleteDialog}
+          style={{ width: "450px" }}
+          header="Confirmar"
+          modal
+          footer={
+            <>
+              <Button
+                label="No"
+                icon="pi pi-times"
+                text
+                onClick={hideDeleteDialog}
+              />
+              <Button
+                label="Sí"
+                icon="pi pi-check"
+                text
+                onClick={handleDeleteCorteRefinacion}
+              />
+            </>
+          }
+          onHide={hideDeleteDialog}
+        >
+          <div className="flex align-items-center justify-content-center">
+            <i
+              className="pi pi-exclamation-triangle mr-3"
+              style={{ fontSize: "2rem" }}
             />
-            <Button
-              label="Sí"
-              icon="pi pi-check"
-              text
-              onClick={handleDeleteCorteRefinacion}
-            />
-          </>
-        }
-        onHide={hideDeleteDialog}
-      >
-        <div className="flex align-items-center justify-content-center">
-          <i
-            className="pi pi-exclamation-triangle mr-3"
-            style={{ fontSize: "2rem" }}
-          />
-          {corteRefinacion && (
-            <span>
-              ¿Estás seguro de que deseas eliminar el corte de refinación con el
-              número <b>{corteRefinacion.numeroCorteRefinacion}</b>?
-            </span>
-          )}
-        </div>
-      </Dialog>
-      <AuditHistoryDialog
-        visible={auditDialogVisible}
-        onHide={() => setAuditDialogVisible(false)}
-        title={
-          <div className="mb-2 text-center md:text-left">
-            <div className="border-bottom-2 border-primary pb-2">
-              <h2 className="text-2xl font-bold text-900 mb-2 flex align-items-center justify-content-center md:justify-content-start">
-                <i className="pi pi-check-circle mr-3 text-primary text-3xl"></i>
-                Historial -{" "}
-                {selectedAuditCorteRefinacion?.numeroCorteRefinacion}
-              </h2>
-            </div>
+            {corteRefinacion && (
+              <span>
+                ¿Estás seguro de que deseas eliminar el corte de refinación con
+                el número <b>{corteRefinacion.numeroCorteRefinacion}</b>?
+              </span>
+            )}
           </div>
-        }
-        createdBy={selectedAuditCorteRefinacion?.createdBy!}
-        createdAt={selectedAuditCorteRefinacion?.createdAt!}
-        historial={selectedAuditCorteRefinacion?.historial}
-      />
-      {/* Diálogo para Formulario de Corte de Refinación */}
-      <Dialog
-        visible={formDialog}
-        style={{ width: "50vw" }}
-        header={`${corteRefinacion ? "Editar" : "Agregar"} Corte de Refinación`}
-        modal
-        onHide={hideFormDialog}
-      >
-        <CorteRefinacionForm
-          corteRefinacion={corteRefinacion}
-          hideCorteRefinacionFormDialog={hideFormDialog}
-          corteRefinacions={corteRefinacions}
-          setCorteRefinacions={setCorteRefinacions}
-          showToast={showToast}
-          toast={toast}
+        </Dialog>
+        <AuditHistoryDialog
+          visible={auditDialogVisible}
+          onHide={() => setAuditDialogVisible(false)}
+          title={
+            <div className="mb-2 text-center md:text-left">
+              <div className="border-bottom-2 border-primary pb-2">
+                <h2 className="text-2xl font-bold text-900 mb-2 flex align-items-center justify-content-center md:justify-content-start">
+                  <i className="pi pi-check-circle mr-3 text-primary text-3xl"></i>
+                  Historial -{" "}
+                  {selectedAuditCorteRefinacion?.numeroCorteRefinacion}
+                </h2>
+              </div>
+            </div>
+          }
+          createdBy={selectedAuditCorteRefinacion?.createdBy!}
+          createdAt={selectedAuditCorteRefinacion?.createdAt!}
+          historial={selectedAuditCorteRefinacion?.historial}
         />
-      </Dialog>
-    </motion.div>
+        {/* Diálogo para Formulario de Corte de Refinación */}
+        <Dialog
+          visible={formDialog}
+          style={{ width: "50vw" }}
+          header={`${
+            corteRefinacion ? "Editar" : "Agregar"
+          } Corte de Refinación`}
+          modal
+          onHide={hideFormDialog}
+        >
+          <CorteRefinacionForm
+            corteRefinacion={corteRefinacion}
+            hideCorteRefinacionFormDialog={hideFormDialog}
+            corteRefinacions={corteRefinacions}
+            setCorteRefinacions={setCorteRefinacions}
+            showToast={showToast}
+            toast={toast}
+          />
+        </Dialog>
+      </motion.div>
+    </>
   );
 };
 

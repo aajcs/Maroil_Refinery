@@ -167,65 +167,67 @@ const RefineriaList = () => {
     );
   }
   return (
-    <motion.div
-      initial={{
-        opacity: 0,
-        scale: 0.95,
-        y: 40,
-        filter: "blur(8px)",
-      }}
-      animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
-      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-      className="card"
-    >
+    <>
       <Toast ref={toast} />
-      <DataTable
-        ref={dt}
-        value={refinerias}
-        header={header}
-        paginator
-        rows={10}
-        responsiveLayout="scroll"
-        currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} entradas"
-        rowsPerPageOptions={[10, 25, 50]}
-        filters={filters}
-        loading={loading}
-        rowClassName={(_, i) => `animated-row`}
-        size="small"
+
+      <motion.div
+        initial={{
+          opacity: 0,
+          scale: 0.95,
+          y: 40,
+          filter: "blur(8px)",
+        }}
+        animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
+        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+        className="card"
       >
-        <Column body={actionBodyTemplate}></Column>
-        {/* <Column
+        <DataTable
+          ref={dt}
+          value={refinerias}
+          header={header}
+          paginator
+          rows={10}
+          responsiveLayout="scroll"
+          currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} entradas"
+          rowsPerPageOptions={[10, 25, 50]}
+          filters={filters}
+          loading={loading}
+          rowClassName={(_, i) => `animated-row`}
+          size="small"
+        >
+          <Column body={actionBodyTemplate}></Column>
+          {/* <Column
           field="img"
           header="Imagen"
           sortable
           headerClassName="white-space-nowrap"
           style={{ width: "25%" }}
         ></Column> */}
-        <Column
-          field="nombre"
-          header="Nombre"
-          sortable
-          headerClassName="white-space-nowrap"
-        ></Column>
-        <Column
-          field="procesamientoDia"
-          header="Procesamiento por día"
-          sortable
-          headerClassName="white-space-nowrap"
-        ></Column>
-        <Column
-          field="ubicacion"
-          header="Ubicación"
-          sortable
-          headerClassName="white-space-nowrap"
-        ></Column>
-        <Column
-          field="nit"
-          header="NIT"
-          sortable
-          headerClassName="white-space-nowrap"
-        ></Column>
-        {/* 
+          <Column
+            field="nombre"
+            header="Nombre"
+            sortable
+            headerClassName="white-space-nowrap"
+          ></Column>
+          <Column
+            field="procesamientoDia"
+            header="Procesamiento por día"
+            sortable
+            headerClassName="white-space-nowrap"
+          ></Column>
+          <Column
+            field="ubicacion"
+            header="Ubicación"
+            sortable
+            headerClassName="white-space-nowrap"
+          ></Column>
+          <Column
+            field="nit"
+            header="NIT"
+            sortable
+            headerClassName="white-space-nowrap"
+          ></Column>
+          {/* 
         <Column
           field="estado"
           header="Estado"
@@ -233,61 +235,62 @@ const RefineriaList = () => {
           headerClassName="white-space-nowrap"
           style={{ width: "25%" }}
         ></Column> */}
-      </DataTable>
-      <AuditHistoryDialog
-        visible={auditDialogVisible}
-        onHide={() => setAuditDialogVisible(false)}
-        title={
-          <div className="mb-2 text-center md:text-left">
-            <div className="border-bottom-2 border-primary pb-2">
-              <h2 className="text-2xl font-bold text-900 mb-2 flex align-items-center justify-content-center md:justify-content-start">
-                <i className="pi pi-check-circle mr-3 text-primary text-3xl"></i>
-                Historial - {selectedAuditRefineria?.nombre}
-              </h2>
+        </DataTable>
+        <AuditHistoryDialog
+          visible={auditDialogVisible}
+          onHide={() => setAuditDialogVisible(false)}
+          title={
+            <div className="mb-2 text-center md:text-left">
+              <div className="border-bottom-2 border-primary pb-2">
+                <h2 className="text-2xl font-bold text-900 mb-2 flex align-items-center justify-content-center md:justify-content-start">
+                  <i className="pi pi-check-circle mr-3 text-primary text-3xl"></i>
+                  Historial - {selectedAuditRefineria?.nombre}
+                </h2>
+              </div>
             </div>
-          </div>
-        }
-        createdBy={selectedAuditRefineria?.createdBy!}
-        createdAt={selectedAuditRefineria?.createdAt!}
-        historial={selectedAuditRefineria?.historial}
-      />
-      <Dialog
-        visible={deleteProductDialog}
-        style={{ width: "450px" }}
-        header="Confirmar"
-        modal
-        footer={deleteProductDialogFooter}
-        onHide={hideDeleteProductDialog}
-      >
-        <div className="flex align-items-center justify-content-center">
-          <i
-            className="pi pi-exclamation-triangle mr-3"
-            style={{ fontSize: "2rem" }}
-          />
-          {refineria && (
-            <span>
-              ¿Estás seguro de que deseas eliminar <b>{refineria.nombre}</b>{" "}
-              <b>{refineria.correo}</b>?
-            </span>
-          )}
-        </div>
-      </Dialog>
-      <Dialog
-        visible={refineriaFormDialog}
-        style={{ width: "850px" }}
-        header="Editar Refineria"
-        modal
-        // footer={deleteProductDialogFooter}
-        onHide={hideRefineriaFormDialog}
-      >
-        <RefineriaForm
-          refineria={refineria}
-          hideRefineriaFormDialog={hideRefineriaFormDialog}
-          refinerias={refinerias}
-          setRefinerias={setRefinerias}
+          }
+          createdBy={selectedAuditRefineria?.createdBy!}
+          createdAt={selectedAuditRefineria?.createdAt!}
+          historial={selectedAuditRefineria?.historial}
         />
-      </Dialog>
-    </motion.div>
+        <Dialog
+          visible={deleteProductDialog}
+          style={{ width: "450px" }}
+          header="Confirmar"
+          modal
+          footer={deleteProductDialogFooter}
+          onHide={hideDeleteProductDialog}
+        >
+          <div className="flex align-items-center justify-content-center">
+            <i
+              className="pi pi-exclamation-triangle mr-3"
+              style={{ fontSize: "2rem" }}
+            />
+            {refineria && (
+              <span>
+                ¿Estás seguro de que deseas eliminar <b>{refineria.nombre}</b>{" "}
+                <b>{refineria.correo}</b>?
+              </span>
+            )}
+          </div>
+        </Dialog>
+        <Dialog
+          visible={refineriaFormDialog}
+          style={{ width: "850px" }}
+          header="Editar Refineria"
+          modal
+          // footer={deleteProductDialogFooter}
+          onHide={hideRefineriaFormDialog}
+        >
+          <RefineriaForm
+            refineria={refineria}
+            hideRefineriaFormDialog={hideRefineriaFormDialog}
+            refinerias={refinerias}
+            setRefinerias={setRefinerias}
+          />
+        </Dialog>
+      </motion.div>
+    </>
   );
 };
 

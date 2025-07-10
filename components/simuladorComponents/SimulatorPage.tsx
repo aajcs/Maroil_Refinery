@@ -1,12 +1,7 @@
 import { Fragment, useEffect, useState } from "react";
-import SimulatorForm from "../components/SimulatorForm";
-import ResultsTable from "../components/ResultsTable";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { Card } from "primereact/card";
-import {
-  calculateDerivatives,
-  // calculateRequiredCrude,
-} from "../utils/refineryCalculations";
+
 import {
   CrudeToProductsResults,
   ProductsToCrudeResults,
@@ -17,6 +12,9 @@ import { useRefineryPrecios } from "@/hooks/useRefineryPrecios";
 import { Tag } from "primereact/tag";
 import { getRefinerias } from "@/app/api/refineriaService";
 import { TipoProducto } from "@/libs/interfaces";
+import { calculateDerivatives } from "@/utils/refineryCalculations";
+import ResultsTable from "./ResultsTable";
+import SimulatorForm from "./SimulatorForm";
 
 export default function Home() {
   const { loading, brent, oilDerivate } = useRefineryPrecios();

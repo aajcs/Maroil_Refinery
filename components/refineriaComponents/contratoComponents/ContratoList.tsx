@@ -197,77 +197,80 @@ const ContratoList = ({ tipoContrato }: ContratoListProps) => {
     );
   }
   return (
-    <motion.div
-      initial={{
-        opacity: 0,
-        scale: 0.95,
-        y: 40,
-        filter: "blur(8px)",
-      }}
-      animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
-      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-      className="card"
-    >
+    <>
       <Toast ref={toast} />
-
-      <DataTable
-        ref={dt}
-        value={contratos}
-        header={renderHeader()}
-        paginator
-        rows={10}
-        expandedRows={expandedRows}
-        onRowToggle={(e) => setExpandedRows(e.data)}
-        rowExpansionTemplate={rowExpansionTemplate}
-        responsiveLayout="scroll"
-        currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} entradas"
-        rowsPerPageOptions={[10, 25, 50]}
-        filters={filters}
-        loading={loading}
-        emptyMessage="No hay contratos disponibles"
-        rowClassName={() => "animated-row"}
-        size="small"
+      <motion.div
+        initial={{
+          opacity: 0,
+          scale: 0.95,
+          y: 40,
+          filter: "blur(8px)",
+        }}
+        animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
+        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+        className="card"
       >
-        <Column expander style={{ width: "3em" }} />
-        <Column body={actionBodyTemplate} headerStyle={{ minWidth: "10rem" }} />
-        {/* <Column field="tipoContrato" header="Tipo de Contrato" sortable /> */}
-        <Column field="numeroContrato" header="Número de Contrato" sortable />
-        {/* <Column field="descripcion" header="Descripción de Contrato" />
+        <DataTable
+          ref={dt}
+          value={contratos}
+          header={renderHeader()}
+          paginator
+          rows={10}
+          expandedRows={expandedRows}
+          onRowToggle={(e) => setExpandedRows(e.data)}
+          rowExpansionTemplate={rowExpansionTemplate}
+          responsiveLayout="scroll"
+          currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} entradas"
+          rowsPerPageOptions={[10, 25, 50]}
+          filters={filters}
+          loading={loading}
+          emptyMessage="No hay contratos disponibles"
+          rowClassName={() => "animated-row"}
+          size="small"
+        >
+          <Column expander style={{ width: "3em" }} />
+          <Column
+            body={actionBodyTemplate}
+            headerStyle={{ minWidth: "10rem" }}
+          />
+          {/* <Column field="tipoContrato" header="Tipo de Contrato" sortable /> */}
+          <Column field="numeroContrato" header="Número de Contrato" sortable />
+          {/* <Column field="descripcion" header="Descripción de Contrato" />
         <Column
           field="montoTotal"
           header="Monto Total"
           body={(rowData: Contrato) => rowData.montoTotal?.toFixed(2)}
         /> */}
-        <Column
-          field="condicionesPago.tipo"
-          header="Tipo de Condiciones de Pago"
-        />
-        <Column
-          field="condicionesPago.plazo"
-          header="Plazo de Condiciones de Pago"
-        />
+          <Column
+            field="condicionesPago.tipo"
+            header="Tipo de Condiciones de Pago"
+          />
+          <Column
+            field="condicionesPago.plazo"
+            header="Plazo de Condiciones de Pago"
+          />
 
-        <Column field="estadoEntrega" header="Estado de Entrega" />
-        <Column field="estadoContrato" header="Estado de Contrato" />
-        {/* <Column field="estado" header="Estado" /> */}
-        <Column
-          field="idContacto.nombre"
-          header="Nombre de Contacto"
-          sortable
-        />
-        <Column
-          field="fechaInicio"
-          header="Fecha de Inicio"
-          body={(rowData: Contrato) => formatDateFH(rowData.fechaInicio)}
-          sortable
-        />
-        <Column
-          field="fechaFin"
-          header="Fecha de Fin"
-          body={(rowData: Contrato) => formatDateFH(rowData.fechaFin)}
-          sortable
-        />
-        {/* <Column
+          <Column field="estadoEntrega" header="Estado de Entrega" />
+          <Column field="estadoContrato" header="Estado de Contrato" />
+          {/* <Column field="estado" header="Estado" /> */}
+          <Column
+            field="idContacto.nombre"
+            header="Nombre de Contacto"
+            sortable
+          />
+          <Column
+            field="fechaInicio"
+            header="Fecha de Inicio"
+            body={(rowData: Contrato) => formatDateFH(rowData.fechaInicio)}
+            sortable
+          />
+          <Column
+            field="fechaFin"
+            header="Fecha de Fin"
+            body={(rowData: Contrato) => formatDateFH(rowData.fechaFin)}
+            sortable
+          />
+          {/* <Column
           field="brent"
           header="Brent"
           body={(rowData: Contrato) => rowData.brent?.toFixed(2)}
@@ -285,62 +288,62 @@ const ContratoList = ({ tipoContrato }: ContratoListProps) => {
           body={(rowData: Contrato) => formatDateFH(rowData.updatedAt)}
           sortable
         /> */}
-      </DataTable>
+        </DataTable>
 
-      <Dialog
-        visible={deleteProductDialog}
-        style={{ width: "450px" }}
-        header="Confirmar"
-        modal
-        footer={
-          <>
-            <Button
-              label="No"
-              icon="pi pi-times"
-              text
-              onClick={hideDeleteProductDialog}
+        <Dialog
+          visible={deleteProductDialog}
+          style={{ width: "450px" }}
+          header="Confirmar"
+          modal
+          footer={
+            <>
+              <Button
+                label="No"
+                icon="pi pi-times"
+                text
+                onClick={hideDeleteProductDialog}
+              />
+              <Button
+                label="Sí"
+                icon="pi pi-check"
+                text
+                onClick={handleDeleteContrato}
+              />
+            </>
+          }
+          onHide={hideDeleteProductDialog}
+        >
+          <div className="flex align-items-center justify-content-center">
+            <i
+              className="pi pi-exclamation-triangle mr-3"
+              style={{ fontSize: "2rem" }}
             />
-            <Button
-              label="Sí"
-              icon="pi pi-check"
-              text
-              onClick={handleDeleteContrato}
-            />
-          </>
-        }
-        onHide={hideDeleteProductDialog}
-      >
-        <div className="flex align-items-center justify-content-center">
-          <i
-            className="pi pi-exclamation-triangle mr-3"
-            style={{ fontSize: "2rem" }}
-          />
-          {contrato && (
-            <span>
-              ¿Estás seguro de que deseas eliminar el contrato de número{" "}
-              <b>{contrato.numeroContrato}</b>?
-            </span>
-          )}
-        </div>
-      </Dialog>
-      <AuditHistoryDialog
-        visible={auditDialogVisible}
-        onHide={() => setAuditDialogVisible(false)}
-        title={
-          <div className="mb-2 text-center md:text-left">
-            <div className="border-bottom-2 border-primary pb-2">
-              <h2 className="text-2xl font-bold text-900 mb-2 flex align-items-center justify-content-center md:justify-content-start">
-                <i className="pi pi-check-circle mr-3 text-primary text-3xl"></i>
-                Historial - {selectedAuditContrato?.numeroContrato}
-              </h2>
-            </div>
+            {contrato && (
+              <span>
+                ¿Estás seguro de que deseas eliminar el contrato de número{" "}
+                <b>{contrato.numeroContrato}</b>?
+              </span>
+            )}
           </div>
-        }
-        createdBy={selectedAuditContrato?.createdBy!}
-        createdAt={selectedAuditContrato?.createdAt!}
-        historial={selectedAuditContrato?.historial}
-      />
-      {/* <Dialog
+        </Dialog>
+        <AuditHistoryDialog
+          visible={auditDialogVisible}
+          onHide={() => setAuditDialogVisible(false)}
+          title={
+            <div className="mb-2 text-center md:text-left">
+              <div className="border-bottom-2 border-primary pb-2">
+                <h2 className="text-2xl font-bold text-900 mb-2 flex align-items-center justify-content-center md:justify-content-start">
+                  <i className="pi pi-check-circle mr-3 text-primary text-3xl"></i>
+                  Historial - {selectedAuditContrato?.numeroContrato}
+                </h2>
+              </div>
+            </div>
+          }
+          createdBy={selectedAuditContrato?.createdBy!}
+          createdAt={selectedAuditContrato?.createdAt!}
+          historial={selectedAuditContrato?.historial}
+        />
+        {/* <Dialog
         visible={contratoFormDialog}
         style={{ width: "80vw", backgroundColor: "red" }}
         header={
@@ -374,21 +377,22 @@ const ContratoList = ({ tipoContrato }: ContratoListProps) => {
         }
       > */}
 
-      {contratoFormDialog && (
-        <ContratoForm
-          contrato={contrato}
-          contratoFormDialog={contratoFormDialog}
-          hideContratoFormDialog={hideContratoFormDialog}
-          contratos={contratos}
-          setContratos={setContratos}
-          setContrato={setContrato}
-          showToast={showToast}
-          tipoContrato={tipoContrato}
-        />
-      )}
+        {contratoFormDialog && (
+          <ContratoForm
+            contrato={contrato}
+            contratoFormDialog={contratoFormDialog}
+            hideContratoFormDialog={hideContratoFormDialog}
+            contratos={contratos}
+            setContratos={setContratos}
+            setContrato={setContrato}
+            showToast={showToast}
+            tipoContrato={tipoContrato}
+          />
+        )}
 
-      {/* </Dialog> */}
-    </motion.div>
+        {/* </Dialog> */}
+      </motion.div>
+    </>
   );
 };
 

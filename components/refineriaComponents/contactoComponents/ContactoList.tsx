@@ -150,44 +150,48 @@ const ContactoList = () => {
     );
   }
   return (
-    <motion.div
-      initial={{
-        opacity: 0,
-        scale: 0.95,
-        y: 40,
-        filter: "blur(8px)",
-      }}
-      animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
-      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-      className="card"
-    >
+    <>
       <Toast ref={toast} />
-      <DataTable
-        ref={dt}
-        value={contactos}
-        header={renderHeader()}
-        paginator
-        rows={10}
-        responsiveLayout="scroll"
-        currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} entradas"
-        rowsPerPageOptions={[10, 25, 50]}
-        filters={filters}
-        loading={loading}
-        emptyMessage="No hay contactos disponibles"
-        rowClassName={() => "animated-row"}
-        size="small"
+      <motion.div
+        initial={{
+          opacity: 0,
+          scale: 0.95,
+          y: 40,
+          filter: "blur(8px)",
+        }}
+        animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
+        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+        className="card"
       >
-        <Column body={actionBodyTemplate} headerStyle={{ minWidth: "10rem" }} />
-        <Column field="nombre" header="Razon Social" />
-        <Column field="identificacionFiscal" header="NIT" />
-        <Column field="correo" header="Correo" />
-        <Column field="ciudad" header="Ciudad" />
-        <Column field="direccion" header="Dirección" />
-        <Column field="telefono" header="Teléfono" />
-        <Column field="tipo" header="Tipo" sortable />
+        <DataTable
+          ref={dt}
+          value={contactos}
+          header={renderHeader()}
+          paginator
+          rows={10}
+          responsiveLayout="scroll"
+          currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} entradas"
+          rowsPerPageOptions={[10, 25, 50]}
+          filters={filters}
+          loading={loading}
+          emptyMessage="No hay contactos disponibles"
+          rowClassName={() => "animated-row"}
+          size="small"
+        >
+          <Column
+            body={actionBodyTemplate}
+            headerStyle={{ minWidth: "10rem" }}
+          />
+          <Column field="nombre" header="Razon Social" />
+          <Column field="identificacionFiscal" header="NIT" />
+          <Column field="correo" header="Correo" />
+          <Column field="ciudad" header="Ciudad" />
+          <Column field="direccion" header="Dirección" />
+          <Column field="telefono" header="Teléfono" />
+          <Column field="tipo" header="Tipo" sortable />
 
-        <Column field="representanteLegal" header="Representante Legal" />
-        {/* <Column
+          <Column field="representanteLegal" header="Representante Legal" />
+          {/* <Column
           field="estado"
           header="Estado"
         
@@ -213,79 +217,80 @@ const ContactoList = () => {
         
           style={{ width: "20%" }}
         /> */}
-      </DataTable>
+        </DataTable>
 
-      <Dialog
-        visible={deleteProductDialog}
-        style={{ width: "450px" }}
-        header="Confirmar"
-        modal
-        footer={
-          <>
-            <Button
-              label="No"
-              icon="pi pi-times"
-              text
-              onClick={hideDeleteProductDialog}
+        <Dialog
+          visible={deleteProductDialog}
+          style={{ width: "450px" }}
+          header="Confirmar"
+          modal
+          footer={
+            <>
+              <Button
+                label="No"
+                icon="pi pi-times"
+                text
+                onClick={hideDeleteProductDialog}
+              />
+              <Button
+                label="Sí"
+                icon="pi pi-check"
+                text
+                onClick={handleDeleteContacto}
+              />
+            </>
+          }
+          onHide={hideDeleteProductDialog}
+        >
+          <div className="flex align-items-center justify-content-center">
+            <i
+              className="pi pi-exclamation-triangle mr-3"
+              style={{ fontSize: "2rem" }}
             />
-            <Button
-              label="Sí"
-              icon="pi pi-check"
-              text
-              onClick={handleDeleteContacto}
-            />
-          </>
-        }
-        onHide={hideDeleteProductDialog}
-      >
-        <div className="flex align-items-center justify-content-center">
-          <i
-            className="pi pi-exclamation-triangle mr-3"
-            style={{ fontSize: "2rem" }}
-          />
-          {contacto && (
-            <span>
-              ¿Estás seguro de que deseas eliminar <b>{contacto.nombre}</b>?
-            </span>
-          )}
-        </div>
-      </Dialog>
-      <AuditHistoryDialog
-        visible={auditDialogVisible}
-        onHide={() => setAuditDialogVisible(false)}
-        title={
-          <div className="mb-2 text-center md:text-left">
-            <div className="border-bottom-2 border-primary pb-2">
-              <h2 className="text-2xl font-bold text-900 mb-2 flex align-items-center justify-content-center md:justify-content-start">
-                <i className="pi pi-check-circle mr-3 text-primary text-3xl"></i>
-                Historial - {selectedAuditContacto?.nombre}
-              </h2>
-            </div>
+            {contacto && (
+              <span>
+                ¿Estás seguro de que deseas eliminar <b>{contacto.nombre}</b>?
+              </span>
+            )}
           </div>
-        }
-        createdBy={selectedAuditContacto?.createdBy!}
-        createdAt={selectedAuditContacto?.createdAt!}
-        historial={selectedAuditContacto?.historial}
-      />
-      <Dialog
-        visible={contactoFormDialog}
-        style={{ width: "850px" }}
-        header={`${contacto ? "Editar" : "Agregar"} Contacto`}
-        modal
-        onHide={hideContactoFormDialog}
-        content={
-          <ContactoForm
-            contacto={contacto}
-            hideContactoFormDialog={hideContactoFormDialog}
-            contactos={contactos}
-            setContactos={setContactos}
-            setContacto={setContacto}
-            showToast={showToast}
-            toast={toast}
-          />
-        }
-      ></Dialog>
-    </motion.div>
+        </Dialog>
+        <AuditHistoryDialog
+          visible={auditDialogVisible}
+          onHide={() => setAuditDialogVisible(false)}
+          title={
+            <div className="mb-2 text-center md:text-left">
+              <div className="border-bottom-2 border-primary pb-2">
+                <h2 className="text-2xl font-bold text-900 mb-2 flex align-items-center justify-content-center md:justify-content-start">
+                  <i className="pi pi-check-circle mr-3 text-primary text-3xl"></i>
+                  Historial - {selectedAuditContacto?.nombre}
+                </h2>
+              </div>
+            </div>
+          }
+          createdBy={selectedAuditContacto?.createdBy!}
+          createdAt={selectedAuditContacto?.createdAt!}
+          historial={selectedAuditContacto?.historial}
+        />
+        <Dialog
+          visible={contactoFormDialog}
+          style={{ width: "850px" }}
+          header={`${contacto ? "Editar" : "Agregar"} Contacto`}
+          modal
+          onHide={hideContactoFormDialog}
+          content={
+            <ContactoForm
+              contacto={contacto}
+              hideContactoFormDialog={hideContactoFormDialog}
+              contactos={contactos}
+              setContactos={setContactos}
+              setContacto={setContacto}
+              showToast={showToast}
+              toast={toast}
+            />
+          }
+        ></Dialog>
+      </motion.div>
+    </>
   );
 };
 

@@ -350,7 +350,6 @@ export default function SimulatorForm({
               <div className="field">
                 <label className="capitalize">{product}</label>
                 <InputNumber
-                  {...field}
                   value={field.value}
                   onValueChange={(e) => field.onChange(e.value)}
                   min={0}

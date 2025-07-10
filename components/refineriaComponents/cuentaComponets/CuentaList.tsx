@@ -231,87 +231,91 @@ const CuentaList = ({ tipoCuenta }: CuentaListProps) => {
     );
   }
   return (
-    <motion.div
-      initial={{
-        opacity: 0,
-        scale: 0.95,
-        y: 40,
-        filter: "blur(8px)",
-      }}
-      animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
-      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-      className="card"
-    >
+    <>
       <Toast ref={toast} />
-      <DataTable
-        ref={dt}
-        value={cuentas}
-        header={renderHeader()}
-        paginator
-        rows={10}
-        responsiveLayout="scroll"
-        currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} entradas"
-        rowsPerPageOptions={[10, 25, 50]}
-        filters={filters}
-        loading={loading}
-        emptyMessage="No hay cuentas disponibles"
-        rowClassName={() => "animated-row"}
-        size="small"
+      <motion.div
+        initial={{
+          opacity: 0,
+          scale: 0.95,
+          y: 40,
+          filter: "blur(8px)",
+        }}
+        animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
+        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+        className="card"
       >
-        <Column body={actionBodyTemplate} headerStyle={{ minWidth: "10rem" }} />
-        <Column field="numeroCuenta" header="N° Cuenta" sortable />
-        <Column
-          field="idContrato.numeroContrato"
-          header="N° Contrato"
-          sortable
-        />
-        <Column
-          header="Abonos"
-          body={abonosBodyTemplate}
-          style={{ minWidth: "250px" }}
-        />
-        {/* <Column field="tipoCuenta" header="Tipo de Cuenta" sortable /> */}
-        <Column
-          field="montoTotalContrato"
-          header="Monto Total Contrato"
-          sortable
-          body={(rowData: Cuenta) =>
-            rowData.montoTotalContrato != null
-              ? rowData.montoTotalContrato.toLocaleString("de-DE", {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })
-              : ""
-          }
-        />
-        <Column
-          field="totalAbonado"
-          header="Total Abonado"
-          sortable
-          body={(rowData: Cuenta) =>
-            rowData.totalAbonado != null
-              ? rowData.totalAbonado.toLocaleString("de-DE", {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })
-              : ""
-          }
-        />
-        <Column
-          field="balancePendiente"
-          header="Balance Pendiente"
-          sortable
-          body={(rowData: Cuenta) =>
-            rowData.balancePendiente != null
-              ? rowData.balancePendiente.toLocaleString("de-DE", {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })
-              : ""
-          }
-        />
+        <DataTable
+          ref={dt}
+          value={cuentas}
+          header={renderHeader()}
+          paginator
+          rows={10}
+          responsiveLayout="scroll"
+          currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} entradas"
+          rowsPerPageOptions={[10, 25, 50]}
+          filters={filters}
+          loading={loading}
+          emptyMessage="No hay cuentas disponibles"
+          rowClassName={() => "animated-row"}
+          size="small"
+        >
+          <Column
+            body={actionBodyTemplate}
+            headerStyle={{ minWidth: "10rem" }}
+          />
+          <Column field="numeroCuenta" header="N° Cuenta" sortable />
+          <Column
+            field="idContrato.numeroContrato"
+            header="N° Contrato"
+            sortable
+          />
+          <Column
+            header="Abonos"
+            body={abonosBodyTemplate}
+            style={{ minWidth: "250px" }}
+          />
+          {/* <Column field="tipoCuenta" header="Tipo de Cuenta" sortable /> */}
+          <Column
+            field="montoTotalContrato"
+            header="Monto Total Contrato"
+            sortable
+            body={(rowData: Cuenta) =>
+              rowData.montoTotalContrato != null
+                ? rowData.montoTotalContrato.toLocaleString("de-DE", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })
+                : ""
+            }
+          />
+          <Column
+            field="totalAbonado"
+            header="Total Abonado"
+            sortable
+            body={(rowData: Cuenta) =>
+              rowData.totalAbonado != null
+                ? rowData.totalAbonado.toLocaleString("de-DE", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })
+                : ""
+            }
+          />
+          <Column
+            field="balancePendiente"
+            header="Balance Pendiente"
+            sortable
+            body={(rowData: Cuenta) =>
+              rowData.balancePendiente != null
+                ? rowData.balancePendiente.toLocaleString("de-DE", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })
+                : ""
+            }
+          />
 
-        {/* <Column field="createdBy.nombre" header="Creado Por" sortable />
+          {/* <Column field="createdBy.nombre" header="Creado Por" sortable />
         <Column
           field="createdAt"
           header="Fecha de Creación"
@@ -324,76 +328,78 @@ const CuentaList = ({ tipoCuenta }: CuentaListProps) => {
           body={(rowData: Cuenta) => formatDateFH(rowData.updatedAt)}
           sortable
         /> */}
-      </DataTable>
+        </DataTable>
 
-      <Dialog
-        visible={deleteProductDialog}
-        style={{ width: "450px" }}
-        header="Confirmar"
-        modal
-        footer={
-          <>
-            <Button
-              label="No"
-              icon="pi pi-times"
-              text
-              onClick={hideDeleteProductDialog}
+        <Dialog
+          visible={deleteProductDialog}
+          style={{ width: "450px" }}
+          header="Confirmar"
+          modal
+          footer={
+            <>
+              <Button
+                label="No"
+                icon="pi pi-times"
+                text
+                onClick={hideDeleteProductDialog}
+              />
+              <Button
+                label="Sí"
+                icon="pi pi-check"
+                text
+                onClick={handleDeleteCuenta}
+              />
+            </>
+          }
+          onHide={hideDeleteProductDialog}
+        >
+          <div className="flex align-items-center justify-content-center">
+            <i
+              className="pi pi-exclamation-triangle mr-3"
+              style={{ fontSize: "2rem" }}
             />
-            <Button
-              label="Sí"
-              icon="pi pi-check"
-              text
-              onClick={handleDeleteCuenta}
-            />
-          </>
-        }
-        onHide={hideDeleteProductDialog}
-      >
-        <div className="flex align-items-center justify-content-center">
-          <i
-            className="pi pi-exclamation-triangle mr-3"
-            style={{ fontSize: "2rem" }}
-          />
-          {cuenta && (
-            <span>
-              ¿Estás seguro de que deseas eliminar <b>{cuenta.numeroCuenta}</b>?
-            </span>
-          )}
-        </div>
-      </Dialog>
-      <AuditHistoryDialog
-        visible={auditDialogVisible}
-        onHide={() => setAuditDialogVisible(false)}
-        title={
-          <div className="mb-2 text-center md:text-left">
-            <div className="border-bottom-2 border-primary pb-2">
-              <h2 className="text-2xl font-bold text-900 mb-2 flex align-items-center justify-content-center md:justify-content-start">
-                <i className="pi pi-check-circle mr-3 text-primary text-3xl"></i>
-                Historial - {selectedAuditCuenta?.numeroCuenta}
-              </h2>
-            </div>
+            {cuenta && (
+              <span>
+                ¿Estás seguro de que deseas eliminar{" "}
+                <b>{cuenta.numeroCuenta}</b>?
+              </span>
+            )}
           </div>
-        }
-        createdBy={selectedAuditCuenta?.createdBy!}
-        createdAt={selectedAuditCuenta?.createdAt!}
-        historial={selectedAuditCuenta?.historial}
-      />
-      <Dialog
-        visible={abonoFormDialog}
-        style={{ width: "850px" }}
-        header={`${cuenta ? "Editar" : "Agregar"} Cuenta`}
-        modal
-        onHide={hideCuentaFormDialog}
-        content={
-          <AbonoForm
-            tipoAbono={tipoCuenta}
-            hideAbonoFormDialog={hideCuentaFormDialog}
-            showToast={showToast}
-            toast={toast}
-          />
-        }
-      ></Dialog>
-    </motion.div>
+        </Dialog>
+        <AuditHistoryDialog
+          visible={auditDialogVisible}
+          onHide={() => setAuditDialogVisible(false)}
+          title={
+            <div className="mb-2 text-center md:text-left">
+              <div className="border-bottom-2 border-primary pb-2">
+                <h2 className="text-2xl font-bold text-900 mb-2 flex align-items-center justify-content-center md:justify-content-start">
+                  <i className="pi pi-check-circle mr-3 text-primary text-3xl"></i>
+                  Historial - {selectedAuditCuenta?.numeroCuenta}
+                </h2>
+              </div>
+            </div>
+          }
+          createdBy={selectedAuditCuenta?.createdBy!}
+          createdAt={selectedAuditCuenta?.createdAt!}
+          historial={selectedAuditCuenta?.historial}
+        />
+        <Dialog
+          visible={abonoFormDialog}
+          style={{ width: "850px" }}
+          header={`${cuenta ? "Editar" : "Agregar"} Cuenta`}
+          modal
+          onHide={hideCuentaFormDialog}
+          content={
+            <AbonoForm
+              tipoAbono={tipoCuenta}
+              hideAbonoFormDialog={hideCuentaFormDialog}
+              showToast={showToast}
+              toast={toast}
+            />
+          }
+        ></Dialog>
+      </motion.div>
+    </>
   );
 };
 

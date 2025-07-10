@@ -213,135 +213,144 @@ const TipoProductoList = () => {
     );
   }
   return (
-    <motion.div
-      initial={{
-        opacity: 0,
-        scale: 0.95,
-        y: 40,
-        filter: "blur(8px)",
-      }}
-      animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
-      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-      className="card"
-    >
+    <>
       <Toast ref={toast} />
-      <DataTable
-        ref={dt}
-        value={tipoProductos}
-        header={renderHeader()}
-        paginator
-        rows={10}
-        responsiveLayout="scroll"
-        currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} entradas"
-        rowsPerPageOptions={[10, 25, 50]}
-        filters={filters}
-        loading={loading}
-        emptyMessage="No hay tipoProductos disponibles"
-        rowClassName={() => "animated-row"}
-        size="small"
+      <motion.div
+        initial={{
+          opacity: 0,
+          scale: 0.95,
+          y: 40,
+          filter: "blur(8px)",
+        }}
+        animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
+        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+        className="card"
       >
-        <Column body={actionBodyTemplate} headerStyle={{ minWidth: "10rem" }} />
-        <Column field="idProducto.nombre" header="Producto" />
-        <Column field="nombre" header="Nombre" />
-        <Column field="clasificacion" header="Clasificación" />
-        <Column field="costoOperacional" header="Costo Operacional" />
-        <Column field="transporte" header="Costo de Transporte" />
-        <Column
-          field="rendimiento"
-          header="Rendimiento"
-          body={rendimientoBodyTemplate}
-        />
-        <Column field="convenio" header="Convenio para el Precio de Compra" />
-        <Column
-          field="gravedadAPI"
-          header="Gravedad API"
-          body={(rowData: TipoProducto) =>
-            rowData.gravedadAPI?.toFixed(2) || "N/A"
-          }
-        />
-        <Column
-          field="azufre"
-          header="Azufre (%)"
-          body={(rowData: TipoProducto) => rowData.azufre?.toFixed(2) || "N/A"}
-        />
-        <Column
-          field="contenidoAgua"
-          header="Contenido de Agua (%)"
-          body={(rowData: TipoProducto) =>
-            rowData.contenidoAgua?.toFixed(2) || "N/A"
-          }
-        />
-        <Column
-          field="puntoDeInflamacion"
-          header="Punto De Inflamación"
-          body={(rowData: TipoProducto) => rowData.puntoDeInflamacion || "N/A"}
-        />
-        <Column field="estado" header="Estado" />
-        <Column
-          field="createdAt"
-          header="Fecha de Creación"
-          body={(rowData: TipoProducto) => formatDateFH(rowData.createdAt)}
-        />
-        <Column
-          field="updatedAt"
-          header="Última Actualización"
-          body={(rowData: TipoProducto) => formatDateFH(rowData.updatedAt)}
-        />
-      </DataTable>
-
-      <Dialog
-        visible={deleteProductDialog}
-        style={{ width: "450px" }}
-        header="Confirmar"
-        modal
-        footer={
-          <>
-            <Button
-              label="No"
-              icon="pi pi-times"
-              text
-              onClick={hideDeleteProductDialog}
-            />
-            <Button
-              label="Sí"
-              icon="pi pi-check"
-              text
-              onClick={handleDeleteTipoProducto}
-            />
-          </>
-        }
-        onHide={hideDeleteProductDialog}
-      >
-        <div className="flex align-items-center justify-content-center">
-          <i
-            className="pi pi-exclamation-triangle mr-3"
-            style={{ fontSize: "2rem" }}
+        <DataTable
+          ref={dt}
+          value={tipoProductos}
+          header={renderHeader()}
+          paginator
+          rows={10}
+          responsiveLayout="scroll"
+          currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} entradas"
+          rowsPerPageOptions={[10, 25, 50]}
+          filters={filters}
+          loading={loading}
+          emptyMessage="No hay tipoProductos disponibles"
+          rowClassName={() => "animated-row"}
+          size="small"
+        >
+          <Column
+            body={actionBodyTemplate}
+            headerStyle={{ minWidth: "10rem" }}
           />
-          {tipoProducto && (
-            <span>
-              ¿Estás seguro de que deseas eliminar <b>{tipoProducto.nombre}</b>?
-            </span>
-          )}
-        </div>
-      </Dialog>
-      <AuditHistoryDialog
-        visible={auditDialogVisible}
-        onHide={() => setAuditDialogVisible(false)}
-        title={
-          <div className="mb-2 text-center md:text-left">
-            <div className="border-bottom-2 border-primary pb-2">
-              <h2 className="text-2xl font-bold text-900 mb-2 flex align-items-center justify-content-center md:justify-content-start">
-                <i className="pi pi-check-circle mr-3 text-primary text-3xl"></i>
-                Historial - {selectedAuditTipoProducto?.nombre}
-              </h2>
-            </div>
+          <Column field="idProducto.nombre" header="Producto" />
+          <Column field="nombre" header="Nombre" />
+          <Column field="clasificacion" header="Clasificación" />
+          <Column field="costoOperacional" header="Costo Operacional" />
+          <Column field="transporte" header="Costo de Transporte" />
+          <Column
+            field="rendimiento"
+            header="Rendimiento"
+            body={rendimientoBodyTemplate}
+          />
+          <Column field="convenio" header="Convenio para el Precio de Compra" />
+          <Column
+            field="gravedadAPI"
+            header="Gravedad API"
+            body={(rowData: TipoProducto) =>
+              rowData.gravedadAPI?.toFixed(2) || "N/A"
+            }
+          />
+          <Column
+            field="azufre"
+            header="Azufre (%)"
+            body={(rowData: TipoProducto) =>
+              rowData.azufre?.toFixed(2) || "N/A"
+            }
+          />
+          <Column
+            field="contenidoAgua"
+            header="Contenido de Agua (%)"
+            body={(rowData: TipoProducto) =>
+              rowData.contenidoAgua?.toFixed(2) || "N/A"
+            }
+          />
+          <Column
+            field="puntoDeInflamacion"
+            header="Punto De Inflamación"
+            body={(rowData: TipoProducto) =>
+              rowData.puntoDeInflamacion || "N/A"
+            }
+          />
+          <Column field="estado" header="Estado" />
+          <Column
+            field="createdAt"
+            header="Fecha de Creación"
+            body={(rowData: TipoProducto) => formatDateFH(rowData.createdAt)}
+          />
+          <Column
+            field="updatedAt"
+            header="Última Actualización"
+            body={(rowData: TipoProducto) => formatDateFH(rowData.updatedAt)}
+          />
+        </DataTable>
+
+        <Dialog
+          visible={deleteProductDialog}
+          style={{ width: "450px" }}
+          header="Confirmar"
+          modal
+          footer={
+            <>
+              <Button
+                label="No"
+                icon="pi pi-times"
+                text
+                onClick={hideDeleteProductDialog}
+              />
+              <Button
+                label="Sí"
+                icon="pi pi-check"
+                text
+                onClick={handleDeleteTipoProducto}
+              />
+            </>
+          }
+          onHide={hideDeleteProductDialog}
+        >
+          <div className="flex align-items-center justify-content-center">
+            <i
+              className="pi pi-exclamation-triangle mr-3"
+              style={{ fontSize: "2rem" }}
+            />
+            {tipoProducto && (
+              <span>
+                ¿Estás seguro de que deseas eliminar{" "}
+                <b>{tipoProducto.nombre}</b>?
+              </span>
+            )}
           </div>
-        }
-        createdBy={selectedAuditTipoProducto?.createdBy!}
-        createdAt={selectedAuditTipoProducto?.createdAt!}
-        historial={selectedAuditTipoProducto?.historial}
-      />
-      {/* <Dialog
+        </Dialog>
+        <AuditHistoryDialog
+          visible={auditDialogVisible}
+          onHide={() => setAuditDialogVisible(false)}
+          title={
+            <div className="mb-2 text-center md:text-left">
+              <div className="border-bottom-2 border-primary pb-2">
+                <h2 className="text-2xl font-bold text-900 mb-2 flex align-items-center justify-content-center md:justify-content-start">
+                  <i className="pi pi-check-circle mr-3 text-primary text-3xl"></i>
+                  Historial - {selectedAuditTipoProducto?.nombre}
+                </h2>
+              </div>
+            </div>
+          }
+          createdBy={selectedAuditTipoProducto?.createdBy!}
+          createdAt={selectedAuditTipoProducto?.createdAt!}
+          historial={selectedAuditTipoProducto?.historial}
+        />
+        {/* <Dialog
         visible={tipoProductoFormDialog}
         style={{ width: "850px" }}
         header={`${tipoProducto ? "Editar" : "Agregar"} Tipo de Producto`}
@@ -359,19 +368,20 @@ const TipoProductoList = () => {
         )}
       ></Dialog> */}
 
-      {tipoProductoFormDialog && (
-        <TipoProductoForm
-          tipoProducto={tipoProducto}
-          tipoProductoFormDialog={tipoProductoFormDialog}
-          hideTipoProductoFormDialog={hideTipoProductoFormDialog}
-          tipoProductos={tipoProductos}
-          setTipoProductos={setTipoProductos}
-          setTipoProducto={setTipoProducto}
-          showToast={showToast}
-          toast={toast}
-        />
-      )}
-    </motion.div>
+        {tipoProductoFormDialog && (
+          <TipoProductoForm
+            tipoProducto={tipoProducto}
+            tipoProductoFormDialog={tipoProductoFormDialog}
+            hideTipoProductoFormDialog={hideTipoProductoFormDialog}
+            tipoProductos={tipoProductos}
+            setTipoProductos={setTipoProductos}
+            setTipoProducto={setTipoProducto}
+            showToast={showToast}
+            toast={toast}
+          />
+        )}
+      </motion.div>
+    </>
   );
 };
 

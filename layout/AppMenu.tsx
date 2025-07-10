@@ -328,26 +328,26 @@ const AppMenu = () => {
         },
       ],
     },
-      {
+    {
       label: "Gestión de Gastos",
       icon: "pi pi-fw pi-user",
       items: [
-            {
-              label: "Facturas",
-              icon: "pi pi-fw pi-truck",
-              to: "/refineria/facturas",
-            },
-            
-            {
-              label: "Partidas",
-              icon: "pi pi-fw pi-truck",
-              to: "/partidas",
-            },
-               {
-              label: "SubPartidas",
-              icon: "pi pi-fw pi-truck",
-              to: "/refineria/subpartidas",
-            },
+        {
+          label: "Facturas",
+          icon: "pi pi-fw pi-truck",
+          to: "/refineria/facturas",
+        },
+
+        {
+          label: "Partidas",
+          icon: "pi pi-fw pi-truck",
+          to: "/partidas",
+        },
+        {
+          label: "SubPartidas",
+          icon: "pi pi-fw pi-truck",
+          to: "/refineria/subpartidas",
+        },
       ],
     },
     {
@@ -387,9 +387,14 @@ const AppMenu = () => {
       icon: "pi pi-fw pi-chart-line",
       items: [
         {
-          label: "Lista",
+          label: "Simulador Básico",
           icon: "pi pi-fw pi-chart-line",
           to: "/simulacion",
+        },
+        {
+          label: "Simulador Avanzado",
+          icon: "pi pi-fw pi-chart-line",
+          to: "/simulacion-avanzado",
         },
       ],
     },

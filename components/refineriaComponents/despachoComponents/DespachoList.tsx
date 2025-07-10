@@ -158,94 +158,95 @@ const DespachoList = () => {
     );
   }
   return (
-    <motion.div
-      initial={{
-        opacity: 0,
-        scale: 0.95,
-        y: 40,
-        filter: "blur(8px)",
-      }}
-      animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
-      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-      className="card"
-    >
+    <>
       <Toast ref={toast} />
-      <DataTable
-        ref={dt}
-        value={despachos}
-        header={renderHeader()}
-        paginator
-        rows={10}
-        responsiveLayout="scroll"
-        currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} entradas"
-        rowsPerPageOptions={[10, 25, 50]}
-        filters={filters}
-        loading={loading}
-        emptyMessage="No hay despachos disponibles"
-        rowClassName={() => "animated-row"}
-        size="small"
+      <motion.div
+        initial={{
+          opacity: 0,
+          scale: 0.95,
+          y: 40,
+          filter: "blur(8px)",
+        }}
+        animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
+        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+        className="card"
       >
-        <Column body={actionBodyTemplate} />
-        <Column field="idGuia" header="ID de la Guía" sortable />
-        <Column field="placa" header="Placa" />
-        <Column field="nombreChofer" header="Nombre del Chofer" sortable />
-        {/* <Column field="apellidoChofer" header="Apellido del Chofer" sortable /> */}
-        <Column
-          field="idContrato.numeroContrato"
-          header="Número de Contrato"
-          sortable
-        />
-        <Column
-          field="idContratoItems.producto.nombre"
-          header="Nombre del Producto"
-        />
-        <Column
-          field="cantidadEnviada"
-          header="Cantidad a Depachar"
-          body={(rowData: Despacho) =>
-            ` ${Number(rowData.cantidadEnviada).toLocaleString("de-DE")}Bbl`
-          }
-        />
-        <Column
-          field="cantidadRecibida"
-          header="Cantidad Depachada"
-          body={(rowData: Despacho) =>
-            ` ${Number(rowData.cantidadRecibida).toLocaleString("de-DE")}Bbl`
-          }
-        />
+        <DataTable
+          ref={dt}
+          value={despachos}
+          header={renderHeader()}
+          paginator
+          rows={10}
+          responsiveLayout="scroll"
+          currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} entradas"
+          rowsPerPageOptions={[10, 25, 50]}
+          filters={filters}
+          loading={loading}
+          emptyMessage="No hay despachos disponibles"
+          rowClassName={() => "animated-row"}
+          size="small"
+        >
+          <Column body={actionBodyTemplate} />
+          <Column field="idGuia" header="ID de la Guía" sortable />
+          <Column field="placa" header="Placa" />
+          <Column field="nombreChofer" header="Nombre del Chofer" sortable />
+          {/* <Column field="apellidoChofer" header="Apellido del Chofer" sortable /> */}
+          <Column
+            field="idContrato.numeroContrato"
+            header="Número de Contrato"
+            sortable
+          />
+          <Column
+            field="idContratoItems.producto.nombre"
+            header="Nombre del Producto"
+          />
+          <Column
+            field="cantidadEnviada"
+            header="Cantidad a Depachar"
+            body={(rowData: Despacho) =>
+              ` ${Number(rowData.cantidadEnviada).toLocaleString("de-DE")}Bbl`
+            }
+          />
+          <Column
+            field="cantidadRecibida"
+            header="Cantidad Depachada"
+            body={(rowData: Despacho) =>
+              ` ${Number(rowData.cantidadRecibida).toLocaleString("de-DE")}Bbl`
+            }
+          />
 
-        <Column
-          field="idLineaDespacho.nombre"
-          header="Nombre de la Línea"
-          sortable
-        />
-        <Column field="idTanque.nombre" header="ID del Tanque" sortable />
-        <Column
-          field="fechaSalida"
-          header="Fecha de Salida"
-          body={(rowData: Despacho) => formatDateFH(rowData.fechaSalida)}
-        />
-        <Column
-          field="fechaLlegada"
-          header="Fecha de Llegada"
-          body={(rowData: Despacho) => formatDateFH(rowData.fechaLlegada)}
-        />
-        <Column
-          field="fechaInicioDespacho"
-          header="Fecha de Inicio de Descarga"
-          body={(rowData: Despacho) =>
-            formatDateFH(rowData.fechaInicioDespacho)
-          }
-        />
-        <Column
-          field="fechaFinDespacho"
-          header="Fecha de Fin de Descarga"
-          body={(rowData: Despacho) => formatDateFH(rowData.fechaFinDespacho)}
-        />
+          <Column
+            field="idLineaDespacho.nombre"
+            header="Nombre de la Línea"
+            sortable
+          />
+          <Column field="idTanque.nombre" header="ID del Tanque" sortable />
+          <Column
+            field="fechaSalida"
+            header="Fecha de Salida"
+            body={(rowData: Despacho) => formatDateFH(rowData.fechaSalida)}
+          />
+          <Column
+            field="fechaLlegada"
+            header="Fecha de Llegada"
+            body={(rowData: Despacho) => formatDateFH(rowData.fechaLlegada)}
+          />
+          <Column
+            field="fechaInicioDespacho"
+            header="Fecha de Inicio de Descarga"
+            body={(rowData: Despacho) =>
+              formatDateFH(rowData.fechaInicioDespacho)
+            }
+          />
+          <Column
+            field="fechaFinDespacho"
+            header="Fecha de Fin de Descarga"
+            body={(rowData: Despacho) => formatDateFH(rowData.fechaFinDespacho)}
+          />
 
-        <Column field="estadoDespacho" header="Estado de la Despacho" />
-        <Column field="estadoCarga" header="Estado de la Carga" />
-        {/* <Column field="estado" header="Estado" />
+          <Column field="estadoDespacho" header="Estado de la Despacho" />
+          <Column field="estadoCarga" header="Estado de la Carga" />
+          {/* <Column field="estado" header="Estado" />
         <Column
           field="createdAt"
           header="Fecha de Creación"
@@ -256,72 +257,73 @@ const DespachoList = () => {
           header="Última Actualización"
           body={(rowData: Despacho) => formatDateFH(rowData.updatedAt)}
         /> */}
-      </DataTable>
-      <Dialog
-        visible={deleteProductDialog}
-        style={{ width: "450px" }}
-        header="Confirmar"
-        modal
-        footer={
-          <>
-            <Button
-              label="No"
-              icon="pi pi-times"
-              text
-              onClick={hideDeleteProductDialog}
+        </DataTable>
+        <Dialog
+          visible={deleteProductDialog}
+          style={{ width: "450px" }}
+          header="Confirmar"
+          modal
+          footer={
+            <>
+              <Button
+                label="No"
+                icon="pi pi-times"
+                text
+                onClick={hideDeleteProductDialog}
+              />
+              <Button
+                label="Sí"
+                icon="pi pi-check"
+                text
+                onClick={handleDeleteDespacho}
+              />
+            </>
+          }
+          onHide={hideDeleteProductDialog}
+        >
+          <div className="flex align-items-center justify-content-center">
+            <i
+              className="pi pi-exclamation-triangle mr-3"
+              style={{ fontSize: "2rem" }}
             />
-            <Button
-              label="Sí"
-              icon="pi pi-check"
-              text
-              onClick={handleDeleteDespacho}
-            />
-          </>
-        }
-        onHide={hideDeleteProductDialog}
-      >
-        <div className="flex align-items-center justify-content-center">
-          <i
-            className="pi pi-exclamation-triangle mr-3"
-            style={{ fontSize: "2rem" }}
-          />
-          {despacho && (
-            <span>
-              ¿Estás seguro de que deseas eliminar <b>{despacho.idGuia}</b>?
-            </span>
-          )}
-        </div>
-      </Dialog>{" "}
-      <AuditHistoryDialog
-        visible={auditDialogVisible}
-        onHide={() => setAuditDialogVisible(false)}
-        title={
-          <div className="mb-2 text-center md:text-left">
-            <div className="border-bottom-2 border-primary pb-2">
-              <h2 className="text-2xl font-bold text-900 mb-2 flex align-items-center justify-content-center md:justify-content-start">
-                <i className="pi pi-check-circle mr-3 text-primary text-3xl"></i>
-                Historial - {selectedAuditDespacho?.numeroDespacho}
-              </h2>
-            </div>
+            {despacho && (
+              <span>
+                ¿Estás seguro de que deseas eliminar <b>{despacho.idGuia}</b>?
+              </span>
+            )}
           </div>
-        }
-        createdBy={selectedAuditDespacho?.createdBy!}
-        createdAt={selectedAuditDespacho?.createdAt!}
-        historial={selectedAuditDespacho?.historial}
-      />
-      {despachoFormDialog && (
-        <DespachoForm
-          despacho={despacho}
-          despachoFormDialog={despachoFormDialog}
-          hideDespachoFormDialog={hideDespachoFormDialog}
-          despachos={despachos}
-          setDespachos={setDespachos}
-          setDespacho={setDespacho}
-          showToast={showToast}
-          toast={toast}
+        </Dialog>{" "}
+        <AuditHistoryDialog
+          visible={auditDialogVisible}
+          onHide={() => setAuditDialogVisible(false)}
+          title={
+            <div className="mb-2 text-center md:text-left">
+              <div className="border-bottom-2 border-primary pb-2">
+                <h2 className="text-2xl font-bold text-900 mb-2 flex align-items-center justify-content-center md:justify-content-start">
+                  <i className="pi pi-check-circle mr-3 text-primary text-3xl"></i>
+                  Historial - {selectedAuditDespacho?.numeroDespacho}
+                </h2>
+              </div>
+            </div>
+          }
+          createdBy={selectedAuditDespacho?.createdBy!}
+          createdAt={selectedAuditDespacho?.createdAt!}
+          historial={selectedAuditDespacho?.historial}
         />
-      )}
-    </motion.div>
+        {despachoFormDialog && (
+          <DespachoForm
+            despacho={despacho}
+            despachoFormDialog={despachoFormDialog}
+            hideDespachoFormDialog={hideDespachoFormDialog}
+            despachos={despachos}
+            setDespachos={setDespachos}
+            setDespacho={setDespacho}
+            showToast={showToast}
+            toast={toast}
+          />
+        )}
+      </motion.div>
+    </>
   );
 };
 

@@ -156,90 +156,93 @@ const RecepcionList = () => {
     );
   }
   return (
-    <motion.div
-      initial={{
-        opacity: 0,
-        scale: 0.95,
-        y: 40,
-        filter: "blur(8px)",
-      }}
-      animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
-      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-      className="card"
-    >
+    <>
       <Toast ref={toast} />
-      <DataTable
-        ref={dt}
-        value={recepcions}
-        header={renderHeader()}
-        paginator
-        rows={10}
-        responsiveLayout="scroll"
-        currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} entradas"
-        rowsPerPageOptions={[10, 25, 50]}
-        filters={filters}
-        loading={loading}
-        emptyMessage="No hay recepcions disponibles"
-        rowClassName={() => "animated-row"}
-        size="small"
+      <motion.div
+        initial={{
+          opacity: 0,
+          scale: 0.95,
+          y: 40,
+          filter: "blur(8px)",
+        }}
+        animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
+        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+        className="card"
       >
-        <Column body={actionBodyTemplate} />
-        <Column field="idGuia" header="ID de la Guía" sortable />
-        <Column field="placa" header="Placa" />
-        <Column field="nombreChofer" header="Nombre del Chofer" sortable />
-        {/* <Column field="apellidoChofer" header="Apellido del Chofer" sortable /> */}
-        <Column
-          field="idContrato.numeroContrato"
-          header="Número de Contrato"
-          sortable
-        />
-        {/* <Column
+        <DataTable
+          ref={dt}
+          value={recepcions}
+          header={renderHeader()}
+          paginator
+          rows={10}
+          responsiveLayout="scroll"
+          currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} entradas"
+          rowsPerPageOptions={[10, 25, 50]}
+          filters={filters}
+          loading={loading}
+          emptyMessage="No hay recepcions disponibles"
+          rowClassName={() => "animated-row"}
+          size="small"
+        >
+          <Column body={actionBodyTemplate} />
+          <Column field="idGuia" header="ID de la Guía" sortable />
+          <Column field="placa" header="Placa" />
+          <Column field="nombreChofer" header="Nombre del Chofer" sortable />
+          {/* <Column field="apellidoChofer" header="Apellido del Chofer" sortable /> */}
+          <Column
+            field="idContrato.numeroContrato"
+            header="Número de Contrato"
+            sortable
+          />
+          {/* <Column
           field="idContratoItems.producto.nombre"
           header="Nombre del Producto"
         /> */}
-        <Column
-          field="cantidadEnviada"
-          header="Cantidad Esperada"
-          body={(rowData: Recepcion) =>
-            ` ${Number(rowData.cantidadEnviada).toLocaleString("de-DE")}Bbl`
-          }
-        />
-        <Column
-          field="cantidadRecibida"
-          header="Cantidad Recibida"
-          body={(rowData: Recepcion) =>
-            ` ${Number(rowData.cantidadRecibida).toLocaleString("de-DE")}Bbl`
-          }
-        />
+          <Column
+            field="cantidadEnviada"
+            header="Cantidad Esperada"
+            body={(rowData: Recepcion) =>
+              ` ${Number(rowData.cantidadEnviada).toLocaleString("de-DE")}Bbl`
+            }
+          />
+          <Column
+            field="cantidadRecibida"
+            header="Cantidad Recibida"
+            body={(rowData: Recepcion) =>
+              ` ${Number(rowData.cantidadRecibida).toLocaleString("de-DE")}Bbl`
+            }
+          />
 
-        <Column field="idLinea.nombre" header="Nombre de la Línea" sortable />
-        <Column field="idTanque.nombre" header="ID del Tanque" sortable />
-        <Column
-          field="fechaSalida"
-          header="Fecha de Salida"
-          body={(rowData: Recepcion) => formatDateFH(rowData.fechaSalida)}
-        />
-        <Column
-          field="fechaLlegada"
-          header="Fecha de Llegada"
-          body={(rowData: Recepcion) => formatDateFH(rowData.fechaLlegada)}
-        />
-        <Column
-          field="fechaInicioRecepcion"
-          header="Fecha de Inicio de Descarga"
-          body={(rowData: Recepcion) =>
-            formatDateFH(rowData.fechaInicioRecepcion)
-          }
-        />
-        <Column
-          field="fechaFinRecepcion"
-          header="Fecha de Fin de Descarga"
-          body={(rowData: Recepcion) => formatDateFH(rowData.fechaFinRecepcion)}
-        />
+          <Column field="idLinea.nombre" header="Nombre de la Línea" sortable />
+          <Column field="idTanque.nombre" header="ID del Tanque" sortable />
+          <Column
+            field="fechaSalida"
+            header="Fecha de Salida"
+            body={(rowData: Recepcion) => formatDateFH(rowData.fechaSalida)}
+          />
+          <Column
+            field="fechaLlegada"
+            header="Fecha de Llegada"
+            body={(rowData: Recepcion) => formatDateFH(rowData.fechaLlegada)}
+          />
+          <Column
+            field="fechaInicioRecepcion"
+            header="Fecha de Inicio de Descarga"
+            body={(rowData: Recepcion) =>
+              formatDateFH(rowData.fechaInicioRecepcion)
+            }
+          />
+          <Column
+            field="fechaFinRecepcion"
+            header="Fecha de Fin de Descarga"
+            body={(rowData: Recepcion) =>
+              formatDateFH(rowData.fechaFinRecepcion)
+            }
+          />
 
-        <Column field="estadoRecepcion" header="Estado de la Recepcion" />
-        <Column field="estadoCarga" header="Estado de la Carga" />
-        {/* <Column field="estado" header="Estado" />
+          <Column field="estadoRecepcion" header="Estado de la Recepcion" />
+          <Column field="estadoCarga" header="Estado de la Carga" />
+          {/* <Column field="estado" header="Estado" />
         <Column
           field="createdAt"
           header="Fecha de Creación"
@@ -250,72 +253,73 @@ const RecepcionList = () => {
           header="Última Actualización"
           body={(rowData: Recepcion) => formatDateFH(rowData.updatedAt)}
         /> */}
-      </DataTable>
-      <Dialog
-        visible={deleteProductDialog}
-        style={{ width: "450px" }}
-        header="Confirmar"
-        modal
-        footer={
-          <>
-            <Button
-              label="No"
-              icon="pi pi-times"
-              text
-              onClick={hideDeleteProductDialog}
+        </DataTable>
+        <Dialog
+          visible={deleteProductDialog}
+          style={{ width: "450px" }}
+          header="Confirmar"
+          modal
+          footer={
+            <>
+              <Button
+                label="No"
+                icon="pi pi-times"
+                text
+                onClick={hideDeleteProductDialog}
+              />
+              <Button
+                label="Sí"
+                icon="pi pi-check"
+                text
+                onClick={handleDeleteRecepcion}
+              />
+            </>
+          }
+          onHide={hideDeleteProductDialog}
+        >
+          <div className="flex align-items-center justify-content-center">
+            <i
+              className="pi pi-exclamation-triangle mr-3"
+              style={{ fontSize: "2rem" }}
             />
-            <Button
-              label="Sí"
-              icon="pi pi-check"
-              text
-              onClick={handleDeleteRecepcion}
-            />
-          </>
-        }
-        onHide={hideDeleteProductDialog}
-      >
-        <div className="flex align-items-center justify-content-center">
-          <i
-            className="pi pi-exclamation-triangle mr-3"
-            style={{ fontSize: "2rem" }}
-          />
-          {recepcion && (
-            <span>
-              ¿Estás seguro de que deseas eliminar <b>{recepcion.idGuia}</b>?
-            </span>
-          )}
-        </div>
-      </Dialog>{" "}
-      <AuditHistoryDialog
-        visible={auditDialogVisible}
-        onHide={() => setAuditDialogVisible(false)}
-        title={
-          <div className="mb-2 text-center md:text-left">
-            <div className="border-bottom-2 border-primary pb-2">
-              <h2 className="text-2xl font-bold text-900 mb-2 flex align-items-center justify-content-center md:justify-content-start">
-                <i className="pi pi-check-circle mr-3 text-primary text-3xl"></i>
-                Historial - {selectedAuditRecepcion?.numeroRecepcion}
-              </h2>
-            </div>
+            {recepcion && (
+              <span>
+                ¿Estás seguro de que deseas eliminar <b>{recepcion.idGuia}</b>?
+              </span>
+            )}
           </div>
-        }
-        createdBy={selectedAuditRecepcion?.createdBy!}
-        createdAt={selectedAuditRecepcion?.createdAt!}
-        historial={selectedAuditRecepcion?.historial}
-      />
-      {recepcionFormDialog && (
-        <RecepcionForm
-          recepcion={recepcion}
-          recepcionFormDialog={recepcionFormDialog}
-          hideRecepcionFormDialog={hideRecepcionFormDialog}
-          recepcions={recepcions}
-          setRecepcions={setRecepcions}
-          setRecepcion={setRecepcion}
-          showToast={showToast}
-          toast={toast}
+        </Dialog>{" "}
+        <AuditHistoryDialog
+          visible={auditDialogVisible}
+          onHide={() => setAuditDialogVisible(false)}
+          title={
+            <div className="mb-2 text-center md:text-left">
+              <div className="border-bottom-2 border-primary pb-2">
+                <h2 className="text-2xl font-bold text-900 mb-2 flex align-items-center justify-content-center md:justify-content-start">
+                  <i className="pi pi-check-circle mr-3 text-primary text-3xl"></i>
+                  Historial - {selectedAuditRecepcion?.numeroRecepcion}
+                </h2>
+              </div>
+            </div>
+          }
+          createdBy={selectedAuditRecepcion?.createdBy!}
+          createdAt={selectedAuditRecepcion?.createdAt!}
+          historial={selectedAuditRecepcion?.historial}
         />
-      )}
-    </motion.div>
+        {recepcionFormDialog && (
+          <RecepcionForm
+            recepcion={recepcion}
+            recepcionFormDialog={recepcionFormDialog}
+            hideRecepcionFormDialog={hideRecepcionFormDialog}
+            recepcions={recepcions}
+            setRecepcions={setRecepcions}
+            setRecepcion={setRecepcion}
+            showToast={showToast}
+            toast={toast}
+          />
+        )}
+      </motion.div>
+    </>
   );
 };
 

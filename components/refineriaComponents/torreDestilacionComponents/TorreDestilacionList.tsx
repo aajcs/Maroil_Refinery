@@ -174,44 +174,49 @@ const TorreDestilacionList = () => {
     );
   }
   return (
-    <motion.div
-      initial={{
-        opacity: 0,
-        scale: 0.95,
-        y: 40,
-        filter: "blur(8px)",
-      }}
-      animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
-      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-      className="card"
-    >
+    <>
       <Toast ref={toast} />
-      <DataTable
-        ref={dt}
-        value={torresDestilacion}
-        header={renderHeader()}
-        paginator
-        rows={10}
-        responsiveLayout="scroll"
-        currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} entradas"
-        rowsPerPageOptions={[10, 25, 50]}
-        filters={filters}
-        loading={loading}
-        emptyMessage="No hay torres de destilación disponibles"
-        className="p-datatable-sm"
-        rowClassName={() => "animated-row"}
-        size="small"
+
+      <motion.div
+        initial={{
+          opacity: 0,
+          scale: 0.95,
+          y: 40,
+          filter: "blur(8px)",
+        }}
+        animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
+        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+        className="card"
       >
-        <Column body={actionBodyTemplate} headerStyle={{ minWidth: "10rem" }} />
-        <Column field="nombre" header="Nombre" />
-        {/* <Column field="ubicacion" header="Ubicación" /> */}
-        <Column
-          field="material"
-          header="Material"
-          body={materialBodyTemplate}
-        />
-        {/* <Column field="estado" header="Estado" /> */}
-        {/* <Column
+        <DataTable
+          ref={dt}
+          value={torresDestilacion}
+          header={renderHeader()}
+          paginator
+          rows={10}
+          responsiveLayout="scroll"
+          currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} entradas"
+          rowsPerPageOptions={[10, 25, 50]}
+          filters={filters}
+          loading={loading}
+          emptyMessage="No hay torres de destilación disponibles"
+          className="p-datatable-sm"
+          rowClassName={() => "animated-row"}
+          size="small"
+        >
+          <Column
+            body={actionBodyTemplate}
+            headerStyle={{ minWidth: "10rem" }}
+          />
+          <Column field="nombre" header="Nombre" />
+          {/* <Column field="ubicacion" header="Ubicación" /> */}
+          <Column
+            field="material"
+            header="Material"
+            body={materialBodyTemplate}
+          />
+          {/* <Column field="estado" header="Estado" /> */}
+          {/* <Column
           field="createdAt"
           header="Fecha de Creación"
           body={(rowData: TorreDestilacion) => formatDateFH(rowData.createdAt)}
@@ -221,44 +226,44 @@ const TorreDestilacionList = () => {
           header="Última Actualización"
           body={(rowData: TorreDestilacion) => formatDateFH(rowData.updatedAt)}
         /> */}
-      </DataTable>
-      <Dialog
-        visible={deleteProductDialog}
-        style={{ width: "450px" }}
-        header="Confirmar"
-        modal
-        footer={
-          <>
-            <Button
-              label="No"
-              icon="pi pi-times"
-              text
-              onClick={hideDeleteProductDialog}
+        </DataTable>
+        <Dialog
+          visible={deleteProductDialog}
+          style={{ width: "450px" }}
+          header="Confirmar"
+          modal
+          footer={
+            <>
+              <Button
+                label="No"
+                icon="pi pi-times"
+                text
+                onClick={hideDeleteProductDialog}
+              />
+              <Button
+                label="Sí"
+                icon="pi pi-check"
+                text
+                onClick={handleDeleteTorreDestilacion}
+              />
+            </>
+          }
+          onHide={hideDeleteProductDialog}
+        >
+          <div className="flex align-items-center justify-content-center">
+            <i
+              className="pi pi-exclamation-triangle mr-3"
+              style={{ fontSize: "2rem" }}
             />
-            <Button
-              label="Sí"
-              icon="pi pi-check"
-              text
-              onClick={handleDeleteTorreDestilacion}
-            />
-          </>
-        }
-        onHide={hideDeleteProductDialog}
-      >
-        <div className="flex align-items-center justify-content-center">
-          <i
-            className="pi pi-exclamation-triangle mr-3"
-            style={{ fontSize: "2rem" }}
-          />
-          {torreDestilacion && (
-            <span>
-              ¿Estás seguro de que deseas eliminar{" "}
-              <b>{torreDestilacion.nombre}</b>?
-            </span>
-          )}
-        </div>
-      </Dialog>
-      {/* <Dialog
+            {torreDestilacion && (
+              <span>
+                ¿Estás seguro de que deseas eliminar{" "}
+                <b>{torreDestilacion.nombre}</b>?
+              </span>
+            )}
+          </div>
+        </Dialog>
+        {/* <Dialog
         visible={auditDialogVisible}
         style={{ width: "600px" }}
         header={
@@ -373,44 +378,45 @@ const TorreDestilacionList = () => {
         </div>
       </Dialog> */}
 
-      <AuditHistoryDialog
-        visible={auditDialogVisible}
-        onHide={() => setAuditDialogVisible(false)}
-        title={
-          <div className="mb-2 text-center md:text-left">
-            <div className="border-bottom-2 border-primary pb-2">
-              <h2 className="text-2xl font-bold text-900 mb-2 flex align-items-center justify-content-center md:justify-content-start">
-                <i className="pi pi-check-circle mr-3 text-primary text-3xl"></i>
-                Historial - {selectedAuditTorre?.nombre}
-              </h2>
+        <AuditHistoryDialog
+          visible={auditDialogVisible}
+          onHide={() => setAuditDialogVisible(false)}
+          title={
+            <div className="mb-2 text-center md:text-left">
+              <div className="border-bottom-2 border-primary pb-2">
+                <h2 className="text-2xl font-bold text-900 mb-2 flex align-items-center justify-content-center md:justify-content-start">
+                  <i className="pi pi-check-circle mr-3 text-primary text-3xl"></i>
+                  Historial - {selectedAuditTorre?.nombre}
+                </h2>
+              </div>
             </div>
-          </div>
-        }
-        createdBy={selectedAuditTorre?.createdBy!}
-        createdAt={selectedAuditTorre?.createdAt!}
-        historial={selectedAuditTorre?.historial}
-      />
-      <Dialog
-        visible={torreDestilacionFormDialog}
-        style={{ width: "850px" }}
-        header={`${
-          torreDestilacion ? "Editar" : "Agregar"
-        } Torre de Destilación`}
-        modal
-        onHide={hideTorreDestilacionFormDialog}
-        content={() => (
-          <TorreDestilacionForm
-            torreDestilacion={torreDestilacion}
-            hideTorreDestilacionFormDialog={hideTorreDestilacionFormDialog}
-            torresDestilacion={torresDestilacion}
-            setTorresDestilacion={setTorresDestilacion}
-            setTorreDestilacion={setTorreDestilacion}
-            showToast={showToast}
-            toast={toast}
-          />
-        )}
-      ></Dialog>
-    </motion.div>
+          }
+          createdBy={selectedAuditTorre?.createdBy!}
+          createdAt={selectedAuditTorre?.createdAt!}
+          historial={selectedAuditTorre?.historial}
+        />
+        <Dialog
+          visible={torreDestilacionFormDialog}
+          style={{ width: "850px" }}
+          header={`${
+            torreDestilacion ? "Editar" : "Agregar"
+          } Torre de Destilación`}
+          modal
+          onHide={hideTorreDestilacionFormDialog}
+          content={() => (
+            <TorreDestilacionForm
+              torreDestilacion={torreDestilacion}
+              hideTorreDestilacionFormDialog={hideTorreDestilacionFormDialog}
+              torresDestilacion={torresDestilacion}
+              setTorresDestilacion={setTorresDestilacion}
+              setTorreDestilacion={setTorreDestilacion}
+              showToast={showToast}
+              toast={toast}
+            />
+          )}
+        ></Dialog>
+      </motion.div>
+    </>
   );
 };
 
