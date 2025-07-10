@@ -8,6 +8,7 @@ import { Avatar } from "primereact/avatar";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { Tag } from "primereact/tag";
 import { useSocket } from "@/hooks/useSocket";
+import { marcarNotificacionLeida } from "@/app/api/notificacionService";
 
 interface AppNotificationDropdownProps {
   session: any;
@@ -55,6 +56,8 @@ const AppNotificationDropdown = ({ session }: AppNotificationDropdownProps) => {
     }
   };
 
+  const unreadCount = notificaciones.filter((n) => !n.read).length;
+
   return (
     <div className="topbar-notifications ">
       <StyleClass
@@ -76,9 +79,9 @@ const AppNotificationDropdown = ({ session }: AppNotificationDropdownProps) => {
               className="pi pi-bell text-indigo-700"
               style={{ fontSize: "1.5rem" }}
             ></i>
-            {total > 0 && (
+            {unreadCount > 0 && (
               <Badge
-                value={total}
+                value={unreadCount}
                 severity="danger"
                 className="absolute top-0 right-0 -mt-1 -mr-1"
               ></Badge>
@@ -112,19 +115,47 @@ const AppNotificationDropdown = ({ session }: AppNotificationDropdownProps) => {
               <div
                 key={index}
                 className="p-ripple border-bottom-1 surface-border p-3 flex flex-column align-items-start hover:surface-hover transition-colors transition-duration-150 cursor-pointer"
+                onClick={async () => {
+                  if (!notification.read) {
+                    // Llama a tu API para marcar como leída
+                    await marcarNotificacionLeida(notification._id);
+                    // Opcional: actualiza el estado local para reflejar el cambio sin recargar
+                    notification.read = true;
+                    // Si usas setState, haz una copia del array y actualiza
+                    // setNotifications([...notificaciones]);
+                  }
+                }}
               >
                 <div className="flex align-items-start w-full">
-                  <div className="mr-3 flex-shrink-0">
+                  <div className="mr-3 flex-shrink-0 flex flex-column align-items-center gap-2">
                     <Avatar
                       icon={getNotificationIcon(notification.type || "info")}
                       size="large"
                       shape="circle"
-                      className="bg-indigo-100"
+                      className={`bg-indigo-100 ${
+                        notification.read ? "opacity-50" : ""
+                      }`}
                     />
+                    <span
+                      className="mt-1 cursor-pointer"
+                      title={notification.read ? "Leída" : "No leída"}
+                      data-pr-tooltip={notification.read ? "Leída" : "No leída"}
+                      data-pr-position="right"
+                    >
+                      {notification.read ? (
+                        <i className="pi pi-eye text-green-500" />
+                      ) : (
+                        <i className="pi pi-eye-slash text-gray-400" />
+                      )}
+                    </span>
                   </div>
                   <div className="flex flex-column flex-grow-1">
                     <div className="flex align-items-center justify-content-between mb-1">
-                      <span className="font-bold text-900">
+                      <span
+                        className={`font-bold text-900 ${
+                          notification.read ? "text-400" : ""
+                        }`}
+                      >
                         {notification.title}
                       </span>
                       {notification.type && (
