@@ -341,7 +341,7 @@ const ModeladoRefineriaDashboard = () => {
             transition={{ duration: 0.7, type: "spring", bounce: 0.35 }}
             className="card p-3 lg-h-fullScreen"
           >
-            <AnimatedTitle text="Almacenamiento Crudo" />
+            <AnimatedTitle text="Almacenamiento Materia Prima" />
             {tanques
               .filter((tanque) => tanque.almacenamientoMateriaPrimaria)
               .map((tanque) => (
@@ -388,7 +388,7 @@ const ModeladoRefineriaDashboard = () => {
             transition={{ duration: 0.7, type: "spring", bounce: 0.35 }}
             className="card p-3 lg-h-fullScreen"
           >
-            <AnimatedTitle text="Almacenamiento de Productos" />
+            <AnimatedTitle text="Almacenamiento de Derivados" />
             <div className="grid">
               {tanquesFiltradosOrdenados.map((tanque) => (
                 <div key={tanque.id} className="mb-2">
