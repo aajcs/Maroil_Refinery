@@ -28,10 +28,10 @@ export const estadoRecepcionOptions = [
 export const estadoCargaOptions = [
   { label: "Muestreo Pendiente", value: "PENDIENTE_MUESTREO" }, // Antes de iniciar
   { label: "Muestreo Aprobado", value: "MUESTREO_APROBADO" }, // Permite descarga
-  { label: "Muestreo Rechazado", value: "RECHAZADO" }, // Si no cumple requisitos
   { label: "En Proceso", value: "EN_PROCESO" }, // Descarga activa
   // { label: "Pausado", value: "PAUSADO" }, // Interrupciones
   { label: "Finalizado", value: "FINALIZADO" }, // Fin del proceso
+  { label: "Muestreo Rechazado", value: "RECHAZADO" }, // Si no cumple requisitos
 ];
 
 // export const workflowConfig = {
