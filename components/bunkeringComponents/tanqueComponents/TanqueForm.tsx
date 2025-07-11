@@ -10,7 +10,6 @@ import { Toast } from "primereact/toast";
 import { Dropdown } from "primereact/dropdown";
 import { useRefineriaStore } from "@/store/refineriaStore";
 
-import { useRefineryData } from "@/hooks/useRefineryData";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { InputNumber } from "primereact/inputnumber";
 import { tanqueBKSchema } from "@/libs/zods";
@@ -18,6 +17,7 @@ import {
   createTanqueBK,
   updateTanqueBK,
 } from "@/app/api/bunkering/tanqueBKService";
+import { useByRefineryData } from "@/hooks/useByRefineryData";
 
 type FormData = z.infer<typeof tanqueBKSchema>;
 
@@ -50,7 +50,9 @@ const TanqueForm = ({
   showToast,
 }: TanqueFormProps) => {
   const { activeRefineria } = useRefineriaStore();
-  const { productos, loading } = useRefineryData(activeRefineria?.id as string);
+  const { productos, loading } = useByRefineryData(
+    activeRefineria?.id as string
+  );
   const toast = useRef<Toast | null>(null);
 
   const [submitting, setSubmitting] = useState(false);

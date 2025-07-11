@@ -11,7 +11,7 @@ import {
   getYear,
   subMonths,
 } from "date-fns";
-import { Recepcion } from "@/libs/interfaces";
+import { Despacho } from "@/libs/interfaces";
 
 const colorPalette = [
   "#42A5F5",
@@ -29,33 +29,33 @@ const calcularDiferencia = (actual: number, anterior: number) => {
   return ((actual - anterior) / anterior) * 100;
 };
 
-const procesarHistorico = (recepcions: any[]) => {
+const procesarHistorico = (despachos: any[]) => {
   const datosHistoricos: Record<string, Record<string, any>> = {};
-  recepcions.forEach((recepcion) => {
-    const fecha = parseISO(recepcion.fechaInicioRecepcion);
+  despachos.forEach((despacho) => {
+    const fecha = parseISO(despacho.fechaInicioDespacho);
     const mes = startOfMonth(fecha).toISOString();
-    const refineria = recepcion.idRefineria.nombre;
+    const refineria = despacho.idRefineria.nombre;
     if (!datosHistoricos[refineria]) datosHistoricos[refineria] = {};
     if (!datosHistoricos[refineria][mes]) {
       datosHistoricos[refineria][mes] = {
         enviado: 0,
         recibido: 0,
-        recepciones: 0,
+        despachos: 0,
       };
     }
-    datosHistoricos[refineria][mes].enviado += recepcion.cantidadEnviada;
-    datosHistoricos[refineria][mes].recibido += recepcion.cantidadRecibida;
-    datosHistoricos[refineria][mes].recepciones += 1;
+    datosHistoricos[refineria][mes].enviado += despacho.cantidadEnviada || 0;
+    datosHistoricos[refineria][mes].recibido += despacho.cantidadRecibida || 0;
+    datosHistoricos[refineria][mes].despachos += 1;
   });
   return datosHistoricos;
 };
 
-const procesarDatosAnuales = (recepcions: any[]) => {
+const procesarDatosAnuales = (despachos: Despacho[]) => {
   const mesesDelAño = Array.from({ length: 12 }, (_, i) =>
     format(new Date(new Date().getFullYear(), i, 1), "MMM")
   );
   const refinerias = Array.from(
-    new Set(recepcions.map((r) => r.idRefineria.nombre))
+    new Set(despachos.map((r) => r.idRefineria.nombre))
   );
   const datos: Record<
     string,
@@ -67,12 +67,12 @@ const procesarDatosAnuales = (recepcions: any[]) => {
       datos[mes][refineria] = { enviados: 0, recibidos: 0 };
     });
   });
-  recepcions.forEach((recepcion) => {
-    const mes = format(parseISO(recepcion.fechaInicioRecepcion), "MMM");
-    const refineria = recepcion.idRefineria.nombre;
+  despachos.forEach((despacho) => {
+    const mes = format(parseISO(despacho.fechaInicioDespacho), "MMM");
+    const refineria = despacho.idRefineria.nombre;
     if (datos[mes] && datos[mes][refineria]) {
-      datos[mes][refineria].enviados += recepcion.cantidadEnviada;
-      datos[mes][refineria].recibidos += recepcion.cantidadRecibida;
+      datos[mes][refineria].enviados += despacho.cantidadEnviada || 0;
+      datos[mes][refineria].recibidos += despacho.cantidadRecibida || 0;
     }
   });
   const datasets = refinerias.flatMap((refineria, index) => [
@@ -134,55 +134,32 @@ const annualChartOptions = {
   },
 };
 
-const GraficaRecepcionesPorRefineria = ({
-  recepcions = [],
+const GraficaDespachoPorRefineria = ({
+  despachos = [],
 }: {
-  recepcions: Recepcion[];
+  despachos: any[];
 }) => {
   const [selectedMonth, setSelectedMonth] = useState<Date | null>(null);
 
-  // Memoized historico
-  const historico = useMemo(() => procesarHistorico(recepcions), [recepcions]);
+  const historico = useMemo(() => procesarHistorico(despachos), [despachos]);
 
-  // Meses disponibles
   const availableMonths = useMemo(() => {
-    if (!recepcions.length) return [];
-    const fechas = recepcions.map((r) => parseISO(r.fechaInicioRecepcion));
+    if (!despachos.length) return [];
+    const fechas = despachos.map((r) => parseISO(r.fechaInicioDespacho));
     const min = fechas.reduce((a, b) => (a < b ? a : b));
     const max = fechas.reduce((a, b) => (a > b ? a : b));
     return eachMonthOfInterval({ start: min, end: max }).map((mes) => ({
       label: format(mes, "MMMM yyyy"),
       value: mes,
     }));
-  }, [recepcions]);
+  }, [despachos]);
 
-  // Selección automática del mes más reciente
   useEffect(() => {
     if (availableMonths.length && !selectedMonth) {
       setSelectedMonth(availableMonths[availableMonths.length - 1].value);
     }
   }, [availableMonths, selectedMonth]);
 
-  // Datos del mes seleccionado
-  const monthTotals = useMemo(() => {
-    if (!selectedMonth) return { enviados: 0, recibidos: 0, recepciones: 0 };
-    const mesInicio = startOfMonth(selectedMonth);
-    const mesFin = endOfMonth(selectedMonth);
-    const datosFiltrados = recepcions.filter((r) => {
-      const fecha = parseISO(r.fechaInicioRecepcion);
-      return fecha >= mesInicio && fecha <= mesFin;
-    });
-    return datosFiltrados.reduce(
-      (acc, recepcion) => ({
-        enviados: acc.enviados + recepcion.cantidadEnviada,
-        recibidos: acc.recibidos + recepcion.cantidadRecibida,
-        recepciones: acc.recepciones + 1,
-      }),
-      { enviados: 0, recibidos: 0, recepciones: 0 }
-    );
-  }, [selectedMonth, recepcions]);
-
-  // Datos por refinería para el mes seleccionado
   const refineriasData = useMemo(() => {
     if (!selectedMonth) return [];
     const mesActual = startOfMonth(selectedMonth).toISOString();
@@ -191,12 +168,12 @@ const GraficaRecepcionesPorRefineria = ({
       const datosActual = historico[refineria][mesActual] || {
         enviado: 0,
         recibido: 0,
-        recepciones: 0,
+        despachos: 0,
       };
       const datosAnterior = historico[refineria][mesAnterior] || {
         enviado: 0,
         recibido: 0,
-        recepciones: 0,
+        despachos: 0,
       };
       return {
         nombre: refineria,
@@ -210,19 +187,18 @@ const GraficaRecepcionesPorRefineria = ({
             datosActual.recibido,
             datosAnterior.recibido
           ),
-          recepciones: calcularDiferencia(
-            datosActual.recepciones,
-            datosAnterior.recepciones
+          despachos: calcularDiferencia(
+            datosActual.despachos,
+            datosAnterior.despachos
           ),
         },
       };
     });
   }, [selectedMonth, historico]);
 
-  // Datos anuales para el gráfico
   const annualChartData = useMemo(
-    () => procesarDatosAnuales(recepcions),
-    [recepcions]
+    () => procesarDatosAnuales(despachos),
+    [despachos]
   );
 
   return (
@@ -230,7 +206,7 @@ const GraficaRecepcionesPorRefineria = ({
       {/* Gráfico Anual */}
 
       <Card
-        title={`Comportamiento Anual de recepcion de materia prima ${getYear(
+        title={`Comportamiento Anual de despacho de materia prima ${getYear(
           new Date()
         )}`}
       >
@@ -252,4 +228,4 @@ const GraficaRecepcionesPorRefineria = ({
   );
 };
 
-export default GraficaRecepcionesPorRefineria;
+export default GraficaDespachoPorRefineria;

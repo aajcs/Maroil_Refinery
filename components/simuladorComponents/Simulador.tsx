@@ -14,8 +14,9 @@ import ReactSpeedometer from "react-d3-speedometer";
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 import { Steps } from "primereact/steps";
 import type { MenuItem } from "primereact/menuitem";
-import { useRefineryData } from "@/hooks/useRefineryData";
+
 import { getRefinerias } from "@/app/api/refineriaService";
+import { useByRefineryData } from "@/hooks/useByRefineryData";
 
 const barrelUnit = "BBL";
 const dollarPerBarrelUnit = "$/BBL";
@@ -139,7 +140,7 @@ function ComprasCard() {
   const [selectedRefineria, setSelectedRefineria] = useState<Refineria | null>(
     null
   );
-  const { tipoProductos = [], loading: loadingData } = useRefineryData(
+  const { tipoProductos = [], loading: loadingData } = useByRefineryData(
     selectedRefineria?.id || ""
   ) as { tipoProductos: Productos[]; loading: boolean };
   const [referencias, setReferencias] = useState<Referencia[]>([]);

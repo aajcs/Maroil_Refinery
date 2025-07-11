@@ -17,10 +17,10 @@ import { Calendar } from "primereact/calendar";
 
 import { ProgressSpinner } from "primereact/progressspinner";
 
-import { useRefineryData } from "@/hooks/useRefineryData";
 import CustomCalendar from "@/components/common/CustomCalendar";
 import { handleFormError } from "@/utils/errorHandlers";
 import { Toast } from "primereact/toast";
+import { useByRefineryData } from "@/hooks/useByRefineryData";
 
 type FormData = z.infer<typeof chequeoCantidadSchema>;
 
@@ -54,8 +54,8 @@ const ChequeoCantidadForm = ({
   const { activeRefineria } = useRefineriaStore();
   console.log("Chequeo de Cantidad", chequeoCantidad);
 
-  const { productos, operadors, tanques, recepcions, despachos, loading } =
-    useRefineryData(activeRefineria?.id || "");
+  const { productos, tanques, recepcions, despachos, loading } =
+    useByRefineryData(activeRefineria?.id || "");
   const calendarRef = useRef<Calendar>(null);
   const [submitting, setSubmitting] = useState(false);
   const [dynamicOptions, setDynamicOptions] = useState<

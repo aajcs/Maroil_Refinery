@@ -1,6 +1,7 @@
 "use client";
 
-import { useRefineryData } from "@/hooks/useRefineryData";
+import { useByRefineryData } from "@/hooks/useByRefineryData";
+
 import { useSocket } from "@/hooks/useSocket";
 import { useRefineriaStore } from "@/store/refineriaStore";
 import { ProgressSpinner } from "primereact/progressspinner";
@@ -11,12 +12,12 @@ const DashboardSales = () => {
   const { recepcionModificado } = useSocket(); // Obtén recepcionModificado desde el socket
   const {
     tanques,
-    torresDestilacion,
+    torresDestilacions,
     lineaRecepcions,
     recepcions,
     contratos,
     loading,
-  } = useRefineryData(
+  } = useByRefineryData(
     activeRefineria?.id || "",
     recepcionModificado || undefined // Pasa recepcionModificado como dependencia
   );

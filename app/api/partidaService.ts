@@ -20,3 +20,8 @@ export const deletePartida = async (id: string) => {
   const response = await apiClient.delete(`/partida/${id}`);
   return response.data;
 };
+
+export const obtenerPartidasPorRefineria = async (idRefineria: string) => {
+  const { data } = await apiClient.get(`/partida/refineria/${idRefineria}`);
+  return data; // { total: number, partidas: Partida[] }
+};

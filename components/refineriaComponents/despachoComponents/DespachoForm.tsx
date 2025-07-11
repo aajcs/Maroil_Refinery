@@ -15,7 +15,6 @@ import { Calendar } from "primereact/calendar";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { truncateText } from "@/utils/funcionesUtiles";
 import { Steps } from "primereact/steps";
-import { useRefineryData } from "@/hooks/useRefineryData";
 
 import { ProgressBar } from "primereact/progressbar";
 import CustomCalendar from "@/components/common/CustomCalendar";
@@ -36,6 +35,7 @@ import { DespachoFormDespacho } from "./DespachoFormDespacho";
 import { handleFormError } from "@/utils/errorHandlers";
 import { Toast } from "primereact/toast";
 import { timeAgo } from "@/utils/dateUtils";
+import { useByRefineryData } from "@/hooks/useByRefineryData";
 
 type FormData = z.infer<typeof despachoSchema>;
 
@@ -65,7 +65,7 @@ const DespachoForm = ({
 }: DespachoFormProps) => {
   const { activeRefineria } = useRefineriaStore();
 
-  const { tanques, contratos, lineaDespachos, loading } = useRefineryData(
+  const { tanques, contratos, lineaDespachos, loading } = useByRefineryData(
     activeRefineria?.id || ""
   );
   const calendarRef = useRef<Calendar>(null);

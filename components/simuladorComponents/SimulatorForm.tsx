@@ -7,7 +7,7 @@ import { classNames } from "primereact/utils";
 import { CrudeOption, Product } from "@/types/simulador";
 import { getRefinerias } from "@/app/api/refineriaService";
 import { useRefineryPrecios } from "@/hooks/useRefineryPrecios";
-import { useRefineryData } from "@/hooks/useRefineryData";
+
 import { TipoProducto } from "@/libs/interfaces";
 import { Dropdown } from "primereact/dropdown";
 import { Accordion, AccordionTab } from "primereact/accordion";
@@ -15,6 +15,7 @@ import { ToggleButton } from "primereact/togglebutton";
 import { Button } from "primereact/button";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { InputNumber } from "primereact/inputnumber";
+import { useByRefineryData } from "@/hooks/useByRefineryData";
 
 // Definiciones de tipos y esquemas
 type SimulationMode = "crudeToProducts" | "productsToCrude";
@@ -113,7 +114,7 @@ export default function SimulatorForm({
   // Hooks y estados
   const { loading, brent, oilDerivate } = useRefineryPrecios();
   const [refineria, setRefineria] = useState<any | null>(null);
-  const { tipoProductos, loading: loadingData } = useRefineryData(
+  const { tipoProductos, loading: loadingData } = useByRefineryData(
     refineria?.id || ""
   );
   const [refinerias, setRefinerias] = useState<any[]>([]);

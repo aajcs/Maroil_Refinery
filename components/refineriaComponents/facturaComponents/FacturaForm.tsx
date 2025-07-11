@@ -16,8 +16,9 @@ import { Calendar } from "primereact/calendar";
 import { createFactura, updateFactura } from "@/app/api/facturaService";
 import { useRefineriaStore } from "@/store/refineriaStore";
 import { handleFormError } from "@/utils/errorHandlers";
-import { useRefineryData } from "@/hooks/useRefineryData";
+
 import { LineaFactura } from "@/libs/interfaces";
+import { useByRefineryData } from "@/hooks/useByRefineryData";
 
 type FormData = z.infer<typeof facturaSchema>;
 
@@ -52,11 +53,11 @@ function FacturaForm({
 }: FacturaFormProps) {
   const toast = useRef<Toast | null>(null);
   const [submitting, setSubmitting] = useState(false);
-    const { activeRefineria } = useRefineriaStore();
-    const { partidas, subPartidas, loading } = useRefineryData(activeRefineria?.id as string);
-    
+  const { activeRefineria } = useRefineriaStore();
+  const { partidas, subPartidas, loading } = useByRefineryData(
+    activeRefineria?.id as string
+  );
 
- 
   const {
     control,
     handleSubmit,
@@ -68,21 +69,20 @@ function FacturaForm({
   } = useForm<FormData>({
     resolver: zodResolver(facturaSchema),
     defaultValues: {
-      id: ""},
+      id: "",
+    },
   });
 
-  
-  
   // Cargar partidas y subpartidas
-  
 
-  const { fields: lineas, append, remove } = useFieldArray({
+  const {
+    fields: lineas,
+    append,
+    remove,
+  } = useFieldArray({
     control,
     name: "idLineasFactura",
   });
-
-
-
 
   // Calcular el total como la suma de los subtotales de las líneas
   const lineasFactura = watch("idLineasFactura") || [];
@@ -97,53 +97,55 @@ function FacturaForm({
     setValue("total", totalCalculado);
   }, [totalCalculado, setValue]);
 
-    useEffect(() => {
-      if (factura) {
-        Object.keys(factura).forEach((key) =>
-          setValue(key as string, factura[key])
-        );
-      }
-    }, [factura, setValue]);
+  useEffect(() => {
+    if (factura) {
+      Object.keys(factura).forEach((key) =>
+        setValue(key as string, factura[key])
+      );
+    }
+  }, [factura, setValue]);
 
   // Guardar o actualizar en la API Express
   const onSubmit = async (data: FormData) => {
-  setSubmitting(true);
-  try {
-    // Transforma las líneas para que idSubPartida sea solo el id
-    const lineasTransformadas = (data.idLineasFactura || []).map((linea: LineaFactura) => ({
-      ...linea,
-      idSubPartida: linea.idSubPartida?.id || linea.idSubPartida || null,
-    }));
-
-    const payload = {
-      ...data,
-      idLineasFactura: lineasTransformadas,
-      lineas: lineasTransformadas,
-      idRefineria: activeRefineria?.id,
-      idProducto: data.idProducto?.id,
-    };
-
-    if (factura) {
-      const updatedFactura = await updateFactura(factura.id, payload);
-      const updatedFacturas = facturas.map((t) =>
-        t.id === updatedFactura.id ? updatedFactura : t
+    setSubmitting(true);
+    try {
+      // Transforma las líneas para que idSubPartida sea solo el id
+      const lineasTransformadas = (data.idLineasFactura || []).map(
+        (linea: LineaFactura) => ({
+          ...linea,
+          idSubPartida: linea.idSubPartida?.id || linea.idSubPartida || null,
+        })
       );
-      setFacturas(updatedFacturas);
-      showToast("success", "Éxito", "Factura actualizado");
-    } else {
-      if (!activeRefineria)
-        throw new Error("No se ha seleccionado una refinería");
-      const newFactura = await createFactura(payload);
-      setFacturas([...facturas, newFactura]);
-      showToast("success", "Éxito", "Factura creado");
+
+      const payload = {
+        ...data,
+        idLineasFactura: lineasTransformadas,
+        lineas: lineasTransformadas,
+        idRefineria: activeRefineria?.id,
+        idProducto: data.idProducto?.id,
+      };
+
+      if (factura) {
+        const updatedFactura = await updateFactura(factura.id, payload);
+        const updatedFacturas = facturas.map((t) =>
+          t.id === updatedFactura.id ? updatedFactura : t
+        );
+        setFacturas(updatedFacturas);
+        showToast("success", "Éxito", "Factura actualizado");
+      } else {
+        if (!activeRefineria)
+          throw new Error("No se ha seleccionado una refinería");
+        const newFactura = await createFactura(payload);
+        setFacturas([...facturas, newFactura]);
+        showToast("success", "Éxito", "Factura creado");
+      }
+      hideFacturaFormDialog();
+    } catch (error) {
+      handleFormError(error, toast);
+    } finally {
+      setSubmitting(false);
     }
-    hideFacturaFormDialog();
-  } catch (error) {
-    handleFormError(error, toast);
-  } finally {
-    setSubmitting(false);
-  }
-};
+  };
 
   return (
     <>
@@ -154,7 +156,7 @@ function FacturaForm({
           maxWidth: "1200px",
           minHeight: "60vh",
           maxHeight: "85vh",
-          margin: "0 auto"
+          margin: "0 auto",
         }}
         header={
           <div className="mb-2 text-center md:text-left surface-50">
@@ -172,7 +174,7 @@ function FacturaForm({
           minHeight: "50vh",
           maxHeight: "70vh",
           overflowY: "auto",
-          paddingBottom: 0
+          paddingBottom: 0,
         }}
         modal
         onHide={hideFacturaFormDialog}
@@ -197,7 +199,9 @@ function FacturaForm({
                       <InputText
                         id="concepto"
                         {...field}
-                        className={classNames("w-full", { "p-invalid": fieldState.error })}
+                        className={classNames("w-full", {
+                          "p-invalid": fieldState.error,
+                        })}
                       />
                       {fieldState.error && (
                         <small className="p-error block mt-2 flex align-items-center">
@@ -226,7 +230,9 @@ function FacturaForm({
                         mode="currency"
                         currency="USD"
                         locale="en-US"
-                        className={classNames("w-full", { "p-invalid": fieldState.error })}
+                        className={classNames("w-full", {
+                          "p-invalid": fieldState.error,
+                        })}
                         disabled
                       />
                       {fieldState.error && (
@@ -253,22 +259,29 @@ function FacturaForm({
                       <Calendar
                         id="fechaFactura"
                         value={field.value ? new Date(field.value) : null}
-                        onChange={e => {
+                        onChange={(e) => {
                           // Convierte a string en formato ISO UTC: 2025-07-05T00:00:00.000Z
                           let val = "";
-                          if (e.value instanceof Date && !isNaN(e.value.getTime())) {
-                            val = new Date(Date.UTC(
-                              e.value.getFullYear(),
-                              e.value.getMonth(),
-                              e.value.getDate()
-                            )).toISOString();
+                          if (
+                            e.value instanceof Date &&
+                            !isNaN(e.value.getTime())
+                          ) {
+                            val = new Date(
+                              Date.UTC(
+                                e.value.getFullYear(),
+                                e.value.getMonth(),
+                                e.value.getDate()
+                              )
+                            ).toISOString();
                           }
                           // Si el usuario borra la fecha, e.value será null o undefined
                           if (!e.value) val = "";
                           field.onChange(val);
                         }}
                         dateFormat="yy-mm-dd"
-                        className={classNames("w-full", { "p-invalid": fieldState.error })}
+                        className={classNames("w-full", {
+                          "p-invalid": fieldState.error,
+                        })}
                         showIcon
                       />
                       {fieldState.error && (
@@ -297,7 +310,9 @@ function FacturaForm({
                         {...field}
                         options={estadoOptions}
                         placeholder="Seleccionar estado"
-                        className={classNames("w-full", { "p-invalid": fieldState.error })}
+                        className={classNames("w-full", {
+                          "p-invalid": fieldState.error,
+                        })}
                         showClear
                         filter
                       />
@@ -341,25 +356,35 @@ function FacturaForm({
                 <div className="p-2 text-600">No hay líneas de factura.</div>
               )}
               <div className="overflow-auto" style={{ minWidth: "1000px" }}>
-                <div className="grid grid-nogutter" style={{ minWidth: "1000px" }}>
+                <div
+                  className="grid grid-nogutter"
+                  style={{ minWidth: "1000px" }}
+                >
                   {/* Encabezados */}
                   <div className="col-2 font-bold text-900">Partida</div>
                   <div className="col-2 font-bold text-900">Subpartida</div>
                   <div className="col-3 font-bold text-900">Descripción</div>
                   <div className="col-1 font-bold text-900">Cantidad</div>
-                  <div className="col-2 font-bold text-900">Precio Unitario</div>
+                  <div className="col-2 font-bold text-900">
+                    Precio Unitario
+                  </div>
                   <div className="col-1 font-bold text-900">Subtotal</div>
                   <div className="col-1"></div>
                 </div>
                 {lineas.map((linea, idx) => {
-                  const selectedPartida = watch(`idLineasFactura.${idx}.idPartida`);
+                  const selectedPartida = watch(
+                    `idLineasFactura.${idx}.idPartida`
+                  );
                   const filteredSubpartidas = subPartidas.filter(
                     (sp) =>
                       (sp.idPartida?.id ?? sp.idPartida) === selectedPartida
                   );
-                  const cantidad = watch(`idLineasFactura.${idx}.cantidad`) ?? 0;
-                  const precioUnitario = watch(`idLineasFactura.${idx}.precioUnitario`) ?? 0;
-                  const subtotal = (Number(cantidad) || 0) * (Number(precioUnitario) || 0);
+                  const cantidad =
+                    watch(`idLineasFactura.${idx}.cantidad`) ?? 0;
+                  const precioUnitario =
+                    watch(`idLineasFactura.${idx}.precioUnitario`) ?? 0;
+                  const subtotal =
+                    (Number(cantidad) || 0) * (Number(precioUnitario) || 0);
 
                   return (
                     <div
@@ -367,7 +392,7 @@ function FacturaForm({
                       className="grid grid-nogutter align-items-center mb-2 p-2 border-1 border-round surface-border"
                       style={{
                         minWidth: "1000px",
-                        background: idx % 2 === 0 ? "#f8fafc" : "#fff"
+                        background: idx % 2 === 0 ? "#f8fafc" : "#fff",
                       }}
                     >
                       {/* Partida */}
@@ -409,8 +434,10 @@ function FacturaForm({
                               options={filteredSubpartidas}
                               optionLabel="codigo"
                               optionValue="id"
-                              onChange={e => {
-                                const selected = filteredSubpartidas.find(sp => sp.id === e.value);
+                              onChange={(e) => {
+                                const selected = filteredSubpartidas.find(
+                                  (sp) => sp.id === e.value
+                                );
                                 field.onChange(selected || null);
                               }}
                               placeholder="Subpartida"
@@ -423,7 +450,7 @@ function FacturaForm({
                               disabled={!selectedPartida}
                               style={{ fontSize: "0.95rem" }}
                               panelStyle={{ fontSize: "0.95rem" }}
-                              itemTemplate={option => (
+                              itemTemplate={(option) => (
                                 <span>
                                   {option.codigo} - {option.descripcion}
                                 </span>
@@ -463,7 +490,9 @@ function FacturaForm({
                           render={({ field, fieldState }) => (
                             <InputNumber
                               value={field.value ?? 0}
-                              onValueChange={(e) => field.onChange(e.value ?? 0)}
+                              onValueChange={(e) =>
+                                field.onChange(e.value ?? 0)
+                              }
                               placeholder="Cantidad"
                               className={classNames("w-full", {
                                 "p-invalid": fieldState.error,
@@ -487,7 +516,9 @@ function FacturaForm({
                           render={({ field, fieldState }) => (
                             <InputNumber
                               value={field.value ?? 0}
-                              onValueChange={(e) => field.onChange(e.value ?? 0)}
+                              onValueChange={(e) =>
+                                field.onChange(e.value ?? 0)
+                              }
                               placeholder="Precio Unitario"
                               mode="currency"
                               currency="USD"
@@ -520,7 +551,7 @@ function FacturaForm({
                             maxWidth: "100%",
                             marginTop: 0,
                             marginBottom: 0,
-                            background: "#f4f4f5"
+                            background: "#f4f4f5",
                           }}
                           className="w-full"
                         />
@@ -533,7 +564,11 @@ function FacturaForm({
                           className="p-button-danger p-button-sm"
                           onClick={() => remove(idx)}
                           tooltip="Eliminar línea"
-                          style={{ fontSize: "1.1rem", height: "2.2rem", width: "2.2rem" }}
+                          style={{
+                            fontSize: "1.1rem",
+                            height: "2.2rem",
+                            width: "2.2rem",
+                          }}
                         />
                       </div>
                     </div>
@@ -546,8 +581,14 @@ function FacturaForm({
               <Button
                 type="submit"
                 disabled={submitting}
-                label={factura && factura.id ? "Modificar Factura" : "Guardar Factura"}
-                className={`p-button-raised ${submitting ? "p-button-secondary" : "p-button-primary"}`}
+                label={
+                  factura && factura.id
+                    ? "Modificar Factura"
+                    : "Guardar Factura"
+                }
+                className={`p-button-raised ${
+                  submitting ? "p-button-secondary" : "p-button-primary"
+                }`}
                 style={{ minWidth: 170 }}
               />
               <Button

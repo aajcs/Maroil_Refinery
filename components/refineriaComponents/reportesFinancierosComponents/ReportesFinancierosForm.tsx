@@ -16,12 +16,13 @@ import { InputTextarea } from "primereact/inputtextarea";
 import { InputNumber } from "primereact/inputnumber";
 import { useBunkeringData } from "@/hooks/useBunkeringData";
 import { truncateText } from "@/utils/funcionesUtiles";
-import { useRefineryData } from "@/hooks/useRefineryData";
+
 import { ProgressSpinner } from "primereact/progressspinner";
 import { Calendar } from "primereact/calendar";
 import { log } from "console";
 import { handleFormError } from "@/utils/errorHandlers";
 import CustomCalendar from "@/components/common/CustomCalendar";
+import { useByRefineryData } from "@/hooks/useByRefineryData";
 
 type FormData = z.infer<typeof abonoSchema>;
 
@@ -37,9 +38,7 @@ interface AbonoFormProps {
     summary: string,
     detail: string
   ) => void;
-    toast: React.RefObject<Toast> | null;
-    
-  
+  toast: React.RefObject<Toast> | null;
 }
 
 const estatusValues = ["true", "false"];
@@ -55,16 +54,14 @@ const AbonoForm = ({
   showToast,
 }: AbonoFormProps) => {
   const { activeRefineria } = useRefineriaStore();
-    const { contratos, loading} = useRefineryData(
-      activeRefineria?.id || ""
-    );
-      const calendarRef = useRef<Calendar>(null);
-    
-const estado_operacionOptions = [
-  { label: "Efectivo", value: "Efectivo" },
-  { label: "Cheque", value: "Cheque" },
-  { label: "Deposito", value: "Deposito" },
-];
+  const { contratos, loading } = useByRefineryData(activeRefineria?.id || "");
+  const calendarRef = useRef<Calendar>(null);
+
+  const estado_operacionOptions = [
+    { label: "Efectivo", value: "Efectivo" },
+    { label: "Cheque", value: "Cheque" },
+    { label: "Deposito", value: "Deposito" },
+  ];
   const [submitting, setSubmitting] = useState(false);
   const {
     register,
@@ -77,10 +74,10 @@ const estado_operacionOptions = [
     resolver: zodResolver(abonoSchema),
     defaultValues: {
       monto: 0,
-        },
+    },
   });
- console.log("Errors:", errors);
- 
+  console.log("Errors:", errors);
+
   useEffect(() => {
     if (abono) {
       Object.keys(abono).forEach((key) =>
@@ -108,7 +105,9 @@ const estado_operacionOptions = [
           throw new Error("No se ha seleccionado una refinería");
         const newAbono = await createAbono({
           ...data,
-          idRefineria: activeRefineria.id, idContrato: data.idContrato.id, tipoAbono: tipoAbono,
+          idRefineria: activeRefineria.id,
+          idContrato: data.idContrato.id,
+          tipoAbono: tipoAbono,
         });
         if (setAbonos) {
           setAbonos([...(abonos || []), newAbono]);
@@ -118,21 +117,20 @@ const estado_operacionOptions = [
       hideAbonoFormDialog();
     } catch (error) {
       handleFormError(error, toast); // Pasamos la referencia del toast
-      
     } finally {
       setSubmitting(false); // Desactivar el estado de envío
     }
   };
-   if (loading) {
-      return (
-        <div
-          className="flex justify-content-center align-items-center"
-          style={{ height: "300px" }}
-        >
-          <ProgressSpinner />
-        </div>
-      );
-    }
+  if (loading) {
+    return (
+      <div
+        className="flex justify-content-center align-items-center"
+        style={{ height: "300px" }}
+      >
+        <ProgressSpinner />
+      </div>
+    );
+  }
   return (
     <div>
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -149,63 +147,61 @@ const estado_operacionOptions = [
 
           {/* Cuerpo del Formulario */}
           <div className="grid formgrid row-gap-2">
+            {/* Campo: Número de Contrato */}
+            <div className="col-12 md:col-6 lg:col-4 xl:col-3">
+              <div className="p-3 bg-white border-round shadow-1">
+                <label className="block font-medium text-900 mb-2 flex align-items-center">
+                  <i className="pi pi-file text-primary mr-2"></i>
+                  Número de Contrato
+                </label>
 
-
-             {/* Campo: Número de Contrato */}
-                          <div className="col-12 md:col-6 lg:col-4 xl:col-3">
-          <div className="p-3 bg-white border-round shadow-1">
-            <label className="block font-medium text-900 mb-2 flex align-items-center">
-              <i className="pi pi-file text-primary mr-2"></i>
-              Número de Contrato
-            </label>
-
- <Controller
-  name="idContrato"
-  control={control}
-  render={({ field, fieldState }) => (
-    <>
-      <Dropdown
-        id="idContrato"
-        {...field}
-        options={contratos
-          .filter((contrato) =>
-            // Solo mostrar contratos de compra para cuentas por pagar,
-            // y contratos de venta para cuentas por cobrar
-            tipoAbono === "Cuentas por Pagar"
-              ? contrato.tipoContrato === "Compra"
-              : tipoAbono === "Cuentas por Cobrar"
-              ? contrato.tipoContrato === "Venta"
-              : true
-          )
-        .map((contrato) => ({
-                      label: `${contrato.numeroContrato} - ${truncateText(
-                        contrato.descripcion || "Sin descripción",
-                        30
-                      )}`,
-                      value: {
-                        id: contrato.id,
-                        numeroContrato: contrato.numeroContrato,
-                        idItems: contrato.idItems,
-                        _id: contrato._id,
-        },
-        }))}
-        placeholder="Seleccionar un contrato"
-        className={classNames("w-full", {
-          "p-invalid": fieldState.error,
-        })}
-        showClear
-        filter
-      />
-      {fieldState.error && (
-        <small className="p-error block mt-2 flex align-items-center">
-          <i className="pi pi-exclamation-circle mr-2"></i>
-          {fieldState.error.message}
-        </small>
-      )}
-    </>
-  )}
-/>       
-            {/* <Controller
+                <Controller
+                  name="idContrato"
+                  control={control}
+                  render={({ field, fieldState }) => (
+                    <>
+                      <Dropdown
+                        id="idContrato"
+                        {...field}
+                        options={contratos
+                          .filter((contrato) =>
+                            // Solo mostrar contratos de compra para cuentas por pagar,
+                            // y contratos de venta para cuentas por cobrar
+                            tipoAbono === "Cuentas por Pagar"
+                              ? contrato.tipoContrato === "Compra"
+                              : tipoAbono === "Cuentas por Cobrar"
+                              ? contrato.tipoContrato === "Venta"
+                              : true
+                          )
+                          .map((contrato) => ({
+                            label: `${contrato.numeroContrato} - ${truncateText(
+                              contrato.descripcion || "Sin descripción",
+                              30
+                            )}`,
+                            value: {
+                              id: contrato.id,
+                              numeroContrato: contrato.numeroContrato,
+                              idItems: contrato.idItems,
+                              _id: contrato._id,
+                            },
+                          }))}
+                        placeholder="Seleccionar un contrato"
+                        className={classNames("w-full", {
+                          "p-invalid": fieldState.error,
+                        })}
+                        showClear
+                        filter
+                      />
+                      {fieldState.error && (
+                        <small className="p-error block mt-2 flex align-items-center">
+                          <i className="pi pi-exclamation-circle mr-2"></i>
+                          {fieldState.error.message}
+                        </small>
+                      )}
+                    </>
+                  )}
+                />
+                {/* <Controller
               name="idContrato"
               control={control}
               render={({ field, fieldState }) => (
@@ -243,10 +239,10 @@ const estado_operacionOptions = [
                 </>
               )}
             /> */}
-          </div>
-         </div>
+              </div>
+            </div>
 
-          {/* Campo: Monto */}
+            {/* Campo: Monto */}
             <div className="col-12 md:col-6 lg:col-4 xl:col-3">
               <div className="p-2 bg-white border-round shadow-1 surface-card">
                 <label className="block font-medium text-900 mb-3 flex align-items-center">
@@ -273,9 +269,9 @@ const estado_operacionOptions = [
                   </small>
                 )}
               </div>
-            </div> 
+            </div>
 
-{/* Campo: Fecha de Abono */}
+            {/* Campo: Fecha de Abono */}
             {/* <div className="col-12 md:col-6 lg:col-4 xl:col-3">
               <div className="p-2 bg-white border-round shadow-1 surface-card">
                 <label className="block font-medium text-900 mb-3 flex align-items-center">
@@ -305,117 +301,115 @@ const estado_operacionOptions = [
               </div>
             </div> */}
             {/* Campo: Fecha de Abono */}
-                        <div className="col-12 md:col-6 lg:col-4 xl:col-3">
-                          <div className="p-2 bg-white border-round shadow-1 surface-card">
-                            <label className="block font-medium text-900 mb-3 flex align-items-center">
-                              <i className="pi pi-calendar mr-2 text-primary"></i>
-                              Fecha de Abono
-                            </label>
-                            <Controller
-                              name="fecha"
-                              control={control}
-                              render={({ field, fieldState }) => (
-                                <>
-                                  <CustomCalendar
-                                    {...field}
-                                    name="fecha"
-                                    control={control}
-                                    setValue={setValue}
-                                    calendarRef={calendarRef}
-                                    isFieldEnabled={false}
-                                    value={
-                                      field.value
-                                        ? new Date(field.value as string | Date)
-                                        : null
-                                    }
-                                    onChange={field.onChange}
-                                  />
-            
-                                  {fieldState.error && (
-                                    <small className="p-error block mt-2 flex align-items-center">
-                                      <i className="pi pi-exclamation-circle mr-2"></i>
-                                      {fieldState.error.message}
-                                    </small>
-                                  )}
-                                </>
-                              )}
-                            />
-                            {errors.fecha && (
-                              <small className="p-error block mt-2 flex align-items-center">
-                                <i className="pi pi-exclamation-circle mr-2"></i>
-                                {errors.fecha.message}
-                              </small>
-                            )}
-                          </div>
-                        </div>
-                
-                 {/* Campo: Estado de Contrato */}
-                   <div className="col-12 md:col-6 lg:col-4 xl:col-3">
-                     <div className="p-2 bg-white border-round shadow-1 surface-card">
-                       <label className="block font-medium text-900 mb-3 flex align-items-center">
-                         <i className="pi pi-flag mr-2 text-primary"></i>
-                         Tipo de Operacion
-                       </label>
-                       <Controller
-                         name="tipoOperacion"
-                         control={control}
-                         render={({ field, fieldState }) => (
-                           <>
-                             <Dropdown
-                               id="tipoOperacion"
-                               {...field}
-                               options={estado_operacionOptions}
-                               placeholder="Seleccionar estado de operacion"
-                               className={classNames("w-full", {
-                                 "p-invalid": fieldState.error,
-                               })}
-                               showClear
-                               filter
-                             />
-                             {fieldState.error && (
-                               <small className="p-error block mt-2 flex align-items-center">
-                                 <i className="pi pi-exclamation-circle mr-2"></i>
-                                 {fieldState.error.message}
-                               </small>
-                             )}
-                           </>
-                         )}
-                       />
-                     </div>
-                   </div>
+            <div className="col-12 md:col-6 lg:col-4 xl:col-3">
+              <div className="p-2 bg-white border-round shadow-1 surface-card">
+                <label className="block font-medium text-900 mb-3 flex align-items-center">
+                  <i className="pi pi-calendar mr-2 text-primary"></i>
+                  Fecha de Abono
+                </label>
+                <Controller
+                  name="fecha"
+                  control={control}
+                  render={({ field, fieldState }) => (
+                    <>
+                      <CustomCalendar
+                        {...field}
+                        name="fecha"
+                        control={control}
+                        setValue={setValue}
+                        calendarRef={calendarRef}
+                        isFieldEnabled={false}
+                        value={
+                          field.value
+                            ? new Date(field.value as string | Date)
+                            : null
+                        }
+                        onChange={field.onChange}
+                      />
 
-              {/* Campo: Referencia */}
-                          <div className="col-12 sm:col-12 lg:col-12 xl:col-12">
-                            <div className="p-2 bg-white border-round shadow-1 surface-card">
-                              <label className="block font-medium text-900 mb-3 flex align-items-center">
-                                <i className="pi pi-align-left mr-2 text-primary"></i>
-                                Referencia
-                              </label>
-                              <Controller
-                                name="referencia"
-                                control={control}
-                                render={({ field, fieldState }) => (
-                                  <>
-                                    <InputText
-                                      id="referencia"
-                                      {...field}
-                                      className={classNames("w-full", {
-                                        "p-invalid": fieldState.error,
-                                      })}
-                                    />
-                                    {fieldState.error && (
-                                      <small className="p-error block mt-2 flex align-items-center">
-                                        <i className="pi pi-exclamation-circle mr-2"></i>
-                                        {fieldState.error.message}
-                                      </small>
-                                    )}
-                                  </>
-                                )}
-                              />
-                            </div>
-                          </div>
+                      {fieldState.error && (
+                        <small className="p-error block mt-2 flex align-items-center">
+                          <i className="pi pi-exclamation-circle mr-2"></i>
+                          {fieldState.error.message}
+                        </small>
+                      )}
+                    </>
+                  )}
+                />
+                {errors.fecha && (
+                  <small className="p-error block mt-2 flex align-items-center">
+                    <i className="pi pi-exclamation-circle mr-2"></i>
+                    {errors.fecha.message}
+                  </small>
+                )}
+              </div>
+            </div>
 
+            {/* Campo: Estado de Contrato */}
+            <div className="col-12 md:col-6 lg:col-4 xl:col-3">
+              <div className="p-2 bg-white border-round shadow-1 surface-card">
+                <label className="block font-medium text-900 mb-3 flex align-items-center">
+                  <i className="pi pi-flag mr-2 text-primary"></i>
+                  Tipo de Operacion
+                </label>
+                <Controller
+                  name="tipoOperacion"
+                  control={control}
+                  render={({ field, fieldState }) => (
+                    <>
+                      <Dropdown
+                        id="tipoOperacion"
+                        {...field}
+                        options={estado_operacionOptions}
+                        placeholder="Seleccionar estado de operacion"
+                        className={classNames("w-full", {
+                          "p-invalid": fieldState.error,
+                        })}
+                        showClear
+                        filter
+                      />
+                      {fieldState.error && (
+                        <small className="p-error block mt-2 flex align-items-center">
+                          <i className="pi pi-exclamation-circle mr-2"></i>
+                          {fieldState.error.message}
+                        </small>
+                      )}
+                    </>
+                  )}
+                />
+              </div>
+            </div>
 
+            {/* Campo: Referencia */}
+            <div className="col-12 sm:col-12 lg:col-12 xl:col-12">
+              <div className="p-2 bg-white border-round shadow-1 surface-card">
+                <label className="block font-medium text-900 mb-3 flex align-items-center">
+                  <i className="pi pi-align-left mr-2 text-primary"></i>
+                  Referencia
+                </label>
+                <Controller
+                  name="referencia"
+                  control={control}
+                  render={({ field, fieldState }) => (
+                    <>
+                      <InputText
+                        id="referencia"
+                        {...field}
+                        className={classNames("w-full", {
+                          "p-invalid": fieldState.error,
+                        })}
+                      />
+                      {fieldState.error && (
+                        <small className="p-error block mt-2 flex align-items-center">
+                          <i className="pi pi-exclamation-circle mr-2"></i>
+                          {fieldState.error.message}
+                        </small>
+                      )}
+                    </>
+                  )}
+                />
+              </div>
+            </div>
 
             {/* Campo: Estado
             <div className="col-12 md:col-6 lg:col-4 xl:col-3">

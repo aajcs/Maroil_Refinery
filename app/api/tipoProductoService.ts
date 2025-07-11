@@ -20,3 +20,9 @@ export const deleteTipoProducto = async (id: string) => {
   const response = await apiClient.delete(`/tipoProducto/${id}`);
   return response.data;
 };
+export const obtenerTiposProductoPorRefineria = async (idRefineria: string) => {
+  const { data } = await apiClient.get(
+    `/tipoProducto/refineria/${idRefineria}`
+  );
+  return data; // { total: number, tipos: TipoProducto[] }
+};

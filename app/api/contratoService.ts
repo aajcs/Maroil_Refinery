@@ -20,3 +20,7 @@ export const deleteContrato = async (id: string) => {
   const response = await apiClient.delete(`/contrato/${id}`);
   return response.data;
 };
+export const obtenerContratosPorRefineria = async (idRefineria: string) => {
+  const { data } = await apiClient.get(`/contrato/refineria/${idRefineria}`);
+  return data; // { total: number, contratos: Contrato[] }
+};

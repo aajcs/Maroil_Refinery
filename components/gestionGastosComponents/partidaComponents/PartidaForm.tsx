@@ -10,13 +10,11 @@ import { partidaSchema } from "@/libs/zods";
 import { Toast } from "primereact/toast";
 import { Dropdown } from "primereact/dropdown";
 import { useRefineriaStore } from "@/store/refineriaStore";
-import {
-  createPartida,
-  updatePartida,
-} from "@/app/api/partidaService";
-import { useRefineryData } from "@/hooks/useRefineryData";
+import { createPartida, updatePartida } from "@/app/api/partidaService";
+
 import { ProgressSpinner } from "primereact/progressspinner";
 import { handleFormError } from "@/utils/errorHandlers";
+import { useByRefineryData } from "@/hooks/useByRefineryData";
 
 type FormData = z.infer<typeof partidaSchema>;
 
@@ -45,7 +43,7 @@ const PartidaForm = ({
   showToast,
 }: PartidaFormProps) => {
   const { activeRefineria } = useRefineriaStore();
-  const { productos, loading } = useRefineryData(activeRefineria?.id || "");
+  const { productos, loading } = useByRefineryData(activeRefineria?.id || "");
 
   // Filtrar productos por categoría "Derivados"
   const filteredProductos = productos.filter(
@@ -59,7 +57,9 @@ const PartidaForm = ({
     formState: { errors },
     setValue,
   } = useForm<{ codigo: number; descripcion: string }>({
-    resolver: zodResolver(partidaSchema.pick({ codigo: true, descripcion: true })),
+    resolver: zodResolver(
+      partidaSchema.pick({ codigo: true, descripcion: true })
+    ),
     defaultValues: {
       codigo: partida?.codigo ?? undefined,
       descripcion: partida?.descripcion ?? "",
@@ -118,9 +118,7 @@ const PartidaForm = ({
             <div className="border-bottom-2 border-primary pb-2">
               <h2 className="text-2xl font-bold text-900 mb-2 flex align-items-center justify-content-center md:justify-content-start">
                 <i className="pi pi-check-circle mr-3 text-primary text-3xl"></i>
-                {partida
-                  ? "Modificar Partida"
-                  : "Crear Partida"}
+                {partida ? "Modificar Partida" : "Crear Partida"}
               </h2>
             </div>
           </div>
@@ -181,11 +179,7 @@ const PartidaForm = ({
               type="submit"
               disabled={submitting}
               icon={submitting ? "pi pi-spinner pi-spin" : ""}
-              label={
-                partida
-                  ? "Modificar Partida"
-                  : "Crear Partida"
-              }
+              label={partida ? "Modificar Partida" : "Crear Partida"}
               className="w-auto"
             />
 

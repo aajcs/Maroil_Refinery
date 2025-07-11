@@ -12,7 +12,6 @@ import { Dropdown } from "primereact/dropdown";
 import { useRefineriaStore } from "@/store/refineriaStore";
 import { InputNumber } from "primereact/inputnumber";
 
-import { useRefineryData } from "@/hooks/useRefineryData";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { MultiSelect } from "primereact/multiselect";
 import { Rendimiento } from "@/libs/interfaces";
@@ -577,6 +576,7 @@ const TipoProductoForm = ({
                   maxSelectedLabels={3}
                   className="w-full mb-3"
                   disabled={loading}
+                  selectAllLabel="Seleccionar todos"
                 />
 
                 {/* Inputs de Rendimientos */}

@@ -20,3 +20,7 @@ export const deleteTanque = async (id: string) => {
   const response = await apiClient.delete(`/tanque/${id}`);
   return response.data;
 };
+export const obtenerTanquesPorRefineria = async (idRefineria: string) => {
+  const { data } = await apiClient.get(`/tanque/refineria/${idRefineria}`);
+  return data; // { total: number, tanques: Tanque[] }
+};

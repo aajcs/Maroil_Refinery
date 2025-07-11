@@ -329,6 +329,7 @@ const UsuarioForm = ({
                   className={classNames("w-full", {
                     "p-invalid": errors.departamento,
                   })}
+                  selectAllLabel="Seleccionar todos"
                 />
                 {errors.departamento && (
                   <small className="p-error">
@@ -373,6 +374,7 @@ const UsuarioForm = ({
                     className={classNames("w-full", {
                       "p-invalid": errors.idRefineria,
                     })}
+                    selectAllLabel="Seleccionar todos"
                   />
                   {errors.idRefineria && (
                     <small className="p-error">

@@ -7,7 +7,7 @@ import { ProgressSpinner } from "primereact/progressspinner";
 import ModeladoRefineriaLineaCarga from "./ModeladoRefineriaLineaCarga";
 import { formatDateFH, formatDuration } from "@/utils/dateUtils";
 import { useSocket } from "@/hooks/useSocket";
-import { useRefineryData } from "@/hooks/useRefineryData";
+
 import { Dialog } from "primereact/dialog";
 import { useState, useMemo, useCallback } from "react";
 import { DataTable } from "primereact/datatable";
@@ -21,6 +21,7 @@ import ModeladoRefineriaContratosVentaList from "./ModeladoRefineriaContratosVen
 import { TabPanel, TabView } from "primereact/tabview";
 import { InputSwitch } from "primereact/inputswitch";
 import { motion } from "framer-motion";
+import { useRefineryData } from "@/hooks/useRefineryData";
 
 const AnimatedTitle = ({ text }: { text: string }) => {
   const container = {

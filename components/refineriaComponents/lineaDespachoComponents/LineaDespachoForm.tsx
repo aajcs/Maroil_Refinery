@@ -15,9 +15,10 @@ import {
   createLineaDespacho,
   updateLineaDespacho,
 } from "@/app/api/lineaDespachoService";
-import { useRefineryData } from "@/hooks/useRefineryData";
+
 import { ProgressSpinner } from "primereact/progressspinner";
 import { handleFormError } from "@/utils/errorHandlers";
+import { useByRefineryData } from "@/hooks/useByRefineryData";
 
 type FormData = z.infer<typeof lineaDespachoSchema>;
 
@@ -46,7 +47,7 @@ const LineaDespachoForm = ({
   showToast,
 }: LineaDespachoFormProps) => {
   const { activeRefineria } = useRefineriaStore();
-  const { productos, loading } = useRefineryData(activeRefineria?.id || "");
+  const { productos, loading } = useByRefineryData(activeRefineria?.id || "");
 
   // Filtrar productos por categoría "Derivados"
   const filteredProductos = productos.filter(
@@ -103,9 +104,8 @@ const LineaDespachoForm = ({
       }
       hideLineaDespachoFormDialog();
     } catch (error) {
-           handleFormError(error, toast); // Pasamos la referencia del toast
-      
-        } finally {
+      handleFormError(error, toast); // Pasamos la referencia del toast
+    } finally {
       setSubmitting(false); // Desactivar el estado de envío
     }
   };

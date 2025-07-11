@@ -14,11 +14,12 @@ import { InputNumber } from "primereact/inputnumber";
 import { DataTable } from "primereact/datatable";
 import { Column, ColumnEditorOptions } from "primereact/column";
 import { Calendar } from "primereact/calendar";
-import { useRefineryData } from "@/hooks/useRefineryData";
+
 import { ProgressSpinner } from "primereact/progressspinner";
 import CustomCalendar from "@/components/common/CustomCalendar";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Dialog } from "primereact/dialog";
+import { useByRefineryData } from "@/hooks/useByRefineryData";
 
 type FormData = z.infer<typeof contratoSchema>;
 
@@ -60,7 +61,7 @@ function ContratoForm({
   contratoFormDialog,
 }: ContratoFormProps) {
   const { activeRefineria } = useRefineriaStore();
-  const { productos, tipoProductos, contactos, loading } = useRefineryData(
+  const { productos, tipoProductos, contactos, loading } = useByRefineryData(
     activeRefineria?.id || ""
   );
   const toast = useRef<Toast | null>(null);

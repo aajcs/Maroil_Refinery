@@ -20,3 +20,7 @@ export const deleteContacto = async (id: string) => {
   const response = await apiClient.delete(`/contacto/${id}`);
   return response.data;
 };
+export const obtenerContactosPorRefineria = async (idRefineria: string) => {
+  const { data } = await apiClient.get(`/contacto/refineria/${idRefineria}`);
+  return data; // { total, contactos }
+};

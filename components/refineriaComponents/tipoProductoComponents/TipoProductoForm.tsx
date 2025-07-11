@@ -15,7 +15,7 @@ import {
   createTipoProducto,
   updateTipoProducto,
 } from "@/app/api/tipoProductoService";
-import { useRefineryData } from "@/hooks/useRefineryData";
+
 import { ProgressSpinner } from "primereact/progressspinner";
 import { tipoProductoSchema } from "@/libs/zods";
 import { MultiSelect } from "primereact/multiselect";
@@ -36,7 +36,7 @@ interface TipoProductoFormProps {
     summary: string,
     detail: string
   ) => void;
-    toast: React.RefObject<Toast> | null;
+  toast: React.RefObject<Toast> | null;
   tipoProductoFormDialog: boolean;
 }
 
@@ -77,7 +77,7 @@ const TipoProductoForm = ({
       convenio: 0,
       transporte: 0,
       costoOperacional: 0,
-        estado: "true",
+      estado: "true",
     },
   });
 
@@ -578,6 +578,7 @@ const TipoProductoForm = ({
                       maxSelectedLabels={3}
                       className="w-full mb-3"
                       disabled={loading}
+                      selectAllLabel="Seleccionar todos"
                     />
 
                     {/* Inputs de Rendimientos */}

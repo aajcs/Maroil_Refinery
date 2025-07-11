@@ -22,3 +22,11 @@ export const deleteCorteRefinacion = async (id: string) => {
   const response = await apiClient.delete(`/corteRefinacion/${id}`);
   return response.data;
 };
+export const obtenerCortesRefinacionPorRefineria = async (
+  idRefineria: string
+) => {
+  const { data } = await apiClient.get(
+    `/corteRefinacion/refineria/${idRefineria}`
+  );
+  return data; // { total: number, cortes: CorteRefinacion[] }
+};

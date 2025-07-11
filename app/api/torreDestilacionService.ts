@@ -30,3 +30,8 @@ export const deleteTorreDestilacion = async (id: string) => {
   const response = await apiClient.delete(`/torre/${id}`);
   return response.data;
 };
+
+export const obtenerTorresPorRefineria = async (idRefineria: string) => {
+  const response = await apiClient.get(`/torre/refineria/${idRefineria}`);
+  return response.data; // { total, torres }
+};

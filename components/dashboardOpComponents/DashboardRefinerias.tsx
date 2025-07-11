@@ -1,24 +1,30 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { getRefinerias } from "@/app/api/refineriaService";
 import { useRouter } from "next/navigation";
 import { useRefineriaStore } from "@/store/refineriaStore";
 import { getRecepcions } from "@/app/api/recepcionService";
 // import GraficaRecepcionesPorRefineria from "./GraficaRecepcionesPorRefineria";
 // import RecepcionDashboard from "./RecepcionDashboard";
-import { Bunkering, Recepcion } from "@/libs/interfaces";
+import { Bunkering, Despacho, Recepcion } from "@/libs/interfaces";
 import { getBunkerings } from "@/app/api/bunkering/bunkeringService";
 import { useSession } from "next-auth/react";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { Button } from "primereact/button";
 // import NoDataIllustration from "@/assets/images/no-data.svg";
 import { motion } from "framer-motion";
+import GraficaRecepcionesPorRefineria from "./GraficaRecepcionesPorRefineria";
+import { getDespachos } from "@/app/api/despachoService";
+import GraficaDespachoPorRefineria from "./GraficaDespachoPorRefineria";
+import CardRecepcionesPorRefineria from "./CardRecepcionesPorRefineria";
+import CardDespachoPorRefineria from "./CardDespachoPorRefineria";
 
 const DashboardRefinerias = () => {
   const { data: session } = useSession();
   const user = session?.user;
   const [refinerias, setRefinerias] = useState<any[]>([]);
   const [recepcions, setRecepcions] = useState<Recepcion[]>([]);
+  const [despachos, setDespachos] = useState<Despacho[]>([]);
   const [bunkerings, setBunkerings] = useState<Bunkering[]>([]);
   const [loading, setLoading] = useState(true);
   const { activeRefineria, setActiveRefineria } = useRefineriaStore();
@@ -86,6 +92,22 @@ const DashboardRefinerias = () => {
     };
 
     fetchRecepcions();
+  }, []);
+  useEffect(() => {
+    const fetchDepachos = async () => {
+      try {
+        const data = await getDespachos();
+        const { despachos: dataDespachos } = data;
+        if (Array.isArray(dataDespachos)) {
+          setDespachos(dataDespachos);
+        } else {
+          console.error("La respuesta no es un array:", dataDespachos);
+        }
+      } catch (error) {
+        console.error("Error al obtener los despachos:", error);
+      }
+    };
+    fetchDepachos();
   }, []);
   const handleDivClick = (refineria: any) => {
     setActiveRefineria(refineria);
@@ -214,13 +236,36 @@ const DashboardRefinerias = () => {
             </div>
           </div>
         ))}
+      {/* <div className="col-12">
+        {CardRecepcionesPorRefineria ? (
+          <CardRecepcionesPorRefineria recepcions={recepcions} />
+        ) : (
+          <p>Error loading chart component</p>
+        )}{" "}
+      </div>
       <div className="col-12">
+        {CardDespachoPorRefineria ? (
+          <CardDespachoPorRefineria despachos={despachos} />
+        ) : (
+          <p>Error loading chart component</p>
+        )}{" "}
+      </div> */}
+
+      <div className="ol-12 md:col-6 ">
         {/* <RecepcionDashboard recepcions={recepcions} /> */}
-        {/* {GraficaRecepcionesPorRefineria ? (
+        {GraficaRecepcionesPorRefineria ? (
           <GraficaRecepcionesPorRefineria recepcions={recepcions} />
         ) : (
           <p>Error loading chart component</p>
-        )}{" "} */}
+        )}{" "}
+      </div>
+      <div className="ol-12 md:col-6 ">
+        {/* <RecepcionDashboard recepcions={recepcions} /> */}
+        {GraficaDespachoPorRefineria ? (
+          <GraficaDespachoPorRefineria despachos={despachos} />
+        ) : (
+          <p>Error loading chart component</p>
+        )}{" "}
       </div>
     </div>
   );

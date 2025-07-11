@@ -18,11 +18,12 @@ import {
   Bar,
 } from "recharts";
 import { getRefinerias } from "@/app/api/refineriaService";
-import { useRefineryData } from "@/hooks/useRefineryData";
+
 import { TipoProducto } from "@/libs/interfaces";
 import { useRefineryPrecios } from "@/hooks/useRefineryPrecios";
 import { Tag } from "primereact/tag";
 import { ProgressSpinner } from "primereact/progressspinner";
+import { useByRefineryData } from "@/hooks/useByRefineryData";
 
 const barrelUnit = "BBL";
 const dollarPerBarrelUnit = "$/BBL";
@@ -185,7 +186,7 @@ function ComprasCard() {
   const [selectedRefineria, setSelectedRefineria] = useState<Refineria | null>(
     null
   );
-  const { tipoProductos, loading: loadingData } = useRefineryData(
+  const { tipoProductos, loading: loadingData } = useByRefineryData(
     selectedRefineria?.id || ""
   );
   const [referencias, setReferencias] = useState<Referencia[]>([]);

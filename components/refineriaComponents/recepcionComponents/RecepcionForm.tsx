@@ -15,7 +15,6 @@ import { Calendar } from "primereact/calendar";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { truncateText } from "@/utils/funcionesUtiles";
 import { Steps } from "primereact/steps";
-import { useRefineryData } from "@/hooks/useRefineryData";
 
 import {
   fieldRulesCarga,
@@ -36,6 +35,7 @@ import { Dialog } from "primereact/dialog";
 import { Recepcion } from "@/libs/interfaces";
 import { handleFormError } from "@/utils/errorHandlers";
 import { Toast } from "primereact/toast";
+import { useByRefineryData } from "@/hooks/useByRefineryData";
 
 type FormData = z.infer<typeof recepcionSchema>;
 
@@ -65,7 +65,7 @@ const RecepcionForm = ({
 }: RecepcionFormProps) => {
   const { activeRefineria } = useRefineriaStore();
   console.log("despacho?.idChequeoCalidad?.numeroChequeoCalidad", recepcion);
-  const { tanques, contratos, lineaRecepcions, loading } = useRefineryData(
+  const { tanques, contratos, lineaRecepcions, loading } = useByRefineryData(
     activeRefineria?.id || ""
   );
   const calendarRef = useRef<Calendar>(null);

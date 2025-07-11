@@ -20,3 +20,11 @@ export const deleteLineaDespacho = async (id: string) => {
   const response = await apiClient.delete(`/lineaDespacho/${id}`);
   return response.data;
 };
+export const obtenerLineasDespachoPorRefineria = async (
+  idRefineria: string
+) => {
+  const { data } = await apiClient.get(
+    `/lineaDespacho/refineria/${idRefineria}`
+  );
+  return data; // { total: number, lineaDespachos: LineaDespacho[] }
+};

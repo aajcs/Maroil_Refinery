@@ -15,7 +15,6 @@ import { Calendar } from "primereact/calendar";
 import { CorteRefinacion } from "@/libs/interfaces";
 import { ProgressSpinner } from "primereact/progressspinner";
 
-import { useRefineryData } from "@/hooks/useRefineryData";
 import { InputTextarea } from "primereact/inputtextarea";
 import {
   createCorteRefinacion,
@@ -23,6 +22,7 @@ import {
 } from "@/app/api/corteRefinacionService";
 import CustomCalendar from "@/components/common/CustomCalendar";
 import { handleFormError } from "@/utils/errorHandlers";
+import { useByRefineryData } from "@/hooks/useByRefineryData";
 
 type FormData = z.infer<typeof corteRefinacionSchema>;
 
@@ -36,8 +36,7 @@ interface CorteRefinacionFormProps {
     summary: string,
     detail: string
   ) => void;
-    toast: React.RefObject<Toast> | null;
-  
+  toast: React.RefObject<Toast> | null;
 }
 
 const CorteRefinacionForm = ({
@@ -49,7 +48,7 @@ const CorteRefinacionForm = ({
   showToast,
 }: CorteRefinacionFormProps) => {
   const { activeRefineria } = useRefineriaStore();
-  const { productos, loading, tanques, torresDestilacion } = useRefineryData(
+  const { productos, loading, tanques, torresDestilacions } = useByRefineryData(
     activeRefineria?.id || ""
   );
   const calendarRef = useRef<Calendar>(null);
@@ -83,7 +82,7 @@ const CorteRefinacionForm = ({
     try {
       if (!activeRefineria) throw new Error("No hay refinería activa");
 
-      const corteTorre = torresDestilacion.map((torre, torreIndex) => {
+      const corteTorre = torresDestilacions.map((torre, torreIndex) => {
         // Combinar materiales torre + materias primas
         const materiasPrimas = productos.filter(
           (p) => p.tipoMaterial === "Materia Prima"
@@ -153,8 +152,7 @@ const CorteRefinacionForm = ({
 
       hideCorteRefinacionFormDialog();
     } catch (error) {
-     handleFormError(error, toast); // Pasamos la referencia del toast
-      
+      handleFormError(error, toast); // Pasamos la referencia del toast
     } finally {
       setSubmitting(false);
     }
@@ -191,7 +189,7 @@ const CorteRefinacionForm = ({
           <div className="grid formgrid row-gap-2">
             {/* Torres de Destilación */}
             <div className="col-12">
-              {torresDestilacion.map((torre, torreIndex) => {
+              {torresDestilacions.map((torre, torreIndex) => {
                 const materiasPrimas = productos.filter(
                   (p) => p.tipoMaterial === "Materia Prima"
                 );
@@ -386,50 +384,50 @@ const CorteRefinacionForm = ({
                 )}
               </div>
             </div> */}
-           {/* Campo: Fecha de Corte */}
-                      <div className="col-12 md:col-6 lg:col-4 xl:col-3">
-                        <div className="p-2 bg-white border-round shadow-1 surface-card">
-                          <label className="block font-medium text-900 mb-3 flex align-items-center">
-                            <i className="pi pi-calendar mr-2 text-primary"></i>
-                            Fecha de Corte
-                          </label>
-                          <Controller
-                            name="fechaCorte"
-                            control={control}
-                            render={({ field, fieldState }) => (
-                              <>
-                                <CustomCalendar
-                                  {...field}
-                                  name="fechaCorte"
-                                  control={control}
-                                  setValue={setValue}
-                                  calendarRef={calendarRef}
-                                  isFieldEnabled={false}
-                                  value={
-                                    field.value
-                                      ? new Date(field.value as string | Date)
-                                      : null
-                                  }
-                                  onChange={field.onChange}
-                                />
-          
-                                {fieldState.error && (
-                                  <small className="p-error block mt-2 flex align-items-center">
-                                    <i className="pi pi-exclamation-circle mr-2"></i>
-                                    {fieldState.error.message}
-                                  </small>
-                                )}
-                              </>
-                            )}
-                          />
-                          {errors.fechaCorte && (
-                            <small className="p-error block mt-2 flex align-items-center">
-                              <i className="pi pi-exclamation-circle mr-2"></i>
-                              {errors.fechaCorte.message}
-                            </small>
-                          )}
-                        </div>
-                      </div>
+            {/* Campo: Fecha de Corte */}
+            <div className="col-12 md:col-6 lg:col-4 xl:col-3">
+              <div className="p-2 bg-white border-round shadow-1 surface-card">
+                <label className="block font-medium text-900 mb-3 flex align-items-center">
+                  <i className="pi pi-calendar mr-2 text-primary"></i>
+                  Fecha de Corte
+                </label>
+                <Controller
+                  name="fechaCorte"
+                  control={control}
+                  render={({ field, fieldState }) => (
+                    <>
+                      <CustomCalendar
+                        {...field}
+                        name="fechaCorte"
+                        control={control}
+                        setValue={setValue}
+                        calendarRef={calendarRef}
+                        isFieldEnabled={false}
+                        value={
+                          field.value
+                            ? new Date(field.value as string | Date)
+                            : null
+                        }
+                        onChange={field.onChange}
+                      />
+
+                      {fieldState.error && (
+                        <small className="p-error block mt-2 flex align-items-center">
+                          <i className="pi pi-exclamation-circle mr-2"></i>
+                          {fieldState.error.message}
+                        </small>
+                      )}
+                    </>
+                  )}
+                />
+                {errors.fechaCorte && (
+                  <small className="p-error block mt-2 flex align-items-center">
+                    <i className="pi pi-exclamation-circle mr-2"></i>
+                    {errors.fechaCorte.message}
+                  </small>
+                )}
+              </div>
+            </div>
 
             {/* Observación */}
             <div className="col-12 md:col-6 lg:col-4">

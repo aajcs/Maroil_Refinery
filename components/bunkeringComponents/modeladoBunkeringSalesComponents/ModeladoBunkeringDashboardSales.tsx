@@ -1,16 +1,16 @@
 "use client";
 
-import { useRefineryData } from "@/hooks/useRefineryData";
 import { useSocket } from "@/hooks/useSocket";
 import { useRefineriaStore } from "@/store/refineriaStore";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { useMemo } from "react";
 import ModeladoBunkeringContratosSalesList from "./ModeladoBunkeringContratosSalesList";
+import { useByRefineryData } from "../../../hooks/useByRefineryData";
 
 const ModeladoBunkeringDashboardSales = () => {
   const { activeRefineria } = useRefineriaStore();
   const { recepcionModificado } = useSocket(); // Obtén recepcionModificado desde el socket
-  const { recepcions, contratos, loading } = useRefineryData(
+  const { recepcions, contratos, loading } = useByRefineryData(
     activeRefineria?.id || "",
     recepcionModificado || undefined // Pasa recepcionModificado como dependencia
   );

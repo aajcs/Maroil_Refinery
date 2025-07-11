@@ -27,3 +27,8 @@ export const deleteRecepcion = async (id: string) => {
   const response = await apiClient.delete(`/recepcion/${id}`);
   return response.data;
 };
+
+export const obtenerRecepcionesPorRefineria = async (idRefineria: string) => {
+  const { data } = await apiClient.get(`/recepcion/refineria/${idRefineria}`);
+  return data; // { total: number, recepciones: Recepcion[] }
+};

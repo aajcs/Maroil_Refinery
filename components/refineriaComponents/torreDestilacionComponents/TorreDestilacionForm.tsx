@@ -33,7 +33,7 @@ interface TorreDestilacionFormProps {
     summary: string,
     detail: string
   ) => void;
-   toast: React.RefObject<Toast> | null;
+  toast: React.RefObject<Toast> | null;
 }
 
 const estatusValues = ["true", "false"];
@@ -131,7 +131,7 @@ const TorreDestilacionForm = ({
       }
       hideTorreDestilacionFormDialog();
     } catch (error) {
-     handleFormError(error, toast); // Pasamos la referencia del toast
+      handleFormError(error, toast); // Pasamos la referencia del toast
     } finally {
       setSubmitting(false);
     }
@@ -273,6 +273,7 @@ const TorreDestilacionForm = ({
                   maxSelectedLabels={3}
                   className="w-full mb-3"
                   disabled={loading}
+                  selectAllLabel="Seleccionar todos"
                 />
 
                 {/* Inputs de Porcentaje */}

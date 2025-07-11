@@ -12,14 +12,19 @@ import { useRefineriaStore } from "@/store/refineriaStore";
 import { InputTextarea } from "primereact/inputtextarea";
 import { InputNumber } from "primereact/inputnumber";
 import { useBunkeringData } from "@/hooks/useBunkeringData";
-import { useRefineryData } from "@/hooks/useRefineryData";
+
 import { ProgressSpinner } from "primereact/progressspinner";
 import { Calendar } from "primereact/calendar";
 import { handleFormError } from "@/utils/errorHandlers";
 import CustomCalendar from "@/components/common/CustomCalendar";
-import { getRecepcions, createRecepcion, updateRecepcion } from "@/app/api/recepcionService";
+import {
+  getRecepcions,
+  createRecepcion,
+  updateRecepcion,
+} from "@/app/api/recepcionService";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import ReporteRecepcionTemplate from "@/components/pdf/templates/reportesLogisticaTemplate";
+import { useByRefineryData } from "@/hooks/useByRefineryData";
 
 const recepcionSchema = z.object({
   idContrato: z.object({
@@ -59,7 +64,7 @@ const ReportesLogisticaForm = ({
   showToast,
 }: ReportesLogisticaFormProps) => {
   const { activeRefineria } = useRefineriaStore();
-  const { contratos, loading } = useRefineryData(activeRefineria?.id || "");
+  const { contratos, loading } = useByRefineryData(activeRefineria?.id || "");
   const calendarRef = useRef<Calendar>(null);
 
   const [submitting, setSubmitting] = useState(false);
@@ -101,7 +106,8 @@ const ReportesLogisticaForm = ({
         const updatedRecepciones = recepciones?.map((t) =>
           t.id === updatedRecepcion.id ? updatedRecepcion : t
         );
-        if (updatedRecepciones && setRecepciones) setRecepciones(updatedRecepciones);
+        if (updatedRecepciones && setRecepciones)
+          setRecepciones(updatedRecepciones);
         showToast("success", "Éxito", "Recepción actualizada");
       } else {
         if (!activeRefineria)
@@ -147,7 +153,10 @@ const ReportesLogisticaForm = ({
   };
 
   const renderRecepcionesTable = (data: any) => (
-    <div className="overflow-x-auto mt-4" style={{ maxWidth: "1200px", margin: "0 auto" }}>
+    <div
+      className="overflow-x-auto mt-4"
+      style={{ maxWidth: "1200px", margin: "0 auto" }}
+    >
       <table className="min-w-[900px] w-full text-sm border border-200">
         <thead>
           <tr className="bg-blue-50 text-blue-900">
@@ -162,9 +171,15 @@ const ReportesLogisticaForm = ({
         <tbody>
           {data.recepciones.map((r: any, idx: number) => (
             <tr key={idx} className="hover:bg-blue-50">
-              <td className="p-2 border-b">{r.fecha ? new Date(r.fecha).toLocaleDateString() : ""}</td>
-              <td className="p-2 border-b">{r.idContrato?.numeroContrato || ""}</td>
-              <td className="p-2 border-b">{r.idContrato?.idContacto?.nombre || ""}</td>
+              <td className="p-2 border-b">
+                {r.fecha ? new Date(r.fecha).toLocaleDateString() : ""}
+              </td>
+              <td className="p-2 border-b">
+                {r.idContrato?.numeroContrato || ""}
+              </td>
+              <td className="p-2 border-b">
+                {r.idContrato?.idContacto?.nombre || ""}
+              </td>
               <td className="p-2 border-b">{r.tipoProducto || ""}</td>
               <td className="p-2 border-b">{r.cantidad}</td>
               <td className="p-2 border-b">{r.observacion || ""}</td>
@@ -173,8 +188,15 @@ const ReportesLogisticaForm = ({
         </tbody>
         <tfoot>
           <tr className="font-bold bg-blue-100">
-            <td className="p-2 border-t" colSpan={4}>Total</td>
-            <td className="p-2 border-t">{data.recepciones.reduce((acc: number, r: any) => acc + Number(r.cantidad ?? 0), 0)}</td>
+            <td className="p-2 border-t" colSpan={4}>
+              Total
+            </td>
+            <td className="p-2 border-t">
+              {data.recepciones.reduce(
+                (acc: number, r: any) => acc + Number(r.cantidad ?? 0),
+                0
+              )}
+            </td>
             <td className="p-2 border-t"></td>
           </tr>
         </tfoot>
@@ -223,7 +245,9 @@ const ReportesLogisticaForm = ({
                         id="idContrato"
                         {...field}
                         options={contratos.map((contrato) => ({
-                          label: `${contrato.numeroContrato} - ${contrato.descripcion || "Sin descripción"}`,
+                          label: `${contrato.numeroContrato} - ${
+                            contrato.descripcion || "Sin descripción"
+                          }`,
                           value: {
                             id: contrato.id,
                             numeroContrato: contrato.numeroContrato,
@@ -387,7 +411,10 @@ const ReportesLogisticaForm = ({
       </form>
 
       {/* Reporte de Recepciones */}
-      <div className="card p-3 mt-5 border-round shadow-2" style={{ maxWidth: 1300, margin: "0 auto" }}>
+      <div
+        className="card p-3 mt-5 border-round shadow-2"
+        style={{ maxWidth: 1300, margin: "0 auto" }}
+      >
         <h3 className="mb-4 text-lg font-semibold text-center text-primary">
           Reporte de Recepciones
         </h3>
@@ -448,14 +475,21 @@ const ReportesLogisticaForm = ({
                       document={
                         <ReporteRecepcionTemplate
                           data={reporteData}
-                          logoUrl={activeRefineria?.img || "/layout/images/avatarHombre.png"}
+                          logoUrl={
+                            activeRefineria?.img ||
+                            "/layout/images/avatarHombre.png"
+                          }
                         />
                       }
                       fileName={`ReporteRecepciones_${fechaInicio?.toLocaleDateString()}_${fechaFin?.toLocaleDateString()}.pdf`}
                       className="p-button p-component p-button-success"
                     >
                       {({ loading }) =>
-                        loading ? <span>Generando PDF...</span> : <span>Descargar Reporte PDF</span>
+                        loading ? (
+                          <span>Generando PDF...</span>
+                        ) : (
+                          <span>Descargar Reporte PDF</span>
+                        )
                       }
                     </PDFDownloadLink>
                     <Button
@@ -475,7 +509,9 @@ const ReportesLogisticaForm = ({
               </>
             ) : (
               <div className="flex flex-col items-center gap-3 justify-center mt-4">
-                <span className="text-lg text-900 font-semibold mb-2">No hay información para mostrar en este reporte.</span>
+                <span className="text-lg text-900 font-semibold mb-2">
+                  No hay información para mostrar en este reporte.
+                </span>
                 <Button
                   label="Volver"
                   icon="pi pi-times"

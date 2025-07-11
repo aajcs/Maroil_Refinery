@@ -20,3 +20,7 @@ export const deleteSubPartida = async (id: string) => {
   const response = await apiClient.delete(`/subpartida/${id}`);
   return response.data;
 };
+export const obtenerSubPartidasPorRefineria = async (idRefineria: string) => {
+  const { data } = await apiClient.get(`/subpartida/partida/${idRefineria}`);
+  return data; // { total: number, subpartidas: SubPartida[] }
+};

@@ -20,3 +20,11 @@ export const deleteChequeoCantidad = async (id: string) => {
   const response = await apiClient.delete(`/chequeoCantidad/${id}`);
   return response.data;
 };
+export const obtenerChequeosCantidadPorRefineria = async (
+  idRefineria: string
+) => {
+  const { data } = await apiClient.get(
+    `/chequeoCantidad/refineria/${idRefineria}`
+  );
+  return data; // { total: number, chequeos: ChequeoCantidad[] }
+};

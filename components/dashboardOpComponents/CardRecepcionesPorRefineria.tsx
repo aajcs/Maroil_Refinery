@@ -134,7 +134,7 @@ const annualChartOptions = {
   },
 };
 
-const GraficaRecepcionesPorRefineria = ({
+const CardRecepcionesPorRefineria = ({
   recepcions = [],
 }: {
   recepcions: Recepcion[];
@@ -227,29 +227,119 @@ const GraficaRecepcionesPorRefineria = ({
 
   return (
     <div className="fluid">
-      {/* Gráfico Anual */}
-
-      <Card
-        title={`Comportamiento Anual de recepcion de materia prima ${getYear(
-          new Date()
-        )}`}
-      >
-        <div>
-          <Chart
-            type="line"
-            data={annualChartData}
-            options={annualChartOptions}
-            style={{ minHeight: "200px" }}
-          />
+      <div className="grid ">
+        {/* Selector de Mes */}
+        <div className="col-12 md:col-3 lg:col-2">
+          <Card title="Selección de Mes" className="mb-4">
+            <Dropdown
+              value={selectedMonth}
+              options={availableMonths}
+              onChange={(e) => setSelectedMonth(e.value)}
+              optionLabel="label"
+              placeholder="Seleccione un mes"
+              style={{ width: "100%" }}
+            />
+          </Card>
         </div>
-        <div className="text-center mt-3">
-          <small className="text-secondary">
-            Línea continua: Enviados | Línea punteada: Recibidos
-          </small>
+        {/* Tarjetas de Refinerías */}
+        <div className="col-12 md:col-9 lg:col-10">
+          <div className="grid">
+            {refineriasData.map((refineria, index) => (
+              <div className="col-12 md:col-6 lg:col-4" key={index}>
+                <div className="p-2">
+                  <div
+                    className="card p-3"
+                    style={{
+                      borderLeft: `4px solid ${
+                        index % 2 ? "#42A5F5" : "#66BB6A"
+                      }`,
+                      borderRadius: "8px",
+                      boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+                    }}
+                  >
+                    <div className="flex justify-content-between align-items-center mb-3">
+                      <h5 style={{ margin: 0 }}>{refineria.nombre}</h5>
+                    </div>
+                    <div className="grid">
+                      <div className="col-12">
+                        <div className="flex justify-content-between mb-2">
+                          <span>Enviado:</span>
+                          <div>
+                            <strong>
+                              {refineria.enviado.toLocaleString()}
+                            </strong>
+                            <span
+                              style={{
+                                color: getColor(
+                                  refineria.diferenciaPorcentaje.enviado
+                                ),
+                                marginLeft: "0.5rem",
+                                fontSize: "0.9em",
+                              }}
+                            >
+                              (
+                              {refineria.diferenciaPorcentaje.enviado.toFixed(
+                                1
+                              )}
+                              %)
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex justify-content-between mb-2">
+                          <span>Recibido:</span>
+                          <div>
+                            <strong>
+                              {refineria.recibido.toLocaleString()}
+                            </strong>
+                            <span
+                              style={{
+                                color: getColor(
+                                  refineria.diferenciaPorcentaje.recibido
+                                ),
+                                marginLeft: "0.5rem",
+                                fontSize: "0.9em",
+                              }}
+                            >
+                              (
+                              {refineria.diferenciaPorcentaje.recibido.toFixed(
+                                1
+                              )}
+                              %)
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex justify-content-between">
+                          <span>Recepciones:</span>
+                          <div>
+                            <strong>{refineria.recepciones}</strong>
+                            <span
+                              style={{
+                                color: getColor(
+                                  refineria.diferenciaPorcentaje.recepciones
+                                ),
+                                marginLeft: "0.5rem",
+                                fontSize: "0.9em",
+                              }}
+                            >
+                              (
+                              {refineria.diferenciaPorcentaje.recepciones.toFixed(
+                                1
+                              )}
+                              %)
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
-      </Card>
+      </div>
     </div>
   );
 };
 
-export default GraficaRecepcionesPorRefineria;
+export default CardRecepcionesPorRefineria;
