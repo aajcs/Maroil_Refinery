@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -15,6 +15,7 @@ import { Checkbox } from "primereact/checkbox";
 import { InputTextarea } from "primereact/inputtextarea";
 import { InputNumber } from "primereact/inputnumber";
 import { handleFormError } from "@/utils/errorHandlers";
+import { LayoutContext } from "@/layout/context/layoutcontext";
 
 type FormData = z.infer<typeof contactoSchema>;
 
@@ -36,6 +37,7 @@ interface ContactoFormProps {
 const estatusValues = ["true", "false"];
 const tipoValues = ["Cliente", "Proveedor"]; // Valores para el campo "tipo"
 
+
 const ContactoForm = ({
   contacto,
   toast,
@@ -45,6 +47,8 @@ const ContactoForm = ({
   showToast,
 }: ContactoFormProps) => {
   const { activeRefineria } = useRefineriaStore();
+const { layoutConfig } = useContext(LayoutContext);
+const filledInput = layoutConfig.inputStyle === "filled";
 
   const [submitting, setSubmitting] = useState(false);
   const {
@@ -57,7 +61,7 @@ const ContactoForm = ({
   } = useForm<FormData>({
     resolver: zodResolver(contactoSchema),
     defaultValues: {
-      telefono: 0,
+    telefono: "",
     },
   });
 
@@ -205,24 +209,41 @@ const ContactoForm = ({
                   control={control}
                   render={({ field, fieldState }) => (
                     <>
-                      <InputNumber
-                        id="telefono"
-                        value={field.value}
-                        onValueChange={(e) => field.onChange(e.value ?? 0)}
-                        useGrouping={false}
-                        // min={1000000} // Mínimo 7 dígitos
-                        // max={9999999999} // Máximo 10 dígitos
-                        className={classNames("w-full", {
-                          "p-invalid": fieldState.error,
-                        })}
-                      />
-                      {fieldState.error && (
-                        <small className="p-error block mt-2 flex align-items-center">
-                          <i className="pi pi-exclamation-circle mr-2"></i>
-                          {fieldState.error.message}
-                        </small>
-                      )}
-                    </>
+                                          <InputText
+                                            id="telefono"
+                                            placeholder="+584248286102"
+                                            className={classNames("w-full", {
+                                              "p-invalid": fieldState.error,
+                                              "pl-5": filledInput,
+                                            })}
+                                            value={field.value}
+                                            onChange={(e) => {
+                                              const value = e.target.value;
+                                              // Forzar que siempre empiece con +
+                                              if (value === "") {
+                                                field.onChange("");
+                                              } else if (value === "+") {
+                                                field.onChange("+");
+                                              } else {
+                                                // Filtrar solo números y mantener el + inicial
+                                                const numericValue = value.replace(/[^0-9]/g, "");
+                                                field.onChange("+" + numericValue);
+                                              }
+                                            }}
+                                            onKeyDown={(e) => {
+                                              // Prevenir borrado del signo +
+                                              if (e.key === "Backspace" && field.value === "+") {
+                                                e.preventDefault();
+                                              }
+                                            }}
+                                          />
+                                          {fieldState.error && (
+                                            <small className="p-error block mt-2 flex align-items-center">
+                                              <i className="pi pi-exclamation-circle mr-2"></i>
+                                              {fieldState.error.message}
+                                            </small>
+                                          )}
+                                        </>
                   )}
                 />
               </div>

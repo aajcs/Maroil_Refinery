@@ -17,6 +17,7 @@ import { InputSwitch } from "primereact/inputswitch";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { InputNumber } from "primereact/inputnumber";
 import { handleFormError } from "@/utils/errorHandlers";
+import { useByRefineryData } from "@/hooks/useByRefineryData";
 
 type FormData = z.infer<typeof tanqueSchema>;
 
@@ -51,7 +52,7 @@ const TanqueForm = ({
   toast,
 }: TanqueFormProps) => {
   const { activeRefineria } = useRefineriaStore();
-  const { productos, loading } = useRefineryData(activeRefineria?.id as string);
+  const { productos, loading } = useByRefineryData(activeRefineria?.id as string);
 
   const [submitting, setSubmitting] = useState(false);
   const {

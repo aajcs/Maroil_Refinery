@@ -22,6 +22,7 @@ import { MultiSelect } from "primereact/multiselect";
 import { Rendimiento } from "@/libs/interfaces";
 import { Dialog } from "primereact/dialog";
 import { handleFormError } from "@/utils/errorHandlers";
+import { useByRefineryData } from "@/hooks/useByRefineryData";
 
 type FormData = z.infer<typeof tipoProductoSchema>;
 
@@ -53,7 +54,7 @@ const TipoProductoForm = ({
   tipoProductoFormDialog,
 }: TipoProductoFormProps) => {
   const { activeRefineria } = useRefineriaStore();
-  const { productos, loading } = useRefineryData(activeRefineria?.id || "");
+  const { productos, loading } = useByRefineryData(activeRefineria?.id || "");
   const [selectedRendimientos, setSelectedRendimientos] = useState<
     Rendimiento[]
   >([]);

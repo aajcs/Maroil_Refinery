@@ -40,7 +40,7 @@ type SubPartidaFormProps = {
 type MinimalSubPartida = {
   codigo: number;
   descripcion: string;
-  idPartida: number;
+  idPartida: string;
   id?: string; // Agregado para manejar la actualización
 };
 
@@ -81,14 +81,13 @@ const {
   watch,
 } = useForm<MinimalSubPartida>({
   resolver: zodResolver(
-    subPartidaSchema.pick(["id", "descripcion", "idPartida"])
-  ),
+    subPartidaSchema  ),
 });
   const watchIdPartida = watch("idPartida");
   useEffect(() => {
     if (subPartida) {
       setValue("id", subPartida.id);
-    
+      setValue("codigo", subPartida.codigo);
       setValue("descripcion", subPartida.descripcion);
       setValue("idPartida", subPartida.idPartida);
     }

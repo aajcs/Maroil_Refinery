@@ -11,10 +11,13 @@ export const contactoSchema = object({
     .max(13, { message: "El NIT no puede tener más de 13 caracteres" }), // Valida longitud máxima
   correo: string().email("El correo debe ser válido"),
   direccion: string().min(1, "La dirección es obligatoria"),
-  telefono: number()
-    .min(1000000, { message: "El teléfono debe tener al menos 7 dígitos" })
-    .max(9999999999, {
-      message: "El teléfono no puede tener más de 10 dígitos",
+   telefono: string()
+    .nonempty("El teléfono es obligatorio")
+    .min(8, "El teléfono debe tener al menos 8 dígitos")
+    .max(15, "El teléfono no puede exceder los 15 dígitos")
+    .regex(/^\+[1-9]\d+$/, {
+      message:
+        "Formato inválido. Use: +[código país][número]. Ej: +584248286102",
     }),
 
   tipo: string().min(1, "El tipo es obligatorio"),
