@@ -439,7 +439,7 @@ const ModeladoBunkeringTanque = ({
             {/* Detalles */}
             <g fontSize="17" fill="#495057">
               {/* Capacidad */}
-              <text x="15" y="65" font-weight="500">
+              {/* <text x="15" y="65" font-weight="500">
                 Capacidad Diseño:
               </text>
               <text
@@ -451,7 +451,7 @@ const ModeladoBunkeringTanque = ({
                 font-weight="600"
               >
                 {tanque.capacidad.toLocaleString()} bls
-              </text>
+              </text> */}
 
               {/* Nivel */}
               <text x="15" y="85" font-weight="500">

@@ -166,6 +166,12 @@ const formatDate = (dateString: string) => {
   return format(new Date(dateString), "dd/MM/yyyy HH:mm", { locale: es });
 };
 
+
+// Utilidad para poner la primera letra en mayúscula
+function capitalizeFirst(text: string) {
+  if (!text) return "";
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
 // Agrupa abonos por cliente (nombre de contacto)
 function groupAbonosByCliente(abonos: any[]) {
   const map: Record<string, any> = {};
@@ -249,14 +255,15 @@ const AbonosPorMesTemplate: React.FC<AbonosPorMesTemplateProps> = ({
         </View>
 
         {/* Título del reporte */}
-        <Text style={styles.reportTitle}>
-          Resumen de abonos {tipo} del periodo
-        </Text>
-        {periodo && (
-          <Text style={{ textAlign: "center", fontSize: 12, color: "#555", marginBottom: 8 }}>
-            {periodo}
-          </Text>
-        )}
+     <Text style={styles.reportTitle}>
+  {capitalizeFirst(`Resumen De Abonos De ${capitalizeFirst(tipo)} Del Periodo`)}
+</Text>
+{periodo && (
+  <Text style={{ textAlign: "center", fontSize: 12, color: "#555", marginBottom: 8 }}>
+    {periodo}
+  </Text>
+)}
+
 
         {/* Resumen general */}
         <View style={styles.section}>

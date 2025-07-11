@@ -151,7 +151,7 @@ const TipoProductoForm = ({
           <div className="border-bottom-2 border-primary pb-2">
             <h2 className="text-2xl font-bold text-900 mb-2 flex align-items-center justify-content-center md:justify-content-start">
               <i className="pi pi-check-circle mr-3 text-primary text-3xl"></i>
-              {tipoProducto ? "Editar" : "Agregar"} Tipo de Producto
+              {tipoProducto ? "Editar" : "Agregar"} Tipo de Crudo
             </h2>
           </div>
         </div>
@@ -198,34 +198,36 @@ const TipoProductoForm = ({
                 {/* Campo: Nombre del Producto */}
                 <div className="col-12 md:col-6 lg:col-4">
                   <div className="p-2 bg-white border-round shadow-1 surface-card">
-                    <label className="block font-medium text-900 mb-3 flex align-items-center">
-                      <i className="pi pi-box mr-2 text-primary"></i>
-                      Producto Asociado
-                    </label>
-                    <Dropdown
-                      id="idProducto"
-                      value={watch("idProducto")}
-                      onChange={(e) => setValue("idProducto", e.value)}
-                      options={productos.map((producto) => ({
-                        label: producto.nombre,
-                        value: {
-                          id: producto.id,
-                          _id: producto.id,
-                          nombre: producto.nombre,
-                          color: producto.color,
-                        },
-                      }))}
-                      placeholder="Seleccionar un producto"
-                      className={classNames("w-full", {
-                        "p-invalid": errors.idProducto?.nombre,
-                      })}
-                    />
-                    {errors.idProducto?.nombre && (
-                      <small className="p-error block mt-2 flex align-items-center">
-                        <i className="pi pi-exclamation-circle mr-2"></i>
-                        {errors.idProducto.nombre.message}
-                      </small>
-                    )}
+                  <label className="block font-medium text-900 mb-3 flex align-items-center">
+                    <i className="pi pi-box mr-2 text-primary"></i>
+                    Crudo Asociado
+                  </label>
+                  <Dropdown
+                    id="idProducto"
+                    value={watch("idProducto")}
+                    onChange={(e) => setValue("idProducto", e.value)}
+                    options={productos
+                    .filter((producto) => producto.tipoMaterial === "Materia Prima")
+                    .map((producto) => ({
+                      label: producto.nombre,
+                      value: {
+                      id: producto.id,
+                      _id: producto.id,
+                      nombre: producto.nombre,
+                      color: producto.color,
+                      },
+                    }))}
+                    placeholder="Seleccionar una materia prima"
+                    className={classNames("w-full", {
+                    "p-invalid": errors.idProducto?.nombre,
+                    })}
+                  />
+                  {errors.idProducto?.nombre && (
+                    <small className="p-error block mt-2 flex align-items-center">
+                    <i className="pi pi-exclamation-circle mr-2"></i>
+                    {errors.idProducto.nombre.message}
+                    </small>
+                  )}
                   </div>
                 </div>
                 {/* Campo: Nombre */}
@@ -541,209 +543,209 @@ const TipoProductoForm = ({
                 {/* Campo: Rendimientos */}
                 <div className="col-12">
                   <div className="p-2 bg-white border-round shadow-1 surface-card">
-                    <label className="block font-medium text-900 mb-3 flex align-items-center">
-                      <i className="pi pi-chart-bar mr-2 text-primary"></i>
-                      Rendimientos
-                    </label>
+                  <label className="block font-medium text-900 mb-3 flex align-items-center">
+                    <i className="pi pi-chart-bar mr-2 text-primary"></i>
+                    Rendimientos
+                  </label>
 
-                    {/* Selector de Productos para Rendimientos */}
-                    <MultiSelect
-                      value={selectedRendimientos.map((r) => r.idProducto)}
-                      options={productos}
-                      optionLabel="nombre"
-                      onChange={(e) => {
-                        const selectedIds = e.value;
-                        console.log("selectedIds", selectedIds);
-                        const nuevosRendimientos = selectedIds.map(
-                          (id: any) => {
-                            // Buscar si ya existe en los seleccionados
-                            const existente = selectedRendimientos.find(
-                              (r) => r.idProducto.id === id
-                            );
-                            return (
-                              existente || {
-                                idProducto: id,
-                                porcentaje: 0,
-                                transporte: 0,
-                                bunker: 0,
-                                costoVenta: 0,
-                                convenio: 0,
-                              }
-                            );
-                          }
-                        );
+                  {/* Selector de Productos para Rendimientos */}
+                  <MultiSelect
+                    value={selectedRendimientos.map((r) => r.idProducto)}
+                    options={productos.filter(
+                    (producto) => producto.tipoMaterial === "Derivado"
+                    )}
+                    optionLabel="nombre"
+                    onChange={(e) => {
+                    const selectedIds = e.value;
+                    const nuevosRendimientos = selectedIds.map(
+                      (id: any) => {
+                      const existente = selectedRendimientos.find(
+                        (r) => r.idProducto.id === id
+                      );
+                      return (
+                        existente || {
+                        idProducto: id,
+                        porcentaje: 0,
+                        transporte: 0,
+                        bunker: 0,
+                        costoVenta: 0,
+                        convenio: 0,
+                        }
+                      );
+                      }
+                    );
+                    setSelectedRendimientos(nuevosRendimientos);
+                    }}
+                    display="chip"
+                    placeholder="Seleccionar derivados"
+                    maxSelectedLabels={3}
+                    className="w-full mb-3"
+                    disabled={loading}
+                    selectAllLabel="Seleccionar todos"
+                  />
+
+                  {/* Inputs de Rendimientos */}
+                  {selectedRendimientos.map((rendimiento, index) => (
+                    <div
+                    key={index}
+                    className="p-3 mb-2 border-round shadow-1 flex align-items-center gap-4"
+                    style={{
+                      backgroundColor: `#${
+                      productos.find(
+                        (p) => p.id === rendimiento.idProducto?.id
+                      )?.color || "cccccc"
+                      }20`,
+                    }}
+                    >
+                    {/* Nombre del Producto */}
+                    <span className="font-bold text-primary w-6rem">
+                      {productos.find(
+                      (p) => p.id === rendimiento.idProducto?.id
+                      )?.nombre || "Producto"}
+                    </span>
+
+                    {/* Porcentaje */}
+                    <div className="flex flex-column align-items-start">
+                      <label
+                      htmlFor={`porcentaje-${index}`}
+                      className="block font-medium text-900"
+                      >
+                      Porcentaje
+                      </label>
+                      <InputNumber
+                      id={`porcentaje-${index}`}
+                      value={rendimiento.porcentaje}
+                      onValueChange={(e) => {
+                        const nuevosRendimientos = [
+                        ...selectedRendimientos,
+                        ];
+                        nuevosRendimientos[index].porcentaje =
+                        e.value || 0;
                         setSelectedRendimientos(nuevosRendimientos);
                       }}
-                      display="chip"
-                      placeholder="Seleccionar productos"
-                      maxSelectedLabels={3}
-                      className="w-full mb-3"
-                      disabled={loading}
-                      selectAllLabel="Seleccionar todos"
-                    />
+                      mode="decimal"
+                      min={0}
+                      max={100}
+                      suffix="%"
+                      className="w-6rem"
+                      />
+                    </div>
 
-                    {/* Inputs de Rendimientos */}
-                    {selectedRendimientos.map((rendimiento, index) => (
-                      <div
-                        key={index}
-                        className="p-3 mb-2 border-round shadow-1 flex align-items-center gap-4"
-                        style={{
-                          backgroundColor: `#${
-                            productos.find(
-                              (p) => p.id === rendimiento.idProducto?.id
-                            )?.color || "cccccc"
-                          }20`,
-                        }}
+                    {/* Transporte */}
+                    <div className="flex flex-column align-items-start">
+                      <label
+                      htmlFor={`transporte-${index}`}
+                      className="block font-medium text-900"
                       >
-                        {/* Nombre del Producto */}
-                        <span className="font-bold text-primary w-6rem">
-                          {productos.find(
-                            (p) => p.id === rendimiento.idProducto?.id
-                          )?.nombre || "Producto"}
-                        </span>
+                      Transporte
+                      </label>
+                      <InputNumber
+                      id={`transporte-${index}`}
+                      value={rendimiento.transporte}
+                      onValueChange={(e) => {
+                        const nuevosRendimientos = [
+                        ...selectedRendimientos,
+                        ];
+                        nuevosRendimientos[index].transporte =
+                        e.value || 0;
+                        setSelectedRendimientos(nuevosRendimientos);
+                      }}
+                      mode="decimal"
+                      min={0}
+                      className="w-6rem"
+                      placeholder="Transporte"
+                      />
+                    </div>
 
-                        {/* Porcentaje */}
-                        <div className="flex flex-column align-items-start">
-                          <label
-                            htmlFor={`porcentaje-${index}`}
-                            className="block font-medium text-900"
-                          >
-                            Porcentaje
-                          </label>
-                          <InputNumber
-                            id={`porcentaje-${index}`}
-                            value={rendimiento.porcentaje}
-                            onValueChange={(e) => {
-                              const nuevosRendimientos = [
-                                ...selectedRendimientos,
-                              ];
-                              nuevosRendimientos[index].porcentaje =
-                                e.value || 0;
-                              setSelectedRendimientos(nuevosRendimientos);
-                            }}
-                            mode="decimal"
-                            min={0}
-                            max={100}
-                            suffix="%"
-                            className="w-6rem"
-                          />
-                        </div>
+                    {/* Bunker */}
+                    <div className="flex flex-column align-items-start">
+                      <label
+                      htmlFor={`bunker-${index}`}
+                      className="block font-medium text-900"
+                      >
+                      Bunker
+                      </label>
+                      <InputNumber
+                      id={`bunker-${index}`}
+                      value={rendimiento.bunker}
+                      onValueChange={(e) => {
+                        const nuevosRendimientos = [
+                        ...selectedRendimientos,
+                        ];
+                        nuevosRendimientos[index].bunker = e.value || 0;
+                        setSelectedRendimientos(nuevosRendimientos);
+                      }}
+                      mode="decimal"
+                      min={0}
+                      className="w-6rem"
+                      placeholder="Bunker"
+                      />
+                    </div>
+                    {/* Convenio */}
+                    <div className="flex flex-column align-items-start">
+                      <label
+                      htmlFor={`convenio-${index}`}
+                      className="block font-medium text-900"
+                      >
+                      Convenio
+                      </label>
+                      <InputNumber
+                      id={`convenio-${index}`}
+                      value={rendimiento.convenio}
+                      onValueChange={(e) => {
+                        const nuevosRendimientos = [
+                        ...selectedRendimientos,
+                        ];
+                        nuevosRendimientos[index].convenio = e.value || 0;
+                        setSelectedRendimientos(nuevosRendimientos);
+                      }}
+                      mode="decimal"
+                      min={0}
+                      className="w-6rem"
+                      placeholder="Convenio"
+                      />
+                    </div>
+                    {/* Costo de Venta */}
+                    <div className="flex flex-column align-items-start">
+                      <label
+                      htmlFor={`costoVenta-${index}`}
+                      className="block font-medium text-900"
+                      >
+                      Costo de Venta
+                      </label>
+                      <InputNumber
+                      id={`costoVenta-${index}`}
+                      value={rendimiento.costoVenta}
+                      onValueChange={(e) => {
+                        const nuevosRendimientos = [
+                        ...selectedRendimientos,
+                        ];
+                        nuevosRendimientos[index].costoVenta =
+                        e.value || 0;
+                        setSelectedRendimientos(nuevosRendimientos);
+                      }}
+                      mode="decimal"
+                      min={0}
+                      className="w-6rem"
+                      placeholder="Costo Venta"
+                      />
+                    </div>
 
-                        {/* Transporte */}
-                        <div className="flex flex-column align-items-start">
-                          <label
-                            htmlFor={`transporte-${index}`}
-                            className="block font-medium text-900"
-                          >
-                            Transporte
-                          </label>
-                          <InputNumber
-                            id={`transporte-${index}`}
-                            value={rendimiento.transporte}
-                            onValueChange={(e) => {
-                              const nuevosRendimientos = [
-                                ...selectedRendimientos,
-                              ];
-                              nuevosRendimientos[index].transporte =
-                                e.value || 0;
-                              setSelectedRendimientos(nuevosRendimientos);
-                            }}
-                            mode="decimal"
-                            min={0}
-                            className="w-6rem"
-                            placeholder="Transporte"
-                          />
-                        </div>
-
-                        {/* Bunker */}
-                        <div className="flex flex-column align-items-start">
-                          <label
-                            htmlFor={`bunker-${index}`}
-                            className="block font-medium text-900"
-                          >
-                            Bunker
-                          </label>
-                          <InputNumber
-                            id={`bunker-${index}`}
-                            value={rendimiento.bunker}
-                            onValueChange={(e) => {
-                              const nuevosRendimientos = [
-                                ...selectedRendimientos,
-                              ];
-                              nuevosRendimientos[index].bunker = e.value || 0;
-                              setSelectedRendimientos(nuevosRendimientos);
-                            }}
-                            mode="decimal"
-                            min={0}
-                            className="w-6rem"
-                            placeholder="Bunker"
-                          />
-                        </div>
-                        {/* Convenio */}
-                        <div className="flex flex-column align-items-start">
-                          <label
-                            htmlFor={`convenio-${index}`}
-                            className="block font-medium text-900"
-                          >
-                            Convenio
-                          </label>
-                          <InputNumber
-                            id={`convenio-${index}`}
-                            value={rendimiento.convenio}
-                            onValueChange={(e) => {
-                              const nuevosRendimientos = [
-                                ...selectedRendimientos,
-                              ];
-                              nuevosRendimientos[index].convenio = e.value || 0;
-                              setSelectedRendimientos(nuevosRendimientos);
-                            }}
-                            mode="decimal"
-                            min={0}
-                            className="w-6rem"
-                            placeholder="Convenio"
-                          />
-                        </div>
-                        {/* Costo de Venta */}
-                        <div className="flex flex-column align-items-start">
-                          <label
-                            htmlFor={`costoVenta-${index}`}
-                            className="block font-medium text-900"
-                          >
-                            Costo de Venta
-                          </label>
-                          <InputNumber
-                            id={`costoVenta-${index}`}
-                            value={rendimiento.costoVenta}
-                            onValueChange={(e) => {
-                              const nuevosRendimientos = [
-                                ...selectedRendimientos,
-                              ];
-                              nuevosRendimientos[index].costoVenta =
-                                e.value || 0;
-                              setSelectedRendimientos(nuevosRendimientos);
-                            }}
-                            mode="decimal"
-                            min={0}
-                            className="w-6rem"
-                            placeholder="Costo Venta"
-                          />
-                        </div>
-
-                        {/* Botón para eliminar rendimiento */}
-                        <Button
-                          type="button"
-                          icon="pi pi-times"
-                          className="p-button-danger p-button-text"
-                          onClick={() => {
-                            const nuevosRendimientos =
-                              selectedRendimientos.filter(
-                                (_, i) => i !== index
-                              );
-                            setSelectedRendimientos(nuevosRendimientos);
-                          }}
-                        />
-                      </div>
-                    ))}
+                    {/* Botón para eliminar rendimiento */}
+                    <Button
+                      type="button"
+                      icon="pi pi-times"
+                      className="p-button-danger p-button-text"
+                      onClick={() => {
+                      const nuevosRendimientos =
+                        selectedRendimientos.filter(
+                        (_, i) => i !== index
+                        );
+                      setSelectedRendimientos(nuevosRendimientos);
+                      }}
+                    />
+                    </div>
+                  ))}
                   </div>
                 </div>
                 {/* Campo: Punto de Inflamación

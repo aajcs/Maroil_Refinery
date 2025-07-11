@@ -131,6 +131,12 @@ const formatDate = (dateString: string) => {
   return format(new Date(dateString), "dd/MM/yyyy HH:mm", { locale: es });
 };
 
+const capitalizeFirst = (text: string) => {
+  if (!text) return "";
+  return text.charAt(0).toUpperCase() + text.slice(1);
+};
+
+
 const AbonoTemplate: React.FC<AbonoTemplateProps> = ({
   data,
   logoUrl,
@@ -151,20 +157,21 @@ const AbonoTemplate: React.FC<AbonoTemplateProps> = ({
       <Page size="A4" orientation="portrait" style={styles.page}>
         {/* Encabezado */}
         <View style={styles.headerContainer}>
-          <Image
-            src={refineryLogo}
-            style={styles.logo}
-          />
-          <View>
-            <Text style={styles.refineryName}>{data.idRefineria?.nombre || "Refinería"}</Text>
-            <Text style={styles.operationNumber}>
-              Abono N° {data.numeroAbono}
-            </Text>
-            <Text style={styles.reportDate}>
-              Fecha: {formatDate(data.fecha)}
-            </Text>
-          </View>
-        </View>
+  <Image
+    src={refineryLogo}
+    style={styles.logo}
+  />
+  <View>
+    <Text style={styles.refineryName}>{data.idRefineria?.nombre || "Refinería"}</Text>
+    {/* Título del reporte con la primera letra en mayúscula */}
+    <Text style={styles.operationNumber}>
+      {capitalizeFirst("Abono N° " + (data.numeroAbono ?? ""))}
+    </Text>
+    <Text style={styles.reportDate}>
+      Fecha: {formatDate(data.fecha)}
+    </Text>
+  </View>
+</View>
 
         {/* Información del Contacto */}
         {contacto && Object.keys(contacto).length > 0 && (
