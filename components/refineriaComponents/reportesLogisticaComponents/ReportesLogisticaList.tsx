@@ -267,7 +267,7 @@ const ReportesLogisticaList: React.FC<ReportesLogisticaListProps> = ({
                     className="p-button-raised"
                     style={{
                       minWidth: 120,
-                      background: "#ef4444",
+                      background: "#22c55e",
                       border: "none",
                       color: "#fff",
                     }}

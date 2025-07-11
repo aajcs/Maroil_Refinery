@@ -256,7 +256,7 @@ const AbonosPorMesTemplate: React.FC<AbonosPorMesTemplateProps> = ({
 
         {/* Título del reporte */}
      <Text style={styles.reportTitle}>
-  {capitalizeFirst(`Resumen de abonos ${tipo} del periodo`)}
+  {capitalizeFirst(`Resumen De Abonos De ${capitalizeFirst(tipo)} Del Periodo`)}
 </Text>
 {periodo && (
   <Text style={{ textAlign: "center", fontSize: 12, color: "#555", marginBottom: 8 }}>
