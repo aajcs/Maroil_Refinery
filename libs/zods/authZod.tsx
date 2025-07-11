@@ -18,10 +18,13 @@ export const registerSchema = object({
 export const profileSchema = object({
   nombre: string().min(1, "El nombre es obligatorio"),
   correo: string().email("Correo electrónico inválido"),
-  telefono: number()
-    .min(1000000, { message: "El teléfono debe tener al menos 7 dígitos" })
-    .max(9999999999, {
-      message: "El teléfono no puede tener más de 10 dígitos",
+  telefono: string()
+    .nonempty("El teléfono es obligatorio")
+    .min(8, "El teléfono debe tener al menos 8 dígitos")
+    .max(15, "El teléfono no puede exceder los 15 dígitos")
+    .regex(/^\+[1-9]\d+$/, {
+      message:
+        "Formato inválido. Use: +[código país][número]. Ej: +584248286102",
     }),
   password: string()
     .optional()

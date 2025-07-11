@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -16,6 +16,7 @@ import { getRefinerias } from "@/app/api/refineriaService";
 import { MultiSelect } from "primereact/multiselect";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { InputNumber } from "primereact/inputnumber";
+import { LayoutContext } from "@/layout/context/layoutcontext";
 
 type FormData = z.infer<typeof profileSchema>;
 
@@ -31,11 +32,12 @@ const UsuarioForm = ({
   usuarios,
   setUsuarios,
 }: UsuarioFormProps) => {
+  const { layoutConfig } = useContext(LayoutContext);
   const toast = useRef<Toast | null>(null);
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
   const [refinerias, setRefinerias] = useState<Refineria[]>([]);
-
+  const filledInput = layoutConfig.inputStyle === "filled";
   const [loading, setLoading] = useState(true);
   const {
     register,
@@ -273,16 +275,33 @@ const UsuarioForm = ({
                   control={control}
                   render={({ field, fieldState }) => (
                     <>
-                      <InputNumber
+                      <InputText
                         id="telefono"
-                        value={field.value}
-                        onValueChange={(e) => field.onChange(e.value ?? 0)}
-                        useGrouping={false}
-                        // min={1000000} // Mínimo 7 dígitos
-                        // max={9999999999} // Máximo 10 dígitos
+                        placeholder="+584248286102"
                         className={classNames("w-full", {
                           "p-invalid": fieldState.error,
+                          "pl-5": filledInput,
                         })}
+                        value={field.value}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          // Forzar que siempre empiece con +
+                          if (value === "") {
+                            field.onChange("");
+                          } else if (value === "+") {
+                            field.onChange("+");
+                          } else {
+                            // Filtrar solo números y mantener el + inicial
+                            const numericValue = value.replace(/[^0-9]/g, "");
+                            field.onChange("+" + numericValue);
+                          }
+                        }}
+                        onKeyDown={(e) => {
+                          // Prevenir borrado del signo +
+                          if (e.key === "Backspace" && field.value === "+") {
+                            e.preventDefault();
+                          }
+                        }}
                       />
                       {fieldState.error && (
                         <small className="p-error block mt-2 flex align-items-center">
