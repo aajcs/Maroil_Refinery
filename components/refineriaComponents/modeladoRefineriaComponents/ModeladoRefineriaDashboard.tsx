@@ -321,7 +321,7 @@ const ModeladoRefineriaDashboard = () => {
             transition={{ duration: 0.9, type: "spring", bounce: 0.45 }}
             className="card p-3 lg-h-fullScreen"
           >
-            <AnimatedTitle text="Recepción de tractomula" />
+            <AnimatedTitle text="Recepciones" />
 
             {lineaRecepcions.map((lineaRecepcion) => (
               <div key={lineaRecepcion.id} className="mb-2">
@@ -341,7 +341,7 @@ const ModeladoRefineriaDashboard = () => {
             transition={{ duration: 0.7, type: "spring", bounce: 0.35 }}
             className="card p-3 lg-h-fullScreen"
           >
-            <AnimatedTitle text="Almacenamiento Materia Prima" />
+            <AnimatedTitle text="Materia Prima" />
             {tanques
               .filter((tanque) => tanque.almacenamientoMateriaPrimaria)
               .map((tanque) => (
@@ -388,7 +388,7 @@ const ModeladoRefineriaDashboard = () => {
             transition={{ duration: 0.7, type: "spring", bounce: 0.35 }}
             className="card p-3 lg-h-fullScreen"
           >
-            <AnimatedTitle text="Almacenamiento de Derivados" />
+            <AnimatedTitle text="Derivados" />
             <div className="grid">
               {tanquesFiltradosOrdenados.map((tanque) => (
                 <div key={tanque.id} className="mb-2">
@@ -413,7 +413,7 @@ const ModeladoRefineriaDashboard = () => {
             transition={{ duration: 0.7, type: "spring", bounce: 0.35 }}
             className="card p-3 lg-h-fullScreen"
           >
-            <AnimatedTitle text="Línea de Despacho" />
+            <AnimatedTitle text="Despachos" />
 
             {lineaDespachos.map((lineaDespacho) => (
               <div key={lineaDespacho.id} className="mb-2">
