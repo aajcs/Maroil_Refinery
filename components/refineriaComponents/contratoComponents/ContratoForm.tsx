@@ -39,8 +39,6 @@ interface ContratoFormProps {
   contratoFormDialog: boolean;
 }
 
-const estatusValues = ["true", "false"];
-const tipoContatroValues = ["Compra", "Venta"];
 const estadoEntregaOptions = [
   { label: "Pendiente", value: "Pendiente" },
   { label: "En Tránsito", value: "En Tránsito" },
@@ -65,6 +63,7 @@ function ContratoForm({
   const { productos, tipoProductos, contactos, loading } = useByRefineryData(
     activeRefineria?.id || ""
   );
+  console.log(tipoProductos, "tipoProductos");
   const { brent: brentOnline, oilDerivate } = useRefineryPrecios();
 
   const toast = useRef<Toast | null>(null);
@@ -73,7 +72,6 @@ function ContratoForm({
 
   const [submitting, setSubmitting] = useState(false);
   const {
-    register,
     handleSubmit,
     formState: { errors },
     setValue,

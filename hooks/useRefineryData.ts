@@ -13,7 +13,6 @@ import {
   CorteRefinacion,
   ChequeoCantidad,
   Partida,
-  SubPartida,
 } from "@/libs/interfaces";
 import { getTanques } from "@/app/api/tanqueService";
 import { getTorresDestilacion } from "@/app/api/torreDestilacionService";
@@ -34,7 +33,6 @@ import {
 } from "@/app/api/chequeoCalidadService";
 import { getChequeoCantidads } from "@/app/api/chequeoCantidadService";
 import { getPartidas } from "@/app/api/partidaService";
-import { getSubPartidas } from "@/app/api/subPartidaService";
 
 export const useRefineryData = (
   activeRefineriaId: string,
@@ -61,12 +59,7 @@ export const useRefineryData = (
   const [chequeoCantidads, setChequeoCantidads] = useState<ChequeoCantidad[]>(
     []
   );
-  const [partidas, setPartidas] = useState<Partida[]>(
-    []
-  );
-    const [subPartidas, setSubPartidas] = useState<SubPartida[]>(
-    []
-  );
+  const [partidas, setPartidas] = useState<Partida[]>([]);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -86,7 +79,6 @@ export const useRefineryData = (
         corteRefinacionDB,
         chequeoCantidadDB,
         partidaDB,
-        subPartidaDB,
 
         // brent,
       ] = await Promise.all([
@@ -104,7 +96,6 @@ export const useRefineryData = (
         getCorteRefinacions(),
         getChequeoCantidads(),
         getPartidas(),
-        getSubPartidas(),
         // getBrent(),
       ]);
 
@@ -183,16 +174,9 @@ export const useRefineryData = (
             chequeoCantidad.idRefineria?.id === activeRefineriaId
         ) || [];
 
-         const filteredPartidas =
+      const filteredPartidas =
         partidaDB?.partidas?.filter(
-          (partida: Partida) =>
-            partida.idRefineria?.id === activeRefineriaId
-        ) || [];
-
-        const filteredSubPartidas =
-        subPartidaDB?.subPartidas?.filter(
-          (subPartida: SubPartida) =>
-            subPartida.idRefineria?.id === activeRefineriaId
+          (partida: Partida) => partida.idRefineria?.id === activeRefineriaId
         ) || [];
 
       setTanques(filteredTanques);
@@ -208,8 +192,6 @@ export const useRefineryData = (
       setOperadors(filteredOperador);
       setChequeoCantidads(filteredChequeoCantidads);
       setPartidas(filteredPartidas);
-      setSubPartidas(filteredSubPartidas);
-
 
       setBrent(brent);
       setCorteRefinacions(filteredCorteRefinacion);
@@ -262,6 +244,5 @@ export const useRefineryData = (
     corteRefinacions,
     chequeoCantidads,
     partidas,
-    subPartidas,
   };
 };

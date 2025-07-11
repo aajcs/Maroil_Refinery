@@ -6,6 +6,12 @@ export const formatDateFH = (dateString: Date | string) => {
   }
   return format(new Date(dateString), "dd/MM/yyyy HH:mm");
 };
+export const formatDateFHSinHora = (dateString: Date | string) => {
+  if (!dateString) {
+    return ""; // O puedes devolver un valor predeterminado como "Fecha no disponible"
+  }
+  return format(new Date(dateString), "dd/MM/yyyy");
+};
 export const formatDateSinAnoFH = (dateString: Date | string) => {
   if (!dateString) {
     return ""; // O puedes devolver un valor predeterminado como "Fecha no disponible"

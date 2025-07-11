@@ -47,7 +47,10 @@ import {
   getTipoProductos,
   obtenerTiposProductoPorRefineria,
 } from "@/app/api/tipoProductoService";
-import { obtenerTorresPorRefineria } from "@/app/api/torreDestilacionService";
+import {
+  getTorresDestilacion,
+  obtenerTorresPorRefineria,
+} from "@/app/api/torreDestilacionService";
 import {
   getPartidas,
   obtenerPartidasPorRefineria,
@@ -89,7 +92,7 @@ interface RefineryData {
   partidas: Partida[];
 }
 
-export const useByRefineryData = (
+export const useByRefineryDataFull = (
   activeRefineriaId: string,
   recepcionModificado?: Recepcion
 ) => {
@@ -121,20 +124,20 @@ export const useByRefineryData = (
 
     try {
       const results = await Promise.allSettled([
-        obtenerTanquesPorRefineria(refineriaId),
-        obtenerTorresPorRefineria(refineriaId),
-        obtenerLineasRecepcionPorRefineria(refineriaId),
-        obtenerLineasDespachoPorRefineria(refineriaId),
-        obtenerRecepcionesPorRefineria(refineriaId),
-        obtenerDespachosPorRefineria(refineriaId),
-        obtenerContratosPorRefineria(refineriaId),
-        obtenerProductosPorRefineria(refineriaId),
-        obtenerTiposProductoPorRefineria(refineriaId),
-        obtenerContactosPorRefineria(refineriaId),
-        obtenerCortesRefinacionPorRefineria(refineriaId),
-        obtenerChequeosCantidadPorRefineria(refineriaId),
-        obtenerChequeosCalidadPorRefineria(refineriaId),
-        obtenerPartidasPorRefineria(refineriaId),
+        getTanques(),
+        getTorresDestilacion(),
+        getLineaRecepcions(),
+        getLineaDespachos(),
+        getRecepcions(),
+        getDespachos(),
+        getContratos(),
+        getProductos(),
+        getTipoProductos(),
+        getContactos(),
+        getCorteRefinacions(),
+        getChequeoCantidads(),
+        getChequeoCalidads(),
+        getPartidas(),
       ]);
       const [
         tanquesDB,

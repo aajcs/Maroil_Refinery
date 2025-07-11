@@ -1,9 +1,12 @@
-import { HistorialCambio, Refineria, UserReference } from "./configRefineriaInterface";
-
+import {
+  HistorialCambio,
+  Refineria,
+  UserReference,
+} from "./configRefineriaInterface";
 
 export interface Factura {
   id: string;
-  idRefinerias: Refineria[];
+  idRefineria: Refineria;
   idLineasFactura: LineaFactura[]; // Puedes crear una interface específica si tienes la estructura
   concepto: string;
   total: number;
@@ -12,43 +15,28 @@ export interface Factura {
   eliminado: boolean;
   estado: string;
   createdAt: string;
-    updatedAt: string;
-    createdBy: UserReference;
-    modificadoPor: UserReference;
-    historial: HistorialCambio[];
+  updatedAt: string;
+  createdBy: UserReference;
+  modificadoPor: UserReference;
+  historial: HistorialCambio[];
 }
 
 export interface LineaFactura {
   id?: string;
   _id?: string;
   descripcion: string;
-  cantidad: number;
-  precioUnitario: number;
-  subtotal: number;
-  idSubPartida: SubPartida;
+
+  subTotal: number;
+  idPartida: Partida;
   idFactura: Factura;
   eliminado: boolean;
   estado: string;
   fecha: string;
   createdAt: string;
-    updatedAt: string;
-    createdBy: UserReference;
-    modificadoPor: UserReference;
-    historial: HistorialCambio[];
-}
-
-export interface SubPartida {
-idRefineria: Refineria;
-  idPartida: Partida;
-  descripcion: string;
-  codigo: number;
-  eliminado: boolean;
-  createdAt: string;
-   updatedAt: string;
-    createdBy: UserReference;
-    modificadoPor: UserReference;
-    historial: HistorialCambio[];
-  id: string;
+  updatedAt: string;
+  createdBy: UserReference;
+  modificadoPor: UserReference;
+  historial: HistorialCambio[];
 }
 
 export interface Partida {
@@ -57,9 +45,9 @@ export interface Partida {
   codigo: number;
   eliminado: boolean;
   createdAt: string;
-   updatedAt: string;
-   createdBy: UserReference;
-   modificadoPor: UserReference;
-   historial: HistorialCambio[];
+  updatedAt: string;
+  createdBy: UserReference;
+  modificadoPor: UserReference;
+  historial: HistorialCambio[];
   id: string;
 }

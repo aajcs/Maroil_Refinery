@@ -24,5 +24,6 @@ export const obtenerTiposProductoPorRefineria = async (idRefineria: string) => {
   const { data } = await apiClient.get(
     `/tipoProducto/refineria/${idRefineria}`
   );
+  console.log("Tipos de producto por refinería:", data);
   return data; // { total: number, tipos: TipoProducto[] }
 };

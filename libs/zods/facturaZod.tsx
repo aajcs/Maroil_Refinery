@@ -1,87 +1,47 @@
-import { z } from "zod";
+import { array, boolean, date, number, object, string, union, z } from "zod";
 
-// Reutiliza tus zods base si ya existen para UserReference, Refineria e HistorialCambio
-const userReferenceSchema = z.object({
-  _id: z.string().optional(),
-  nombre: z.string(),
-  correo: z.string().optional(),
-  id: z.string().optional(),
-});
+export const facturaSchema = object({
+  id: string().optional(),
+  idRefineria: object({
+    id: string().min(1, "El ID de la refinería es obligatorio"),
+    nombre: string().optional(),
+  }),
+  idLineasFactura: array(
+    object({
+      id: string().optional(),
+      descripcion: string().min(1, "La descripción es obligatoria"),
+      subTotal: number().min(0, "El subtotal debe ser un número no negativo"),
 
-const historialCambioSchema = z.object({
-  // Define los campos según tu modelo real
-  // ejemplo:
-  // fecha: z.string(),
-  // descripcion: z.string(),
-}).passthrough();
+      idPartida: object({
+        id: string().min(1, "El ID de la partida es obligatorio"),
+        descripcion: string().optional(),
+      }).optional(),
 
-const refineriaSchema = z.object({
-  _id: z.string().optional(),
-  nombre: z.string(),
-  id: z.string(),
-});
-
-export const subPartidaSchema = z.object({
-  // idRefineria: z.string(),
-  // idPartida: z.string(),
-  // descripcion: z.string(),
-  // codigo: z.number(),
-  // eliminado: z.boolean(),
-  // createdAt: z.string(),
-  // updatedAt: z.string(),
-  // createdBy: userReferenceSchema,
-  // modificadoPor: userReferenceSchema,
-  // historial: z.array(historialCambioSchema),
-  id: z.string(),
-});
-
-export const partidaSchema = z.object({
-  idRefineria: refineriaSchema,
-  descripcion: z.string(),
-  codigo: z.number(),
-  eliminado: z.boolean(),
-  createdAt: z.string(),
-  updatedAt: z.string(),
-  createdBy: userReferenceSchema,
-  modificadoPor: userReferenceSchema,
-  historial: z.array(historialCambioSchema),
-  id: z.string(),
-});
-
-export const lineaFacturaSchema = z.object({
-  id: z.string().optional(),
-  _id: z.string().optional(),
-  descripcion: z.string(),
-  cantidad: z.number(),
-  precioUnitario: z.number(),
-  // subtotal: z.number(),
-  idSubPartida: subPartidaSchema,
-  // idFactura: z.lazy(() => facturaSchema), // Referencia circular
-  // eliminado: z.boolean(),
-  // estado: z.string(),
-  // fecha: z.string(),
-  // createdAt: z.string(),
-  // updatedAt: z.string(),
-  // createdBy: userReferenceSchema,
-  // modificadoPor: userReferenceSchema,
-  // historial: z.array(historialCambioSchema),
-});
-
-// Definición principal de FacturaSchema (debe ir después de LineaFacturaSchema por la referencia circular)
-export const facturaSchema: z.ZodType<any> = z.object({
-  id: z.string().optional(),
-  idRefinerias: z.array(refineriaSchema).optional(),
-  
-  idLineasFactura: z.array(lineaFacturaSchema),
-  concepto: z.string(),
-  total: z.number(),
-  // aprobada: z.string(),
-  fechaFactura: z.string(),
-  // eliminado: z.boolean(),
-  estado: z.string(),
-  // createdAt: z.string(),
-  // updatedAt: z.string(),
-  // createdBy: userReferenceSchema,
-  // modificadoPor: userReferenceSchema,
-  // historial: z.array(historialCambioSchema),
+      eliminado: boolean().default(false).optional(),
+      estado: string().optional(),
+    })
+  ).min(1, "Debe haber al menos una línea de factura"),
+  concepto: string().min(1, "El concepto es obligatorio"),
+  total: number().min(0, "El total debe ser un número no negativo"),
+  aprobada: string().optional(),
+  fechaFactura: union([string(), date()]).optional(),
+  eliminado: boolean().default(false),
+  estado: string().min(1, "El estado es obligatorio"),
+  createdAt: union([string(), date()]).optional(),
+  updatedAt: union([string(), date()]).optional(),
+  createdBy: object({
+    id: string().optional(),
+    nombre: string().optional(),
+  }).optional(),
+  modificadoPor: object({
+    id: string().optional(),
+    nombre: string().optional(),
+  }).optional(),
+  historial: array(
+    object({
+      id: string().optional(),
+      fecha: union([string(), date()]).optional(),
+      descripcion: string().optional(),
+    })
+  ).optional(),
 });
