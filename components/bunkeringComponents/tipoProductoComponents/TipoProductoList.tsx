@@ -257,7 +257,7 @@ const TipoProductoList = () => {
         />
         <Column
           field="puntoDeInflamacion"
-          header="Punto De Inflamación"
+          header="Punto De Inflamación (°C)"
           body={(rowData: TipoProductoBK) =>
             rowData.puntoDeInflamacion || "N/A"
           }
