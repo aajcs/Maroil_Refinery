@@ -10,22 +10,10 @@ import { getCuentas } from "@/app/api/cuentaService";
 import { useRefineriaStore } from "@/store/refineriaStore";
 
 const REPORTES = [
-  {
-    key: "abonosPorFecha",
-    label: "Reporte de Abonos por Fecha",
-  },
-  {
-    key: "abonosPorTipoOperacion",
-    label: "Abonos por Tipo de Operación",
-  },
-  {
-    key: "abonosPorProveedor",
-    label: "Abonos por Proveedor",
-  },
-  {
-    key: "cuentasPendientes",
-    label: "Cuentas por Pagar / Cobrar Pendientes",
-  },
+  { key: "abonosPorFecha", label: "Reporte de Abonos por Fecha" },
+  { key: "abonosPorTipoOperacion", label: "Abonos por Tipo de Operación" },
+  { key: "abonosPorProveedor", label: "Abonos por Proveedor" },
+  { key: "cuentasPendientes", label: "Cuentas por Pagar / Cobrar Pendientes" },
 ];
 
 const TIPO_ABONO_OPTIONS = [
@@ -96,6 +84,12 @@ const ReportesFinacierosList: React.FC<ReportesFinacierosListProps> = ({ tipoRep
     };
     cargarProveedores();
   }, []);
+
+  // --- TITULO DINÁMICO ---
+  const tituloReporte =
+    reporteSeleccionado
+      ? REPORTES.find(r => r.key === reporteSeleccionado)?.label || tipoReporte
+      : tipoReporte;
 
   // --- HANDLERS ---
   const handleGenerarReporte = async () => {
@@ -212,7 +206,6 @@ const ReportesFinacierosList: React.FC<ReportesFinacierosListProps> = ({ tipoRep
   };
 
   // --- TABLAS DE VISTA PREVIA ---
-  // Orden: Fecha | Contrato | Proveedor/Cliente | Tipo Operación | Monto
   const renderAbonosTable = (data: any) => (
     <div className="overflow-x-auto mt-4" style={{ maxWidth: "1200px", margin: "0 auto" }}>
       <table className="min-w-[900px] w-full text-sm border border-200">
@@ -246,7 +239,6 @@ const ReportesFinacierosList: React.FC<ReportesFinacierosListProps> = ({ tipoRep
     </div>
   );
 
-  // Para cuentas pendientes, mantenemos el ancho mayor
   const renderCuentasPendientesTable = (cuentas: any[], total: number) => (
     <div className="overflow-x-auto mt-4" style={{ maxWidth: "1200px", margin: "0 auto" }}>
       <table className="min-w-[900px] w-full text-sm border border-200">
@@ -284,7 +276,7 @@ const ReportesFinacierosList: React.FC<ReportesFinacierosListProps> = ({ tipoRep
   return (
     <div className="card surface-50 p-4 border-round shadow-2xl" style={{ maxWidth: 1300, margin: "0 auto" }}>
       <h2 className="mb-4 text-2xl font-bold text-center text-primary" style={{ letterSpacing: 1 }}>
-        {tipoReporte}
+        {tituloReporte}
       </h2>
 
       {/* Selección de reporte */}
