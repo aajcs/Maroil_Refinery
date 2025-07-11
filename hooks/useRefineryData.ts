@@ -12,6 +12,8 @@ import {
   Despacho,
   CorteRefinacion,
   ChequeoCantidad,
+  Partida,
+  SubPartida,
 } from "@/libs/interfaces";
 import { getTanques } from "@/app/api/tanqueService";
 import { getTorresDestilacion } from "@/app/api/torreDestilacionService";
@@ -31,6 +33,8 @@ import {
   getChequeoCalidads,
 } from "@/app/api/chequeoCalidadService";
 import { getChequeoCantidads } from "@/app/api/chequeoCantidadService";
+import { getPartidas } from "@/app/api/partidaService";
+import { getSubPartidas } from "@/app/api/subPartidaService";
 
 export const useRefineryData = (
   activeRefineriaId: string,
@@ -57,6 +61,12 @@ export const useRefineryData = (
   const [chequeoCantidads, setChequeoCantidads] = useState<ChequeoCantidad[]>(
     []
   );
+  const [partidas, setPartidas] = useState<Partida[]>(
+    []
+  );
+    const [subPartidas, setSubPartidas] = useState<SubPartida[]>(
+    []
+  );
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -75,6 +85,8 @@ export const useRefineryData = (
         operadorDB,
         corteRefinacionDB,
         chequeoCantidadDB,
+        partidaDB,
+        subPartidaDB,
 
         // brent,
       ] = await Promise.all([
@@ -91,6 +103,8 @@ export const useRefineryData = (
         getOperadors(),
         getCorteRefinacions(),
         getChequeoCantidads(),
+        getPartidas(),
+        getSubPartidas(),
         // getBrent(),
       ]);
 
@@ -169,6 +183,18 @@ export const useRefineryData = (
             chequeoCantidad.idRefineria?.id === activeRefineriaId
         ) || [];
 
+         const filteredPartidas =
+        partidaDB?.partidas?.filter(
+          (partida: Partida) =>
+            partida.idRefineria?.id === activeRefineriaId
+        ) || [];
+
+        const filteredSubPartidas =
+        subPartidaDB?.subPartidas?.filter(
+          (subPartida: SubPartida) =>
+            subPartida.idRefineria?.id === activeRefineriaId
+        ) || [];
+
       setTanques(filteredTanques);
       setTorresDestilacion(filteredTorresDestilacion);
       setLineaRecepcions(filteredLineaRecepcions);
@@ -181,6 +207,9 @@ export const useRefineryData = (
       setContactos(filteredContactos);
       setOperadors(filteredOperador);
       setChequeoCantidads(filteredChequeoCantidads);
+      setPartidas(filteredPartidas);
+      setSubPartidas(filteredSubPartidas);
+
 
       setBrent(brent);
       setCorteRefinacions(filteredCorteRefinacion);
@@ -232,5 +261,7 @@ export const useRefineryData = (
     operadors,
     corteRefinacions,
     chequeoCantidads,
+    partidas,
+    subPartidas,
   };
 };

@@ -512,7 +512,7 @@ const ModeladoRefineriaTanque = ({
                 N/A
               </text>
               <text x="15" y="145" font-weight="500">
-                Último Chequeo:
+                Última Medición:
               </text>
               <text
                 x="240"

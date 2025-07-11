@@ -332,22 +332,18 @@ const AppMenu = () => {
       label: "Gestión de Gastos",
       icon: "pi pi-fw pi-user",
       items: [
-        {
-          label: "Facturas",
-          icon: "pi pi-fw pi-truck",
-          to: "/refineria/facturas",
-        },
-
-        {
-          label: "Partidas",
-          icon: "pi pi-fw pi-truck",
-          to: "/partidas",
-        },
-        {
-          label: "SubPartidas",
-          icon: "pi pi-fw pi-truck",
-          to: "/refineria/subpartidas",
-        },
+           
+            
+            {
+              label: "Partidas",
+              icon: "pi pi-fw pi-truck",
+              to: "/partidas",
+            },
+               {
+              label: "SubPartidas",
+              icon: "pi pi-fw pi-truck",
+              to: "/subpartidas",
+            },
       ],
     },
     {

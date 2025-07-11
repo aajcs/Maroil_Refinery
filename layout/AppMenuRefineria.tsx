@@ -31,10 +31,26 @@ const AppMenuRefineria = () => {
           label: "Configuración",
           icon: "pi pi-fw pi-cog",
           items: [
+                 {
+              label: "Producto",
+              icon: "pi pi-fw pi-plus",
+              to: "/refineria/configuracion/producto",
+            },
+            {
+              label: "Tipo de Producto",
+              icon: "pi pi-fw pi-plus",
+              to: "/refineria/configuracion/tipo-producto",
+            },
+           
             {
               label: "Linea de Recepción",
               icon: "pi pi-fw pi-list",
               to: "/refineria/configuracion/linea-recepcion",
+            },
+              {
+              label: "Linea de Despacho",
+              icon: "pi pi-fw pi-list",
+              to: "/refineria/configuracion/linea-despacho",
             },
             {
               label: "Tanques",
@@ -46,21 +62,7 @@ const AppMenuRefineria = () => {
               icon: "pi pi-fw pi-building",
               to: "/refineria/configuracion/torre-destilacion",
             },
-            {
-              label: "Linea de Despacho",
-              icon: "pi pi-fw pi-list",
-              to: "/refineria/configuracion/linea-despacho",
-            },
-            {
-              label: "Producto",
-              icon: "pi pi-fw pi-plus",
-              to: "/refineria/configuracion/producto",
-            },
-            {
-              label: "Tipo de Producto",
-              icon: "pi pi-fw pi-plus",
-              to: "/refineria/configuracion/tipo-producto",
-            },
+               
           ],
         },
         {
@@ -72,40 +74,55 @@ const AppMenuRefineria = () => {
               icon: "pi pi-fw pi-id-card",
               to: "/refineria/finanzas/contacto",
             },
-            {
+           {
               label: "Contrato Compra",
               icon: "pi pi-fw pi-briefcase",
               to: "/refineria/finanzas/contrato-compra",
             },
 
+           {
+              label: "Contrato Venta",
+              icon: "pi pi-fw pi-briefcase",
+              to: "/refineria/finanzas/contrato-venta",
+            },
+
+            
              {
               label: "Abono Egreso",
               icon: "pi pi-fw pi-receipt",
               to: "/refineria/finanzas/abono-egreso",
             },
 
-            {
-              label: "Contrato Venta",
-              icon: "pi pi-fw pi-briefcase",
-              to: "/refineria/finanzas/contrato-venta",
-            },
+           
             {
               label: "Abono Ingreso",
               icon: "pi pi-fw pi-receipt",
               to: "/refineria/finanzas/abono-ingreso",
             },
 
-            {
-              label: "Cuenta por Pagar",
-              icon: "pi pi-fw pi-money-bill",
-              to: "/refineria/finanzas/cuenta-pagar",
-            },
-             {
+                {
               label: "Cuenta por Cobrar",
               icon: "pi pi-fw pi-money-bill",
               to: "/refineria/finanzas/cuenta-cobrar",
             },
             
+           
+
+
+            {
+              label: "Cuenta por Pagar",
+              icon: "pi pi-fw pi-money-bill",
+              to: "/refineria/finanzas/cuenta-pagar",
+            },
+            
+            {
+              label: "Facturas de Gastos",
+              icon: "pi pi-fw pi-truck",
+              to: "/refineria/finanzas/facturas",
+            },
+
+        
+           
               {
               label: "Reportes Financieros",
               icon: "pi pi-fw pi-money-bill",

@@ -38,8 +38,8 @@ export interface LineaFactura {
 }
 
 export interface SubPartida {
-  idRefineria: string;
-  idPartida: string;
+idRefineria: Refineria;
+  idPartida: Partida;
   descripcion: string;
   codigo: number;
   eliminado: boolean;

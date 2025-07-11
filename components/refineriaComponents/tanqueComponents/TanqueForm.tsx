@@ -80,13 +80,13 @@ const TanqueForm = ({
     setSubmitting(true);
     try {
       if (tanque) {
-        const updatedTorre = await updateTanque(tanque.id, {
+        const updatedTanque = await updateTanque(tanque.id, {
           ...data,
           idRefineria: activeRefineria?.id,
           idProducto: data.idProducto.id,
         });
         const updatedTanques = tanques.map((t) =>
-          t.id === updatedTorre.id ? updatedTorre : t
+          t.id === updatedTanque.id ? updatedTanque : t
         );
         setTanques(updatedTanques);
         showToast("success", "Éxito", "Tanque actualizado");
