@@ -361,7 +361,7 @@ const ReportesFinacierosList: React.FC<ReportesFinacierosListProps> = ({ tipoRep
                     className="p-button-raised"
                     style={{
                       minWidth: 120,
-                      background: "#ef4444",
+                      background: "#22c55e",
                       border: "none",
                       color: "#fff",
                     }}
@@ -475,7 +475,7 @@ const ReportesFinacierosList: React.FC<ReportesFinacierosListProps> = ({ tipoRep
                     className="p-button-raised"
                     style={{
                       minWidth: 120,
-                      background: "#ef4444",
+                      background: "#22c55e",
                       border: "none",
                       color: "#fff",
                     }}
@@ -590,7 +590,7 @@ const ReportesFinacierosList: React.FC<ReportesFinacierosListProps> = ({ tipoRep
                     className="p-button-raised"
                     style={{
                       minWidth: 120,
-                      background: "#ef4444",
+                      background:"#22c55e",
                       border: "none",
                       color: "#fff",
                     }}
@@ -673,7 +673,7 @@ const ReportesFinacierosList: React.FC<ReportesFinacierosListProps> = ({ tipoRep
                   className="p-button-raised"
                   style={{
                     minWidth: 120,
-                    background: "#ef4444",
+                    background: "#22c55e",
                     border: "none",
                     color: "#fff",
                     alignSelf: "end",
