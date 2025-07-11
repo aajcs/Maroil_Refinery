@@ -37,7 +37,7 @@ const AppMenuRefineria = () => {
               to: "/refineria/configuracion/producto",
             },
             {
-              label: "Tipo de Producto",
+              label: "Tipo de Crudo",
               icon: "pi pi-fw pi-plus",
               to: "/refineria/configuracion/tipo-producto",
             },
@@ -121,8 +121,7 @@ const AppMenuRefineria = () => {
               to: "/refineria/finanzas/facturas",
             },
 
-        
-           
+                 
               {
               label: "Reportes Financieros",
               icon: "pi pi-fw pi-money-bill",
