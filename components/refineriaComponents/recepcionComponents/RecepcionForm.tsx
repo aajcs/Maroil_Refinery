@@ -387,7 +387,7 @@ const RecepcionForm = ({
                         <div className="mb-3 md:mb-0">
                           <h3 className="text-xl font-bold text-900 mb-2 flex align-items-center">
                             <i className="pi pi-check-circle text-primary mr-2"></i>
-                            Chequeo de Calidad
+                           Certificación de Producto
                           </h3>
                           <p className="text-700 mb-1">
                             <strong>Número:</strong>{" "}

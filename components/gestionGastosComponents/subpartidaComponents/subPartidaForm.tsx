@@ -20,6 +20,7 @@ import {
 import { useRefineryData } from "@/hooks/useRefineryData";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { handleFormError } from "@/utils/errorHandlers";
+import { set } from "date-fns";
 
 type SubPartidaFormProps = {
   subPartida: any;
@@ -36,7 +37,12 @@ type SubPartidaFormProps = {
 };
 
 // MinimalSubPartida solo con los campos requeridos para el formulario
-type MinimalSubPartida = Pick<z.infer<typeof subPartidaSchema>, 'codigo' | 'descripcion' | 'idPartida'>;
+type MinimalSubPartida = {
+  codigo: number;
+  descripcion: string;
+  idPartida: number;
+  id?: string; // Agregado para manejar la actualización
+};
 
 const SubPartidaForm = ({
   subPartida,
@@ -67,19 +73,22 @@ console.log (partidas)
   }, []);
   const { activeRefineria } = useRefineriaStore();
   const [submitting, setSubmitting] = useState(false);
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    setValue,
-    watch,
-  } = useForm<MinimalSubPartida>({
-    resolver: zodResolver(subPartidaSchema.pick({ codigo: true, descripcion: true, idPartida: true })),
-  });
+const {
+  register,
+  handleSubmit,
+  formState: { errors },
+  setValue,
+  watch,
+} = useForm<MinimalSubPartida>({
+  resolver: zodResolver(
+    subPartidaSchema.pick(["id", "descripcion", "idPartida"])
+  ),
+});
   const watchIdPartida = watch("idPartida");
   useEffect(() => {
     if (subPartida) {
-      setValue("codigo", subPartida.codigo);
+      setValue("id", subPartida.id);
+    
       setValue("descripcion", subPartida.descripcion);
       setValue("idPartida", subPartida.idPartida);
     }
