@@ -149,47 +149,53 @@ export const RepecionFormRecepcion = ({
               Número de Contrato
             </label>
             <Controller
-              name="idContrato"
-              control={control}
-              render={({ field, fieldState }) => (
-                <>
-                  <Dropdown
-                    id="idContrato.id"
-                    value={field.value}
-                    onChange={(e) => field.onChange(e.value)}
-                    options={contratos
-                      .filter((c) => c.tipoContrato === "Compra")
-                      .map((contrato) => ({
-                        label: `${contrato.numeroContrato} - ${truncateText(
-                          contrato.descripcion || "Sin descripción",
-                          30
-                        )}`,
-                        value: {
-                          id: contrato.id,
-                          numeroContrato: contrato.numeroContrato,
-                          idItems: contrato.idItems,
-                          _id: contrato._id,
-                        },
-                      }))}
-                    placeholder="Seleccionar un proveedor"
-                    className={classNames("w-full", {
-                      "p-invalid": fieldState.error,
-                    })}
-                    showClear
-                    filter
-                    disabled={
-                      !isFieldEnabledRecepcion("idContrato", estadoRecepcion)
-                    }
-                  />
-                  {fieldState.error && (
-                    <small className="p-error block mt-2 flex align-items-center">
-                      <i className="pi pi-exclamation-circle mr-2"></i>
-                      {fieldState.error.message}
-                    </small>
-                  )}
-                </>
-              )}
-            />
+  name="idContrato"
+  control={control}
+  render={({ field, fieldState }) => (
+    <>
+      <Dropdown
+        id="idContrato.id"
+        value={field.value}
+        onChange={(e) => field.onChange(e.value)}
+        options={contratos
+          .filter(
+            (c) =>
+              c.tipoContrato === "Compra" &&
+              c.estadoContrato === "Activo" &&
+              (c.estadoEntrega === "Pendiente" || c.estadoEntrega === "En tránsito")
+          )
+          .map((contrato) => ({
+            label: `${contrato.numeroContrato} - ${truncateText(
+              contrato.descripcion || "Sin descripción",
+              30
+            )}`,
+            value: {
+              id: contrato.id,
+              numeroContrato: contrato.numeroContrato,
+              idItems: contrato.idItems,
+              _id: contrato._id,
+            },
+          }))}
+        placeholder="Seleccionar un contrato"
+        className={classNames("w-full", {
+          "p-invalid": fieldState.error,
+        })}
+        showClear
+        filter
+        disabled={
+          !isFieldEnabledRecepcion("idContrato", estadoRecepcion)
+        }
+      />
+      {fieldState.error && (
+        <small className="p-error block mt-2 flex align-items-center">
+          <i className="pi pi-exclamation-circle mr-2"></i>
+          {fieldState.error.message}
+        </small>
+      )}
+    </>
+  )}
+/>
+      
           </div>
         </div>
 
