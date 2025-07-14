@@ -94,15 +94,30 @@ function FacturaForm({
 
   useEffect(() => {
     if (factura) {
-      (Object.keys(factura) as (keyof Factura)[]).forEach((key) =>
-        setValue(key as keyof Factura, factura[key])
-      );
+      // Only set values for fields that exist in the form
+      const formFields: (keyof FormData)[] = [
+        "id",
+        "idRefineria",
+        "eliminado",
+        "estado",
+        "idLineasFactura",
+        "concepto",
+        "total",
+        "aprobada",
+        "fechaFactura",
+      ];
+      formFields.forEach((key) => {
+        if (factura[key] !== undefined) {
+          setValue(key, factura[key] as any);
+        }
+      });
     }
   }, [factura, setValue]);
 
   // Guardar o actualizar factura
   const onSubmit = async (data: FormData) => {
     setSubmitting(true);
+    console.log("Submitting data:", data);
     try {
       const lineasTransformadas = (data.idLineasFactura || []).map(
         (linea: any) => ({
@@ -192,7 +207,7 @@ function FacturaForm({
       />
     );
   };
-
+  console.log(errors);
   return (
     <Dialog
       visible={facturaFormDialog}

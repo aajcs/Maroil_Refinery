@@ -454,7 +454,7 @@ const ModeladoBunkeringTanque = ({
               </text> */}
 
               {/* Nivel */}
-              <text x="15" y="85" font-weight="500">
+              <text x="15" y="70" font-weight="500">
                 Nivel:
               </text>
               <text

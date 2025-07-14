@@ -409,7 +409,7 @@ const ModeladoRefineriaTanque = ({
             x="5"
             y="5"
             width="240"
-            height="160"
+            height="135"
             rx="8"
             fill="#f8f9fa"
             stroke="#dee2e6"
@@ -454,12 +454,12 @@ const ModeladoRefineriaTanque = ({
               </text> */}
 
               {/* Nivel */}
-              <text x="15" y="85" font-weight="500">
+              <text x="15" y="60" font-weight="500">
                 Nivel:
               </text>
               <text
                 x="240"
-                y="85"
+                y="60"
                 fontSize="18"
                 textAnchor="end"
                 fill="#2d3436"
@@ -469,12 +469,12 @@ const ModeladoRefineriaTanque = ({
               </text>
 
               {/* Cantidad */}
-              <text x="15" y="105" font-weight="500">
+              <text x="15" y="80" font-weight="500">
                 Cantidad:
               </text>
               <text
                 x="240"
-                y="105"
+                y="80"
                 fontSize="18"
                 textAnchor="end"
                 fill="#2d3436"
@@ -496,12 +496,12 @@ const ModeladoRefineriaTanque = ({
               </text>
 
               {/* Temperatura */}
-              <text x="15" y="125" font-weight="500">
+              <text x="15" y="100" font-weight="500">
                 Temperatura:
               </text>
               <text
                 x="240"
-                y="125"
+                y="100"
                 fontSize="18"
                 textAnchor="end"
                 fill="#6c757d"
@@ -511,12 +511,12 @@ const ModeladoRefineriaTanque = ({
                 {/* Puedes reemplazar con el dato real cuando lo tengas */}
                 N/A
               </text>
-              <text x="15" y="145" font-weight="500">
+              <text x="15" y="120" font-weight="500">
                 Última Medición:
               </text>
               <text
                 x="240"
-                y="145"
+                y="120"
                 fontSize="18"
                 textAnchor="end"
                 fill="#2d3436"
@@ -529,7 +529,7 @@ const ModeladoRefineriaTanque = ({
               </text>
               <text
                 x="240"
-                y="160"
+                y="135"
                 fontSize="18"
                 textAnchor="end"
                 fill="#2d3436"

@@ -5,7 +5,7 @@ export const facturaSchema = object({
   idRefineria: object({
     id: string().min(1, "El ID de la refinería es obligatorio"),
     nombre: string().optional(),
-  }),
+  }).optional(),
   idLineasFactura: array(
     object({
       id: string().optional(),
@@ -13,7 +13,7 @@ export const facturaSchema = object({
       subTotal: number().min(0, "El subtotal debe ser un número no negativo"),
 
       idPartida: object({
-        id: string().min(1, "El ID de la partida es obligatorio"),
+        id: string().optional(),
         descripcion: string().optional(),
       }).optional(),
 
@@ -27,23 +27,6 @@ export const facturaSchema = object({
   fechaFactura: union([string(), date()]).optional(),
   eliminado: boolean().default(false),
   estado: string().min(1, "El estado es obligatorio"),
-  createdAt: union([string(), date()]).optional(),
-  updatedAt: union([string(), date()]).optional(),
-  createdBy: object({
-    id: string().optional(),
-    nombre: string().optional(),
-  }).optional(),
-  modificadoPor: object({
-    id: string().optional(),
-    nombre: string().optional(),
-  }).optional(),
-  historial: array(
-    object({
-      id: string().optional(),
-      fecha: union([string(), date()]).optional(),
-      descripcion: string().optional(),
-    })
-  ).optional(),
 });
 export const partidaSchema = object({
   id: string().optional(),

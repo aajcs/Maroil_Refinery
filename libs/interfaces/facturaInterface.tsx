@@ -14,11 +14,11 @@ export interface Factura {
   fechaFactura: string;
   eliminado: boolean;
   estado: string;
-  createdAt: string;
-  updatedAt: string;
-  createdBy: UserReference;
-  modificadoPor: UserReference;
-  historial: HistorialCambio[];
+  createdAt?: string;
+  updatedAt?: string;
+  createdBy?: UserReference;
+  modificadoPor?: UserReference;
+  historial?: HistorialCambio[];
 }
 
 export interface LineaFactura {
