@@ -6,7 +6,6 @@ import { z } from "zod";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { classNames } from "primereact/utils";
-import { partidaSchema } from "@/libs/zods";
 import { Toast } from "primereact/toast";
 import { Dropdown } from "primereact/dropdown";
 import { useRefineriaStore } from "@/store/refineriaStore";
@@ -15,6 +14,7 @@ import { createPartida, updatePartida } from "@/app/api/partidaService";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { handleFormError } from "@/utils/errorHandlers";
 import { useByRefineryData } from "@/hooks/useByRefineryData";
+import { partidaSchema } from "@/libs/zods";
 
 type FormData = z.infer<typeof partidaSchema>;
 
@@ -56,10 +56,8 @@ const PartidaForm = ({
     handleSubmit,
     formState: { errors },
     setValue,
-  } = useForm<{ codigo: number; descripcion: string }>({
-    resolver: zodResolver(
-      partidaSchema.pick({ codigo: true, descripcion: true })
-    ),
+  } = useForm<FormData>({
+    resolver: zodResolver(partidaSchema),
     defaultValues: {
       codigo: partida?.codigo ?? undefined,
       descripcion: partida?.descripcion ?? "",

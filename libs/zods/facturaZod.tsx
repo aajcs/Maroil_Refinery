@@ -45,3 +45,30 @@ export const facturaSchema = object({
     })
   ).optional(),
 });
+export const partidaSchema = object({
+  id: string().optional(),
+  idRefineria: object({
+    id: string().min(1, "El ID de la refinería es obligatorio"),
+    nombre: string().optional(),
+  }),
+  descripcion: string().min(1, "La descripción es obligatoria"),
+  codigo: number().min(0, "El código debe ser un número no negativo"),
+  eliminado: boolean().default(false),
+  createdAt: union([string(), date()]).optional(),
+  updatedAt: union([string(), date()]).optional(),
+  createdBy: object({
+    id: string().optional(),
+    nombre: string().optional(),
+  }).optional(),
+  modificadoPor: object({
+    id: string().optional(),
+    nombre: string().optional(),
+  }).optional(),
+  historial: array(
+    object({
+      id: string().optional(),
+      fecha: union([string(), date()]).optional(),
+      descripcion: string().optional(),
+    })
+  ).optional(),
+});
