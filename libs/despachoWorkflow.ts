@@ -19,7 +19,7 @@
 export const estadoDespachoOptions = [
   { label: "Programado", value: "PROGRAMADO" }, // Cuando está agendado
   { label: "Asignación Despacho", value: "EN_TRANSITO" }, // Reemplaza "En Recepción" para cuando viene en camino
-  { label: "En Refineria", value: "EN_REFINERIA" }, // Cuando llega físicamente
+  { label: "En Proceso", value: "EN_REFINERIA" }, // Cuando llega físicamente
   { label: "Despacho Completado", value: "COMPLETADO" }, // Finalización exitosa
   { label: "Cancelado", value: "CANCELADO" }, // Si no se presenta
 ];
