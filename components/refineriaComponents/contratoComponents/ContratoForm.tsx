@@ -837,6 +837,9 @@ function ContratoForm({
                       updated[rowIndex].producto = newValue;
                       setItems(updated);
                     }}
+                    body={(rowData: any) =>
+                      rowData.producto?.nombre || "Sin producto"
+                    }
                   />
                   <Column
                     field="idTipoProducto.nombre"
@@ -849,6 +852,9 @@ function ContratoForm({
                         newValue
                       );
                     }}
+                    body={(rowData: any) =>
+                      rowData.idTipoProducto?.nombre || "Sin tipo producto"
+                    }
                   />
 
                   <Column
@@ -931,7 +937,7 @@ function ContratoForm({
                   <Column
                     field="cantidad"
                     header="Cantidad (Bbl)"
-                    body={(rowData: any) => `${rowData.cantidad} Bbl`}
+                    // body={(rowData: any) => `${rowData.cantidad} Bbl`}
                     editor={(options) => (
                       <InputNumber
                         value={options.value}
@@ -940,6 +946,21 @@ function ContratoForm({
                         }
                         suffix=" Bbl"
                       />
+                    )}
+                    body={(rowData: any) => (
+                      <div
+                        style={{
+                          border:
+                            rowData.cantidad === 0
+                              ? "2px solid #f44336"
+                              : undefined,
+                          borderRadius: "4px",
+                          padding: "2px 6px",
+                          display: "inline-block",
+                        }}
+                      >
+                        {`${rowData.cantidad} Bbl`}
+                      </div>
                     )}
                   />
 
