@@ -31,12 +31,10 @@ interface ContactoFormProps {
     detail: string
   ) => void;
   toast: React.RefObject<Toast> | null;
-  
 }
 
 const estatusValues = ["true", "false"];
 const tipoValues = ["Cliente", "Proveedor"]; // Valores para el campo "tipo"
-
 
 const ContactoForm = ({
   contacto,
@@ -47,8 +45,8 @@ const ContactoForm = ({
   showToast,
 }: ContactoFormProps) => {
   const { activeRefineria } = useRefineriaStore();
-const { layoutConfig } = useContext(LayoutContext);
-const filledInput = layoutConfig.inputStyle === "filled";
+  const { layoutConfig } = useContext(LayoutContext);
+  const filledInput = layoutConfig.inputStyle === "filled";
 
   const [submitting, setSubmitting] = useState(false);
   const {
@@ -61,7 +59,7 @@ const filledInput = layoutConfig.inputStyle === "filled";
   } = useForm<FormData>({
     resolver: zodResolver(contactoSchema),
     defaultValues: {
-    telefono: "",
+      telefono: "",
     },
   });
 
@@ -98,8 +96,7 @@ const filledInput = layoutConfig.inputStyle === "filled";
       }
       hideContactoFormDialog();
     } catch (error) {
-          handleFormError(error, toast); // Pasamos la referencia del toast
-     
+      handleFormError(error, toast); // Pasamos la referencia del toast
     } finally {
       setSubmitting(false); // Desactivar el estado de envío
     }
@@ -159,10 +156,10 @@ const filledInput = layoutConfig.inputStyle === "filled";
                     "p-invalid": errors.identificacionFiscal,
                   })}
                   {...register("identificacionFiscal")}
-                  onInput={(e) => {
-                    const input = e.target as HTMLInputElement;
-                    input.value = input.value.replace(/[^0-9-]/g, ""); // Elimina caracteres no válidos
-                  }}
+                  // onInput={(e) => {
+                  //   const input = e.target as HTMLInputElement;
+                  //   input.value = input.value.replace(/[^0-9-]/g, ""); // Elimina caracteres no válidos
+                  // }}
                 />
                 {errors.identificacionFiscal && (
                   <small className="p-error block mt-2 flex align-items-center">
@@ -209,41 +206,41 @@ const filledInput = layoutConfig.inputStyle === "filled";
                   control={control}
                   render={({ field, fieldState }) => (
                     <>
-                                          <InputText
-                                            id="telefono"
-                                            placeholder="+584248286102"
-                                            className={classNames("w-full", {
-                                              "p-invalid": fieldState.error,
-                                              "pl-5": filledInput,
-                                            })}
-                                            value={field.value}
-                                            onChange={(e) => {
-                                              const value = e.target.value;
-                                              // Forzar que siempre empiece con +
-                                              if (value === "") {
-                                                field.onChange("");
-                                              } else if (value === "+") {
-                                                field.onChange("+");
-                                              } else {
-                                                // Filtrar solo números y mantener el + inicial
-                                                const numericValue = value.replace(/[^0-9]/g, "");
-                                                field.onChange("+" + numericValue);
-                                              }
-                                            }}
-                                            onKeyDown={(e) => {
-                                              // Prevenir borrado del signo +
-                                              if (e.key === "Backspace" && field.value === "+") {
-                                                e.preventDefault();
-                                              }
-                                            }}
-                                          />
-                                          {fieldState.error && (
-                                            <small className="p-error block mt-2 flex align-items-center">
-                                              <i className="pi pi-exclamation-circle mr-2"></i>
-                                              {fieldState.error.message}
-                                            </small>
-                                          )}
-                                        </>
+                      <InputText
+                        id="telefono"
+                        placeholder="+584248286102"
+                        className={classNames("w-full", {
+                          "p-invalid": fieldState.error,
+                          "pl-5": filledInput,
+                        })}
+                        value={field.value}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          // Forzar que siempre empiece con +
+                          if (value === "") {
+                            field.onChange("");
+                          } else if (value === "+") {
+                            field.onChange("+");
+                          } else {
+                            // Filtrar solo números y mantener el + inicial
+                            const numericValue = value.replace(/[^0-9]/g, "");
+                            field.onChange("+" + numericValue);
+                          }
+                        }}
+                        onKeyDown={(e) => {
+                          // Prevenir borrado del signo +
+                          if (e.key === "Backspace" && field.value === "+") {
+                            e.preventDefault();
+                          }
+                        }}
+                      />
+                      {fieldState.error && (
+                        <small className="p-error block mt-2 flex align-items-center">
+                          <i className="pi pi-exclamation-circle mr-2"></i>
+                          {fieldState.error.message}
+                        </small>
+                      )}
+                    </>
                   )}
                 />
               </div>

@@ -4,14 +4,14 @@ export const contactoSchema = object({
   id: string().optional(),
   nombre: string().min(1, "La razon es obligatoria"),
   identificacionFiscal: string()
-    .regex(/^[0-9-]+$/, {
-      message: "El NIT solo puede contener números y el carácter '-'",
-    })
+    // .regex(/^[0-9-]+$/, {
+    //   message: "El NIT solo puede contener números y el carácter '-'",
+    // })
     .min(8, { message: "El NIT debe tener al menos 8 caracteres" }) // Valida longitud mínima
     .max(13, { message: "El NIT no puede tener más de 13 caracteres" }), // Valida longitud máxima
   correo: string().email("El correo debe ser válido"),
   direccion: string().min(1, "La dirección es obligatoria"),
-   telefono: string()
+  telefono: string()
     .nonempty("El teléfono es obligatorio")
     .min(8, "El teléfono debe tener al menos 8 dígitos")
     .max(15, "El teléfono no puede exceder los 15 dígitos")
@@ -33,19 +33,40 @@ export const contactoSchema = object({
 });
 
 export const contratoSchema = object({
-  // Ejemplo de campo adicional
   id: string().optional(),
-  numeroContrato: string().min(1, "El número de contrato es obligatorio"),
-  descripcion: string().min(1, "La descripción es obligatoria"),
-  tipoContrato: string().min(1, "El tipo de contrato es obligatorio"), // Ejemplo: "Compra"
-  estadoContrato: string().min(1, "El estado del contrato es obligatorio"), // Ejemplo: "Adjudicado"
-  estadoEntrega: string().min(1, "El estado de entrega es obligatorio"), // Ejemplo: "Pendiente"
+  numeroContrato: string({
+    required_error: "El número de contrato es obligatorio",
+  }).min(1, "El número de contrato es obligatorio"),
+  descripcion: string({
+    required_error: "La descripción es obligatoria",
+  }).min(1, "La descripción es obligatoria"),
+  tipoContrato: string({
+    required_error: "El tipo de contrato es obligatorio",
+  }).min(1, "El tipo de contrato es obligatorio"),
+  estadoContrato: string({
+    required_error: "El estado del contrato es obligatorio",
+  }).min(1, "El estado del contrato es obligatorio"),
+  estadoEntrega: string({
+    required_error: "El estado de entrega es obligatorio",
+  }).min(1, "El estado de entrega es obligatorio"),
   eliminado: boolean().default(false),
-  fechaInicio: union([string(), date()]).optional(),
-  fechaFin: union([string(), date()]).optional(),
-  createdAt: union([string(), date()]).optional(),
-  updatedAt: union([string(), date()]).optional(),
-  brent: number().optional(),
+  fechaInicio: union([
+    string({ required_error: "La fecha de inicio es obligatoria" }),
+    date({ required_error: "La fecha de inicio es obligatoria" }),
+  ]),
+  fechaFin: union([
+    string({
+      required_error: "La fecha de fin es obligatoria",
+    }),
+    date({
+      required_error: "La fecha de fin es obligatoria",
+    }),
+  ]),
+
+  brent: number({ required_error: "El valor de brent es obligatorio" }).min(
+    0.000001,
+    "El valor de brent es obligatorio"
+  ),
   montoTotal: number().optional(),
   montoTransporte: number().optional(),
 
@@ -56,16 +77,26 @@ export const contratoSchema = object({
     id: string().optional(),
   }).optional(),
 
-  idContacto: object({
-    id: string().optional(),
-    nombre: string().min(1, "El nombre del contacto es obligatorio"),
-  }),
-
+  idContacto: z.object(
+    {
+      id: z.string().optional(),
+      nombre: z
+        .string({
+          required_error: "El nombre del proveedor es obligatorio",
+        })
+        .min(1, "El nombre del proveedor es obligatorio"),
+    },
+    { required_error: "Debe seleccionar un proveedor" }
+  ),
   // Condiciones de pago
   condicionesPago: object({
-    tipo: string().min(1, "El tipo de condiciones de pago es obligatorio"),
-    plazo: number().min(0, "El plazo debe ser un número no negativo"),
-  }).optional(),
+    tipo: string({
+      required_error: "El tipo de condiciones de pago es obligatorio",
+    }).min(1, "El tipo de condiciones de pago es obligatorio"),
+    plazo: number({
+      required_error: "El plazo es obligatorio",
+    }).min(0, "El plazo debe ser un número no negativo"),
+  }),
 
   // Abonos
   abono: array(
@@ -125,8 +156,9 @@ export const contratoSchema = object({
 
       // Estado local de cada item
       estado: string().optional(),
-    })
-  ).optional(),
+    }),
+    { required_error: "El contrato debe tener al menos un ítem." }
+  ),
 
   /**
    * Campos alternativos para items (si tuvieras otra colección con la misma estructura).
@@ -185,21 +217,8 @@ export const contratoSchema = object({
       estado: string().optional(),
     })
   ).optional(),
-  // Clausulas
-  clausulas: array(string()).optional(),
-
-  // Historial de modificaciones
-
-  historialModificaciones: array(
-    object({
-      id: string().optional(),
-      fecha: string().optional(),
-      descripcion: string().optional(),
-    })
-  ).optional(),
 });
 export const abonoSchema = object({
-  
   idContrato: object({
     // Puedes expandir los campos según la interfaz Contrato
     id: string().min(1, "El ID del contrato es obligatorio"),

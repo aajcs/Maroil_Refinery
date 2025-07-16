@@ -21,6 +21,7 @@ import { InputTextarea } from "primereact/inputtextarea";
 import { Dialog } from "primereact/dialog";
 import { useRefineryPrecios } from "@/hooks/useRefineryPrecios";
 import { useByRefineryData } from "@/hooks/useByRefineryData";
+import { handleFormError } from "@/utils/errorHandlers";
 
 type FormData = z.infer<typeof contratoSchema>;
 
@@ -127,12 +128,7 @@ function ContratoForm({
       }
       hideContratoFormDialog();
     } catch (error) {
-      console.error("Error al crear/modificar contrato:", error);
-      showToast(
-        "error",
-        "Error",
-        error instanceof Error ? error.message : "Ocurrió un error inesperado"
-      );
+      handleFormError(error, toast); // Pasamos la referencia del toast
     } finally {
       setSubmitting(false); // Desactivar el estado de envío
     }
@@ -154,12 +150,29 @@ function ContratoForm({
         montoTransporte: 0, // Monto de transporte (opcional, debe ser no negativo)
       },
     ]);
+    setValue("idItems", [
+      ...items,
+      {
+        nombre: "", // El nombre del crudo es obligatorio
+        // clasificacion: undefined, // La clasificación es opcional
+        gravedadAPI: 0, // Gravedad API del producto (opcional, debe ser no negativa)
+        azufre: 0, // Porcentaje de azufre (opcional, debe ser no negativo)
+        contenidoAgua: 0, // Contenido de agua en porcentaje (opcional, debe ser no negativo)
+        puntoDeInflamacion: 0, // Flashpoint del producto (opcional)
+        cantidad: 0, // Cantidad de producto (opcional, debe ser no negativa)
+
+        convenio: 0, // Precio de convenio (opcional, debe ser no negativo)
+        precioUnitario: 0, // Precio unitario (opcional, debe ser no negativo)
+        montoTransporte: 0, // Monto de transporte (opcional, debe ser no negativo)
+      },
+    ]);
   };
 
   const updateItem = (index: number, field: string, value: any) => {
     const newItems = [...items];
     newItems[index][field] = value;
     setItems(newItems);
+    setValue("idItems", newItems);
   };
 
   const deleteItem = (index: number) => {
@@ -320,7 +333,7 @@ function ContratoForm({
   // }
   // Observa el valor de brent
   const brent = watch("brent") || 0;
-  console.log("object", brent);
+  // console.log("object", brent);
   // Efecto para actualizar el precio unitario cuando cambie el brent
   useEffect(() => {
     interface Item {
@@ -339,6 +352,8 @@ function ContratoForm({
     }));
     setItems(updatedItems);
   }, [brent]);
+  console.log("watch", watch("idItems"));
+  console.log("errors", errors);
   return (
     <Dialog
       visible={contratoFormDialog}
@@ -471,6 +486,7 @@ function ContratoForm({
                         <Dropdown
                           id="idContacto"
                           {...field}
+                          value={field.value ?? undefined}
                           options={contactos
                             .filter((contacto) =>
                               tipoContrato === "Compra"
@@ -539,6 +555,7 @@ function ContratoForm({
                         <Dropdown
                           id="condicionesPago.tipo"
                           {...field}
+                          value={field.value ?? undefined}
                           options={["Contado", "Crédito"]}
                           placeholder="Seleccionar un tipo de condiciones de pago"
                           className={classNames("w-full", {
@@ -572,10 +589,13 @@ function ContratoForm({
                         <>
                           <InputNumber
                             id="condicionesPago.plazo"
-                            {...field}
                             className={classNames("w-full", {
                               "p-invalid": fieldState.error,
                             })}
+                            value={field.value}
+                            onValueChange={(e) => {
+                              field.onChange(e.value);
+                            }}
                           />
                           {fieldState.error && (
                             <small className="p-error block mt-2 flex align-items-center">
@@ -777,13 +797,23 @@ function ContratoForm({
               </div>
 
               {/* Tabla de Items del Contrato */}
-              <div className="orders-subtable col-12">
-                {/* <h5>Items for {contrato?.name}</h5> */}
+              <div
+                className={`orders-subtable col-12${
+                  errors.idItems ? " p-invalid" : ""
+                }`}
+              >
                 <DataTable
                   value={items}
                   responsiveLayout="scroll"
                   scrollable
-                  className="datatable-responsive"
+                  className={`datatable-responsive${
+                    errors.idItems ? " p-invalid" : " "
+                  }`}
+                  style={
+                    errors.idItems
+                      ? { border: "1px solid #f44336" } // rojo y más grueso si hay error
+                      : {}
+                  }
                   size="small"
                   editMode="cell"
                 >
@@ -1028,6 +1058,12 @@ function ContratoForm({
 
                   <Column body={actionBodyTemplate} header="Acciones" />
                 </DataTable>
+                {errors.idItems && (
+                  <small className="p-error block mt-2 flex align-items-center">
+                    <i className="pi pi-exclamation-circle mr-2"></i>
+                    {errors.idItems.message}
+                  </small>
+                )}
                 <Button
                   type="button"
                   label="Agregar Item"

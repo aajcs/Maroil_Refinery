@@ -74,6 +74,9 @@ export const tanqueSchema = object({
   }).optional(),
   createdAt: string().optional(),
   updatedAt: string().optional(),
+}).refine((data) => data.almacenamiento <= data.capacidad, {
+  message: "El almacenamiento no puede ser mayor a la capacidad",
+  path: ["almacenamiento"],
 });
 
 export const lineaRecepcionSchema = object({
