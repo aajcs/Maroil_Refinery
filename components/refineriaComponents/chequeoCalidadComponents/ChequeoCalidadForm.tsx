@@ -59,6 +59,7 @@ const ChequeoCalidadForm = ({
   const [dynamicOptions, setDynamicOptions] = useState<
     { label: string; value: any }[]
   >([]);
+  const [referenciaTipo, setReferenciaTipo] = useState<any>();
   const {
     handleSubmit,
     formState: { errors },
@@ -75,7 +76,7 @@ const ChequeoCalidadForm = ({
       },
       gravedadAPI: 0,
       puntoDeInflamacion: 0,
-      cetano: 0,
+      // cetano: 0,
       estado: "aprobado",
       fechaChequeo: new Date(),
     },
@@ -94,15 +95,18 @@ const ChequeoCalidadForm = ({
     if (tipoAplicar === "Recepcion") {
       const rc = recepcions.find((r) => r.id === referencia.id);
       prod = rc?.idContratoItems?.producto;
+      setReferenciaTipo(rc?.idContratoItems || null);
     } else if (tipoAplicar === "Tanque") {
       const tn = tanques.find((t) => t.id === referencia.id);
       console.log("Tanque:", tn);
-      prod = tn?.idProducto; // Asume que tanque tiene campo `producto`
+      prod = tn?.idProducto;
+      setReferenciaTipo(null);
+      // Asume que tanque tiene campo `producto`
     } else if (tipoAplicar === "Despacho") {
       const dsp = despachos.find((d) => d.id === referencia.id);
       prod = dsp?.idContratoItems?.producto;
+      setReferenciaTipo(dsp?.idContratoItems || null);
     }
-
     if (prod) {
       setValue("idProducto", {
         id: prod.id,
@@ -182,6 +186,7 @@ const ChequeoCalidadForm = ({
         setValue(key as keyof FormData, chequeoCalidad[key])
       );
     }
+    console.log("Chequeo de calidad cargado:", chequeoCalidad);
     if (onDuplicate && chequeoCalidad) {
       // Establecer valores predeterminados para el modo duplicado
       setValue("azufre", 0); // Cambiar el valor de azufre
@@ -189,7 +194,7 @@ const ChequeoCalidadForm = ({
 
       setValue("gravedadAPI", 0); // Cambiar el valor de gravedad API
       setValue("puntoDeInflamacion", 0); // Cambiar el valor de punto de inflamación
-      setValue("cetano", 0); // Cambiar el valor de cetano
+      // setValue("cetano", 0); // Cambiar el valor de cetano
       setValue("fechaChequeo", new Date()); // Cambiar la fecha de chequeo
     }
   }, [chequeoCalidad, onDuplicate, setValue]);
@@ -265,6 +270,8 @@ const ChequeoCalidadForm = ({
       }
     }
   };
+
+  console.log("Referencia tipo:", referenciaTipo);
   return (
     <div>
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -477,9 +484,14 @@ const ChequeoCalidadForm = ({
             {/* Campo: Gravedad API */}
             <div className="col-12 md:col-6 lg:col-4 xl:col-3">
               <div className="p-2 bg-white border-round shadow-1 surface-card">
-                <label className="block font-medium text-900 mb-3 flex align-items-center">
-                  <i className="pi pi-chart-line mr-2 text-primary"></i>
-                  Gravedad API
+                <label className="block font-medium text-900 mb-3 flex justify-content-between align-items-center">
+                  <span className="flex align-items-center">
+                    <i className="pi pi-chart-line mr-2 text-primary"></i>
+                    Gravedad API
+                  </span>
+                  {referenciaTipo && (
+                    <span>Ref={referenciaTipo?.gravedadAPI}</span>
+                  )}
                 </label>
                 <Controller
                   name="gravedadAPI"
@@ -507,9 +519,12 @@ const ChequeoCalidadForm = ({
             {/* Campo: Azufre */}
             <div className="col-12 md:col-6 lg:col-4 xl:col-3">
               <div className="p-2 bg-white border-round shadow-1 surface-card">
-                <label className="block font-medium text-900 mb-3 flex align-items-center">
-                  <i className="pi pi-percentage mr-2 text-primary"></i>
-                  Azufre (%)
+                <label className="block font-medium text-900 mb-3 flex justify-content-between align-items-center">
+                  <span className="flex align-items-center">
+                    <i className="pi pi-percentage mr-2 text-primary"></i>
+                    Azufre (%)
+                  </span>
+                  {referenciaTipo && <span>Ref={referenciaTipo?.azufre}</span>}
                 </label>
                 <Controller
                   name="azufre"
@@ -538,9 +553,14 @@ const ChequeoCalidadForm = ({
             {/* Campo: Contenido de Agua */}
             <div className="col-12 md:col-6 lg:col-4 xl:col-3">
               <div className="p-2 bg-white border-round shadow-1 surface-card">
-                <label className="block font-medium text-900 mb-3 flex align-items-center">
-                  <i className="pi pi-water mr-2 text-primary"></i>
-                  Contenido de Agua (%)
+                <label className="block font-medium text-900 mb-3 flex justify-content-between align-items-center">
+                  <span className="flex align-items-center">
+                    <i className="pi pi-water mr-2 text-primary"></i>
+                    Contenido de Agua (%)
+                  </span>
+                  {referenciaTipo && (
+                    <span>Ref={referenciaTipo?.contenidoAgua}</span>
+                  )}
                 </label>
                 <Controller
                   name="contenidoAgua"
@@ -569,9 +589,14 @@ const ChequeoCalidadForm = ({
             {/* Campo: Punto de Inflamación */}
             <div className="col-12 md:col-6 lg:col-4 xl:col-3">
               <div className="p-2 bg-white border-round shadow-1 surface-card">
-                <label className="block font-medium text-900 mb-3 flex align-items-center">
-                  <i className="pi pi-fire mr-2 text-primary"></i>
-                  Punto de Inflamación (°C)
+                <label className="block font-medium text-900 mb-3 flex justify-content-between align-items-center">
+                  <span className="flex align-items-center">
+                    <i className="pi pi-fire mr-2 text-primary"></i>
+                    Punto de Inflamación (°C)
+                  </span>
+                  {referenciaTipo && (
+                    <span>Ref={referenciaTipo?.puntoDeInflamacion}</span>
+                  )}
                 </label>
                 <Controller
                   name="puntoDeInflamacion"
@@ -597,7 +622,7 @@ const ChequeoCalidadForm = ({
             </div>
 
             {/* Campo: Índice Cetano */}
-            <div className="col-12 md:col-6 lg:col-4 xl:col-3">
+            {/* <div className="col-12 md:col-6 lg:col-4 xl:col-3">
               <div className="p-2 bg-white border-round shadow-1 surface-card">
                 <label className="block font-medium text-900 mb-3 flex align-items-center">
                   <i className="pi pi-star mr-2 text-primary"></i>
@@ -624,7 +649,7 @@ const ChequeoCalidadForm = ({
                   </small>
                 )}
               </div>
-            </div>
+            </div> */}
 
             {/* Campo: Estado */}
             <div className="col-12 md:col-6 lg:col-4 xl:col-3">

@@ -46,7 +46,7 @@ export const chequeoCalidadSchema = z.object({
   puntoDeInflamacion: z
     .number()
     .min(0, "El punto de inflamación debe ser un número no negativo"),
-  cetano: z.number().min(0, "El índice cetano debe ser un número no negativo"),
+  // cetano: z.number().min(0, "El índice cetano debe ser un número no negativo"),
   idOperador: z
     .object({
       nombre: z.string().min(1, "El nombre del operador es obligatorio"),

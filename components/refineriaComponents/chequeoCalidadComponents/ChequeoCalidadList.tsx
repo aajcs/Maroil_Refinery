@@ -249,7 +249,7 @@ const ChequeoCalidadList = () => {
             header="Punto Inflamación"
             sortable
           />
-          <Column field="cetano" header="Índice Cetano" sortable />
+          {/* <Column field="cetano" header="Índice Cetano" sortable /> */}
           <Column field="estado" header="Estado" sortable />
           {/* <Column
           field="createdAt"

@@ -70,7 +70,7 @@ const ChequeoCalidadForm = ({
       },
       gravedadAPI: 0,
       puntoDeInflamacion: 0,
-      cetano: 0,
+      // cetano: 0,
       estado: "aprobado",
       fechaChequeo: new Date(),
     },
@@ -176,7 +176,7 @@ const ChequeoCalidadForm = ({
 
       setValue("gravedadAPI", 0); // Cambiar el valor de gravedad API
       setValue("puntoDeInflamacion", 0); // Cambiar el valor de punto de inflamación
-      setValue("cetano", 0); // Cambiar el valor de cetano
+      // setValue("cetano", 0); // Cambiar el valor de cetano
       setValue("fechaChequeo", new Date()); // Cambiar la fecha de chequeo
     }
   }, [chequeoCalidad, onDuplicate, setValue]);
@@ -573,7 +573,7 @@ const ChequeoCalidadForm = ({
               </div>
             </div>
 
-            {/* Campo: Índice Cetano */}
+            {/* Campo: Índice Cetano
             <div className="col-12 md:col-6 lg:col-4 xl:col-3">
               <div className="p-2 bg-white border-round shadow-1 surface-card">
                 <label className="block font-medium text-900 mb-3 flex align-items-center">
@@ -601,7 +601,7 @@ const ChequeoCalidadForm = ({
                   </small>
                 )}
               </div>
-            </div>
+            </div> */}
 
             {/* Campo: Estado */}
             <div className="col-12 md:col-6 lg:col-4 xl:col-3">
