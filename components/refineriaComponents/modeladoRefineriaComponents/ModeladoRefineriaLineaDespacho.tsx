@@ -11,6 +11,7 @@ import {
 } from "./ElementosLineaCarga";
 import { LineaDespacho, Despacho } from "@/libs/interfaces";
 import ModeladoRefineriaDespachosList from "./ModeladoRefineriaDespachosList";
+import { createPortal } from "react-dom";
 
 interface ModeladoRefineriaLineaDespachoProps {
   lineaDespacho: LineaDespacho; // Ajusta el tipo según sea necesario
@@ -213,9 +214,13 @@ const ModeladoRefineriaLineaDespacho = ({
           </circle>
         )}
       </svg>
-      {showTooltip && selectedDespacho && (
-        <Tooltip despacho={selectedDespacho} position={tooltipPosition} />
-      )}
+
+      {showTooltip &&
+        selectedDespacho &&
+        createPortal(
+          <Tooltip despacho={selectedDespacho} position={tooltipPosition} />,
+          document.body
+        )}
     </div>
   );
 };

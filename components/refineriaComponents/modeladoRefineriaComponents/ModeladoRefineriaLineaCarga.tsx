@@ -11,6 +11,7 @@ import {
 } from "./ElementosLineaCarga";
 import { LineaRecepcion, Recepcion } from "@/libs/interfaces";
 import ModeladoRefineriaRecepcionesList from "./ModeladoRefineriaRecepcionesList";
+import { createPortal } from "react-dom";
 
 interface ModeladoRefineriaLineaCargaProps {
   lineaRecepcion: LineaRecepcion;
@@ -206,9 +207,12 @@ const ModeladoRefineriaLineaCarga = ({
         )}
       </svg>
 
-      {showTooltip && selectedRecepcion && (
-        <Tooltip recepcion={selectedRecepcion} position={tooltipPosition} />
-      )}
+      {showTooltip &&
+        selectedRecepcion &&
+        createPortal(
+          <Tooltip recepcion={selectedRecepcion} position={tooltipPosition} />,
+          document.body
+        )}
     </div>
   );
 };
