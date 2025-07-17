@@ -1,6 +1,6 @@
 "use client";
 
-import CorteRefinacionList from "@/components/refineriaComponents/corteRefinacionComponents/CorteRefinacionList";
+import CorteRefinacionList from "@/components/refineriaComponents/corteRefinacionsComponents/CorteRefinacionList";
 
 function RefinacionSalida() {
   return (

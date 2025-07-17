@@ -52,7 +52,6 @@ const ChequeoCantidadForm = ({
   setOnDuplicate,
 }: ChequeoCantidadFormProps) => {
   const { activeRefineria } = useRefineriaStore();
-  console.log(chequeoCantidad);
 
   const { productos, tanques, recepcions, despachos, loading } =
     useByRefineryData(activeRefineria?.id || "");
