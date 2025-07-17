@@ -630,9 +630,9 @@ function DashboardFinanzas() {
               >
                 <path
                   stroke="#000"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
                   d="M18 8.5v-.146A3.354 3.354 0 0 0 14.646 5H9.5a3.5 3.5 0 1 0 0 7h5a3.5 3.5 0 1 1 0 7H9.427A3.427 3.427 0 0 1 6 15.573V15.5M12 3v18"
                 />
               </svg>

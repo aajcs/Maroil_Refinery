@@ -208,12 +208,12 @@ const ModeladoBunkeringTorre: React.FC<ModeladoBunkeringTorreProps> = ({
               rx="6"
               fill="#ffffff"
               stroke="#e0e0e0"
-              stroke-width="1.2"
+              strokeWidth="1.2"
               filter="url(#shadow-light)"
             />
 
             {/* Contenido */}
-            <g font-family="Segoe UI, sans-serif">
+            <g fontFamily="Segoe UI, sans-serif">
               {/* Título de la sección */}
               <text
                 x="0"
@@ -227,7 +227,7 @@ const ModeladoBunkeringTorre: React.FC<ModeladoBunkeringTorreProps> = ({
               </text>
 
               {/* Línea divisoria más visible */}
-              <path d="M0 -3 L140 -3" stroke="#e0e0e0" stroke-width="1" />
+              <path d="M0 -3 L140 -3" stroke="#e0e0e0" strokeWidth="1" />
 
               {/* Contenedor de datos técnicos */}
               <g transform="translate(0, 10)" fontSize="14" fill="#4a4a4a">

@@ -413,33 +413,33 @@ const ModeladoBunkeringTanque = ({
             rx="8"
             fill="#f8f9fa"
             stroke="#dee2e6"
-            stroke-width="1.5"
+            strokeWidth="1.5"
             filter="url(#shadow)"
           />
 
           {/* Contenido */}
-          <g font-family="Segoe UI, Arial, sans-serif">
+          <g fontFamily="Segoe UI, Arial, sans-serif">
             {/* Título */}
-            <text x="15" y="30" fill="#2d3436" fontSize="20" font-weight="600">
+            <text x="15" y="30" fill="#2d3436" fontSize="20" fontWeight="600">
               <tspan>{tanque.nombre}</tspan>
               <tspan
                 x="110"
                 y="30"
                 fill="#2d3436"
                 fontSize="20"
-                font-weight="600"
+                fontWeight="600"
               >
                 {tanque.idProducto?.nombre}
               </tspan>
             </text>
 
             {/* Línea divisoria */}
-            <path d="M15 40 L225 40" stroke="#ced4da" stroke-width="1" />
+            <path d="M15 40 L225 40" stroke="#ced4da" strokeWidth="1" />
 
             {/* Detalles */}
             <g fontSize="17" fill="#495057">
               {/* Capacidad */}
-              {/* <text x="15" y="65" font-weight="500">
+              {/* <text x="15" y="65" fontWeight="500">
                 Capacidad Diseño:
               </text>
               <text
@@ -448,13 +448,13 @@ const ModeladoBunkeringTanque = ({
                 fontSize="18"
                 textAnchor="end"
                 fill="#2d3436"
-                font-weight="600"
+                fontWeight="600"
               >
                 {tanque.capacidad.toLocaleString()} bls
               </text> */}
 
               {/* Nivel */}
-              <text x="15" y="70" font-weight="500">
+              <text x="15" y="70" fontWeight="500">
                 Nivel:
               </text>
               <text
@@ -463,13 +463,13 @@ const ModeladoBunkeringTanque = ({
                 fontSize="18"
                 textAnchor="end"
                 fill="#2d3436"
-                font-weight="600"
+                fontWeight="600"
               >
                 {apiData.tankLevel.toFixed(2)}%
               </text>
 
               {/* Cantidad */}
-              <text x="15" y="105" font-weight="500">
+              <text x="15" y="105" fontWeight="500">
                 Cantidad:
               </text>
               <text
@@ -478,7 +478,7 @@ const ModeladoBunkeringTanque = ({
                 fontSize="18"
                 textAnchor="end"
                 fill="#2d3436"
-                font-weight="600"
+                fontWeight="600"
               >
                 {ultimoCorteRefinacion
                   ? (!salida
@@ -496,7 +496,7 @@ const ModeladoBunkeringTanque = ({
               </text>
 
               {/* Temperatura */}
-              <text x="15" y="125" font-weight="500">
+              <text x="15" y="125" fontWeight="500">
                 Temperatura:
               </text>
               <text
@@ -505,13 +505,13 @@ const ModeladoBunkeringTanque = ({
                 fontSize="18"
                 textAnchor="end"
                 fill="#6c757d"
-                font-style="italic"
-                font-weight="600"
+                fontStyle="italic"
+                fontWeight="600"
               >
                 {/* Puedes reemplazar con el dato real cuando lo tengas */}
                 N/A
               </text>
-              <text x="15" y="145" font-weight="500">
+              <text x="15" y="145" fontWeight="500">
                 Última Medición:
               </text>
               <text
@@ -520,7 +520,7 @@ const ModeladoBunkeringTanque = ({
                 fontSize="18"
                 textAnchor="end"
                 fill="#2d3436"
-                font-weight="600"
+                fontWeight="600"
               >
                 {ultimoChequeoCantidad
                   ? `${ultimoChequeoCantidad.cantidad.toLocaleString()} Bbl 
@@ -533,7 +533,7 @@ const ModeladoBunkeringTanque = ({
                 fontSize="18"
                 textAnchor="end"
                 fill="#2d3436"
-                // font-weight="600"
+                // fontWeight="600"
               >
                 {ultimoChequeoCantidad &&
                   `Hace ${

@@ -579,12 +579,12 @@ const ModeladoRefineriaTorre: React.FC<ModeladoRefineriaTorreProps> = ({
               rx="6"
               fill="#ffffff"
               stroke="#e0e0e0"
-              stroke-width="1.2"
+              strokeWidth="1.2"
               filter="url(#shadow-light)"
             />
 
             {/* Contenido */}
-            <g font-family="Segoe UI, sans-serif">
+            <g fontFamily="Segoe UI, sans-serif">
               {/* Título de la sección */}
               <text
                 x="0"
@@ -598,13 +598,13 @@ const ModeladoRefineriaTorre: React.FC<ModeladoRefineriaTorreProps> = ({
               </text>
 
               {/* Línea divisoria más visible */}
-              <path d="M0 -3 L140 -3" stroke="#e0e0e0" stroke-width="1" />
+              <path d="M0 -3 L140 -3" stroke="#e0e0e0" strokeWidth="1" />
 
               {/* Contenedor de datos técnicos */}
               <g transform="translate(0, 10)" fontSize="14" fill="#4a4a4a">
                 {/* Fila de rendimientos */}
                 <g transform="translate(0, 0)">
-                  <text font-weight="600">
+                  <text fontWeight="600">
                     <tspan fill="#6c757d" dx="2">
                       Diseño:{" "}
                     </tspan>
@@ -618,7 +618,7 @@ const ModeladoRefineriaTorre: React.FC<ModeladoRefineriaTorreProps> = ({
                 </g>
 
                 <g transform="translate(0, 18)">
-                  <text font-weight="600">
+                  <text fontWeight="600">
                     <tspan fill="#6c757d" dx="2">
                       Real:{" "}
                     </tspan>
@@ -634,10 +634,10 @@ const ModeladoRefineriaTorre: React.FC<ModeladoRefineriaTorreProps> = ({
                 {/* Fila de cantidades */}
                 <g transform="translate(0, 36)">
                   <text>
-                    <tspan fill="#6c757d" font-weight="600" dx="2">
+                    <tspan fill="#6c757d" fontWeight="600" dx="2">
                       Cantidad:{" "}
                     </tspan>
-                    <tspan fill="#1a1a1a" font-weight="600">
+                    <tspan fill="#1a1a1a" fontWeight="600">
                       {section.cantidad.toLocaleString()} bpd
                     </tspan>
                   </text>

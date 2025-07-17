@@ -110,9 +110,9 @@ export const useSocket = (): UseSocketReturn => {
 
   useEffect(() => {
     socket?.on("new-notification", (notification) => {
-      console.log("notificacion:", notification);
+      // console.log("notificacion:", notification);
       setNotification(notification);
-      console.log("notificacion", notification);
+      // console.log("notificacion", notification);
       // Aquí puedes actualizar el estado o realizar otra acción según lo recibido.
     });
   }, [socket]);

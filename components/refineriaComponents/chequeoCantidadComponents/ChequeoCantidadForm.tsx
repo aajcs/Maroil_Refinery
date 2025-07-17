@@ -52,6 +52,7 @@ const ChequeoCantidadForm = ({
   setOnDuplicate,
 }: ChequeoCantidadFormProps) => {
   const { activeRefineria } = useRefineriaStore();
+  console.log(chequeoCantidad);
 
   const { productos, tanques, recepcions, despachos, loading } =
     useByRefineryData(activeRefineria?.id || "");
@@ -94,7 +95,14 @@ const ChequeoCantidadForm = ({
     } else if (tipo === "Recepcion") {
       setDynamicOptions(
         recepcions
-          .filter((r) => r.estadoCarga !== "FINALIZADO" && r.estadoRecepcion === "EN_REFINERIA")
+          .filter((r) => {
+            if (!chequeoCantidad)
+              return (
+                r.estadoCarga !== "FINALIZADO" &&
+                r.estadoRecepcion === "EN_REFINERIA"
+              );
+            return true;
+          })
           .map((recepcion) => ({
             label: `Recepción - ${recepcion.idGuia}`,
             value: {
@@ -102,22 +110,35 @@ const ChequeoCantidadForm = ({
               idGuia: recepcion.idGuia,
               nombreChofer: recepcion.nombreChofer,
               placa: recepcion.placa,
-              // _id: recepcion.id,
+              cantidadEnviada: recepcion.cantidadEnviada,
+              cantidadRecibida: recepcion.cantidadRecibida,
+              numeroRecepcion: recepcion.numeroRecepcion,
+              // ...agrega aquí cualquier otro campo necesario...
             },
           }))
       );
     } else if (tipo === "Despacho") {
       setDynamicOptions(
         despachos
-          .filter((d) => d.estadoCarga !== "FINALIZADO" && d.estadoDespacho === "EN_REFINERIA")
+          .filter((d) => {
+            if (!chequeoCantidad)
+              return (
+                d.estadoCarga !== "FINALIZADO" &&
+                d.estadoDespacho === "EN_REFINERIA"
+              );
+            return true;
+          })
           .map((despacho) => ({
             label: `Despacho - ${despacho.idGuia}`,
             value: {
               id: despacho.id,
+              _id: despacho.id,
               idGuia: despacho.idGuia,
               nombreChofer: despacho.nombreChofer,
               placa: despacho.placa,
-              _id: despacho.id,
+              cantidadEnviada: despacho.cantidadEnviada,
+              cantidadRecibida: despacho.cantidadRecibida,
+              numeroDespacho: despacho.numeroDespacho,
             },
           }))
       );
@@ -283,6 +304,7 @@ const ChequeoCantidadForm = ({
                       className={classNames("w-full", {
                         "p-invalid": errors.aplicar,
                       })}
+                      disabled={!!chequeoCantidad}
                     />
                   )}
                 />
@@ -319,6 +341,7 @@ const ChequeoCantidadForm = ({
                         })}
                         showClear
                         filter
+                        disabled={!!chequeoCantidad}
                       />
                     )}
                   />
