@@ -14,6 +14,7 @@ const REPORTES = [
   { key: "abonosPorTipoOperacion", label: "Abonos por Tipo de Operación" },
   { key: "abonosPorProveedor", label: "Abonos por Proveedor" },
   { key: "cuentasPendientes", label: "Cuentas por Pagar / Cobrar Pendientes" },
+  { key: "cuentasPendientesPorProveedor", label: "Cuentas Pendientes por Proveedor/Cliente" }, // Nuevo reporte
 ];
 
 const TIPO_ABONO_OPTIONS = [
@@ -74,6 +75,10 @@ const ReportesFinacierosList: React.FC<ReportesFinacierosListProps> = ({ tipoRep
   const [tipoCuentaPendiente, setTipoCuentaPendiente] = useState<string>("Cuentas por Pagar");
   const [totalPendiente, setTotalPendiente] = useState<number>(0);
 
+  // Para cuentas pendientes por proveedor/cliente
+  const [pendienteProveedor, setPendienteProveedor] = useState<string | null>(null);
+  const [pendienteProveedores, setPendienteProveedores] = useState<{ label: string; value: string }[]>([]);
+
   // Visualización previa
   const [showPreview, setShowPreview] = useState(false);
 
@@ -84,6 +89,34 @@ const ReportesFinacierosList: React.FC<ReportesFinacierosListProps> = ({ tipoRep
     };
     cargarProveedores();
   }, []);
+
+  // Cargar proveedores/clientes para cuentas pendientes según tipo de cuenta
+  useEffect(() => {
+    const cargarPendienteProveedores = async () => {
+      const cuentasDB = await getCuentas();
+      const cuentas = cuentasDB.cuentas || [];
+      const map = new Map<string, { label: string; value: string }>();
+      cuentas.forEach((cuenta: any) => {
+        if (
+          cuenta.idRefineria?.id === activeRefineria?.id &&
+          cuenta.tipoCuenta === tipoCuentaPendiente &&
+          cuenta.idContacto?.id &&
+          cuenta.idContacto?.nombre
+        ) {
+          map.set(cuenta.idContacto.id, {
+            label: cuenta.idContacto.nombre,
+            value: cuenta.idContacto.id,
+          });
+        }
+      });
+      setPendienteProveedores(Array.from(map.values()));
+    };
+    if (reporteSeleccionado === "cuentasPendientesPorProveedor" && tipoCuentaPendiente) {
+      cargarPendienteProveedores();
+      setPendienteProveedor(null);
+    }
+    // eslint-disable-next-line
+  }, [reporteSeleccionado, tipoCuentaPendiente, activeRefineria]);
 
   // --- TITULO DINÁMICO ---
   const tituloReporte =
@@ -194,6 +227,31 @@ const ReportesFinacierosList: React.FC<ReportesFinacierosListProps> = ({ tipoRep
     setLoading(false);
   };
 
+  // Nuevo handler para cuentas pendientes por proveedor/cliente
+  const handleGenerarCuentasPendientesPorProveedor = async () => {
+    setLoading(true);
+    try {
+      const cuentasDB = await getCuentas();
+      let cuentas = cuentasDB.cuentas || [];
+      cuentas = cuentas.filter(
+        (cuenta: any) =>
+          cuenta.idRefineria?.id === activeRefineria?.id &&
+          cuenta.tipoCuenta === tipoCuentaPendiente &&
+          Number(cuenta.balancePendiente) > 0 &&
+          (!pendienteProveedor || cuenta.idContacto?.id === pendienteProveedor)
+      );
+      setCuentasPendientes(cuentas);
+      setTotalPendiente(
+        cuentas.reduce((acc: number, c: any) => acc + Number(c.balancePendiente ?? 0), 0)
+      );
+      setShowPreview(true);
+    } catch (e) {
+      setCuentasPendientes([]);
+      setTotalPendiente(0);
+    }
+    setLoading(false);
+  };
+
   // --- RESET ---
   const handleVolver = () => {
     setReporteSeleccionado(null);
@@ -203,6 +261,7 @@ const ReportesFinacierosList: React.FC<ReportesFinacierosListProps> = ({ tipoRep
     setProveedor(null);
     setCuentasPendientes([]);
     setShowPreview(false);
+    setPendienteProveedor(null);
   };
 
   // --- TABLAS DE VISTA PREVIA ---
@@ -300,6 +359,7 @@ const ReportesFinacierosList: React.FC<ReportesFinacierosListProps> = ({ tipoRep
                   setProveedor(null);
                   setCuentasPendientes([]);
                   setShowPreview(false);
+                  setPendienteProveedor(null);
                 }}
               />
             ))}
@@ -723,6 +783,129 @@ const ReportesFinacierosList: React.FC<ReportesFinacierosListProps> = ({ tipoRep
           )}
         </div>
       )}
+
+      {/* Nuevo: Formulario para el reporte de cuentas pendientes por proveedor/cliente */}
+      {reporteSeleccionado === "cuentasPendientesPorProveedor" && (
+  <div className="mb-4 p-3 bg-white border-round shadow-1">
+    {!showPreview ? (
+      <>
+        <h3 className="mb-4 text-lg font-semibold text-center text-primary">
+          Reporte de {tipoCuentaPendiente} Pendientes por {tipoCuentaPendiente === "Cuentas por Pagar" ? "Proveedor" : "Cliente"}
+        </h3>
+        <div className="flex flex-wrap gap-4 justify-center mb-4">
+          <div className="flex flex-column gap-2" style={{ minWidth: 180 }}>
+            <label className="font-medium text-900">Tipo de Cuenta</label>
+            <Dropdown
+              value={tipoCuentaPendiente}
+              options={TIPO_CUENTA_OPTIONS}
+              onChange={(e) => setTipoCuentaPendiente(e.value)}
+              placeholder="Seleccione tipo de cuenta"
+              className="w-full"
+            />
+          </div>
+          {tipoCuentaPendiente && (
+            <div className="flex flex-column gap-2" style={{ minWidth: 180 }}>
+              <label className="font-medium text-900">
+                {tipoCuentaPendiente === "Cuentas por Pagar" ? "Proveedor" : "Cliente"}
+              </label>
+              <Dropdown
+                value={pendienteProveedor}
+                options={pendienteProveedores}
+                onChange={(e) => setPendienteProveedor(e.value)}
+                placeholder={`Seleccione un ${tipoCuentaPendiente === "Cuentas por Pagar" ? "proveedor" : "cliente"}`}
+                className="w-full"
+                filter
+                disabled={pendienteProveedores.length === 0}
+              />
+            </div>
+          )}
+          <Button
+            label="Visualizar Reporte"
+            icon="pi pi-eye"
+            className="p-button-raised p-button-primary"
+            style={{ minWidth: 220, fontWeight: 600, fontSize: 16, alignSelf: "end" }}
+            onClick={handleGenerarCuentasPendientesPorProveedor}
+            loading={loading}
+            disabled={!tipoCuentaPendiente}
+          />
+          <Button
+            label="Volver"
+            icon="pi pi-times"
+            className="p-button-raised"
+            style={{
+              minWidth: 120,
+              background: "#22c55e",
+              border: "none",
+              color: "#fff",
+              alignSelf: "end",
+            }}
+            onClick={handleVolver}
+          />
+        </div>
+      </>
+    ) : (
+      <>
+        {/* Resumen financiero del proveedor/cliente */}
+        {pendienteProveedor && cuentasPendientes.length > 0 && (
+          <div className="mb-4 p-3 bg-blue-50 border-round shadow-1 flex flex-wrap gap-4 justify-center">
+            <div>
+              <strong>{tipoCuentaPendiente === "Cuentas por Pagar" ? "Proveedor" : "Cliente"}:</strong>{" "}
+              {cuentasPendientes[0]?.idContacto?.nombre}
+            </div>
+            <div>
+              <strong>Total Cuentas:</strong> {cuentasPendientes.length}
+            </div>
+            <div>
+              <strong>Total Pendiente:</strong> ${totalPendiente.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+            </div>
+          </div>
+        )}
+        {/* Mostrar la tabla SIEMPRE que existan cuentas */}
+        {cuentasPendientes.length > 0 ? (
+          renderCuentasPendientesTable(cuentasPendientes, totalPendiente)
+        ) : (
+          <div className="text-center text-900 font-medium my-4">
+            No existen cuentas pendientes para el filtro seleccionado.
+          </div>
+        )}
+        <div className="flex justify-center mt-4">
+          <div className="flex gap-3">
+            <PDFDownloadLink
+              document={
+                <CuentasPendientesTemplate
+                  data={{
+                    tipoCuenta: tipoCuentaPendiente,
+                    cuentas: cuentasPendientes,
+                    totalPendiente: totalPendiente,
+                  }}
+                  logoUrl={activeRefineria?.img || "/layout/images/avatarHombre.png"}
+                />
+              }
+              fileName={`ReporteCuentasPendientesPorProveedor_${tipoCuentaPendiente}_${pendienteProveedor || "Todos"}_${new Date().toLocaleDateString()}.pdf`}
+              className="p-button p-component p-button-success"
+            >
+              {({ loading }) =>
+                loading ? <span>Generando PDF...</span> : <span>Descargar Reporte PDF</span>
+              }
+            </PDFDownloadLink>
+            <Button
+              label="Volver"
+              icon="pi pi-times"
+              className="p-button-raised"
+              style={{
+                minWidth: 120,
+                background: "#ef4444",
+                border: "none",
+                color: "#fff",
+              }}
+              onClick={() => setShowPreview(false)}
+            />
+          </div>
+        </div>
+      </>
+    )}
+  </div>
+)}
     </div>
   );
 };
