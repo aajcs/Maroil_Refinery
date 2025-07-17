@@ -31,6 +31,7 @@ const DespachoList = () => {
   const [auditDialogVisible, setAuditDialogVisible] = useState(false);
   const [selectedAuditDespacho, setSelectedAuditDespacho] =
     useState<Despacho | null>(null);
+  const [mostrarTodas, setMostrarTodas] = useState(false);
   const router = useRouter();
   const dt = useRef(null);
   const toast = useRef<Toast | null>(null);
@@ -71,14 +72,14 @@ const DespachoList = () => {
       toast.current?.show({
         severity: "success",
         summary: "Éxito",
-        detail: "Despacho Eliminada",
+        detail: "Despacho Eliminado",
         life: 3000,
       });
     } else {
       toast.current?.show({
         severity: "error",
         summary: "Error",
-        detail: "No se pudo eliminar la torre de destilación",
+        detail: "No se pudo eliminar el despacho",
         life: 3000,
       });
     }
@@ -92,23 +93,42 @@ const DespachoList = () => {
     setGlobalFilterValue(value);
   };
 
+  // Filtrado según mostrarTodas
+  const despachosFiltrados = mostrarTodas
+    ? despachos
+    : despachos.filter(
+        (d) =>
+          d.estadoDespacho !== "COMPLETADO" &&
+          d.estadoDespacho !== "CANCELADO"
+      );
+
   const renderHeader = () => (
     <div className="flex flex-wrap gap-2 align-items-center justify-content-between">
-      <span className="p-input-icon-left w-full sm:w-20rem flex-order-1 sm:flex-order-0">
-        <i className="pi pi-search"></i>
-        <InputText
-          value={globalFilterValue}
-          onChange={onGlobalFilterChange}
-          placeholder="Búsqueda Global"
-          className="w-full"
+      <div className="flex align-items-center gap-2 w-full sm:w-auto">
+        <span className="p-input-icon-left w-full sm:w-20rem">
+          <i className="pi pi-search"></i>
+          <InputText
+            value={globalFilterValue}
+            onChange={onGlobalFilterChange}
+            placeholder="Búsqueda Global"
+            className="w-full"
+          />
+        </span>
+        <Button
+          type="button"
+          icon={mostrarTodas ? "pi pi-eye-slash" : "pi pi-eye"}
+          label={mostrarTodas ? "Ver solo activos" : "Ver todos"}
+          className="p-button-secondary"
+          onClick={() => setMostrarTodas((prev) => !prev)}
+          style={{ minWidth: 160 }}
         />
-      </span>
+      </div>
       <Button
         type="button"
         icon="pi pi-user-plus"
         label="Agregar Nuevo"
         outlined
-        className="w-full sm:w-auto flex-order-0 sm:flex-order-1"
+        className="w-full sm:w-auto"
         onClick={() => setDespachoFormDialog(true)}
       />
     </div>
@@ -119,17 +139,14 @@ const DespachoList = () => {
       rowData={rowData}
       onInfo={(data) => {
         setSelectedAuditDespacho(data);
-
         setAuditDialogVisible(true);
       }}
       onEdit={(data) => {
         setDespacho(rowData);
-        data;
         setDespachoFormDialog(true);
       }}
       onDelete={(data) => {
         setDespacho(rowData);
-        data;
         setDeleteProductDialog(true);
       }}
       pdfTemplate={(props) => (
@@ -142,6 +159,7 @@ const DespachoList = () => {
       pdfDownloadText="Descargar Despacho"
     />
   );
+
   const showToast = (
     severity: "success" | "error" | "warn",
     summary: string,
@@ -157,6 +175,7 @@ const DespachoList = () => {
       </div>
     );
   }
+
   return (
     <>
       <Toast ref={toast} />
@@ -173,7 +192,7 @@ const DespachoList = () => {
       >
         <DataTable
           ref={dt}
-          value={despachos}
+          value={despachosFiltrados}
           header={renderHeader()}
           paginator
           rows={10}
@@ -202,14 +221,14 @@ const DespachoList = () => {
           />
           <Column
             field="cantidadEnviada"
-            header="Cantidad a Depachar"
+            header="Cantidad a Despachar"
             body={(rowData: Despacho) =>
               ` ${Number(rowData.cantidadEnviada).toLocaleString("de-DE")}Bbl`
             }
           />
           <Column
             field="cantidadRecibida"
-            header="Cantidad Depachada"
+            header="Cantidad Despachada"
             body={(rowData: Despacho) =>
               ` ${Number(rowData.cantidadRecibida).toLocaleString("de-DE")}Bbl`
             }
@@ -246,17 +265,6 @@ const DespachoList = () => {
 
           <Column field="estadoDespacho" header="Estado de la Despacho" />
           <Column field="estadoCarga" header="Estado de la Carga" />
-          {/* <Column field="estado" header="Estado" />
-        <Column
-          field="createdAt"
-          header="Fecha de Creación"
-          body={(rowData: Despacho) => formatDateFH(rowData.createdAt)}
-        />
-        <Column
-          field="updatedAt"
-          header="Última Actualización"
-          body={(rowData: Despacho) => formatDateFH(rowData.updatedAt)}
-        /> */}
         </DataTable>
         <Dialog
           visible={deleteProductDialog}
@@ -292,7 +300,7 @@ const DespachoList = () => {
               </span>
             )}
           </div>
-        </Dialog>{" "}
+        </Dialog>
         <AuditHistoryDialog
           visible={auditDialogVisible}
           onHide={() => setAuditDialogVisible(false)}

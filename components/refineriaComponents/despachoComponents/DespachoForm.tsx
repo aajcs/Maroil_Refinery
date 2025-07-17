@@ -473,49 +473,45 @@ const DespachoForm = ({
                         Línea de Descarga
                       </label>
                       <Controller
-                        name="idLineaDespacho"
-                        control={control}
-                        render={({ field }) => {
-                          watch("idLineaDespacho");
-                          const filteredLineas = !watch("idLineaDespacho")
-                            ? lineaDespachos.filter(
-                                (lineaDespacho) =>
-                                  !despachos.some(
-                                    (despacho) =>
-                                      despacho.idLineaDespacho?.id ===
-                                        lineaDespacho.id &&
-                                      despacho.estadoDespacho ===
-                                        "EN_REFINERIA" &&
-                                      despacho.estadoCarga === "EN_PROCESO"
-                                  )
-                              )
-                            : lineaDespachos;
-                          const isDisabled = isFieldEnabledCarga(
-                            "idLineaDespacho",
-                            estadoCarga
-                          );
+  name="idLineaDespacho"
+  control={control}
+  render={({ field }) => {
+    // Filtra líneas ocupadas por despachos activos (EN_REFINERIA y EN_PROCESO)
+    const lineasOcupadas = despachos
+      .filter(
+        (d) =>
+          d.idLineaDespacho?.id &&
+          d.estadoDespacho === "EN_REFINERIA" &&
+         (!despacho?.id || d.id !== despacho.id) // Permite editar la misma línea si es edición
+      )
+      .map((d) => d.idLineaDespacho.id);
 
-                          return (
-                            <Dropdown
-                              value={field.value}
-                              onChange={(e) => field.onChange(e.value)}
-                              options={filteredLineas.map((lineaDespacho) => ({
-                                label: lineaDespacho.nombre,
-                                value: {
-                                  id: lineaDespacho.id,
-                                  nombre: lineaDespacho.nombre,
-                                },
-                              }))}
-                              // optionLabel="nombre"
-                              placeholder="Seleccionar línea"
-                              className="w-full"
-                              showClear
-                              filter
-                              disabled={isDisabled}
-                            />
-                          );
-                        }}
-                      />
+    const filteredLineas = lineaDespachos.filter(
+      (linea) => !lineasOcupadas.includes(linea.id)
+    );
+
+    const isDisabled = isFieldEnabledCarga("idLineaDespacho", estadoCarga);
+
+    return (
+      <Dropdown
+        value={field.value}
+        onChange={(e) => field.onChange(e.value)}
+        options={filteredLineas.map((lineaDespacho) => ({
+          label: lineaDespacho.nombre,
+          value: {
+            id: lineaDespacho.id,
+            nombre: lineaDespacho.nombre,
+          },
+        }))}
+        placeholder="Seleccionar línea"
+        className="w-full"
+        showClear
+        filter
+        disabled={isDisabled}
+      />
+    );
+  }}
+/>
                       {errors.idLineaDespacho && (
                         <small className="p-error block mt-2 flex align-items-center">
                           <i className="pi pi-exclamation-circle mr-2"></i>
