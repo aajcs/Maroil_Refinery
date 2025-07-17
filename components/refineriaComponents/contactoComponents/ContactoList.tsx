@@ -178,10 +178,7 @@ const ContactoList = () => {
           rowClassName={() => "animated-row"}
           size="small"
         >
-          <Column
-            body={actionBodyTemplate}
-            headerStyle={{ minWidth: "10rem" }}
-          />
+          <Column body={actionBodyTemplate} />
           <Column field="nombre" header="Razon Social" />
           <Column field="identificacionFiscal" header="NIT" />
           <Column field="correo" header="Correo" />

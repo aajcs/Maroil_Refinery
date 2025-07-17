@@ -228,10 +228,7 @@ const ContratoList = ({ tipoContrato }: ContratoListProps) => {
           size="small"
         >
           <Column expander style={{ width: "3em" }} />
-          <Column
-            body={actionBodyTemplate}
-            headerStyle={{ minWidth: "10rem" }}
-          />
+          <Column body={actionBodyTemplate} />
           {/* <Column field="tipoContrato" header="Tipo de Contrato" sortable /> */}
           <Column field="numeroContrato" header="Número de Contrato" sortable />
           {/* <Column field="descripcion" header="Descripción de Contrato" />

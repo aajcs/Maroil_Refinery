@@ -40,6 +40,7 @@ const ContratoVentaCard = ({
   const [showExpand, setShowExpand] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
   const CARD_MAX_HEIGHT = 220;
+
   useEffect(() => {
     if (contentRef.current) {
       setShowExpand(contentRef.current.scrollHeight > CARD_MAX_HEIGHT - 60);
@@ -200,7 +201,16 @@ const ModeladoRefineriaContratosVentaList = ({
   const ventaContratos = contratos.filter(
     (contrato) => contrato.tipoContrato === "Venta"
   );
-
+  const [orientation, setOrientation] = useState<"horizontal" | "vertical">(
+    "horizontal"
+  );
+  useEffect(() => {
+    const handleResize = () =>
+      setOrientation(window.innerWidth <= 460 ? "vertical" : "horizontal");
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
   // Renderiza cada card como item del carrusel
   const contratoTemplate = (contrato: Contrato & { productos: Producto[] }) => (
     <ContratoVentaCard
@@ -220,6 +230,8 @@ const ModeladoRefineriaContratosVentaList = ({
         circular
         showIndicators
         showNavigators
+        orientation={orientation}
+        verticalViewPortHeight="200px"
         responsiveOptions={[
           { breakpoint: "1400px", numVisible: 2, numScroll: 1 },
           { breakpoint: "900px", numVisible: 1, numScroll: 1 },

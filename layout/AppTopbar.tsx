@@ -199,13 +199,13 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
               className="p-ripple flex p-2 border-round align-items-center hover:surface-hover transition-colors transition-duration-150 cursor-pointer"
             >
               <i className="pi pi-user mr-3"></i>
-              <span>Perfil</span>
+              <span className="hidden sm:inline">Perfil</span>
               <Ripple />
             </Link>
 
             <a className="p-ripple flex p-2 border-round align-items-center hover:surface-hover transition-colors transition-duration-150 cursor-pointer">
               <i className="pi pi-cog mr-3"></i>
-              <span>Configuración</span>
+              <span className="hidden sm:inline">Configuración</span>
               <Ripple />
             </a>
             <a
@@ -213,7 +213,7 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
               onClick={handleSignOut}
             >
               <i className="pi pi-power-off mr-3"></i>
-              <span>Cerrar sesión</span>
+              <span className="hidden sm:inline">Cerrar sesión</span>
               <Ripple />
             </a>
           </li>

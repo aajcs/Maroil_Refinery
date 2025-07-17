@@ -30,6 +30,18 @@ const ModeladoRefineriaContratosList = ({
   contratos,
   onShowDialog,
 }: ModeladoRefineriaContratosListProps) => {
+  // Control de orientación en responsive
+  const [orientation, setOrientation] = useState<"horizontal" | "vertical">(
+    "horizontal"
+  );
+  useEffect(() => {
+    const handleResize = () =>
+      setOrientation(window.innerWidth <= 460 ? "vertical" : "horizontal");
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   // Solo contratos de tipo Compra
   const compraContratos = contratos.filter(
     (contrato) => contrato.tipoContrato === "Compra"
@@ -54,6 +66,8 @@ const ModeladoRefineriaContratosList = ({
         circular
         showIndicators
         showNavigators
+        orientation={orientation}
+        verticalViewPortHeight="200px"
         responsiveOptions={[
           { breakpoint: "1400px", numVisible: 2, numScroll: 1 },
           { breakpoint: "900px", numVisible: 1, numScroll: 1 },
@@ -95,7 +109,7 @@ const ContratoCard = ({
           transition: "max-height 0.3s",
           position: "relative",
           width: "100%",
-          minWidth: 280,
+          // minWidth: 280,
         }}
       >
         <div
