@@ -17,9 +17,12 @@ interface Producto {
   cantidadFaltante: number;
   porcentaje: number;
 }
-
+export interface ContratoConTotales extends Contrato {
+  totalRecepciones?: number;
+  totalRecepcionesCompletadas?: number;
+}
 interface ModeladoRefineriaContratosListProps {
-  contratos: Array<Contrato & { productos: Producto[] }>;
+  contratos: Array<ContratoConTotales & { productos: Producto[] }>;
   onShowDialog?: (product: Producto) => void;
 }
 
@@ -65,7 +68,7 @@ const ContratoCard = ({
   contrato,
   onShowDialog,
 }: {
-  contrato: Contrato & { productos: Producto[] };
+  contrato: ContratoConTotales & { productos: Producto[] };
   onShowDialog?: (product: Producto) => void;
 }) => {
   const [expanded, setExpanded] = useState(false);
@@ -131,12 +134,28 @@ const ContratoCard = ({
           <hr className="my-0" />
 
           {/* Fechas */}
-          <div className="text-sm">
-            <span className="font-medium">Inicio:</span>{" "}
-            {formatDateSinAnoFH(contrato.fechaInicio)}
-            {" - "}
-            <span className="font-medium">Fin:</span>{" "}
-            {formatDateSinAnoFH(contrato.fechaFin)}
+          <div className="text-sm flex justify-content-between align-items-center">
+            <div>
+              <span className="font-medium">Inicio:</span>{" "}
+              {formatDateSinAnoFH(contrato.fechaInicio)}
+              {" - "}
+              <span className="font-medium">Fin:</span>{" "}
+              {formatDateSinAnoFH(contrato.fechaFin)}
+            </div>
+            <span
+              className="ml-2 flex align-items-center text-primary"
+              title="Recepciones"
+            >
+              <i
+                className="pi pi-truck mr-1"
+                style={{ fontSize: "1.2rem" }}
+              ></i>
+              <span className="font-bold">
+                {`${contrato.totalRecepciones ?? 0} / ${
+                  contrato.totalRecepcionesCompletadas ?? 0
+                } `}{" "}
+              </span>
+            </span>
           </div>
 
           <hr className="my-0" />

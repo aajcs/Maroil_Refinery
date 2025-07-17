@@ -114,6 +114,25 @@ const ModeladoRefineriaDashboard = () => {
       const recepcionesContrato = recepcions.filter(
         (recepcion) => recepcion.idContrato.id === contrato.id
       );
+
+      // Totalidad de recepciones del contrato
+      const totalRecepciones = recepcionesContrato.length;
+      // Recepciones en estado COMPLETADO
+      const recepcionesCompletadas = recepcionesContrato.filter(
+        (recepcion) => recepcion.estadoRecepcion === "COMPLETADO"
+      );
+      const totalRecepcionesCompletadas = recepcionesCompletadas.length;
+
+      const despachosContrato = despachos.filter(
+        (despacho) => despacho.idContrato.id === contrato.id
+      );
+
+      const totalDespachos = despachosContrato.length;
+      const despachosCompletados = despachosContrato.filter(
+        (despacho) => despacho.estadoDespacho === "COMPLETADO"
+      );
+      const totalDespachosCompletados = despachosCompletados.length;
+
       const productos = contrato.idItems.map((item: any) => {
         const recepcionesProducto = recepcionesContrato.filter(
           (recepcion) =>
@@ -164,6 +183,12 @@ const ModeladoRefineriaDashboard = () => {
       return {
         ...contrato,
         productos,
+        totalRecepciones,
+        totalRecepcionesCompletadas,
+        recepcionesCompletadas,
+        totalDespachos,
+        totalDespachosCompletados,
+        despachosCompletados,
       };
     });
   }, [contratos, recepcions]);
