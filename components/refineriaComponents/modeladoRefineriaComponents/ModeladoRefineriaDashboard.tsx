@@ -127,11 +127,12 @@ const ModeladoRefineriaDashboard = () => {
       const despachosContrato = despachos.filter(
         (despacho) => despacho.idContrato.id === contrato.id
       );
-
+      console.log("despachosContrato", despachosContrato);
       const totalDespachos = despachosContrato.length;
       const despachosCompletados = despachosContrato.filter(
         (despacho) => despacho.estadoDespacho === "COMPLETADO"
       );
+      console.log("despachosCompletados", despachosCompletados);
       const totalDespachosCompletados = despachosCompletados.length;
 
       const productos = contrato.idItems.map((item: any) => {
@@ -149,7 +150,6 @@ const ModeladoRefineriaDashboard = () => {
         const cantidadFaltante = item.cantidad - cantidadRecibida;
 
         const porcentaje = (cantidadRecibida / item.cantidad) * 100;
-        console.log("despachosContrato", despachosContrato);
         const despachosProducto = despachosContrato.filter(
           (despacho) =>
             despacho.idContratoItems?.producto.id === item.producto?.id &&
@@ -400,7 +400,7 @@ const ModeladoRefineriaDashboard = () => {
             initial={{ opacity: 0, y: 40, scale: 0.95, filter: "blur(8px)" }}
             animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
             transition={{ duration: 0.7, type: "spring", bounce: 0.35 }}
-            className="card p-3 lg-h-fullScreen "
+            className="card p-3 lg-h-fullScreen overflow-auto"
           >
             <AnimatedTitle text="Materia Prima" />
             {tanques

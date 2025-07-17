@@ -16,7 +16,7 @@ import { useRefineriaStore } from "@/store/refineriaStore";
 import { handleFormError } from "@/utils/errorHandlers";
 import { Factura, LineaFactura } from "@/libs/interfaces";
 import { useByRefineryDataFull } from "@/hooks/useRefineryDataFull";
-import { Column, ColumnEditorOptions } from "primereact/column";
+import { Column, ColumnEditorOptions, ColumnEvent } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 
 type FormData = z.infer<typeof facturaSchema>;
@@ -201,11 +201,13 @@ function FacturaForm({
             codigo: partida.codigo,
           },
         }))}
+        optionLabel="label"
         placeholder="Seleccionar un Partida"
         // optionLabel="descripcion"
       />
     );
   };
+
   return (
     <Dialog
       visible={facturaFormDialog}
@@ -431,6 +433,7 @@ function FacturaForm({
                   <InputText
                     value={options.value}
                     onChange={(e) => options.editorCallback!(e.target.value)}
+                    onKeyDown={(e) => e.stopPropagation()}
                   />
                 )}
                 onCellEditComplete={(e) => {

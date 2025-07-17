@@ -158,7 +158,8 @@ const ContratoCard = ({
             </div>
             <span
               className="ml-2 flex align-items-center text-primary"
-              title="Recepciones"
+              id={`recepciones-tooltip-${contrato.id}`}
+              style={{ cursor: "pointer" }}
             >
               <i
                 className="pi pi-truck mr-1"
@@ -167,9 +168,14 @@ const ContratoCard = ({
               <span className="font-bold">
                 {`${contrato.totalRecepcionesCompletadas ?? 0} / ${
                   contrato.totalRecepciones ?? 0
-                } `}{" "}
+                } `}
               </span>
             </span>
+            <Tooltip
+              target={`#recepciones-tooltip-${contrato.id}`}
+              content="Recepciones completadas / Recepciones totales"
+              position="top"
+            />
           </div>
 
           <hr className="my-0" />

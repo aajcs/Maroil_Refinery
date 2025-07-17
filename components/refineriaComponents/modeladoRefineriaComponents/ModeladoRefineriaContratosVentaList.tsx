@@ -20,7 +20,7 @@ interface Producto {
 
 export interface ContratoConTotales extends Contrato {
   totalDespachos?: number;
-  totalDespachosCompletadas?: number;
+  totalDespachosCompletados?: number;
 }
 
 interface ModeladoRefineriaContratosVentaListProps {
@@ -102,18 +102,24 @@ const ContratoVentaCard = ({
             </div>
             <span
               className="ml-2 flex align-items-center text-primary"
-              title="Recepciones"
+              id={`despachos-tooltip-${contrato.id}`}
+              style={{ cursor: "pointer" }}
             >
               <i
                 className="pi pi-truck mr-1"
                 style={{ fontSize: "1.2rem" }}
               ></i>
               <span className="font-bold">
-                {`${contrato.totalDespachosCompletadas ?? 0} / ${
+                {`${contrato.totalDespachosCompletados ?? 0} / ${
                   contrato.totalDespachos ?? 0
-                } `}{" "}
+                } `}
               </span>
             </span>
+            <Tooltip
+              target={`#despachos-tooltip-${contrato.id}`}
+              content="Despachos completados / Despachos totales"
+              position="top"
+            />
           </div>
           <hr className="my-0" />
           <div className="flex flex-column gap-2">
