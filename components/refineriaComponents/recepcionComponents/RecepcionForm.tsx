@@ -455,50 +455,46 @@ const RecepcionForm = ({
                         <i className="pi pi-link mr-2 text-primary"></i>
                         Línea de Descarga
                       </label>
-                      <Controller
-                        name="idLinea"
-                        control={control}
-                        render={({ field }) => {
-                          watch("idLinea");
-                          const filteredLineas = !watch("idLinea")
-                            ? lineaRecepcions.filter(
-                                (lineaRecepcion) =>
-                                  !recepcions.some(
-                                    (recepcion) =>
-                                      recepcion.idLinea?.id ===
-                                        lineaRecepcion.id &&
-                                      recepcion.estadoRecepcion ===
-                                        "EN_REFINERIA" &&
-                                      recepcion.estadoCarga === "EN_PROCESO"
-                                  )
-                              )
-                            : lineaRecepcions;
-                          const isDisabled = isFieldEnabledCarga(
-                            "idLinea",
-                            estadoCarga
-                          );
+                   <Controller
+  name="idLinea"
+  control={control}
+  render={({ field }) => {
+    // Obtén todas las líneas ocupadas por recepciones activas (EN_REFINERIA y EN_PROCESO)
+    const lineasOcupadas = recepcions
+      .filter(
+        (r) =>
+          r.idLinea?.id &&
+          r.estadoRecepcion === "EN_REFINERIA" 
+      )
+      .map((r) => r.idLinea.id);
 
-                          return (
-                            <Dropdown
-                              value={field.value}
-                              onChange={(e) => field.onChange(e.value)}
-                              options={filteredLineas.map((lineaRecepcion) => ({
-                                label: lineaRecepcion.nombre,
-                                value: {
-                                  id: lineaRecepcion.id,
-                                  nombre: lineaRecepcion.nombre,
-                                },
-                              }))}
-                              // optionLabel="nombre"
-                              placeholder="Seleccionar línea"
-                              className="w-full"
-                              showClear
-                              filter
-                              disabled={isDisabled}
-                            />
-                          );
-                        }}
-                      />
+    // Solo muestra líneas que NO estén ocupadas
+    const filteredLineas = lineaRecepcions.filter(
+      (linea) => !lineasOcupadas.includes(linea.id)
+    );
+
+    const isDisabled = isFieldEnabledCarga("idLinea", estadoCarga);
+
+    return (
+      <Dropdown
+        value={field.value}
+        onChange={(e) => field.onChange(e.value)}
+        options={filteredLineas.map((lineaRecepcion) => ({
+          label: lineaRecepcion.nombre,
+          value: {
+            id: lineaRecepcion.id,
+            nombre: lineaRecepcion.nombre,
+          },
+        }))}
+        placeholder="Seleccionar línea"
+        className="w-full"
+        showClear
+        filter
+        disabled={isDisabled}
+      />
+    );
+  }}
+/>
                       {errors.idLinea && (
                         <small className="p-error block mt-2 flex align-items-center">
                           <i className="pi pi-exclamation-circle mr-2"></i>
