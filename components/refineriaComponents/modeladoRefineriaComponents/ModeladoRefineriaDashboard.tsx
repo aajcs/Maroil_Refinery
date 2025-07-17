@@ -79,14 +79,15 @@ const ModeladoRefineriaDashboard = () => {
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [visibleDespachos, setVisibleDespachos] = useState<boolean>(false);
   const [selectedContratoVenta, setSelectedContratoVenta] = useState<any>(null);
+  console.log("selectedContratoVenta", selectedContratoVenta);
   const [checked, setChecked] = useState(false); // Estado para el InputSwitch
 
   const showDialog = useCallback((product: any) => {
     setSelectedProduct(product);
     setVisible(true);
   }, []);
-  const onShowDialogDespachos = useCallback((contrato: any) => {
-    setSelectedContratoVenta(contrato);
+  const onShowDialogDespachos = useCallback((product: any) => {
+    setSelectedContratoVenta(product);
     setVisibleDespachos(true);
   }, []);
 
@@ -141,25 +142,23 @@ const ModeladoRefineriaDashboard = () => {
               item.idTipoProducto?.id
         );
 
-        const cantidadRecibida = recepcionesProducto.reduce(
-          (total, recepcion) => total + recepcion.cantidadRecibida,
-          0
-        );
+        const cantidadRecibida = recepcionesProducto
+          .filter((r) => r.estadoRecepcion === "COMPLETADO")
+          .reduce((total, recepcion) => total + recepcion.cantidadRecibida, 0);
 
         const cantidadFaltante = item.cantidad - cantidadRecibida;
 
         const porcentaje = (cantidadRecibida / item.cantidad) * 100;
-
-        const despachosProducto = despachos.filter(
+        console.log("despachosContrato", despachosContrato);
+        const despachosProducto = despachosContrato.filter(
           (despacho) =>
             despacho.idContratoItems?.producto.id === item.producto?.id &&
             despacho.idContratoItems?.idTipoProducto === item.idTipoProducto.id
         );
 
-        const cantidadDespachada = despachosProducto.reduce(
-          (total, despacho) => total + despacho.cantidadRecibida,
-          0
-        );
+        const cantidadDespachada = despachosProducto
+          .filter((d) => d.estadoDespacho === "COMPLETADO")
+          .reduce((total, despacho) => total + despacho.cantidadRecibida, 0);
 
         const porcentajeDespacho = (cantidadDespachada / item.cantidad) * 100;
         const cantidadFaltanteDespacho = item.cantidad - cantidadDespachada;
@@ -217,6 +216,15 @@ const ModeladoRefineriaDashboard = () => {
       "bg-en-refineria": data[0].estadoRecepcion === "EN_REFINERIA",
       "bg-completado": data[0].estadoRecepcion === "COMPLETADO",
       "bg-cancelado": data[0].estadoRecepcion === "CANCELADO",
+    };
+  };
+  const rowClassDespacho = (data: any) => {
+    return {
+      "bg-programado": data[0].estadoDespacho === "PROGRAMADO",
+      "bg-en-transito": data[0].estadoDespacho === "EN_TRANSITO",
+      "bg-en-refineria": data[0].estadoDespacho === "EN_REFINERIA",
+      "bg-completado": data[0].estadoDespacho === "COMPLETADO",
+      "bg-cancelado": data[0].estadoDespacho === "CANCELADO",
     };
   };
   return (
@@ -618,7 +626,7 @@ const ModeladoRefineriaDashboard = () => {
         )}
       </Dialog>
       <Dialog
-        header="Detalles de Recepciones"
+        header="Detalles de Despachos"
         visible={visibleDespachos}
         modal
         onHide={hideDialogDespacho}
@@ -661,6 +669,7 @@ const ModeladoRefineriaDashboard = () => {
                   </div>
                 </div>
               }
+              rowClassName={rowClassDespacho}
             >
               <Column field="placa" header="Placa"></Column>
               <Column

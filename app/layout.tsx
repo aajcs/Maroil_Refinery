@@ -10,6 +10,8 @@ import { SessionProvider } from "next-auth/react";
 import { Nullable } from "primereact/ts-helpers";
 import "../styles/globals.css";
 import AppInitializer from "@/components/common/AppInitializer";
+import { AnimatePresence, motion } from "framer-motion";
+import { usePathname } from "next/navigation";
 
 addLocale("es", {
   firstDayOfWeek: 1,
@@ -61,6 +63,14 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
+
+  const variants = {
+    initial: { opacity: 0 },
+    animate: { opacity: 1 },
+    exit: { opacity: 0 },
+    transition: { duration: 0.3 },
+  };
   return (
     <html lang="es" suppressHydrationWarning>
       <head>
@@ -75,7 +85,19 @@ export default function RootLayout({
           <PrimeReactProvider>
             <LayoutProvider>
               <AppInitializer /> {/* <-- Aquí va */}
-              {children}
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.div
+                  key={pathname}
+                  variants={variants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  transition={{ duration: 0.3 }}
+                  style={{ width: "100%" }}
+                >
+                  {children}
+                </motion.div>
+              </AnimatePresence>
             </LayoutProvider>
           </PrimeReactProvider>
         </SessionProvider>
