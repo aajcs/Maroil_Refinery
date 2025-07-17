@@ -201,8 +201,8 @@ const ModeladoRefineriaTanque = ({
     <>
       <svg
         width="180"
-        height="230"
-        viewBox="0 50 250 250"
+        height="210"
+        viewBox="0 50 250 230"
         // className="card m-0 p-0"
       >
         {/* ----------- GRADIENTE Y CLIP-PATH PARA EL TANQUE ----------- */}

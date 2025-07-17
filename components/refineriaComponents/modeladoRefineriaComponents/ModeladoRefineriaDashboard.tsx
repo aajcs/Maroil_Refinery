@@ -344,7 +344,7 @@ const ModeladoRefineriaDashboard = () => {
               filter: "blur(0px) grayscale(0%)",
             }}
             transition={{ duration: 0.9, type: "spring", bounce: 0.45 }}
-            className="card p-3 lg-h-fullScreen"
+            className="card p-3 lg-h-fullScreen overflow-auto"
           >
             <AnimatedTitle text="Recepciones" />
 
@@ -364,7 +364,7 @@ const ModeladoRefineriaDashboard = () => {
             initial={{ opacity: 0, y: 40, scale: 0.95, filter: "blur(8px)" }}
             animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
             transition={{ duration: 0.7, type: "spring", bounce: 0.35 }}
-            className="card p-3 lg-h-fullScreen"
+            className="card p-3 lg-h-fullScreen "
           >
             <AnimatedTitle text="Materia Prima" />
             {tanques
@@ -389,7 +389,7 @@ const ModeladoRefineriaDashboard = () => {
             initial={{ opacity: 0, y: 40, scale: 0.95, filter: "blur(8px)" }}
             animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
             transition={{ duration: 0.7, type: "spring", bounce: 0.35 }}
-            className="card p-3 lg-h-fullScreen"
+            className="card p-3 lg-h-fullScreen overflow-auto"
           >
             <AnimatedTitle text="Torres de Procesamiento" />
             <div className="grid">
@@ -411,7 +411,7 @@ const ModeladoRefineriaDashboard = () => {
             initial={{ opacity: 0, y: 40, scale: 0.95, filter: "blur(8px)" }}
             animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
             transition={{ duration: 0.7, type: "spring", bounce: 0.35 }}
-            className="card p-3 lg-h-fullScreen"
+            className="card p-3 lg-h-fullScreen overflow-auto"
           >
             <AnimatedTitle text="Derivados" />
             <div className="grid">
@@ -436,7 +436,7 @@ const ModeladoRefineriaDashboard = () => {
             initial={{ opacity: 0, y: 40, scale: 0.95, filter: "blur(8px)" }}
             animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
             transition={{ duration: 0.7, type: "spring", bounce: 0.35 }}
-            className="card p-3 lg-h-fullScreen"
+            className="card p-3 lg-h-fullScreen overflow-auto"
           >
             <AnimatedTitle text="Despachos" />
 
