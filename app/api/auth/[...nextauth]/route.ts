@@ -1,6 +1,6 @@
 import NextAuth, { DefaultSession } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { googleSingIn, loginUser } from "../../userService";
+import { getUser, googleSingIn, loginUser } from "../../userService";
 import { Usuario } from "@/libs/interfaces";
 import GoogleProvider from "next-auth/providers/google";
 declare module "next-auth" {
@@ -53,7 +53,7 @@ const handler = NextAuth({
   session: {
     strategy: "jwt",
     maxAge: 7 * 24 * 60 * 60, // 7 días
-    updateAge: 24 * 60 * 60, // 24 hours
+    updateAge: 3600,
   },
   callbacks: {
     async jwt({ token, user, account }) {
@@ -96,10 +96,40 @@ const handler = NextAuth({
       }
       return token;
     },
+    // async session({ session, token }) {
+    //   session.user = token.user as any;
+
+    //   if (token.access_token && typeof token.access_token === "string") {
+    //     session.user.access_token = token.access_token; // Expón el access_token en la sesión
+    //   }
+    //   return session;
+    // },
     async session({ session, token }) {
       session.user = token.user as any;
-      if (token.access_token && typeof token.access_token === "string") {
-        session.user.access_token = token.access_token; // Expón el access_token en la sesión
+      // 1) Si fue login via credentials y cambió datos en loginUser, `token.user` ya tiene el objeto actualizado.
+      //    Si necesitas refrescarlo desde tu API, puedes hacerlo aquí:
+      if (session.user) {
+        // Ejemplo: fetch a tu backend para traer el usuario más reciente
+        try {
+          const userObj = token.user as { usuario: { id: string } };
+          const freshUser = await getUser(userObj.usuario.id || "");
+          if (freshUser) {
+            session.user.usuario = freshUser;
+            console.log("token.user", token.user);
+          } else {
+            // Si la ruta no existe o da error, caemos al token.user original
+            // session.user.usuario = token.user as Usuario;
+            session.user = token.user as any;
+          }
+        } catch (error) {
+          // session.user.usuario = token.user as Usuario;
+          session.user = token.user as any;
+        }
+
+        // 2) Exponer el access_token a la sesión
+        if (token.access_token && typeof token.access_token === "string") {
+          session.user.access_token = token.access_token; // Expón el access_token en la sesión
+        }
       }
       return session;
     },

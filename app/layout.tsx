@@ -71,7 +71,7 @@ export default function RootLayout({
         ></link>
       </head>
       <body>
-        <SessionProvider>
+        <SessionProvider refetchOnWindowFocus={false}>
           <PrimeReactProvider>
             <LayoutProvider>
               <AppInitializer /> {/* <-- Aquí va */}

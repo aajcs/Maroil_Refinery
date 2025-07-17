@@ -22,6 +22,7 @@ import CardDespachoPorRefineria from "./CardDespachoPorRefineria";
 const DashboardRefinerias = () => {
   const { data: session } = useSession();
   const user = session?.user;
+  console.log("renderizando DashboardRefinerias", user);
   const [refinerias, setRefinerias] = useState<any[]>([]);
   const [recepcions, setRecepcions] = useState<Recepcion[]>([]);
   const [despachos, setDespachos] = useState<Despacho[]>([]);
