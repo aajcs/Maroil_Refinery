@@ -42,7 +42,6 @@ const ContactoList = () => {
   const fetchContactos = async () => {
     try {
       const contactosDB = await getContactosBK();
-      console.log("contactos", contactosDB);
       if (contactosDB && Array.isArray(contactosDB.contactos)) {
         const filteredContactos = contactosDB.contactos.filter(
           (contacto: ContactoBK) =>

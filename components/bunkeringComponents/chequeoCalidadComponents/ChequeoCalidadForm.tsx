@@ -91,7 +91,6 @@ const ChequeoCalidadForm = ({
       prod = rc?.idContratoItems?.producto;
     } else if (tipoAplicar === "Tanque") {
       const tn = tanques.find((t) => t.id === referencia.id);
-      console.log("Tanque:", tn);
       prod = tn?.idProducto; // Asume que tanque tiene campo `producto`
     } else if (tipoAplicar === "Despacho") {
       const dsp = despachos.find((d) => d.id === referencia.id);

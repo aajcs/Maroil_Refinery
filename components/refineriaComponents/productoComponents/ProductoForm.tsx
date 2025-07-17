@@ -29,7 +29,7 @@ interface ProductoFormProps {
     summary: string,
     detail: string
   ) => void;
-     toast: React.RefObject<Toast> | null;
+  toast: React.RefObject<Toast> | null;
 }
 
 const estatusValues = ["true", "false"];
@@ -44,7 +44,7 @@ const ProductoForm = ({
   showToast,
 }: ProductoFormProps) => {
   const { activeRefineria } = useRefineriaStore();
- 
+
   const [submitting, setSubmitting] = useState(false);
   const {
     register,
@@ -99,7 +99,6 @@ const ProductoForm = ({
       setSubmitting(false); // Desactivar el estado de envío
     }
   };
-  console.log(errors);
   return (
     <div>
       <form onSubmit={handleSubmit(onSubmit)}>

@@ -136,7 +136,6 @@ const FacturaList = () => {
     />
   );
   const rowExpansionTemplate = (data: Factura) => {
-    console.log(data.idLineasFactura);
     return (
       <div className="orders-subtable">
         <h5>Items for {data.concepto}</h5>

@@ -660,7 +660,6 @@ function VentasCard({
   const sellCosts = sellSteps.reduce((prev, curr) => prev + curr.data.total, 0);
 
   const profit = derivative.reduce((prev, curr) => {
-    console.log(curr, getRendimiento(curr));
     return prev + (curr.price * getRendimiento(curr) * totalBbl) / 100;
   }, -operationalCost * totalBbl - sellCosts);
 

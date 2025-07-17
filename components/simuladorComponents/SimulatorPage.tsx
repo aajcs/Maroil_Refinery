@@ -38,7 +38,6 @@ export default function Home() {
           data.crudeType,
           data.crudeAmount!
         );
-        console.log("calculation", calculation);
         setResults(calculation as CrudeToProductsResults);
       }
       // else {

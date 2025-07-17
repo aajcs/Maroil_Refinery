@@ -76,7 +76,6 @@ const AbonoForm = ({
       monto: 0,
     },
   });
-  console.log("Errors:", errors);
 
   useEffect(() => {
     if (abono) {
@@ -88,7 +87,6 @@ const AbonoForm = ({
 
   const onSubmit = async (data: FormData) => {
     setSubmitting(true);
-    console.log("Datos del formulario:", data);
     try {
       if (abono) {
         const updatedAbono = await updateAbono(abono.id, {

@@ -50,7 +50,6 @@ const TorreDestilacionList = () => {
   const fetchTorresDestilacion = async () => {
     try {
       const torresDestilacionDB = await getTorresDestilacion();
-      console.log("torresDestilacionDB", torresDestilacionDB);
       if (torresDestilacionDB && Array.isArray(torresDestilacionDB.torres)) {
         const filteredTorresDestilacion = torresDestilacionDB.torres.filter(
           (torre: TorreDestilacion) =>

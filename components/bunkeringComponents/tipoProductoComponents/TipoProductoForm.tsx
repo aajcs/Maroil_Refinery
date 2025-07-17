@@ -114,7 +114,6 @@ const TipoProductoForm = ({
           })
         ),
       };
-      console.log("requestData", requestData);
       if (tipoProducto) {
         const updatedTipoProducto = await updateTipoProductoBK(
           tipoProducto.id,
@@ -151,7 +150,6 @@ const TipoProductoForm = ({
       </div>
     );
   }
-  console.log(errors);
   return (
     <Dialog
       visible={tipoProductoFormDialog}
@@ -552,7 +550,6 @@ const TipoProductoForm = ({
                   optionLabel="nombre"
                   onChange={(e) => {
                     const selectedIds = e.value;
-                    console.log("selectedIds", selectedIds);
                     const nuevosRendimientos = selectedIds.map((id: any) => {
                       // Buscar si ya existe en los seleccionados
                       const existente = selectedRendimientos.find(

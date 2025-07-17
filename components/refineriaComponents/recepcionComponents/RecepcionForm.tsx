@@ -64,7 +64,6 @@ const RecepcionForm = ({
   showToast,
 }: RecepcionFormProps) => {
   const { activeRefineria } = useRefineriaStore();
-  console.log("despacho?.idChequeoCalidad?.numeroChequeoCalidad", recepcion);
   const { tanques, contratos, lineaRecepcions, loading } = useByRefineryData(
     activeRefineria?.id || ""
   );
@@ -142,7 +141,6 @@ const RecepcionForm = ({
       };
     });
   }, [contratos, recepcions]);
-  console.log("recepcionesPorContrato", recepcionesPorContrato);
   const onSubmit = async (data: FormData) => {
     setSubmitting(true);
     try {
@@ -387,7 +385,7 @@ const RecepcionForm = ({
                         <div className="mb-3 md:mb-0">
                           <h3 className="text-xl font-bold text-900 mb-2 flex align-items-center">
                             <i className="pi pi-check-circle text-primary mr-2"></i>
-                           Certificación de Producto
+                            Certificación de Producto
                           </h3>
                           <p className="text-700 mb-1">
                             <strong>Número:</strong>{" "}

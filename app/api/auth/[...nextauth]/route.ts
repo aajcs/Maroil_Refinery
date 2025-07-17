@@ -78,7 +78,7 @@ const handler = NextAuth({
             access_token: account.access_token,
             id_token: account.id_token,
           });
-          console.log("response", response);
+          // console.log("response", response);
           // const googleUser = await response.json();
 
           if (response) {
@@ -89,7 +89,7 @@ const handler = NextAuth({
             token.user = response;
             token.access_token = account.access_token;
           }
-          console.log(token);
+          // console.log(token);
         } catch (error) {
           console.error("Google auth error:", error);
         }

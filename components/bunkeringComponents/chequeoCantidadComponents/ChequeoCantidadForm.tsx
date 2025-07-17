@@ -49,7 +49,6 @@ const ChequeoCantidadForm = ({
   const { activeRefineria } = useRefineriaStore();
   const { productos, tanques, recepcions, despachos, loading } =
     useBunkeringData(activeRefineria?.id || "");
-  console.log("recepcions:", recepcions);
   const [submitting, setSubmitting] = useState(false);
   const [dynamicOptions, setDynamicOptions] = useState<
     { label: string; value: any }[]
@@ -126,7 +125,6 @@ const ChequeoCantidadForm = ({
       prod = rc?.idContratoItems?.producto;
     } else if (tipoAplicar === "Tanque") {
       const tn = tanques.find((t) => t.id === referencia.id);
-      console.log("Tanque:", tn);
       prod = tn?.idProducto; // Asume que tanque tiene campo `producto`
     } else if (tipoAplicar === "Despacho") {
       const dsp = despachos.find((d) => d.id === referencia.id);

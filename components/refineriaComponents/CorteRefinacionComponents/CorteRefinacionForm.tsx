@@ -132,8 +132,6 @@ const CorteRefinacionForm = ({
         observacion: data.observacion,
       };
 
-      console.log("Payload final", payload);
-
       if (corteRefinacion) {
         const updated = await updateCorteRefinacion(
           corteRefinacion.id,

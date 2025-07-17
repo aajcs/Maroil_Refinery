@@ -111,7 +111,6 @@ const RefineriaForm = ({
       } else {
         // Crear una nueva refinería
         const refineriaCreada = await createRefineria(data);
-        console.log("Refinería creada:", refineriaCreada);
 
         // Actualizar el estado local con la nueva refinería
         // setRefinerias([...refinerias, refineriaCreada]);
@@ -159,8 +158,6 @@ const RefineriaForm = ({
       setSubmitting(false);
     }
   };
-
-  console.log("errors", errors);
 
   return (
     <div className="card">

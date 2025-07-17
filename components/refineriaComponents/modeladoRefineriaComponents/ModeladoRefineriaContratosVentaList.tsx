@@ -108,8 +108,8 @@ const ContratoVentaCard = ({
                 style={{ fontSize: "1.2rem" }}
               ></i>
               <span className="font-bold">
-                {`${contrato.totalDespachos ?? 0} / ${
-                  contrato.totalDespachosCompletadas ?? 0
+                {`${contrato.totalDespachosCompletadas ?? 0} / ${
+                  contrato.totalDespachos ?? 0
                 } `}{" "}
               </span>
             </span>

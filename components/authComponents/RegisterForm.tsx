@@ -123,7 +123,6 @@ const RegisterForm: Page = () => {
       const { confirmPassword, terminos, ...userData } = data;
 
       const usuarioCreado = await registerUser(userData);
-      console.log(usuarioCreado);
       if (!usuarioCreado.token) {
         throw new Error(usuarioCreado.message || "Error en el registro");
       }

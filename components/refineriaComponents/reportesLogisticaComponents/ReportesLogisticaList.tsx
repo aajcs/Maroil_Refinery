@@ -50,21 +50,13 @@ const ReportesLogisticaList: React.FC<ReportesLogisticaListProps> = ({
         fechaFin: fechaFin?.toISOString(),
         estadoRecepcion: estadoRecepcion,
       };
-      console.log("Parámetros para el backend:", params);
       const data = await getRecepcionsFechas(params);
-
-      console.log("Recepciones traídas del backend:", data);
 
       // data es un array, no un objeto con .recepciones
       const recepcionesFiltradas = (data || []).filter((r: any) => {
         const refineriaId = r.idRefineria?.id;
         const activeId = activeRefineria?.id;
-        console.log(
-          "r.idRefineria.id:",
-          refineriaId,
-          "activeRefineria.id:",
-          activeId
-        );
+
         return (
           refineriaId && activeId && String(refineriaId) === String(activeId)
         );
@@ -120,7 +112,7 @@ const ReportesLogisticaList: React.FC<ReportesLogisticaListProps> = ({
                     r.idContrato.idItems[0]?.producto?.nombre) ||
                   ""}
               </td>
-              
+
               <td className="p-2 border-b">{r.idTanque?.nombre || ""}</td>
               <td className="p-2 border-b">{r.idLinea?.nombre || ""}</td>
               <td className="p-2 border-b">{r.nombreChofer || ""}</td>
@@ -135,15 +127,16 @@ const ReportesLogisticaList: React.FC<ReportesLogisticaListProps> = ({
             <td className="p-2 border-t" colSpan={8}></td>
             <td className="p-2 border-t">
               {recepciones
-          .reduce(
-            (acc: number, r: any) => acc + Number(r.cantidadRecibida ?? 0),
-            0
-          )
-          .toLocaleString("de-DE", {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-            useGrouping: true,
-          })}
+                .reduce(
+                  (acc: number, r: any) =>
+                    acc + Number(r.cantidadRecibida ?? 0),
+                  0
+                )
+                .toLocaleString("de-DE", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                  useGrouping: true,
+                })}
             </td>
             <td className="p-2 border-t"></td>
           </tr>

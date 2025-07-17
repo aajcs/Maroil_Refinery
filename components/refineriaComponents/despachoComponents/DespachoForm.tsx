@@ -138,7 +138,6 @@ const DespachoForm = ({
       };
     });
   }, [contratos, despachos]);
-  console.log("recepcionesPorContrato", recepcionesPorContrato);
   const onSubmit = async (data: FormData) => {
     setSubmitting(true);
     try {
@@ -172,8 +171,7 @@ const DespachoForm = ({
 
   const estadoDespacho = watch("estadoDespacho") as EstadoDespacho;
   const estadoCarga = watch("estadoCarga") as EstadoCarga;
-  // console.log(watch("idContrato"));
-  const contrato = watch("idContrato");
+  // const contrato = watch("idContrato");
 
   const validarCamposRequeridosDespacho = (estadoDestino: string): boolean => {
     const camposRequeridos =

@@ -53,12 +53,12 @@ export const useSocket = (): UseSocketReturn => {
     });
 
     socketTemp.on("connect", () => {
-      console.log("Connected to server");
+      // console.log("Connected to server");
       setOnline(true);
     });
 
     socketTemp.on("disconnect", () => {
-      console.log("Disconnected from server");
+      // console.log("Disconnected from server");
       setOnline(false);
     });
 

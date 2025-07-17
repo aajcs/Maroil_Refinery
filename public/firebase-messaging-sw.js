@@ -19,8 +19,6 @@ const messaging = firebase.messaging();
 
 // Configuración de notificaciones
 messaging.onMessage((payload) => {
-  console.log("Notificación en primer plano:", payload);
-
   const { title, body, image } = payload.notification || {};
   const notificationOptions = {
     body,
@@ -35,8 +33,6 @@ messaging.onMessage((payload) => {
 
 // Manejar notificaciones en segundo plano
 messaging.onBackgroundMessage((payload) => {
-  console.log("[Firebase] Notificación en segundo plano:", payload);
-
   const { title, body, image } = payload.notification || {};
   const notificationOptions = {
     body,
@@ -55,7 +51,6 @@ messaging.onBackgroundMessage((payload) => {
 
 // Manejar clic en notificación
 self.addEventListener("notificationclick", (event) => {
-  console.log("Notificación clickeada", event.notification.data);
   event.notification.close();
 
   // Usa el link del payload o uno por defecto
@@ -82,6 +77,4 @@ self.addEventListener("notificationclick", (event) => {
 });
 
 // Manejar cierre de notificación (opcional)
-self.addEventListener("notificationclose", (event) => {
-  console.log("Notificación cerrada", event.notification);
-});
+self.addEventListener("notificationclose", (event) => {});

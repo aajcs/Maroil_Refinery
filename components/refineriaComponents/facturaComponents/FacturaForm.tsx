@@ -117,7 +117,6 @@ function FacturaForm({
   // Guardar o actualizar factura
   const onSubmit = async (data: FormData) => {
     setSubmitting(true);
-    console.log("Submitting data:", data);
     try {
       const lineasTransformadas = (data.idLineasFactura || []).map(
         (linea: any) => ({
@@ -207,7 +206,6 @@ function FacturaForm({
       />
     );
   };
-  console.log(errors);
   return (
     <Dialog
       visible={facturaFormDialog}

@@ -52,7 +52,9 @@ const TanqueForm = ({
   toast,
 }: TanqueFormProps) => {
   const { activeRefineria } = useRefineriaStore();
-  const { productos, loading } = useByRefineryData(activeRefineria?.id as string);
+  const { productos, loading } = useByRefineryData(
+    activeRefineria?.id as string
+  );
 
   const [submitting, setSubmitting] = useState(false);
   const {
@@ -99,7 +101,6 @@ const TanqueForm = ({
           idRefineria: activeRefineria.id,
           idProducto: data.idProducto.id,
         });
-        console.log("Nuevo tanque creado:", newTanque);
         setTanques([...tanques, newTanque]);
         showToast("success", "Éxito", "Tanque creado");
       }

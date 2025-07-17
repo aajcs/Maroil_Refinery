@@ -113,7 +113,6 @@ const TanqueForm = ({
       setSubmitting(false); // Desactivar el estado de envío
     }
   };
-  console.log("watch", watch());
   if (loading) {
     return (
       <div

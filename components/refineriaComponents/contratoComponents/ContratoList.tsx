@@ -29,7 +29,6 @@ interface ContratoListProps {
 const ContratoList = ({ tipoContrato }: ContratoListProps) => {
   const { activeRefineria } = useRefineriaStore();
   const [contratos, setContratos] = useState<Contrato[]>([]);
-  console.log("Contratos:", contratos);
   const [contrato, setContrato] = useState<Contrato | null>(null);
   const [filters, setFilters] = useState<DataTableFilterMeta>({});
   const [loading, setLoading] = useState(true);

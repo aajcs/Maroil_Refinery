@@ -64,7 +64,6 @@ function ContratoForm({
   const { productos, tipoProductos, contactos, loading } = useByRefineryData(
     activeRefineria?.id || ""
   );
-  console.log(tipoProductos, "tipoProductos");
   const { brent: brentOnline, oilDerivate } = useRefineryPrecios();
 
   const toast = useRef<Toast | null>(null);
@@ -114,7 +113,6 @@ function ContratoForm({
         );
         setContratos(updatedContratos);
         showToast("success", "Éxito", "Contrato actualizado");
-        console.log("updatedContrato", updatedContrato);
       } else {
         if (!activeRefineria)
           throw new Error("No se ha seleccionado una refinería");
@@ -282,7 +280,6 @@ function ContratoForm({
     const caracteristicasTipoProducto = tipoProductos.find(
       (tipoProducto) => tipoProducto.id === tipoProductoValue?.id
     );
-    console.log("caracteristicasTipoProducto", caracteristicasTipoProducto);
     // // Actualizar directamente el rowData
     options.rowData.idTipoProducto = tipoProductoValue;
     options.rowData.clasificacion =
@@ -352,8 +349,7 @@ function ContratoForm({
     }));
     setItems(updatedItems);
   }, [brent]);
-  console.log("watch", watch("idItems"));
-  console.log("errors", errors);
+
   return (
     <Dialog
       visible={contratoFormDialog}

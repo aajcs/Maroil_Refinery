@@ -181,7 +181,6 @@ function renderNumber(value: number, truncate?: boolean) {
 
 function ComprasCard() {
   const { loading, brent, oilDerivate } = useRefineryPrecios();
-  console.log(oilDerivate);
   const [refinerias, setRefinerias] = useState<Refineria[]>([]);
   const [selectedRefineria, setSelectedRefineria] = useState<Refineria | null>(
     null
@@ -205,7 +204,6 @@ function ComprasCard() {
     rendimientos: [],
     transporte: 0,
   }))[0];
-  console.log(defaultProduct);
   const [mezcla, setMezcla] = useState<Mezcla[]>([]);
 
   const totalBbl = mezcla.reduce((prev, curr) => prev + curr.cantidad, 0);
@@ -360,9 +358,7 @@ function ComprasCard() {
                 // if (referencia) {
                 //     setSelectedReferencia(referencia);
                 // }
-                console.log(referencias);
                 setSelectedReferencia(e.value);
-                console.log(e, selectedReferencia);
               }}
               options={referencias}
               // optionLabel="name"
@@ -821,7 +817,6 @@ function VentasCard({
 
       <OperationalMargin
         profit={derivative.reduce((prev, curr) => {
-          console.log(curr, getRendimiento(curr));
           return (
             prev +
             ((curr.price - curr.tractomula - curr.bunker) *

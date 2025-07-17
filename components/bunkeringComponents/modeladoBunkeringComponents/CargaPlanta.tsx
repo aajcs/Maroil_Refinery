@@ -264,8 +264,6 @@ function CargaPlanta() {
         }, {})
       : {};
 
-  console.log(consumos);
-
   useEffect(() => {
     fetch(
       "https://api-maroil-refinery-2500582bacd8.herokuapp.com/api/corteRefinacion/"

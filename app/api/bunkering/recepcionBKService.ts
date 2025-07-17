@@ -9,7 +9,6 @@ export const getRecepcionsBK = async () => {
   return response.data;
 };
 export const createRecepcionBK = async (data: any) => {
-  console.log(data);
   const response = await apiClient.post("bunkering/recepcionBK", data);
   return response.data;
 };

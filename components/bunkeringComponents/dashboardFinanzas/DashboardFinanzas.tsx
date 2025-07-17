@@ -386,9 +386,7 @@ function DashboardFinanzas() {
       });
     (async () => {
       const res = await getTanques();
-      console.log("res", res);
       const body = res as { tanques: Tanque[] };
-      console.log(body.tanques);
       const filteredTanques = body.tanques.filter(
         (t) => t.idRefineria.nombre === Nombre.OctanoIndustrialSAS
       );

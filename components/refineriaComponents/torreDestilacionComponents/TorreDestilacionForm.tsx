@@ -72,7 +72,6 @@ const TorreDestilacionForm = ({
   const fetchData = useCallback(async () => {
     try {
       const productosDB = await getProductos();
-      console.log("Productos DB:", productosDB);
       if (productosDB && Array.isArray(productosDB.productos)) {
         const filteredProductos = productosDB.productos.filter(
           (producto: Producto) =>
@@ -136,7 +135,6 @@ const TorreDestilacionForm = ({
       setSubmitting(false);
     }
   };
-  console.log(errors);
   return (
     <div>
       <form onSubmit={handleSubmit(onSubmit)}>

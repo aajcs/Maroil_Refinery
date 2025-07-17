@@ -98,7 +98,6 @@ const ChequeoCalidadForm = ({
       setReferenciaTipo(rc?.idContratoItems || null);
     } else if (tipoAplicar === "Tanque") {
       const tn = tanques.find((t) => t.id === referencia.id);
-      console.log("Tanque:", tn);
       prod = tn?.idProducto;
       setReferenciaTipo(null);
       // Asume que tanque tiene campo `producto`
@@ -186,7 +185,6 @@ const ChequeoCalidadForm = ({
         setValue(key as keyof FormData, chequeoCalidad[key])
       );
     }
-    console.log("Chequeo de calidad cargado:", chequeoCalidad);
     if (onDuplicate && chequeoCalidad) {
       // Establecer valores predeterminados para el modo duplicado
       setValue("azufre", 0); // Cambiar el valor de azufre
@@ -271,7 +269,6 @@ const ChequeoCalidadForm = ({
     }
   };
 
-  console.log("Referencia tipo:", referenciaTipo);
   return (
     <div>
       <form onSubmit={handleSubmit(onSubmit)}>

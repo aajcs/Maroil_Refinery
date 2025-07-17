@@ -14,20 +14,13 @@ import CustomActionButtons from "@/components/common/CustomActionButtons";
 import PartidaForm from "./PartidaForm";
 import { Partida, Tanque } from "@/libs/interfaces";
 import { formatDateFH } from "@/utils/dateUtils";
-import {
-  deletePartida,
-  getPartidas,
-} from "@/app/api/partidaService";
+import { deletePartida, getPartidas } from "@/app/api/partidaService";
 import AuditHistoryDialog from "@/components/common/AuditHistoryDialog";
-
-
 
 const PartidaList = () => {
   const { activeRefineria } = useRefineriaStore();
   const [partidas, setPartidas] = useState<Partida[]>([]);
-  const [partida, setPartida] = useState<Partida | null>(
-    null
-  );
+  const [partida, setPartida] = useState<Partida | null>(null);
   const [filters, setFilters] = useState<DataTableFilterMeta>({});
   const [loading, setLoading] = useState(true);
   const [globalFilterValue, setGlobalFilterValue] = useState("");
@@ -49,7 +42,6 @@ const PartidaList = () => {
     try {
       const partidasDB = await getPartidas();
       if (partidasDB && Array.isArray(partidasDB.partidas)) {
-        console.log("Partidas obtenidas:", partidasDB.partidas);
         setPartidas(partidasDB.partidas);
       } else {
         console.error("La estructura de partidasDB no es la esperada");
@@ -70,9 +62,7 @@ const PartidaList = () => {
   const handleDeletePartida = async () => {
     if (partida?.id) {
       await deletePartida(partida.id);
-      setPartidas(
-        partidas.filter((val) => val.id !== partida.id)
-      );
+      setPartidas(partidas.filter((val) => val.id !== partida.id));
       toast.current?.show({
         severity: "success",
         summary: "Éxito",
@@ -180,7 +170,7 @@ const PartidaList = () => {
           sortable
          
         /> */}
-      
+
         <Column field="descripcion" header="Descripcion" sortable />
         {/* <Column
           field="createdAt"
@@ -228,8 +218,7 @@ const PartidaList = () => {
           />
           {partida && (
             <span>
-              ¿Estás seguro de que deseas eliminar <b>{partida.descripcion}</b>
-              ?
+              ¿Estás seguro de que deseas eliminar <b>{partida.descripcion}</b>?
             </span>
           )}
         </div>
@@ -254,9 +243,7 @@ const PartidaList = () => {
       <Dialog
         visible={partidaFormDialog}
         style={{ width: "850px" }}
-        header={`${
-          partida ? "Editar" : "Agregar"
-        } Recepción de tractomula.
+        header={`${partida ? "Editar" : "Agregar"} Recepción de tractomula.
 `}
         modal
         onHide={hidePartidaFormDialog}
@@ -269,7 +256,6 @@ const PartidaList = () => {
             setPartida={setPartida}
             showToast={showToast}
             toast={toast}
-
           />
         )}
       ></Dialog>

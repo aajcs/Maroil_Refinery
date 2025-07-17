@@ -52,7 +52,6 @@ const ChequeoCantidadForm = ({
   setOnDuplicate,
 }: ChequeoCantidadFormProps) => {
   const { activeRefineria } = useRefineriaStore();
-  console.log("Chequeo de Cantidad", chequeoCantidad);
 
   const { productos, tanques, recepcions, despachos, loading } =
     useByRefineryData(activeRefineria?.id || "");
@@ -142,7 +141,6 @@ const ChequeoCantidadForm = ({
       prod = rc?.idContratoItems?.producto;
     } else if (tipoAplicar === "Tanque") {
       const tn = tanques.find((t) => t.id === referencia.id);
-      console.log("Tanque:", tn);
       prod = tn?.idProducto; // Asume que tanque tiene campo `producto`
     } else if (tipoAplicar === "Despacho") {
       const dsp = despachos.find((d) => d.id === referencia.id);
@@ -245,7 +243,6 @@ const ChequeoCantidadForm = ({
       }
     }
   };
-  console.log("Chequeo de Cantidad Form Data", watch("aplicar"));
   return (
     <div>
       <form onSubmit={handleSubmit(onSubmit)}>

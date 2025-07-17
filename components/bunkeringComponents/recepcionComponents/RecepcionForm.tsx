@@ -141,7 +141,6 @@ const RecepcionForm = ({
       };
     });
   }, [contratos, recepcions]);
-  console.log("recepcionesPorContrato", recepcionesPorContrato);
   const onSubmit = async (data: FormData) => {
     setSubmitting(true);
     try {
@@ -167,7 +166,6 @@ const RecepcionForm = ({
       }
       hideRecepcionFormDialog();
     } catch (error) {
-      console.log(error);
       showToast(
         "error",
         "Error",

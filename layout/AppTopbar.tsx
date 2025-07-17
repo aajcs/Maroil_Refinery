@@ -29,7 +29,6 @@ interface ExtendedUser extends User {
 
 const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
   const { data: session } = useSession();
-  console.log("Session data:", session);
   const { activeRefineria } = useRefineriaStore();
 
   const { online, desconectarSocket } = useSocket();
@@ -42,7 +41,7 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
         await fetch(
           `https://accounts.google.com/o/oauth2/revoke?token=${accessToken}`
         );
-        console.log("Token de Google revocado correctamente.");
+        // console.log("Token de Google revocado correctamente.");
       } catch (e) {
         console.error("Error al revocar el token de Google:", e);
       }

@@ -101,8 +101,7 @@ const EmbarcacionForm = ({
       setSubmitting(false); // Desactivar el estado de envío
     }
   };
-  // console.log("watch", watch());
-  console.log("errors", errors);
+
   return (
     <div>
       <form onSubmit={handleSubmit(onSubmit)}>

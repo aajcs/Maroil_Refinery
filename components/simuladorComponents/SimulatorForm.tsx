@@ -134,7 +134,6 @@ export default function SimulatorForm({
       crudeAmount: refineria?.procesamientoDia || 1000,
     },
   });
-  console.log(errors);
   // Watchers
   const mode = watch("mode");
   const crudeType = watch("crudeType");
@@ -175,8 +174,6 @@ export default function SimulatorForm({
 
   // Handlers
   const onSubmit = (data: any) => {
-    console.log("data", data);
-
     onCalculate({
       ...data,
       crudeType: {

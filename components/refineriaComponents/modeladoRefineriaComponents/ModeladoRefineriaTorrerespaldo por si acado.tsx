@@ -291,7 +291,6 @@ const ModeladoRefineriaTorre: React.FC<ModeladoRefineriaTorreProps> = ({
           .find((t) => t.idTorre === torre?.id)
           ?.productos.find((p) => p.materiaPrima === "Materia Prima");
 
-        console.log(datosMateriaPrimaTotal);
         return {
           name: material.idProducto?.nombre || "Desconocido",
           idProducto: material.idProducto?.id || "",

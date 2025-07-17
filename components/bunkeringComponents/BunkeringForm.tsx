@@ -142,8 +142,6 @@ const BunkeringForm = ({
     }
   };
 
-  console.log("errors", errors);
-
   return (
     <div className="card">
       <Toast ref={toast} />

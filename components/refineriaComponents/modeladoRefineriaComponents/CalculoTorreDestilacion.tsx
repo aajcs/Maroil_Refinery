@@ -11,8 +11,7 @@ const CalculoTorreDestilacion = ({
   corteRefinacion,
 }: CalculoTorreDestilacionProps) => {
   // Filter details for the current tower
-  console.log("corteRefinacion", corteRefinacion);
-  console.log("torre", torre);
+
   const torreCorte = corteRefinacion
     ?.map((cr) => cr?.corteTorre)
     .flat()
