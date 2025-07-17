@@ -81,7 +81,7 @@ const ModeladoRefineriaDashboard = () => {
   const [selectedContratoVenta, setSelectedContratoVenta] = useState<any>(null);
   console.log("selectedContratoVenta", selectedContratoVenta);
   const [checked, setChecked] = useState(false); // Estado para el InputSwitch
-
+  const [checkedDespachos, setCheckedDespachos] = useState(false); // Estado para el InputSwitch de despachos
   const showDialog = useCallback((product: any) => {
     setSelectedProduct(product);
     setVisible(true);
@@ -201,7 +201,14 @@ const ModeladoRefineriaDashboard = () => {
     () => recepcions.filter((r) => r.estadoRecepcion === "EN_REFINERIA"),
     [recepcions]
   );
-
+  const despachosEnTransito = useMemo(
+    () => despachos.filter((d) => d.estadoDespacho === "EN_TRANSITO"),
+    [despachos]
+  );
+  const despachosEnRefineria = useMemo(
+    () => despachos.filter((d) => d.estadoDespacho === "EN_REFINERIA"),
+    [despachos]
+  );
   if (loading) {
     return (
       <div className="flex justify-content-center align-items-center h-screen">
@@ -282,22 +289,22 @@ const ModeladoRefineriaDashboard = () => {
               <div>
                 {/* Switch para alternar entre recepciones */}
                 <div className="flex align-items-center gap-3 mb-3">
-                  <span>Mostrar Recepciones en Tránsito</span>
+                  <span>Mostrar Recepciones en Refinería</span>
                   <InputSwitch
                     checked={checked}
                     onChange={(e) => setChecked(e.value)}
                   />
-                  <span>Mostrar Recepciones en Refinería</span>
+                  <span>Mostrar Recepciones en Tránsito</span>
                 </div>
 
                 {/* Mostrar el componente según el estado del switch */}
                 {checked ? (
                   <ModeladoRefineriaRecepcionesList
-                    recepciones={recepcionesEnRefineria}
+                    recepciones={recepcionesEnTransito}
                   />
                 ) : (
                   <ModeladoRefineriaRecepcionesList
-                    recepciones={recepcionesEnTransito}
+                    recepciones={recepcionesEnRefineria}
                   />
                 )}
               </div>
@@ -319,7 +326,28 @@ const ModeladoRefineriaDashboard = () => {
                 delay: 0.3,
               }}
             >
-              <ModeladoRefineriaDespachosList despachos={despachos} />
+              <div>
+                {/* Switch para alternar entre recepciones */}
+                <div className="flex align-items-center gap-3 mb-3">
+                  <span>Mostrar Des en Refinería</span>
+                  <InputSwitch
+                    checked={checkedDespachos}
+                    onChange={(e) => setCheckedDespachos(e.value)}
+                  />
+                  <span>Mostrar Despacho en Tránsito</span>
+                </div>
+
+                {/* Mostrar el componente según el estado del switch */}
+                {checkedDespachos ? (
+                  <ModeladoRefineriaDespachosList
+                    despachos={despachosEnTransito}
+                  />
+                ) : (
+                  <ModeladoRefineriaDespachosList
+                    despachos={despachosEnRefineria}
+                  />
+                )}
+              </div>
             </motion.div>
           </TabPanel>
         </TabView>
