@@ -17,6 +17,7 @@ import AuditHistoryDialog from "@/components/common/AuditHistoryDialog";
 import RecepcionTemplate from "@/components/pdf/templates/recepcionTemplate";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { motion } from "framer-motion";
+
 const RecepcionList = () => {
   const { activeRefineria } = useRefineriaStore();
   const [recepcions, setRecepcions] = useState<Recepcion[]>([]);
@@ -30,6 +31,7 @@ const RecepcionList = () => {
   const [auditDialogVisible, setAuditDialogVisible] = useState(false);
   const [selectedAuditRecepcion, setSelectedAuditRecepcion] =
     useState<Recepcion | null>(null);
+  const [mostrarTodas, setMostrarTodas] = useState(false);
   const dt = useRef(null);
   const toast = useRef<Toast | null>(null);
 
@@ -90,9 +92,10 @@ const RecepcionList = () => {
     setGlobalFilterValue(value);
   };
 
-  const renderHeader = () => (
-    <div className="flex flex-wrap gap-2 align-items-center justify-content-between">
-      <span className="p-input-icon-left w-full sm:w-20rem flex-order-1 sm:flex-order-0">
+ const renderHeader = () => (
+  <div className="flex flex-wrap gap-2 align-items-center justify-content-between">
+    <div className="flex align-items-center gap-2 w-full sm:w-auto">
+      <span className="p-input-icon-left w-full sm:w-20rem">
         <i className="pi pi-search"></i>
         <InputText
           value={globalFilterValue}
@@ -103,14 +106,23 @@ const RecepcionList = () => {
       </span>
       <Button
         type="button"
-        icon="pi pi-user-plus"
-        label="Agregar Nuevo"
-        outlined
-        className="w-full sm:w-auto flex-order-0 sm:flex-order-1"
-        onClick={() => setRecepcionFormDialog(true)}
+        icon={mostrarTodas ? "pi pi-eye-slash" : "pi pi-eye"}
+        label={mostrarTodas ? "Ver solo activas" : "Ver todas"}
+        className="p-button-secondary"
+        onClick={() => setMostrarTodas((prev) => !prev)}
+        style={{ minWidth: 160 }}
       />
     </div>
-  );
+    <Button
+      type="button"
+      icon="pi pi-user-plus"
+      label="Agregar Nuevo"
+      outlined
+      className="w-full sm:w-auto"
+      onClick={() => setRecepcionFormDialog(true)}
+    />
+  </div>
+);
 
   const actionBodyTemplate = (rowData: Recepcion) => (
     <CustomActionButtons
@@ -148,6 +160,15 @@ const RecepcionList = () => {
     toast.current?.show({ severity, summary, detail, life: 3000 });
   };
 
+  // Filtrado según mostrarTodas
+  const recepcionsFiltradas = mostrarTodas
+    ? recepcions
+    : recepcions.filter(
+        (r) =>
+          r.estadoRecepcion !== "COMPLETADO" &&
+          r.estadoRecepcion !== "CANCELADO"
+      );
+
   if (loading) {
     return (
       <div className="flex justify-content-center align-items-center h-screen">
@@ -171,7 +192,7 @@ const RecepcionList = () => {
       >
         <DataTable
           ref={dt}
-          value={recepcions}
+          value={recepcionsFiltradas}
           header={renderHeader()}
           paginator
           rows={10}
