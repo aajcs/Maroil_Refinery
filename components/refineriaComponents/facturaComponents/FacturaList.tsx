@@ -23,6 +23,7 @@ import AuditHistoryDialog from "@/components/common/AuditHistoryDialog";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { motion } from "framer-motion";
 import { Tag } from "primereact/tag";
+import FacturaTemplate from "@/components/pdf/templates/FacturaTemplate";
 
 const FacturaList = () => {
   const { activeRefineria } = useRefineriaStore();
@@ -134,7 +135,16 @@ const FacturaList = () => {
         setFactura(data);
         setDeleteProductDialog(true);
       }}
+       pdfTemplate={(props) => (
+        <FacturaTemplate
+          data={props.data}
+          logoUrl="/layout/images/avatarHombre.png"
+        />
+      )}
+      pdfFileName={`Recepcion${rowData.numeroFactura}.pdf`}
+      pdfDownloadText="Descargar Recepcion"
     />
+    
   );
   const rowExpansionTemplate = (data: Factura) => {
     return (
