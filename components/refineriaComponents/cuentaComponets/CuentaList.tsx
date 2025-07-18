@@ -274,60 +274,90 @@ const CuentaList = ({ tipoCuenta }: CuentaListProps) => {
             body={abonosBodyTemplate}
             style={{ minWidth: "250px" }}
           />
-          {/* <Column field="tipoCuenta" header="Tipo de Cuenta" sortable /> */}
           <Column
             field="montoTotalContrato"
-            header="Monto Total Contrato"
+            header={
+              <span>
+                <i className="pi pi-wallet mr-2"></i>Monto Total Contrato
+              </span>
+            }
             sortable
             body={(rowData: Cuenta) =>
               rowData.montoTotalContrato != null
-                ? rowData.montoTotalContrato.toLocaleString("de-DE", {
+                ? `$${rowData.montoTotalContrato.toLocaleString("de-DE", {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
-                  })
+                  })}`
                 : ""
             }
           />
           <Column
             field="totalAbonado"
-            header="Total Abonado"
+            header={
+              <span>
+                <i className="pi pi-money-bill mr-2"></i>Total Abonado
+              </span>
+            }
             sortable
             body={(rowData: Cuenta) =>
               rowData.totalAbonado != null
-                ? rowData.totalAbonado.toLocaleString("de-DE", {
+                ? `$${rowData.totalAbonado.toLocaleString("de-DE", {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
-                  })
+                  })}`
                 : ""
             }
           />
           <Column
             field="balancePendiente"
-            header="Balance Pendiente"
+            header={
+              <span>
+                <i className="pi pi-chart-line mr-2"></i>Balance Pendiente
+              </span>
+            }
             sortable
             body={(rowData: Cuenta) =>
               rowData.balancePendiente != null
-                ? rowData.balancePendiente.toLocaleString("de-DE", {
+                ? `$${rowData.balancePendiente.toLocaleString("de-DE", {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
-                  })
+                  })}`
                 : ""
             }
           />
 
-          {/* <Column field="createdBy.nombre" header="Creado Por" sortable />
-        <Column
-          field="createdAt"
-          header="Fecha de Creación"
-          body={(rowData: Cuenta) => formatDateFH(rowData.createdAt)}
-          sortable
-        />
-        <Column
-          field="updatedAt"
-          header="Última Actualización"
-          body={(rowData: Cuenta) => formatDateFH(rowData.updatedAt)}
-          sortable
-        /> */}
+          {/* Nuevas columnas de auditoría */}
+          <Column
+            field="createdBy.nombre"
+            header={
+              <span>
+                <i className="pi pi-user mr-2"></i>Creado Por
+              </span>
+            }
+            sortable
+            body={(rowData: Cuenta) => rowData.createdBy?.nombre || ""}
+          />
+          <Column
+            field="createdAt"
+            header={
+              <span>
+                <i className="pi pi-calendar-plus mr-2"></i>Fecha de Creación
+              </span>
+            }
+            sortable
+            body={(rowData: Cuenta) => formatDateFH(rowData.createdAt)}
+          />
+          <Column
+            field="updatedAt"
+            header={
+              <span>
+                <i className="pi pi-calendar-times mr-2"></i>Última
+                Actualización
+              </span>
+            }
+            sortable
+            body={(rowData: Cuenta) => formatDateFH(rowData.updatedAt)}
+          />
         </DataTable>
 
         <Dialog

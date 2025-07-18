@@ -197,7 +197,14 @@ const AbonoList = ({ tipoAbono }: AbonoListProps) => {
             headerStyle={{ minWidth: "10rem" }}
           />
           <Column field="numeroAbono" header="N° Abono" sortable />
-          <Column field="monto" header="Monto" sortable />
+          <Column
+            field="monto"
+            header="Monto"
+            sortable
+            body={(rowData: Abono) =>
+              `$${rowData.monto.toLocaleString("de-DE")}`
+            }
+          />
           <Column
             field="fecha"
             header="Fecha"
@@ -208,7 +215,7 @@ const AbonoList = ({ tipoAbono }: AbonoListProps) => {
           <Column field="referencia" header="Referencia" />
           <Column field="idContrato.numeroContrato" header="N° Contrato" />
           {/* <Column field="idRefineria.nombre" header="Refinería" /> */}
-          <Column field="createdBy.nombre" header="Creado Por" />
+          {/* <Column field="createdBy.nombre" header="Creado Por" />
           <Column
             field="createdAt"
             header="Fecha de Creación"
@@ -218,7 +225,7 @@ const AbonoList = ({ tipoAbono }: AbonoListProps) => {
             field="updatedAt"
             header="Última Actualización"
             body={(rowData: Abono) => formatDateFH(rowData.updatedAt)}
-          />
+          /> */}
           {/* <Column
           field="estado"
           header="Estado"

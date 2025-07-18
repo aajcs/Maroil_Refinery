@@ -150,23 +150,67 @@ const ContratoList = ({ tipoContrato }: ContratoListProps) => {
       <div className="orders-subtable">
         <h5>Items for {data.name}</h5>
         <DataTable value={data.idItems} responsiveLayout="scroll">
-          <Column field="producto.nombre" header="Producto" />
-          <Column field="idTipoProducto.nombre" header="Tipo de Producto" />
-          <Column field="clasificacion" header="Clasificación" />
-          <Column field="gravedadAPI" header="Gravedad API" />
-          <Column field="azufre" header="Azufre" />
-
-          <Column field="contenidoAgua" header="Contenido de Agua" />
-          <Column field="puntoDeInflamacion" header="Punto De Inflamación" />
-
-          <Column field="cantidad" header="Cantidad" />
-          <Column field="precioUnitario" header="Precio Unitario" />
+          <Column
+            field="producto.nombre"
+            header="Producto"
+            body={(rowData: any) => rowData.producto?.nombre}
+          />
+          <Column
+            field="idTipoProducto.nombre"
+            header="Tipo de Producto"
+            body={(rowData: any) => rowData.idTipoProducto?.nombre}
+          />
+          <Column
+            field="clasificacion"
+            header="Clasificación"
+            body={(rowData: any) => rowData.clasificacion}
+          />
+          <Column
+            field="gravedadAPI"
+            header="Gravedad API"
+            body={(rowData: any) => `${rowData.gravedadAPI} °API`}
+          />
+          <Column
+            field="azufre"
+            header="Azufre"
+            body={(rowData: any) => `${rowData.azufre} %`}
+          />
+          <Column
+            field="contenidoAgua"
+            header="Contenido de Agua"
+            body={(rowData: any) => `${rowData.contenidoAgua} %`}
+          />
+          <Column
+            field="puntoDeInflamacion"
+            header="Punto De Inflamación"
+            body={(rowData: any) => `${rowData.puntoDeInflamacion} °C`}
+          />
+          <Column
+            field="cantidad"
+            header="Cantidad"
+            body={(rowData: any) => `${rowData.cantidad} Bbl`}
+          />
+          <Column
+            field="precioUnitario"
+            header="Precio Unitario"
+            body={(rowData: any) => `$${rowData.precioUnitario.toFixed(2)}`}
+          />
           <Column
             header="Total"
-            body={(rowData: any) => rowData.cantidad * rowData.precioUnitario}
+            body={(rowData: any) =>
+              `$${(rowData.cantidad * rowData.precioUnitario).toFixed(2)}`
+            }
           />
-          <Column field="convenio" header="Convenio" />
-          <Column field="montoTransporte" header="Monto Transporte" />
+          <Column
+            field="convenio"
+            header="Convenio"
+            body={(rowData: any) => `$${rowData.convenio.toFixed(2)}`}
+          />
+          <Column
+            field="montoTransporte"
+            header="Monto Transporte"
+            body={(rowData: any) => `$${rowData.montoTransporte.toFixed(2)}`}
+          />
         </DataTable>
       </div>
     );

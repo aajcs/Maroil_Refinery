@@ -146,7 +146,7 @@ function FacturaForm({
     setItems([
       ...items,
       {
-        descripcion: "Sin Descripcion", // El nombre del crudo es obligatorio
+        descripcion: "", // El nombre del crudo es obligatorio
         // clasificacion: undefined, // La clasificación es opcional
         subTotal: 0, // Gravedad API del producto (opcional, debe ser no negativa)
         // idPartida: 0, // Porcentaje de azufre (opcional, debe ser no negativo)
@@ -155,7 +155,7 @@ function FacturaForm({
     setValue("idLineasFactura", [
       ...items,
       {
-        descripcion: "Sin Descripcion", // El nombre del crudo es obligatorio
+        descripcion: "", // El nombre del crudo es obligatorio
         // clasificacion: undefined, // La clasificación es opcional
         subTotal: 0, // Gravedad API del producto (opcional, debe ser no negativa)
         // idPartida: 0, // Porcentaje de azufre (opcional, debe ser no negativo)
@@ -480,12 +480,28 @@ function FacturaForm({
                           options.editorCallback!(e.target.value)
                         }
                         onKeyDown={(e) => e.stopPropagation()}
+                        placeholder="Descripción del item"
                       />
                     )}
                     onCellEditComplete={(e) => {
                       const { newValue, rowIndex } = e;
                       updateItem(rowIndex, "descripcion", newValue);
                     }}
+                    body={(rowData: any) => (
+                      <div
+                        style={{
+                          border:
+                            rowData.descripcion === ""
+                              ? "2px solid #f44336"
+                              : undefined,
+                          borderRadius: "4px",
+                          padding: "2px 6px",
+                          display: "inline-block",
+                        }}
+                      >
+                        {rowData.descripcion || "Sin Descripción"}
+                      </div>
+                    )}
                   />
 
                   <Column

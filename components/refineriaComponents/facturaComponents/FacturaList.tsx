@@ -22,6 +22,7 @@ import { deleteFactura, getFacturas } from "@/app/api/facturaService";
 import AuditHistoryDialog from "@/components/common/AuditHistoryDialog";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { motion } from "framer-motion";
+import { Tag } from "primereact/tag";
 
 const FacturaList = () => {
   const { activeRefineria } = useRefineriaStore();
@@ -141,7 +142,13 @@ const FacturaList = () => {
         <h5>Items for {data.concepto}</h5>
         <DataTable value={data.idLineasFactura} responsiveLayout="scroll">
           <Column field="descripcion" header="Descripción" />
-          <Column field="subTotal" header="Subtotal" />
+          <Column
+            field="subTotal"
+            header="Subtotal"
+            body={(rowData: any) =>
+              `$${rowData.subTotal.toLocaleString("de-DE")}`
+            }
+          />
           <Column field="idPartida.descripcion" header="ID Partida" />
         </DataTable>
       </div>
@@ -154,6 +161,21 @@ const FacturaList = () => {
   ) => {
     toast.current?.show({ severity, summary, detail, life: 3000 });
   };
+
+  // Helper to map estado to severity
+  const getSeverity = (estado: string) => {
+    switch (estado) {
+      case "Pendiente":
+        return "warning";
+      case "Aprobada":
+        return "success";
+      case "Rechazada":
+        return "danger";
+      default:
+        return "info";
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex justify-content-center align-items-center h-screen">
@@ -197,8 +219,15 @@ const FacturaList = () => {
             body={actionBodyTemplate}
             headerStyle={{ minWidth: "10rem" }}
           />
-          <Column field="concepto" header="Concepto" sortable />
-          <Column field="total" header="Total" sortable />
+          <Column field="concepto" header="Concepto" />
+          <Column
+            field="total"
+            header="Total"
+            sortable
+            body={(rowData: Factura) =>
+              `$${rowData.total.toLocaleString("de-DE")}`
+            }
+          />
           <Column
             field="fechaFactura"
             header="Fecha"
@@ -207,7 +236,16 @@ const FacturaList = () => {
               formatDateFHSinHora(rowData.fechaFactura)
             }
           />
-          <Column field="estado" header="Estado" />
+          <Column
+            field="estado"
+            header="Estado"
+            body={(rowData: any) => (
+              <Tag
+                value={rowData.estado}
+                severity={getSeverity(rowData.estado)}
+              />
+            )}
+          />
         </DataTable>
 
         <Dialog
