@@ -329,12 +329,12 @@ const ModeladoRefineriaDashboard = () => {
               <div>
                 {/* Switch para alternar entre recepciones */}
                 <div className="flex align-items-center gap-3 mb-3">
-                  <span>Mostrar Des en Refinería</span>
+                  <span>Mostrar Despachos en Refinería</span>
                   <InputSwitch
                     checked={checkedDespachos}
                     onChange={(e) => setCheckedDespachos(e.value)}
                   />
-                  <span>Mostrar Despacho en Tránsito</span>
+                  <span>Mostrar Despachos en Tránsito</span>
                 </div>
 
                 {/* Mostrar el componente según el estado del switch */}
