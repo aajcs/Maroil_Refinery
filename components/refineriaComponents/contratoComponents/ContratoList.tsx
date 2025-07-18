@@ -145,6 +145,33 @@ const ContratoList = ({ tipoContrato }: ContratoListProps) => {
     </div>
   );
 
+  const rowExpansionTemplate = (data: any) => {
+    return (
+      <div className="orders-subtable">
+        <h5>Items for {data.name}</h5>
+        <DataTable value={data.idItems} responsiveLayout="scroll">
+          <Column field="producto.nombre" header="Producto" />
+          <Column field="idTipoProducto.nombre" header="Tipo de Producto" />
+          <Column field="clasificacion" header="Clasificación" />
+          <Column field="gravedadAPI" header="Gravedad API" />
+          <Column field="azufre" header="Azufre" />
+
+          <Column field="contenidoAgua" header="Contenido de Agua" />
+          <Column field="puntoDeInflamacion" header="Punto De Inflamación" />
+
+          <Column field="cantidad" header="Cantidad" />
+          <Column field="precioUnitario" header="Precio Unitario" />
+          <Column
+            header="Total"
+            body={(rowData: any) => rowData.cantidad * rowData.precioUnitario}
+          />
+          <Column field="convenio" header="Convenio" />
+          <Column field="montoTransporte" header="Monto Transporte" />
+        </DataTable>
+      </div>
+    );
+  };
+
   const actionBodyTemplate = (rowData: Contrato) => (
     <CustomActionButtons
       rowData={rowData}
@@ -215,7 +242,11 @@ const ContratoList = ({ tipoContrato }: ContratoListProps) => {
           emptyMessage="No hay contratos disponibles"
           rowClassName={() => "animated-row"}
           size="small"
+          expandedRows={expandedRows}
+          onRowToggle={(e) => setExpandedRows(e.data)}
+          rowExpansionTemplate={rowExpansionTemplate}
         >
+          <Column expander style={{ width: "3em" }} />
           <Column body={actionBodyTemplate} />
           <Column field="numeroContrato" header="Número de Contrato" sortable />
           <Column field="estadoContrato" header="Estado del Contrato" />
