@@ -143,7 +143,6 @@ const FacturaList = () => {
           <Column field="descripcion" header="Descripción" />
           <Column field="subTotal" header="Subtotal" />
           <Column field="idPartida.descripcion" header="ID Partida" />
-          <Column field="estado" header="Estado" />
         </DataTable>
       </div>
     );

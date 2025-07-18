@@ -27,16 +27,16 @@ export interface LineaFactura {
   descripcion: string;
 
   subTotal: number;
-  idPartida: Partida;
-  idFactura: Factura;
-  eliminado: boolean;
-  estado: string;
-  fecha: string;
-  createdAt: string;
-  updatedAt: string;
-  createdBy: UserReference;
-  modificadoPor: UserReference;
-  historial: HistorialCambio[];
+  idPartida?: Partida;
+  idFactura?: Factura;
+  eliminado?: boolean;
+  // estado: string;
+  // fecha: string;
+  // createdAt: string;
+  // updatedAt: string;
+  // createdBy: UserReference;
+  // modificadoPor: UserReference;
+  // historial: HistorialCambio[];
 }
 
 export interface Partida {
