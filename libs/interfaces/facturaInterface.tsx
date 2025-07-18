@@ -19,6 +19,7 @@ export interface Factura {
   createdBy?: UserReference;
   modificadoPor?: UserReference;
   historial?: HistorialCambio[];
+  numeroFactura?: number; // Si es necesario, puedes agregar este campo
 }
 
 export interface LineaFactura {
