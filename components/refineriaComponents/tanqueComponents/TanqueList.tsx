@@ -196,6 +196,37 @@ const TanqueList = () => {
             headerStyle={{ minWidth: "10rem" }}
           />
           <Column field="nombre" header="Nombre" sortable />
+          <Column
+            field="capacidad"
+            header="Capacidad (m³)"
+            sortable
+            body={(rowData: Tanque) =>
+              rowData.capacidad.toLocaleString("de-DE")
+            }
+          />
+          <Column
+            field="nivel"
+            header="Nivel Actual (%)"
+            sortable
+            body={(rowData: Tanque) => {
+              const porcentaje =
+                (rowData.almacenamiento / rowData.capacidad) * 100;
+              return (
+                <div>
+                  {porcentaje.toFixed(2)}%
+                  <span
+                    style={{
+                      fontSize: "0.8em",
+                      marginLeft: "0.5em",
+                      color: "#6c757d",
+                    }}
+                  >
+                    ({rowData.almacenamiento.toLocaleString("de-DE")} m³)
+                  </span>
+                </div>
+              );
+            }}
+          />
 
           <Column
             field="idProducto.nombre"

@@ -16,12 +16,13 @@ import { ProgressSpinner } from "primereact/progressspinner";
 import { Dialog } from "primereact/dialog";
 import UsuarioChangePasswordForm from "../usuarioComponents/UsuarioChangePasswordForm";
 import { Tooltip } from "primereact/tooltip";
+import MyprofileForm from "./MyprofileForm";
 
 const MyProfileList: React.FC = () => {
   const { data: session, update } = useSession();
   const profile = session?.user;
   const toast = useRef<Toast>(null);
-  const [isEditing, setIsEditing] = useState(false);
+  const [usuarioFormDialog, setMyprofileFormDialog] = useState(false);
   const [name, setName] = useState(profile?.usuario?.nombre || "");
   const [email, setEmail] = useState(profile?.usuario?.correo || "");
   const [currentPassword, setCurrentPassword] = useState("");
@@ -66,7 +67,7 @@ const MyProfileList: React.FC = () => {
       });
 
       showToast("success", "Éxito", "Perfil actualizado correctamente");
-      setIsEditing(false);
+      setMyprofileFormDialog(false);
     } catch (error) {
       showToast("error", "Error", "No se pudo actualizar el perfil");
     } finally {
@@ -85,7 +86,9 @@ const MyProfileList: React.FC = () => {
       reader.readAsDataURL(file);
     }
   };
-
+  const hideMyprofileFormDialog = () => {
+    setMyprofileFormDialog(false);
+  };
   useEffect(() => {
     if (profile?.usuario) {
       setName(profile.usuario.nombre || "");
@@ -203,7 +206,7 @@ const MyProfileList: React.FC = () => {
                   <span
                     id="edit-user-tooltip"
                     className="ml-2 cursor-pointer"
-                    onClick={() => setIsEditing(true)}
+                    onClick={() => setMyprofileFormDialog(true)}
                   >
                     <i
                       className="pi pi-user-edit text-primary"
@@ -399,35 +402,7 @@ const MyProfileList: React.FC = () => {
     </>
   );
 
-  const renderEditForm = () => (
-    <div className="grid formgrid p-fluid">
-      <div className="field mb-4 col-12 md:col-6">
-        <label htmlFor="name" className="font-medium text-900 block mb-2">
-          Nombre completo
-        </label>
-        <InputText
-          id="name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="w-full"
-        />
-      </div>
-
-      <div className="field mb-4 col-12 md:col-6">
-        <label htmlFor="email" className="font-medium text-900 block mb-2">
-          Correo electrónico
-        </label>
-        <InputText
-          id="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="w-full"
-        />
-      </div>
-    </div>
-  );
-
-  if (isLoading || (!session && !isEditing)) {
+  if (isLoading || (!session && !usuarioFormDialog)) {
     return (
       <div className="flex justify-content-center align-items-center h-screen">
         <ProgressSpinner />
@@ -453,61 +428,30 @@ const MyProfileList: React.FC = () => {
                 animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
                 transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
               >
-                {!isEditing && renderProfileInfo()}
+                {renderProfileInfo()}
               </motion.div>
-            )}
-            {isEditing && (
-              <div className="mt-5">
-                <h2 className="text-2xl font-bold text-900 mb-4">
-                  Editar Perfil
-                </h2>
-                {renderEditForm()}
-                <div className="flex justify-content-end gap-3 mt-5">
-                  <Button
-                    label="Cancelar"
-                    className="p-button-outlined p-button-secondary"
-                    onClick={() => setIsEditing(false)}
-                  />
-                  <Button
-                    label="Guardar Cambios"
-                    icon="pi pi-save"
-                    onClick={handleSaveProfile}
-                  />
-                </div>
-              </div>
             )}
           </>
         )}
       </div>
-
-      {/* <Card title="Actividad Reciente" className="mb-6">
-        <div className="timeline">
-          <div className="timeline-event">
-            <div className="timeline-event-circle bg-blue-500"></div>
-            <div className="timeline-event-content">
-              <div className="font-bold">Sesión iniciada</div>
-              <div className="text-600">Hoy a las 09:45 AM</div>
-            </div>
-          </div>
-
-          <div className="timeline-event">
-            <div className="timeline-event-circle bg-green-500"></div>
-            <div className="timeline-event-content">
-              <div className="font-bold">Documento actualizado</div>
-              <div className="text-600">Ayer a las 03:20 PM</div>
-              <div className="text-600">Reporte de producción.pdf</div>
-            </div>
-          </div>
-
-          <div className="timeline-event">
-            <div className="timeline-event-circle bg-purple-500"></div>
-            <div className="timeline-event-content">
-              <div className="font-bold">Cambio de contraseña</div>
-              <div className="text-600">Hace 3 días</div>
-            </div>
-          </div>
-        </div>
-      </Card> */}
+      {profile?.usuario && (
+        <Dialog
+          visible={usuarioFormDialog}
+          style={{ minWidth: "300px" }}
+          header="Editar Perfil"
+          modal
+          // footer={deleteProductDialogFooter}
+          onHide={hideMyprofileFormDialog}
+          content={() => (
+            <MyprofileForm
+              usuario={profile.usuario!}
+              hideMyprofileFormDialog={hideMyprofileFormDialog}
+              // usuarios={usuarios}
+              // setUsuarios={setUsuarios}
+            />
+          )}
+        ></Dialog>
+      )}
       <Dialog
         visible={usuarioPasswordFormDialog}
         style={{ width: "850px" }}

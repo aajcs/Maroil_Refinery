@@ -97,7 +97,7 @@ const AuditHistoryDialog: React.FC<AuditHistoryDialogProps> = ({
 
                 <div className="text-lg font-medium mb-2">Cambios:</div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
-                  {Object.entries(h.cambios).map(([field, change], i) => (
+                  {Object.entries(h.cambios || {}).map(([field, change], i) => (
                     <div
                       key={i}
                       className="bg-gray-50 p-3 rounded flex justify-between items-center"

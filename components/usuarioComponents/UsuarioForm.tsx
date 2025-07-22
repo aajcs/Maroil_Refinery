@@ -7,7 +7,7 @@ import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { Dropdown } from "primereact/dropdown";
 import { classNames } from "primereact/utils";
-import { profileSchema } from "@/libs/zods";
+import { usuarioSchema } from "@/libs/zods";
 import { createUser, updateUser } from "@/app/api/userService";
 import { Toast } from "primereact/toast";
 import { useRouter } from "next/navigation";
@@ -18,7 +18,7 @@ import { ProgressSpinner } from "primereact/progressspinner";
 import { InputNumber } from "primereact/inputnumber";
 import { LayoutContext } from "@/layout/context/layoutcontext";
 
-type FormData = z.infer<typeof profileSchema>;
+type FormData = z.infer<typeof usuarioSchema>;
 
 interface UsuarioFormProps {
   usuario: any;
@@ -48,7 +48,7 @@ const UsuarioForm = ({
     reset,
     control,
   } = useForm<FormData>({
-    resolver: zodResolver(profileSchema),
+    resolver: zodResolver(usuarioSchema),
   });
   useEffect(() => {
     if (usuario) {

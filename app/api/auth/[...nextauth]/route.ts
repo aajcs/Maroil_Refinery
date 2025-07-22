@@ -56,8 +56,37 @@ const handler = NextAuth({
     updateAge: 3600,
   },
   callbacks: {
-    async jwt({ token, user, account }) {
+    async jwt({ token, user, account, trigger, session }) {
       if (user) token.user = user;
+      // Actualización desde el cliente (update())
+      if (trigger === "update" && session?.updatedUsuario) {
+        token.user = {
+          ...(typeof token.user === "object" && token.user !== null
+            ? token.user
+            : {}),
+          usuario: {
+            ...(typeof token.user === "object" &&
+            token.user !== null &&
+            "usuario" in token.user &&
+            typeof (token.user as any).usuario === "object"
+              ? (token.user as any).usuario
+              : {}),
+            nombre: session.updatedUsuario.nombre,
+            telefono: session.updatedUsuario.telefono,
+          },
+        };
+        // token.user = {
+        //   ...token.user,
+        //   usuario: {
+        //     ...(token.user && (token.user as any).usuario
+        //       ? (token.user as any).usuario
+        //       : {}),
+        //     nombre: (token.user && (token.user as any).usuario?.nombre) || "", // Usa los nuevos valores
+        //     telefono:
+        //       (token.user && (token.user as any).usuario?.telefono) || "",
+        //   },
+        // };
+      }
       if (account?.provider === "google") {
         token.access_token = account.access_token; // Guarda el access_token
         try {

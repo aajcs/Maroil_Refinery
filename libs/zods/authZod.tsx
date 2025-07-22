@@ -15,7 +15,7 @@ export const registerSchema = object({
     .nonempty("La contraseña es obligatoria"),
 });
 
-export const profileSchema = object({
+export const usuarioSchema = object({
   nombre: string().min(1, "El nombre es obligatorio"),
   correo: string().email("Correo electrónico inválido"),
   telefono: string()
@@ -39,4 +39,18 @@ export const profileSchema = object({
   departamento: string()
     .array()
     .min(1, "Debes seleccionar al menos un departamento"),
+});
+export const profileSchema = object({
+  nombre: string().min(1, "El nombre es obligatorio"),
+
+  telefono: string()
+    .nonempty("El teléfono es obligatorio")
+    .min(8, "El teléfono debe tener al menos 8 dígitos")
+    .max(15, "El teléfono no puede exceder los 15 dígitos")
+    .regex(/^\+[1-9]\d+$/, {
+      message:
+        "Formato inválido. Use: +[código país][número]. Ej: +584248286102",
+    }),
+
+  idRefineria: string().array().optional(),
 });

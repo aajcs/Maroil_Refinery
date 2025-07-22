@@ -462,8 +462,23 @@ const ModeladoRefineriaTanque = ({
                 y="60"
                 fontSize="18"
                 textAnchor="end"
-                fill="#2d3436"
                 fontWeight="600"
+                style={{
+                  fill:
+                    apiData.tankLevel < 7.5
+                      ? "red"
+                      : apiData.tankLevel < 15
+                      ? "#FFC107"
+                      : apiData.tankLevel > 92.5
+                      ? "red"
+                      : apiData.tankLevel > 85
+                      ? "#FFC107"
+                      : "green",
+                  animation:
+                    apiData.tankLevel < 7.5 || apiData.tankLevel > 92.5
+                      ? "blink 1s steps(5, start) infinite"
+                      : "none",
+                }}
               >
                 {apiData.tankLevel.toFixed(2)}%
               </text>
@@ -698,6 +713,16 @@ const ModeladoRefineriaTanque = ({
       <style jsx>{`
         .fill-animate {
           transition: d 2s ease-in-out;
+        }
+      `}</style>
+      <style jsx>{`
+        .fill-animate {
+          transition: d 2s ease-in-out;
+        }
+        @keyframes blink {
+          to {
+            visibility: hidden;
+          }
         }
       `}</style>
     </>
