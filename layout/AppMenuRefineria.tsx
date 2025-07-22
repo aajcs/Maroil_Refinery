@@ -31,7 +31,7 @@ const AppMenuRefineria = () => {
           label: "Configuración",
           icon: "pi pi-fw pi-cog",
           items: [
-                 {
+            {
               label: "Producto",
               icon: "pi pi-fw pi-plus",
               to: "/refineria/configuracion/producto",
@@ -41,13 +41,13 @@ const AppMenuRefineria = () => {
               icon: "pi pi-fw pi-plus",
               to: "/refineria/configuracion/tipo-producto",
             },
-           
+
             {
               label: "Linea de Recepción",
               icon: "pi pi-fw pi-list",
               to: "/refineria/configuracion/linea-recepcion",
             },
-              {
+            {
               label: "Linea de Despacho",
               icon: "pi pi-fw pi-list",
               to: "/refineria/configuracion/linea-despacho",
@@ -62,7 +62,6 @@ const AppMenuRefineria = () => {
               icon: "pi pi-fw pi-building",
               to: "/refineria/configuracion/torre-destilacion",
             },
-               
           ],
         },
         {
@@ -74,55 +73,49 @@ const AppMenuRefineria = () => {
               icon: "pi pi-fw pi-id-card",
               to: "/refineria/finanzas/contacto",
             },
-           {
+            {
               label: "Contrato Compra",
               icon: "pi pi-fw pi-briefcase",
               to: "/refineria/finanzas/contrato-compra",
             },
 
-           {
+            {
               label: "Contrato Venta",
               icon: "pi pi-fw pi-briefcase",
               to: "/refineria/finanzas/contrato-venta",
             },
 
-            
-             {
+            {
               label: "Abono Egreso",
               icon: "pi pi-fw pi-receipt",
               to: "/refineria/finanzas/abono-egreso",
             },
 
-           
             {
               label: "Abono Ingreso",
               icon: "pi pi-fw pi-receipt",
               to: "/refineria/finanzas/abono-ingreso",
             },
 
-                {
+            {
               label: "Cuenta por Cobrar",
               icon: "pi pi-fw pi-money-bill",
               to: "/refineria/finanzas/cuenta-cobrar",
             },
-            
-           
-
 
             {
               label: "Cuenta por Pagar",
               icon: "pi pi-fw pi-money-bill",
               to: "/refineria/finanzas/cuenta-pagar",
             },
-            
+
             {
               label: "Facturas de Gastos",
               icon: "pi pi-fw pi-truck",
               to: "/refineria/finanzas/facturas",
             },
 
-                 
-              {
+            {
               label: "Reportes Financieros",
               icon: "pi pi-fw pi-money-bill",
               to: "/refineria/finanzas/reportes-financieros",
@@ -143,7 +136,7 @@ const AppMenuRefineria = () => {
               icon: "pi pi-fw pi-truck",
               to: "/refineria/despacho",
             },
-             {
+            {
               label: "Reportes Logistica",
               icon: "pi pi-fw pi-truck",
               to: "/refineria/reportes-logistica",
@@ -178,7 +171,42 @@ const AppMenuRefineria = () => {
             },
           ],
         },
-
+        {
+          label: "Reportes y graficos",
+          icon: "pi pi-fw pi-chart-bar",
+          items: [
+            {
+              label: "Gráficos de Tanques",
+              icon: "pi pi-fw pi-chart-line",
+              to: "/refineria/reportes-graficas/graficos-tanques",
+            },
+            {
+              label: "Gráficos de Recepciones",
+              icon: "pi pi-fw pi-chart-bar",
+              to: "/refineria/reportes-graficas/graficos-recepciones",
+            },
+            {
+              label: "Gráficos de Despachos",
+              icon: "pi pi-fw pi-chart-pie",
+              to: "/refineria/reportes-graficas/graficos-despachos",
+            },
+            {
+              label: "Gráficos de Contratos",
+              icon: "pi pi-fw pi-chart-line",
+              to: "/refineria/reportes-graficas/graficos-contratos",
+            },
+            {
+              label: "Gráficos de Productos",
+              icon: "pi pi-fw pi-chart-bar",
+              to: "/refineria/reportes-graficas/graficos-productos",
+            },
+            {
+              label: "Gráficos de Finanzas",
+              icon: "pi pi-fw pi-chart-pie",
+              to: "/refineria/reportes-graficas/graficos-finanzas",
+            },
+          ],
+        },
         // {
         //   label: "Refinación",
         //   icon: "pi pi-fw pi-plus",

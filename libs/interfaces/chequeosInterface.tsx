@@ -14,11 +14,8 @@ export interface ChequeoCalidad {
       _id?: string;
       nombre?: string;
       id: string;
-          numeroDespacho?: string;
+      numeroDespacho?: string;
       [key: string]: any;
-  
-
-
     };
   };
   _id: string;
@@ -61,18 +58,12 @@ export interface ChequeoCantidad {
       cantidadEnviada?: number;
       numeroDespacho?: string;
       [key: string]: any;
-
     };
   };
   _id: string;
   idRefineria: Refineria;
-  
 
-  idProducto: {
-    _id: string;
-    nombre: string;
-    id: string;
-  };
+  idProducto: Producto;
   fechaChequeo: string;
   cantidad: number;
   idOperador: {

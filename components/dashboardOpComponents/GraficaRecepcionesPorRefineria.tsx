@@ -233,6 +233,7 @@ const GraficaRecepcionesPorRefineria = ({
         title={`Comportamiento Anual de recepcion de materia prima ${getYear(
           new Date()
         )}`}
+        className="card p-0"
       >
         <div>
           <Chart

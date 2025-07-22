@@ -209,6 +209,7 @@ const GraficaDespachoPorRefineria = ({
         title={`Comportamiento Anual de despacho de materia prima ${getYear(
           new Date()
         )}`}
+        className="card p-0"
       >
         <div>
           <Chart
