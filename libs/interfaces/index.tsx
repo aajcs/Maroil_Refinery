@@ -12,3 +12,4 @@ export * from "./recepcionInterfaceBK";
 export * from "./despachoInterfaceBK";
 export * from "./chequeosInterfaceBK";
 export * from "./facturaInterface";
+export * from "./balanceInterface";

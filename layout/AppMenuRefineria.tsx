@@ -114,6 +114,11 @@ const AppMenuRefineria = () => {
               icon: "pi pi-fw pi-truck",
               to: "/refineria/finanzas/facturas",
             },
+            {
+              label: "Balance Ventana de compras vs ventas",
+              icon: "pi pi-fw pi-chart-line",
+              to: "/refineria/finanzas/balance-ventana",
+            },
 
             {
               label: "Reportes Financieros",

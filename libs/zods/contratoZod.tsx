@@ -63,10 +63,9 @@ export const contratoSchema = object({
     }),
   ]),
 
-  brent: number({ required_error: "El valor de brent es obligatorio" }).min(
-    0.000001,
-    "El valor de brent es obligatorio"
-  ),
+  brent: number({ required_error: "El valor de brent es obligatorio" })
+    .min(0.000001, "El valor de brent es obligatorio")
+    .optional(),
   montoTotal: number().optional(),
   montoTransporte: number().optional(),
 

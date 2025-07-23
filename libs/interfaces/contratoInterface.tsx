@@ -1,3 +1,4 @@
+import { Balance } from "./balanceInterface";
 import {
   HistorialCambio,
   Producto,
@@ -46,7 +47,7 @@ export interface Abono {
   tipoOperacion: string;
   referencia: string;
   numeroAbono: number;
-  tipoAbono: string; 
+  tipoAbono: string;
   eliminado: boolean;
   createdBy: {
     _id: string;
@@ -109,13 +110,11 @@ export interface Contrato {
   montoTotalContrato?: number; // Monto total del contrato, calculado como suma de todos los items
   montoPagado?: number; // Monto total pagado hasta la fecha
   montoPendiente?: number; // Monto pendiente de pago
-
+  idBalance?: string; // ID del balance asociado, si aplica
   // Referencias
   idRefineria: Refineria;
   idContacto: Contacto; // Referencia al contacto asociado
 
-    
-  
   idItems: ContratoItem[];
 
   // Nuevos campos
@@ -146,5 +145,4 @@ export interface Contacto {
   createdBy: UserReference;
   modificadoPor: UserReference;
   historial: HistorialCambio[];
-
 }
