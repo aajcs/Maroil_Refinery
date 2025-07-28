@@ -326,37 +326,15 @@ const CuentaList = ({ tipoCuenta }: CuentaListProps) => {
             }
           />
 
-          {/* Nuevas columnas de auditoría */}
           <Column
-            field="createdBy.nombre"
+            field="fechaCuenta"
             header={
               <span>
-                <i className="pi pi-user mr-2"></i>Creado Por
+                <i className="pi pi-calendar-plus mr-2"></i>Fecha de la Cuenta
               </span>
             }
             sortable
-            body={(rowData: Cuenta) => rowData.createdBy?.nombre || ""}
-          />
-          <Column
-            field="createdAt"
-            header={
-              <span>
-                <i className="pi pi-calendar-plus mr-2"></i>Fecha de Creación
-              </span>
-            }
-            sortable
-            body={(rowData: Cuenta) => formatDateFH(rowData.createdAt)}
-          />
-          <Column
-            field="updatedAt"
-            header={
-              <span>
-                <i className="pi pi-calendar-times mr-2"></i>Última
-                Actualización
-              </span>
-            }
-            sortable
-            body={(rowData: Cuenta) => formatDateFH(rowData.updatedAt)}
+            body={(rowData: Cuenta) => formatDateFH(rowData.fechaCuenta)}
           />
         </DataTable>
 

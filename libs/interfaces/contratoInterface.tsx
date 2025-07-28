@@ -83,6 +83,7 @@ export interface Cuenta {
   id: string;
   idRefineria: Refineria;
   numeroCuenta: number;
+  fechaCuenta: string; // Fecha de la cuenta
 }
 
 export interface CondicionesPago {
