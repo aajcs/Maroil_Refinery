@@ -218,3 +218,40 @@
 .p-inputnumber-input {
   min-width: 0;
 }
+
+/* Efecto hover para los KPI */
+.surface-card {
+  transition: all 0.3s ease;
+  min-width: 120px;
+}
+.surface-card:hover {
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+/* Indicador de estado */
+.pi-circle-fill {
+  font-size: 0.8rem;
+}
+
+/* En tu archivo de estilos */
+.alert-indicator {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.critical-alert {
+  border-left: 4px solid var(--red-500);
+  padding-left: 0.5rem;
+}

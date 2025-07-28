@@ -69,7 +69,13 @@ import {
   ChequeoCantidad,
   ChequeoCalidad,
   Partida,
+  Factura,
+  Balance,
+  Cuenta,
 } from "@/libs/interfaces";
+import { obtenerFacturasPorRefineria } from "@/app/api/facturaService";
+import { obtenerBalancesPorRefineria } from "@/app/api/balanceService";
+import { obtenerCuentaPorRefineria } from "@/app/api/cuentaService";
 
 // Tipo para el estado consolidado
 interface RefineryData {
@@ -87,6 +93,9 @@ interface RefineryData {
   chequeoCantidads: ChequeoCantidad[];
   chequeoCalidads: ChequeoCalidad[];
   partidas: Partida[];
+  facturas: Factura[]; // Agregado para facturas
+  balances: Balance[];
+  cuentas: Cuenta[];
 }
 
 export const useByRefineryData = (
@@ -108,6 +117,9 @@ export const useByRefineryData = (
     chequeoCantidads: [],
     chequeoCalidads: [],
     partidas: [],
+    facturas: [],
+    balances: [],
+    cuentas: [],
   });
 
   const [brent, setBrent] = useState<any | null>(null);
@@ -135,6 +147,9 @@ export const useByRefineryData = (
         obtenerChequeosCantidadPorRefineria(refineriaId),
         obtenerChequeosCalidadPorRefineria(refineriaId),
         obtenerPartidasPorRefineria(refineriaId),
+        obtenerFacturasPorRefineria(refineriaId),
+        obtenerBalancesPorRefineria(refineriaId),
+        obtenerCuentaPorRefineria(refineriaId),
       ]);
       const [
         tanquesDB,
@@ -151,6 +166,9 @@ export const useByRefineryData = (
         chequeoCantidadsDB,
         chequeoCalidadsDB,
         partidasDB,
+        facturaDB,
+        balanceDB,
+        cuentasDB,
       ] = results.map((r) => (r.status === "fulfilled" ? r.value : null));
 
       setData({
@@ -178,6 +196,9 @@ export const useByRefineryData = (
         chequeoCantidads: chequeoCantidadsDB?.chequeoCantidads || [],
         chequeoCalidads: chequeoCalidadsDB?.chequeoCalidads || [],
         partidas: partidasDB?.partidas || [],
+        facturas: facturaDB?.facturas || [], // Asignar facturas
+        balances: balanceDB?.balances || [], // Asignar balance
+        cuentas: cuentasDB?.cuentas || [], // Asignar cuentas
       });
 
       // Datos que no dependen de la refinería
@@ -226,6 +247,9 @@ export const useByRefineryData = (
         chequeoCantidads: [],
         chequeoCalidads: [],
         partidas: [],
+        facturas: [], // Reiniciar facturas al cambiar de refinería
+        balances: [],
+        cuentas: [],
       });
       setLoading(false);
     }

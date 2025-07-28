@@ -20,3 +20,7 @@ export const deleteBalance = async (id: string) => {
   const response = await apiClient.delete(`/balance/${id}`);
   return response.data;
 };
+export const obtenerBalancesPorRefineria = async (idRefineria: string) => {
+  const response = await apiClient.get(`/balance/refineria/${idRefineria}`);
+  return response.data;
+};

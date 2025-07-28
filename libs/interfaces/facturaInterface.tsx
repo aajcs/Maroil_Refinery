@@ -41,14 +41,14 @@ export interface LineaFactura {
 }
 
 export interface Partida {
-  idRefineria: Refineria;
+  idRefineria?: Refineria;
   descripcion: string;
   codigo: number;
   eliminado: boolean;
-  createdAt: string;
-  updatedAt: string;
-  createdBy: UserReference;
-  modificadoPor: UserReference;
-  historial: HistorialCambio[];
+  createdAt?: string;
+  updatedAt?: string;
+  createdBy?: UserReference;
+  modificadoPor?: UserReference;
+  historial?: HistorialCambio[];
   id: string;
 }

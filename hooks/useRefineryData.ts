@@ -13,6 +13,7 @@ import {
   CorteRefinacion,
   ChequeoCantidad,
   Partida,
+  Factura,
 } from "@/libs/interfaces";
 import { getTanques } from "@/app/api/tanqueService";
 import { getTorresDestilacion } from "@/app/api/torreDestilacionService";
@@ -33,6 +34,7 @@ import {
 } from "@/app/api/chequeoCalidadService";
 import { getChequeoCantidads } from "@/app/api/chequeoCantidadService";
 import { getPartidas } from "@/app/api/partidaService";
+import { getFacturas } from "@/app/api/facturaService";
 
 export const useRefineryData = (
   activeRefineriaId: string,
@@ -60,6 +62,7 @@ export const useRefineryData = (
     []
   );
   const [partidas, setPartidas] = useState<Partida[]>([]);
+  const [facturas, setFacturas] = useState<Factura[]>([]);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -79,6 +82,7 @@ export const useRefineryData = (
         corteRefinacionDB,
         chequeoCantidadDB,
         partidaDB,
+        facturaDB,
 
         // brent,
       ] = await Promise.all([
@@ -96,6 +100,7 @@ export const useRefineryData = (
         getCorteRefinacions(),
         getChequeoCantidads(),
         getPartidas(),
+        getFacturas(),
         // getBrent(),
       ]);
 
@@ -179,6 +184,11 @@ export const useRefineryData = (
           (partida: Partida) => partida.idRefineria?.id === activeRefineriaId
         ) || [];
 
+      const filteredFacturas =
+        facturaDB?.facturas?.filter(
+          (factura: Factura) => factura.idRefineria?.id === activeRefineriaId
+        ) || [];
+
       setTanques(filteredTanques);
       setTorresDestilacion(filteredTorresDestilacion);
       setLineaRecepcions(filteredLineaRecepcions);
@@ -192,6 +202,7 @@ export const useRefineryData = (
       setOperadors(filteredOperador);
       setChequeoCantidads(filteredChequeoCantidads);
       setPartidas(filteredPartidas);
+      setFacturas(filteredFacturas);
 
       setBrent(brent);
       setCorteRefinacions(filteredCorteRefinacion);
@@ -244,5 +255,6 @@ export const useRefineryData = (
     corteRefinacions,
     chequeoCantidads,
     partidas,
+    facturas,
   };
 };

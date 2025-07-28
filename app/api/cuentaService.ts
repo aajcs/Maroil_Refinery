@@ -20,3 +20,7 @@ export const deleteCuenta = async (id: string) => {
   const response = await apiClient.delete(`/cuenta/${id}`);
   return response.data;
 };
+export const obtenerCuentaPorRefineria = async (refineriaId: string) => {
+  const response = await apiClient.get(`/cuenta/refineria/${refineriaId}`);
+  return response.data;
+};
