@@ -344,26 +344,26 @@ const ReportesFinacierosList: React.FC<ReportesFinacierosListProps> = ({ tipoRep
           <h3 className="mb-4 text-lg font-semibold text-center text-primary">
             Selecciona un reporte
           </h3>
-          <div className="flex flex-wrap gap-3 justify-center">
-            {REPORTES.map((rep) => (
-              <Button
-                key={rep.key}
-                label={rep.label}
-                className="p-button-raised p-button-primary"
-                style={{ minWidth: 220, fontWeight: 600, fontSize: 16 }}
-                onClick={() => {
-                  setReporteSeleccionado(rep.key);
-                  setReporteData(null);
-                  setFechaInicio(null);
-                  setFechaFin(null);
-                  setProveedor(null);
-                  setCuentasPendientes([]);
-                  setShowPreview(false);
-                  setPendienteProveedor(null);
-                }}
-              />
-            ))}
-          </div>
+        <div className="flex flex-column gap-3">
+  {REPORTES.map((rep) => (
+    <Button
+      key={rep.key}
+      label={rep.label}
+      className="p-button-raised p-button-primary w-full"
+      style={{ fontWeight: 600, fontSize: 16 }}
+      onClick={() => {
+        setReporteSeleccionado(rep.key);
+        setReporteData(null);
+        setFechaInicio(null);
+        setFechaFin(null);
+        setProveedor(null);
+        setCuentasPendientes([]);
+        setShowPreview(false);
+        setPendienteProveedor(null);
+      }}
+    />
+  ))}
+</div>
         </div>
       )}
 
