@@ -464,13 +464,14 @@ const RecepcionForm = ({
       .filter(
         (r) =>
           r.idLinea?.id &&
-          r.estadoRecepcion === "EN_REFINERIA" 
+          (r.estadoRecepcion === "EN_REFINERIA" || r.estadoRecepcion === "EN_PROCESO")
       )
       .map((r) => r.idLinea.id);
 
-    // Solo muestra líneas que NO estén ocupadas
+    // Filtra las líneas que no están ocupadas ni en mantenimiento
     const filteredLineas = lineaRecepcions.filter(
-      (linea) => !lineasOcupadas.includes(linea.id)
+      (linea) =>
+        !lineasOcupadas.includes(linea.id) && String(linea.estado) !== "Mantenimiento"
     );
 
     const isDisabled = isFieldEnabledCarga("idLinea", estadoCarga);
