@@ -59,9 +59,15 @@ const TanqueList = () => {
   };
 
   const hideDeleteProductDialog = () => setDeleteProductDialog(false);
+
   const hideTanqueFormDialog = () => {
-    setTanque(null);
+    setTanque(null); // Limpia el estado del tanque seleccionado
     setTanqueFormDialog(false);
+  };
+
+  const openTanqueFormDialog = () => {
+    setTanque(null); // Limpia el estado del tanque seleccionado
+    setTanqueFormDialog(true);
   };
 
   const handleDeleteTanque = async () => {
@@ -71,14 +77,14 @@ const TanqueList = () => {
       toast.current?.show({
         severity: "success",
         summary: "Éxito",
-        detail: "Tanque Eliminada",
+        detail: "Tanque eliminado",
         life: 3000,
       });
     } else {
       toast.current?.show({
         severity: "error",
         summary: "Error",
-        detail: "No se pudo eliminar la torre de destilación",
+        detail: "No se pudo eliminar el tanque",
         life: 3000,
       });
     }
@@ -109,7 +115,7 @@ const TanqueList = () => {
         label="Agregar Nuevo"
         outlined
         className="w-full sm:w-auto flex-order-0 sm:flex-order-1"
-        onClick={() => setTanqueFormDialog(true)}
+        onClick={openTanqueFormDialog}
       />
     </div>
   );
@@ -119,21 +125,19 @@ const TanqueList = () => {
       rowData={rowData}
       onInfo={(data) => {
         setSelectedAuditTanque(data);
-
         setAuditDialogVisible(true);
       }}
       onEdit={(data) => {
         setTanque(rowData);
-        data;
         setTanqueFormDialog(true);
       }}
       onDelete={(data) => {
         setTanque(rowData);
-        data;
         setDeleteProductDialog(true);
       }}
     />
   );
+
   const productoBodyTemplate = (rowData: Tanque) => {
     const { idProducto } = rowData;
     return (
@@ -147,6 +151,7 @@ const TanqueList = () => {
       </div>
     );
   };
+
   const showToast = (
     severity: "success" | "error",
     summary: string,
@@ -162,6 +167,7 @@ const TanqueList = () => {
       </div>
     );
   }
+
   return (
     <>
       <Toast ref={toast} />
@@ -227,7 +233,6 @@ const TanqueList = () => {
               );
             }}
           />
-
           <Column
             field="idProducto.nombre"
             header="Producto"
@@ -243,18 +248,6 @@ const TanqueList = () => {
             }
           />
           <Column field="estado" header="Estado" sortable />
-          {/* <Column
-          field="createdAt"
-          header="Fecha de Creación"
-          body={(rowData: Tanque) => formatDateFH(rowData.createdAt)}
-          sortable
-        />
-        <Column
-          field="updatedAt"
-          header="Última Actualización"
-          body={(rowData: Tanque) => formatDateFH(rowData.updatedAt)}
-          sortable
-        /> */}
         </DataTable>
 
         <Dialog
@@ -292,6 +285,7 @@ const TanqueList = () => {
             )}
           </div>
         </Dialog>
+
         <AuditHistoryDialog
           visible={auditDialogVisible}
           onHide={() => setAuditDialogVisible(false)}
@@ -309,24 +303,24 @@ const TanqueList = () => {
           createdAt={selectedAuditTanque?.createdAt!}
           historial={selectedAuditTanque?.historial}
         />
+
         <Dialog
           visible={tanqueFormDialog}
           style={{ width: "850px" }}
           header={`${tanque ? "Editar" : "Agregar"} Tanque`}
           modal
           onHide={hideTanqueFormDialog}
-          content={() => (
-            <TanqueForm
-              tanque={tanque}
-              hideTanqueFormDialog={hideTanqueFormDialog}
-              tanques={tanques}
-              setTanques={setTanques}
-              setTanque={setTanque}
-              showToast={showToast}
-              toast={toast}
-            />
-          )}
-        ></Dialog>
+        >
+          <TanqueForm
+            tanque={tanque}
+            setTanque={setTanque}
+            hideTanqueFormDialog={hideTanqueFormDialog}
+            tanques={tanques}
+            setTanques={setTanques}
+            showToast={showToast}
+            toast={toast}
+          />
+        </Dialog>
       </motion.div>
     </>
   );
