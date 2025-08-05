@@ -54,7 +54,9 @@ const AbonoForm = ({
   showToast,
 }: AbonoFormProps) => {
   const { activeRefineria } = useRefineriaStore();
-  const { contratos, loading } = useByRefineryData(activeRefineria?.id || "");
+  const { contratos = [], loading } = useByRefineryData(
+    activeRefineria?.id || ""
+  );
   const calendarRef = useRef<Calendar>(null);
 
   const estado_operacionOptions = [

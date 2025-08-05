@@ -54,7 +54,9 @@ const TipoProductoForm = ({
   tipoProductoFormDialog,
 }: TipoProductoFormProps) => {
   const { activeRefineria } = useRefineriaStore();
-  const { productos, loading } = useByRefineryData(activeRefineria?.id || "");
+  const { productos = [], loading } = useByRefineryData(
+    activeRefineria?.id || ""
+  );
   const [selectedRendimientos, setSelectedRendimientos] = useState<
     Rendimiento[]
   >([]);

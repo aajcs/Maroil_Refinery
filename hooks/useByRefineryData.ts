@@ -53,7 +53,8 @@ import {
   obtenerPartidasPorRefineria,
 } from "@/app/api/partidaService";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect } from "react";
+import useSWR from "swr";
 import {
   Tanque,
   TorreDestilacion,
@@ -101,183 +102,122 @@ interface RefineryData {
   abonos: Abono[];
 }
 
+// SWR fetcher function
+const fetcher = async (refineriaId: string) => {
+  const results = await Promise.allSettled([
+    obtenerTanquesPorRefineria(refineriaId),
+    obtenerTorresPorRefineria(refineriaId),
+    obtenerLineasRecepcionPorRefineria(refineriaId),
+    obtenerLineasDespachoPorRefineria(refineriaId),
+    obtenerRecepcionesPorRefineria(refineriaId),
+    obtenerDespachosPorRefineria(refineriaId),
+    obtenerContratosPorRefineria(refineriaId),
+    obtenerProductosPorRefineria(refineriaId),
+    obtenerTiposProductoPorRefineria(refineriaId),
+    obtenerContactosPorRefineria(refineriaId),
+    obtenerCortesRefinacionPorRefineria(refineriaId),
+    obtenerChequeosCantidadPorRefineria(refineriaId),
+    obtenerChequeosCalidadPorRefineria(refineriaId),
+    obtenerPartidasPorRefineria(refineriaId),
+    obtenerFacturasPorRefineria(refineriaId),
+    obtenerBalancesPorRefineria(refineriaId),
+    obtenerCuentaPorRefineria(refineriaId),
+    obtenerAbonosporRefineria(refineriaId),
+  ]);
+  const [
+    tanquesDB,
+    torresDestilacionsDB,
+    lineaRecepcionsDB,
+    lineaDespachosDB,
+    recepcionsDB,
+    despachosDB,
+    contratosDB,
+    productosDB,
+    tipoProductosDB,
+    contactosDB,
+    corteRefinacionsDB,
+    chequeoCantidadsDB,
+    chequeoCalidadsDB,
+    partidasDB,
+    facturaDB,
+    balanceDB,
+    cuentasDB,
+    abonosDB,
+  ] = results.map((r) => (r.status === "fulfilled" ? r.value : null));
+
+  return {
+    tanques: tanquesDB?.tanques || [],
+    torresDestilacions: (torresDestilacionsDB?.torres || []).map(
+      (torre: TorreDestilacion) => ({
+        ...torre,
+        material:
+          torre.material?.sort(
+            (a, b) =>
+              parseInt(a.idProducto?.posicion?.toString() || "0", 10) -
+              parseInt(b.idProducto?.posicion?.toString() || "0", 10)
+          ) || [],
+      })
+    ),
+    lineaRecepcions: lineaRecepcionsDB?.lineaCargas || [],
+    lineaDespachos: lineaDespachosDB?.lineaDespachos || [],
+    recepcions: recepcionsDB?.recepcions || [],
+    despachos: despachosDB?.despachos || [],
+    contratos: contratosDB?.contratos || [],
+    productos: productosDB?.productos || [],
+    tipoProductos: tipoProductosDB?.tipoProductos || [],
+    contactos: contactosDB?.contactos || [],
+    corteRefinacions: corteRefinacionsDB?.corteRefinacions || [],
+    chequeoCantidads: chequeoCantidadsDB?.chequeoCantidads || [],
+    chequeoCalidads: chequeoCalidadsDB?.chequeoCalidads || [],
+    partidas: partidasDB?.partidas || [],
+    facturas: facturaDB?.facturas || [],
+    balances: balanceDB?.balances || [],
+    cuentas: cuentasDB?.cuentas || [],
+    abonos: abonosDB?.abonos || [],
+  };
+};
+
 export const useByRefineryData = (
   activeRefineriaId: string,
   recepcionModificado?: Recepcion
 ) => {
-  const [data, setData] = useState<RefineryData>({
-    tanques: [],
-    torresDestilacions: [],
-    lineaRecepcions: [],
-    lineaDespachos: [],
-    recepcions: [],
-    despachos: [],
-    contratos: [],
-    productos: [],
-    tipoProductos: [],
-    contactos: [],
-    corteRefinacions: [],
-    chequeoCantidads: [],
-    chequeoCalidads: [],
-    partidas: [],
-    facturas: [],
-    balances: [],
-    cuentas: [],
-    abonos: [],
-  });
+  const { data, error, isLoading, mutate } = useSWR<RefineryData>(
+    activeRefineriaId ? ["refinery-data", activeRefineriaId] : null,
+    () => fetcher(activeRefineriaId),
+    { revalidateOnFocus: false }
+  );
 
-  const [brent, setBrent] = useState<any | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  // Función para obtener datos con filtro de refinería
-  const fetchRefineryData = useCallback(async (refineriaId: string) => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const results = await Promise.allSettled([
-        obtenerTanquesPorRefineria(refineriaId),
-        obtenerTorresPorRefineria(refineriaId),
-        obtenerLineasRecepcionPorRefineria(refineriaId),
-        obtenerLineasDespachoPorRefineria(refineriaId),
-        obtenerRecepcionesPorRefineria(refineriaId),
-        obtenerDespachosPorRefineria(refineriaId),
-        obtenerContratosPorRefineria(refineriaId),
-        obtenerProductosPorRefineria(refineriaId),
-        obtenerTiposProductoPorRefineria(refineriaId),
-        obtenerContactosPorRefineria(refineriaId),
-        obtenerCortesRefinacionPorRefineria(refineriaId),
-        obtenerChequeosCantidadPorRefineria(refineriaId),
-        obtenerChequeosCalidadPorRefineria(refineriaId),
-        obtenerPartidasPorRefineria(refineriaId),
-        obtenerFacturasPorRefineria(refineriaId),
-        obtenerBalancesPorRefineria(refineriaId),
-        obtenerCuentaPorRefineria(refineriaId),
-        obtenerAbonosporRefineria(refineriaId),
-      ]);
-      const [
-        tanquesDB,
-        torresDestilacionsDB,
-        lineaRecepcionsDB,
-        lineaDespachosDB,
-        recepcionsDB,
-        despachosDB,
-        contratosDB,
-        productosDB,
-        tipoProductosDB,
-        contactosDB,
-        corteRefinacionsDB,
-        chequeoCantidadsDB,
-        chequeoCalidadsDB,
-        partidasDB,
-        facturaDB,
-        balanceDB,
-        cuentasDB,
-        abonosDB,
-      ] = results.map((r) => (r.status === "fulfilled" ? r.value : null));
-
-      setData({
-        tanques: tanquesDB?.tanques || [],
-        torresDestilacions: (torresDestilacionsDB?.torres || []).map(
-          (torre: TorreDestilacion) => ({
-            ...torre,
-            material:
-              torre.material?.sort(
-                (a, b) =>
-                  parseInt(a.idProducto?.posicion?.toString() || "0", 10) -
-                  parseInt(b.idProducto?.posicion?.toString() || "0", 10)
-              ) || [],
-          })
-        ),
-        lineaRecepcions: lineaRecepcionsDB?.lineaCargas || [],
-        lineaDespachos: lineaDespachosDB?.lineaDespachos || [],
-        recepcions: recepcionsDB?.recepcions || [],
-        despachos: despachosDB?.despachos || [],
-        contratos: contratosDB?.contratos || [],
-        productos: productosDB?.productos || [],
-        tipoProductos: tipoProductosDB?.tipoProductos || [],
-        contactos: contactosDB?.contactos || [],
-        corteRefinacions: corteRefinacionsDB?.corteRefinacions || [],
-        chequeoCantidads: chequeoCantidadsDB?.chequeoCantidads || [],
-        chequeoCalidads: chequeoCalidadsDB?.chequeoCalidads || [],
-        partidas: partidasDB?.partidas || [],
-        facturas: facturaDB?.facturas || [], // Asignar facturas
-        balances: balanceDB?.balances || [], // Asignar balance
-        cuentas: cuentasDB?.cuentas || [], // Asignar cuentas
-        abonos: abonosDB?.abonos || [], // Asignar abonos
-      });
-
-      // Datos que no dependen de la refinería
-      // const brentData = await getBrent();
-      // setBrent(brentData);
-    } catch (err) {
-      console.error("Error al obtener los datos:", err);
-      setError("Error al cargar los datos de la refinería");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  // Actualizar recepciones de forma eficiente
-  const updateRecepciones = useCallback((newRecepcion: Recepcion) => {
-    setData((prev) => {
-      const index = prev.recepcions.findIndex((r) => r.id === newRecepcion.id);
-
+  // Actualizar recepciones localmente
+  const updateRecepciones = useCallback(
+    (newRecepcion: Recepcion) => {
+      if (!data) return;
+      const index = data.recepcions.findIndex(
+        (r: Recepcion) => r.id === newRecepcion.id
+      );
+      let updatedRecepcions;
       if (index !== -1) {
-        const updatedRecepcions = [...prev.recepcions];
+        updatedRecepcions = [...data.recepcions];
         updatedRecepcions[index] = newRecepcion;
-        return { ...prev, recepcions: updatedRecepcions };
+      } else {
+        updatedRecepcions = [...data.recepcions, newRecepcion];
       }
+      mutate({ ...data, recepcions: updatedRecepcions }, false);
+    },
+    [data, mutate]
+  );
 
-      return { ...prev, recepcions: [...prev.recepcions, newRecepcion] };
-    });
-  }, []);
-
-  // Efecto principal para cargar datos
+  // Efecto para actualizar recepciones si cambia recepcionModificado
   useEffect(() => {
-    if (activeRefineriaId) {
-      fetchRefineryData(activeRefineriaId);
-    } else {
-      setData({
-        tanques: [],
-        torresDestilacions: [],
-        lineaRecepcions: [],
-        lineaDespachos: [],
-        recepcions: [],
-        despachos: [],
-        contratos: [],
-        productos: [],
-        tipoProductos: [],
-        contactos: [],
-        corteRefinacions: [],
-        chequeoCantidads: [],
-        chequeoCalidads: [],
-        partidas: [],
-        facturas: [], // Reiniciar facturas al cambiar de refinería
-        balances: [],
-        cuentas: [],
-        abonos: [],
-      });
-      setLoading(false);
-    }
-  }, [activeRefineriaId, fetchRefineryData]);
-
-  // Efecto para actualizar recepciones
-  useEffect(() => {
-    if (recepcionModificado) {
+    if (recepcionModificado && data) {
       updateRecepciones(recepcionModificado);
     }
-  }, [recepcionModificado, updateRecepciones]);
-
-  // Memorizar datos para evitar recálculos innecesarios
-  const memoizedData = useMemo(() => data, [data]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [recepcionModificado]);
 
   return {
-    ...memoizedData,
-    brent,
-    loading,
+    ...(data || {}),
+    loading: isLoading,
     error,
-    updateRecepciones, // Expón la función para actualizaciones externas
+    updateRecepciones,
   };
 };

@@ -19,9 +19,13 @@ import { AnalisisContratos } from "./AnalisisContratos";
 const DashboardFinanzas = () => {
   const { activeRefineria } = useRefineriaStore();
 
-  const { facturas, balances, cuentas, abonos, loading } = useByRefineryData(
-    activeRefineria?.id || ""
-  );
+  const {
+    facturas = [],
+    balances = [],
+    cuentas = [],
+    abonos = [],
+    loading,
+  } = useByRefineryData(activeRefineria?.id || "");
   console.log("abonos", abonos);
   const [productsThisWeek, setProductsThisWeek] = useState<Demo.Product[]>([]);
   const [productsLastWeek, setProductsLastWeek] = useState<Demo.Product[]>([]);

@@ -60,9 +60,12 @@ const DespachoForm = ({
 }: DespachoFormProps) => {
   const { activeRefineria } = useRefineriaStore();
 
-  const { tanques, contratos, lineaDespachos, loading } = useByRefineryData(
-    activeRefineria?.id || ""
-  );
+  const {
+    tanques = [],
+    contratos = [],
+    lineaDespachos = [],
+    loading,
+  } = useByRefineryData(activeRefineria?.id || "");
   const calendarRef = useRef<Calendar>(null);
 
   const [submitting, setSubmitting] = useState(false);

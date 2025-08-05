@@ -47,8 +47,13 @@ const ChequeoCalidadForm = ({
 }: ChequeoCalidadFormProps) => {
   const { activeRefineria } = useRefineriaStore();
 
-  const { productos, tanques, recepcions, despachos, loading } =
-    useByRefineryData(activeRefineria?.id || "");
+  const {
+    productos = [],
+    tanques = [],
+    recepcions = [],
+    despachos = [],
+    loading,
+  } = useByRefineryData(activeRefineria?.id || "");
 
   const [submitting, setSubmitting] = useState(false);
   const [dynamicOptions, setDynamicOptions] = useState<

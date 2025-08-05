@@ -114,7 +114,7 @@ export default function SimulatorForm({
   // Hooks y estados
   const { loading, brent, oilDerivate } = useRefineryPrecios();
   const [refineria, setRefineria] = useState<any | null>(null);
-  const { tipoProductos, loading: loadingData } = useByRefineryData(
+  const { tipoProductos = [], loading: loadingData } = useByRefineryData(
     refineria?.id || ""
   );
   const [refinerias, setRefinerias] = useState<any[]>([]);
