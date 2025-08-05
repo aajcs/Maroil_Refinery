@@ -6,8 +6,7 @@ import { Column } from "primereact/column";
 import { Skeleton } from "primereact/skeleton";
 import { Tag } from "primereact/tag";
 import { classNames } from "primereact/utils";
-import { useRefineriaStore } from "@/store/refineriaStore";
-import { useByRefineryData } from "@/hooks/useByRefineryData";
+
 import { Factura, Partida } from "@/libs/interfaces";
 
 // Colores para las diferentes partidas

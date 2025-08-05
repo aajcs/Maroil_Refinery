@@ -61,9 +61,12 @@ function ContratoForm({
   contratoFormDialog,
 }: ContratoFormProps) {
   const { activeRefineria } = useRefineriaStore();
-  const { productos, tipoProductos, contactos, loading } = useByRefineryData(
-    activeRefineria?.id || ""
-  );
+  const {
+    productos = [],
+    tipoProductos = [],
+    contactos = [],
+    loading,
+  } = useByRefineryData(activeRefineria?.id || "");
   const toast = useRef<Toast | null>(null);
   const calendarRef = useRef<Calendar>(null);
   const [items, setItems] = useState(contrato?.idItems || []);

@@ -52,8 +52,13 @@ const ChequeoCalidadForm = ({
   setOnDuplicate,
 }: ChequeoCalidadFormProps) => {
   const { activeRefineria } = useRefineriaStore();
-  const { productos, tanques, recepcions, despachos, loading } =
-    useByRefineryData(activeRefineria?.id || "");
+  const {
+    productos = [],
+    tanques = [],
+    recepcions = [],
+    despachos = [],
+    loading,
+  } = useByRefineryData(activeRefineria?.id || "");
   const calendarRef = useRef<Calendar>(null);
   const [submitting, setSubmitting] = useState(false);
   const [dynamicOptions, setDynamicOptions] = useState<
@@ -134,7 +139,11 @@ const ChequeoCalidadForm = ({
     } else if (tipo === "Recepcion") {
       setDynamicOptions(
         recepcions
-          .filter((r) => r.estadoCarga !== "FINALIZADO" && r.estadoRecepcion === "EN_REFINERIA")
+          .filter(
+            (r) =>
+              r.estadoCarga !== "FINALIZADO" &&
+              r.estadoRecepcion === "EN_REFINERIA"
+          )
           .map((recepcion) => ({
             label: `Recepción - ${recepcion.idGuia}`,
             value: {
@@ -148,7 +157,11 @@ const ChequeoCalidadForm = ({
     } else if (tipo === "Despacho") {
       setDynamicOptions(
         despachos
-          .filter((d) => d.estadoCarga !== "FINALIZADO" && d.estadoDespacho === "EN_REFINERIA")
+          .filter(
+            (d) =>
+              d.estadoCarga !== "FINALIZADO" &&
+              d.estadoDespacho === "EN_REFINERIA"
+          )
           .map((despacho) => ({
             label: `Despacho - ${despacho.idGuia}`,
             value: {

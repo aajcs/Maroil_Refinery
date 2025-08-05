@@ -48,7 +48,7 @@ const CorteRefinacionForm = ({
   showToast,
 }: CorteRefinacionFormProps) => {
   const { activeRefineria } = useRefineriaStore();
-  const { productos, loading, tanques, torresDestilacions } = useByRefineryData(
+  const { productos = [], loading, tanques = [], torresDestilacions = [] } = useByRefineryData(
     activeRefineria?.id || ""
   );
   const calendarRef = useRef<Calendar>(null);

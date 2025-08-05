@@ -50,7 +50,7 @@ const TanqueForm = ({
   showToast,
 }: TanqueFormProps) => {
   const { activeRefineria } = useRefineriaStore();
-  const { productos, loading } = useByRefineryData(
+  const { productos = [], loading } = useByRefineryData(
     activeRefineria?.id as string
   );
   const toast = useRef<Toast | null>(null);

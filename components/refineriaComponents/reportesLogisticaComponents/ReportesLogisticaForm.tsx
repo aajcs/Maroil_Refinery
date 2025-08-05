@@ -64,7 +64,7 @@ const ReportesLogisticaForm = ({
   showToast,
 }: ReportesLogisticaFormProps) => {
   const { activeRefineria } = useRefineriaStore();
-  const { contratos, loading } = useByRefineryData(activeRefineria?.id || "");
+  const { contratos = [], loading } = useByRefineryData(activeRefineria?.id || "");
   const calendarRef = useRef<Calendar>(null);
 
   const [submitting, setSubmitting] = useState(false);
