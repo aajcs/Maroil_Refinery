@@ -21,7 +21,6 @@ import ModeladoRefineriaContratosVentaList from "./ModeladoRefineriaContratosVen
 import { TabPanel, TabView } from "primereact/tabview";
 import { InputSwitch } from "primereact/inputswitch";
 import { motion } from "framer-motion";
-import { useRefineryData } from "@/hooks/useRefineryData";
 import { useByRefineryData } from "@/hooks/useByRefineryData";
 
 const AnimatedTitle = ({ text }: { text: string }) => {
