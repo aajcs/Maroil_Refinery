@@ -19,10 +19,10 @@ import { AnalisisContratos } from "./AnalisisContratos";
 const DashboardFinanzas = () => {
   const { activeRefineria } = useRefineriaStore();
 
-  const { facturas, balances, cuentas, loading } = useByRefineryData(
+  const { facturas, balances, cuentas, abonos, loading } = useByRefineryData(
     activeRefineria?.id || ""
   );
-  console.log("cuentas", cuentas);
+  console.log("abonos", abonos);
   const [productsThisWeek, setProductsThisWeek] = useState<Demo.Product[]>([]);
   const [productsLastWeek, setProductsLastWeek] = useState<Demo.Product[]>([]);
   const [activeTab, setActiveTab] = useState<number>(0);
@@ -71,21 +71,21 @@ const DashboardFinanzas = () => {
       </div>
 
       <div className="col-12 lg:col-6">
-        <AbonosOverview activeTab={activeTab} setActiveTab={setActiveTab} />
+        <AbonosOverview abonos={abonos} loading={loading} />
       </div>
 
-      <div className="col-12 lg:col-6">
+      {/* <div className="col-12 lg:col-6">
         <RecentSales
           productsThisWeek={productsThisWeek}
           productsLastWeek={productsLastWeek}
         />
-      </div>
+      </div> */}
 
-      <div className="col-12 md:col-6 xl:col-6">
+      {/* <div className="col-12 md:col-6 xl:col-6">
         <LiveSupport />
-      </div>
+      </div> */}
 
-      <div className="col-12 md:col-6 xl:col-3">
+      {/* <div className="col-12 md:col-6 xl:col-3">
         <RevenueStream />
       </div>
 
@@ -95,7 +95,7 @@ const DashboardFinanzas = () => {
 
       <div className="col-12 md:col-6 xl:col-3">
         <BestSellers />
-      </div>
+      </div> */}
 
       <div className="col-12 md:col-6 lg:col-6">
         <GastosResumen facturas={facturas} loading={loading} />
@@ -104,11 +104,11 @@ const DashboardFinanzas = () => {
       <div className="col-12 ">
         <AnalisisContratos balances={balances} loading={loading} />
       </div>
-
+      {/* 
       <div className="col-12 md:col-6 lg:col-6">
         <CustomerStories />
         <PotentialInfluencers />
-      </div>
+      </div> */}
     </div>
   );
 };

@@ -4,226 +4,58 @@ import { Avatar } from "primereact/avatar";
 import { Chart } from "primereact/chart";
 import { Tag } from "primereact/tag";
 import { Skeleton } from "primereact/skeleton";
+import { Abono } from "@/libs/interfaces";
 
 // Interfaz para los datos del backend
-interface AbonoBackend {
-  id: string;
-  idRefineria: {
-    id: string;
-    nombre: string;
-    img: string;
-  };
-  idContrato: {
-    id: string;
-    numeroContrato: string;
-    descripcion: string;
-    idContacto: {
-      id: string;
-      nombre: string;
-      representanteLegal: string;
-      telefono: string;
-      correo: string;
-      direccion: string;
-    };
-    montoTotal: number;
-    montoPagado: number;
-    montoPendiente: number;
-  };
-  monto: number;
-  fecha: string;
-  tipoOperacion: string;
-  tipoAbono: "Cuentas por Cobrar" | "Cuentas por Pagar";
-  referencia: string;
-  numeroAbono: number;
-  createdAt: string;
-  createdBy: {
-    id: string;
-    nombre: string;
-    correo: string;
-  };
+// interface AbonoBackend {
+//   id: string;
+//   idRefineria: {
+//     id: string;
+//     nombre: string;
+//     img: string;
+//   };
+//   idContrato: {
+//     id: string;
+//     numeroContrato: string;
+//     descripcion: string;
+//     idContacto: {
+//       id: string;
+//       nombre: string;
+//       representanteLegal: string;
+//       telefono: string;
+//       correo: string;
+//       direccion: string;
+//     };
+//     montoTotal: number;
+//     montoPagado: number;
+//     montoPendiente: number;
+//   };
+//   monto: number;
+//   fecha: string;
+//   tipoOperacion: string;
+//   tipoAbono: "Cuentas por Cobrar" | "Cuentas por Pagar";
+//   referencia: string;
+//   numeroAbono: number;
+//   createdAt: string;
+//   createdBy: {
+//     id: string;
+//     nombre: string;
+//     correo: string;
+//   };
+// }
+
+// interface AbonosResponse {
+//   total: number;
+//   abonos: AbonoBackend[];
+// }
+interface AbonosOverviewProps {
+  abonos: Abono[];
+  loading: boolean;
 }
 
-interface AbonosResponse {
-  total: number;
-  abonos: AbonoBackend[];
-}
-
-const AbonosOverview = () => {
+const AbonosOverview = ({ abonos, loading }: AbonosOverviewProps) => {
   const [activeTab, setActiveTab] = useState<number>(0);
-  const [selectedAbono, setSelectedAbono] = useState<AbonoBackend | null>(null);
-  const [abonosData, setAbonosData] = useState<AbonosResponse | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  // Simulamos la carga de datos desde el backend
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // En una aplicación real, aquí harías la llamada a tu API
-        // const response = await fetch('/api/abonos');
-        // const data = await response.json();
-
-        // Usamos datos de ejemplo que coinciden con tu estructura
-        const mockData: AbonosResponse = {
-          total: 3,
-          abonos: [
-            {
-              id: "687a942f1c0d1835268456aa",
-              idRefineria: {
-                id: "685abbb13af3a643ca2905eb",
-                nombre: "Refineria Prueba",
-                img: "https://r-charts.com/es/miscelanea/procesamiento-imagenes-magick_files/figure-html/importar-imagen-r.png",
-              },
-              idContrato: {
-                id: "687950f6d4c436b138607696",
-                numeroContrato: "VENT-02",
-                descripcion: "VENTA DE DERIVADOS",
-                idContacto: {
-                  id: "686fc59c4549e62975c293ae",
-                  nombre: "PETROLEUM",
-                  representanteLegal: "ABOGADO ",
-                  telefono: "4249638524",
-                  correo: "correo@correo.com",
-                  direccion: "Residencia toscana, lecheria, anzoategui",
-                },
-                montoTotal: 23400,
-                montoPagado: 500,
-                montoPendiente: 22900,
-              },
-              monto: 500,
-              fecha: "2025-07-18T18:36:14.513Z",
-              tipoOperacion: "Efectivo",
-              tipoAbono: "Cuentas por Cobrar",
-              referencia: "LE COMPRE DOLARES A MARIA, QUE TE LOS ENTREGUE ELLA",
-              numeroAbono: 1033,
-              createdAt: "2025-07-18T18:36:31.534Z",
-              createdBy: {
-                id: "685dac36aba28eecce49dd55",
-                nombre: "Ivan Bracamonte",
-                correo: "ivanbrac.ib@gmail.com",
-              },
-            },
-            {
-              id: "687a942f1c0d1835268456ab",
-              idRefineria: {
-                id: "685abbb13af3a643ca2905eb",
-                nombre: "Refineria Prueba",
-                img: "https://r-charts.com/es/miscelanea/procesamiento-imagenes-magick_files/figure-html/importar-imagen-r.png",
-              },
-              idContrato: {
-                id: "687950f6d4c436b138607697",
-                numeroContrato: "COMP-01",
-                descripcion: "COMPRA DE CRUDO",
-                idContacto: {
-                  id: "686fc59c4549e62975c293af",
-                  nombre: "CRUDO S.A.",
-                  representanteLegal: "LIC. JUAN",
-                  telefono: "4141234567",
-                  correo: "crudo@empresa.com",
-                  direccion: "Av. Principal, Caracas",
-                },
-                montoTotal: 50000,
-                montoPagado: 20000,
-                montoPendiente: 30000,
-              },
-              monto: 20000,
-              fecha: "2025-07-19T10:15:00.000Z",
-              tipoOperacion: "Transferencia",
-              tipoAbono: "Cuentas por Pagar",
-              referencia: "Pago parcial de factura COMP-01",
-              numeroAbono: 1034,
-              createdAt: "2025-07-19T10:15:31.534Z",
-              createdBy: {
-                id: "685dac36aba28eecce49dd56",
-                nombre: "Maria Castillo",
-                correo: "maria.castillo@gmail.com",
-              },
-            },
-            {
-              id: "687a942f1c0d1835268456ac",
-              idRefineria: {
-                id: "685abbb13af3a643ca2905eb",
-                nombre: "Refineria Prueba",
-                img: "https://r-charts.com/es/miscelanea/procesamiento-imagenes-magick_files/figure-html/importar-imagen-r.png",
-              },
-              idContrato: {
-                id: "687950f6d4c436b138607698",
-                numeroContrato: "VENT-03",
-                descripcion: "VENTA DE GASOLINA",
-                idContacto: {
-                  id: "686fc59c4549e62975c293b0",
-                  nombre: "GASOLINERA EL SOL",
-                  representanteLegal: "SR. LUIS",
-                  telefono: "4129876543",
-                  correo: "ventas@gasolinerasol.com",
-                  direccion: "Calle 10, Maracaibo",
-                },
-                montoTotal: 15000,
-                montoPagado: 15000,
-                montoPendiente: 0,
-              },
-              monto: 15000,
-              fecha: "2025-07-20T14:45:00.000Z",
-              tipoOperacion: "Cheque",
-              tipoAbono: "Cuentas por Cobrar",
-              referencia: "Pago total de venta VENT-03",
-              numeroAbono: 1035,
-              createdAt: "2025-07-20T14:45:31.534Z",
-              createdBy: {
-                id: "685dac36aba28eecce49dd57",
-                nombre: "Carlos Perez",
-                correo: "carlos.perez@gmail.com",
-              },
-            },
-            {
-              id: "687a942f1c0d1835268456ad",
-              idRefineria: {
-                id: "685abbb13af3a643ca2905eb",
-                nombre: "Refineria Prueba",
-                img: "https://r-charts.com/es/miscelanea/procesamiento-imagenes-magick_files/figure-html/importar-imagen-r.png",
-              },
-              idContrato: {
-                id: "687950f6d4c436b138607699",
-                numeroContrato: "COMP-02",
-                descripcion: "COMPRA DE ADITIVOS",
-                idContacto: {
-                  id: "686fc59c4549e62975c293b1",
-                  nombre: "ADITIVOS VENEZUELA",
-                  representanteLegal: "ING. ANA",
-                  telefono: "4165554321",
-                  correo: "aditivos@venezuela.com",
-                  direccion: "Zona Industrial, Valencia",
-                },
-                montoTotal: 8000,
-                montoPagado: 4000,
-                montoPendiente: 4000,
-              },
-              monto: 4000,
-              fecha: "2025-07-21T09:30:00.000Z",
-              tipoOperacion: "Efectivo",
-              tipoAbono: "Cuentas por Pagar",
-              referencia: "Pago inicial de compra COMP-02",
-              numeroAbono: 1036,
-              createdAt: "2025-07-21T09:30:31.534Z",
-              createdBy: {
-                id: "685dac36aba28eecce49dd58",
-                nombre: "Luis Martinez",
-                correo: "luis.martinez@gmail.com",
-              },
-            },
-          ],
-        };
-
-        setAbonosData(mockData);
-        setSelectedAbono(mockData.abonos[0]);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error cargando abonos:", error);
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
+  const [selectedAbono, setSelectedAbono] = useState<Abono | null>(null);
 
   // Datos para el gráfico (en una app real vendrían del backend)
   const abonosMes = {
@@ -377,11 +209,11 @@ const AbonosOverview = () => {
           <div className="flex justify-content-between align-items-center mb-3">
             <h6>Últimos Movimientos</h6>
             <span className="text-sm text-color-secondary">
-              {abonosData?.total || 0} registros
+              {abonos.length || 0} registros
             </span>
           </div>
           <div className="border-round overflow-hidden border-1 surface-border">
-            {abonosData?.abonos.map((abono) => (
+            {abonos.map((abono) => (
               <div
                 key={abono.id}
                 className={classNames(
@@ -403,7 +235,12 @@ const AbonosOverview = () => {
                   shape="circle"
                   className={classNames(
                     "mr-3",
-                    getTipoAbonoClass(abono.tipoAbono)
+                    getTipoAbonoClass(
+                      abono.tipoAbono === "Cuentas por Cobrar" ||
+                        abono.tipoAbono === "Cuentas por Pagar"
+                        ? abono.tipoAbono
+                        : "Cuentas por Cobrar"
+                    )
                   )}
                 />
                 <div className="flex-1">
@@ -428,7 +265,12 @@ const AbonosOverview = () => {
                   </div>
                   <div className="mt-2">
                     <span className="text-sm">{abono.referencia}</span>
-                    {getTipoAbonoTag(abono.tipoAbono)}
+                    {getTipoAbonoTag(
+                      abono.tipoAbono === "Cuentas por Cobrar" ||
+                        abono.tipoAbono === "Cuentas por Pagar"
+                        ? abono.tipoAbono
+                        : "Cuentas por Cobrar"
+                    )}
                   </div>
                 </div>
               </div>

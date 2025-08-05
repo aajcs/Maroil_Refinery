@@ -88,7 +88,7 @@ export const AnalisisContratos: React.FC<AnalisisContratosProps> = ({
       contrato.idItems.forEach((item) => {
         const nombreProducto = item.producto.nombre;
         resumenVentas[nombreProducto] =
-          (resumenVentas[nombreProducto] || 0) + item.cantidad;
+          (resumenVentas[nombreProducto] || 0) + (item.cantidad ?? 0);
       });
     });
 

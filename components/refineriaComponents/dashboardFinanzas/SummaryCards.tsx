@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Avatar } from "primereact/avatar";
 import { Badge } from "primereact/badge";
 import { Tooltip } from "primereact/tooltip";
 import { Chart } from "primereact/chart";
 import { classNames } from "primereact/utils";
 import { Cuenta } from "@/libs/interfaces";
+import NumberFlow from "@number-flow/react";
 
 interface FinancialCard {
   icon: string;
@@ -26,66 +27,180 @@ interface SummaryCardsProps {
 }
 
 const SummaryCards: React.FC<SummaryCardsProps> = ({ cuentas }) => {
+  // Función para obtener el rango de fechas hasta el mes anterior
+  const getDateRanges = () => {
+    const now = new Date();
+
+    // Mes actual (hasta hoy)
+    const currentMonthEnd = now;
+
+    // Mes anterior (hasta el último día del mes pasado)
+    const previousMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0);
+
+    return { currentMonthEnd, previousMonthEnd };
+  };
+
+  // Obtener rangos de fechas
+  const { currentMonthEnd, previousMonthEnd } = getDateRanges();
+
+  // Calcular totales acumulados hasta cada fecha
+  const {
+    totalPorPagarCurrent,
+    totalPorPagarPrevious,
+    totalPorCobrarCurrent,
+    totalPorCobrarPrevious,
+    totalComprasCurrent,
+    totalComprasPrevious,
+    totalVentasCurrent,
+    totalVentasPrevious,
+  } = useMemo(() => {
+    // Inicializar variables
+    let tpc = 0,
+      tpp = 0,
+      tcc = 0,
+      tcp = 0,
+      coc = 0,
+      cop = 0,
+      voc = 0,
+      vop = 0;
+
+    cuentas.forEach((cuenta) => {
+      const cuentaDate = new Date(cuenta.fechaCuenta);
+
+      // Acumulado hasta el mes actual (incluye hoy)
+      if (cuentaDate <= currentMonthEnd) {
+        if (cuenta.tipoCuenta === "Cuentas por Pagar")
+          tpc += cuenta.balancePendiente;
+        if (cuenta.tipoCuenta === "Cuentas por Cobrar")
+          tcc += cuenta.balancePendiente;
+        if (cuenta.idContrato.tipoContrato === "Compra")
+          coc += cuenta.montoTotalContrato;
+        if (cuenta.idContrato.tipoContrato === "Venta")
+          voc += cuenta.montoTotalContrato;
+      }
+
+      // Acumulado hasta el mes anterior (hasta el último día del mes pasado)
+      if (cuentaDate <= previousMonthEnd) {
+        if (cuenta.tipoCuenta === "Cuentas por Pagar")
+          tpp += cuenta.balancePendiente;
+        if (cuenta.tipoCuenta === "Cuentas por Cobrar")
+          tcp += cuenta.balancePendiente;
+        if (cuenta.idContrato.tipoContrato === "Compra")
+          cop += cuenta.montoTotalContrato;
+        if (cuenta.idContrato.tipoContrato === "Venta")
+          vop += cuenta.montoTotalContrato;
+      }
+    });
+
+    return {
+      totalPorPagarCurrent: tpc,
+      totalPorPagarPrevious: tpp,
+      totalPorCobrarCurrent: tcc,
+      totalPorCobrarPrevious: tcp,
+      totalComprasCurrent: coc,
+      totalComprasPrevious: cop,
+      totalVentasCurrent: voc,
+      totalVentasPrevious: vop,
+    };
+  }, [cuentas]);
+
+  // Función para calcular el crecimiento
+  const calcularCrecimiento = (
+    actual: number,
+    anterior: number
+  ): {
+    value: number;
+    percentage: number;
+    trend: "up" | "down" | "neutral";
+    period: string;
+  } => {
+    console.log("anterior", anterior, "actual", actual);
+    if (anterior === 0)
+      return {
+        value: 0,
+        percentage: 0,
+        trend: "neutral",
+        period: "mes anterior",
+      };
+
+    const diferencia = actual - anterior;
+    const porcentaje = Math.round((Math.abs(diferencia) / anterior) * 100);
+
+    return {
+      value: anterior,
+      percentage: porcentaje,
+      trend: diferencia > 0 ? "up" : diferencia < 0 ? "down" : "neutral",
+      period: "mes anterior",
+    };
+  };
+
+  // Generar datos de tendencia
+  const generarTrendData = (actual: number, anterior: number) => {
+    // Crear 4 puntos que muestren la progresión
+    return [
+      anterior * 0.75, // Hace 3 meses
+      anterior, // Mes anterior
+      (anterior + actual) / 2, // Promedio
+      actual, // Mes actual
+    ];
+  };
+
+  // Configurar las tarjetas
   const cards: FinancialCard[] = [
     {
       icon: "pi pi-credit-card",
-      color: "#2563eb", // blue-600 hex
+      color: "#2563eb",
       title: "Cuentas por Pagar",
-      currentValue: 4500000,
+      currentValue: totalPorPagarCurrent,
       comparison: {
-        value: 3800000,
-        percentage: 18.4,
-        trend: "up",
+        ...calcularCrecimiento(totalPorPagarCurrent, totalPorPagarPrevious),
         period: "mes anterior",
       },
       format: "currency",
       tooltip: "Obligaciones pendientes con proveedores de crudo y servicios",
-      trendData: [3.8, 4.1, 4.3, 4.5], // Valores en millones
+      trendData: generarTrendData(totalPorPagarCurrent, totalPorPagarPrevious),
     },
     {
       icon: "pi pi-wallet",
       color: "green",
       title: "Cuentas por Cobrar",
-      currentValue: 6200000,
+      currentValue: totalPorCobrarCurrent,
       comparison: {
-        value: 6800000,
-        percentage: 8.8,
-        trend: "down",
-        period: "trimestre anterior",
+        ...calcularCrecimiento(totalPorCobrarCurrent, totalPorCobrarPrevious),
+        period: "mes anterior",
       },
       format: "currency",
       tooltip: "Facturas pendientes de pago por clientes y distribuidores",
-      trendData: [6.8, 6.5, 6.3, 6.2],
+      trendData: generarTrendData(
+        totalPorCobrarCurrent,
+        totalPorCobrarPrevious
+      ),
     },
     {
       icon: "pi pi-shopping-cart",
       color: "orange",
       title: "Compras Crudo",
-      currentValue: 12500000,
+      currentValue: totalComprasCurrent,
       comparison: {
-        value: 11800000,
-        percentage: 5.9,
-        trend: "up",
+        ...calcularCrecimiento(totalComprasCurrent, totalComprasPrevious),
         period: "mes anterior",
       },
       format: "currency",
       tooltip: "Inversión total en adquisición de crudo y materias primas",
-      trendData: [11.8, 12.1, 12.3, 12.5],
+      trendData: generarTrendData(totalComprasCurrent, totalComprasPrevious),
     },
     {
       icon: "pi pi-chart-line",
       color: "purple",
       title: "Ventas Derivados",
-      currentValue: 18400000,
+      currentValue: totalVentasCurrent,
       comparison: {
-        value: 17600000,
-        percentage: 4.5,
-        trend: "up",
-        period: "año anterior",
+        ...calcularCrecimiento(totalVentasCurrent, totalVentasPrevious),
+        period: "mes anterior",
       },
       format: "currency",
       tooltip: "Ingresos por venta de productos refinados y derivados",
-      trendData: [17.6, 17.9, 18.2, 18.4],
+      trendData: generarTrendData(totalVentasCurrent, totalVentasPrevious),
     },
   ];
 
@@ -145,7 +260,7 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ cuentas }) => {
 
   return (
     <div className="card p-0 grid grid-nogutter">
-      <pre>{JSON.stringify(cuentas, null, 2)}</pre>
+      {/* <pre>{JSON.stringify(cuentas, null, 2)}</pre> */}
       {cards.map((card, index) => {
         const chartConfig = getTrendChart(card.trendData, card.color);
         const tooltipId = `tooltip-${index}`;
@@ -187,13 +302,22 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ cuentas }) => {
             {/* Valor principal */}
             <div className="flex align-items-center justify-content-between mb-3">
               <span className="block font-bold text-4xl mb-3">
-                {formatValue(card.currentValue, card.format)}
+                <NumberFlow
+                  value={card.currentValue}
+                  format={
+                    card.format === "currency"
+                      ? { currency: "USD", style: "currency" }
+                      : undefined
+                  }
+                />
                 {card.currentValue >= 1000000 && (
                   <span className="text-sm ml-1">USD</span>
                 )}
               </span>
               <Badge
-                value={`${card.comparison.percentage}%`}
+                value={
+                  <NumberFlow value={card.comparison.percentage} suffix="%" />
+                }
                 severity={
                   card.comparison.trend === "up"
                     ? card.title.includes("Pagar") ||
@@ -265,7 +389,12 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ cuentas }) => {
                   "text-orange-500": card.comparison.trend === "neutral",
                 })}
               >
-                {formatValue(card.comparison.value, card.format)}
+                <NumberFlow
+                  // className="number"
+                  value={card.comparison.value}
+                  format={{ currency: "USD", style: "currency" }}
+                />
+                {/* {formatValue(card.comparison.value, card.format)} */}
                 <i
                   className={classNames("ml-2", {
                     "pi pi-arrow-up": card.comparison.trend === "up",

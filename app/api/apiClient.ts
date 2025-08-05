@@ -6,8 +6,8 @@ interface ExtendedUser {
 }
 
 const apiClient = axios.create({
-  //  baseURL: "http://localhost:8082/api",
-  baseURL: "https://api-maroil-refinery-2500582bacd8.herokuapp.com/api",
+  baseURL: "http://localhost:8082/api",
+  //   baseURL: "https://api-maroil-refinery-2500582bacd8.herokuapp.com/api",
   headers: {
     "Content-Type": "application/json",
   },
@@ -35,7 +35,7 @@ let logoutAlertShown = false;
 apiClient.interceptors.response.use(
   async (response) => {
     // log full response and headers for debugging
-    console.log("API Response headers:", response);
+    // console.log("API Response headers:", response);
     // log x-new-token if present
     const newToken =
       response.headers["x-new-token"] || response.headers["X-New-Token"];

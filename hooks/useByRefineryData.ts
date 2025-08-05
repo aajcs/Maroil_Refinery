@@ -72,10 +72,12 @@ import {
   Factura,
   Balance,
   Cuenta,
+  Abono,
 } from "@/libs/interfaces";
 import { obtenerFacturasPorRefineria } from "@/app/api/facturaService";
 import { obtenerBalancesPorRefineria } from "@/app/api/balanceService";
 import { obtenerCuentaPorRefineria } from "@/app/api/cuentaService";
+import { obtenerAbonosporRefineria } from "@/app/api/abonoService";
 
 // Tipo para el estado consolidado
 interface RefineryData {
@@ -96,6 +98,7 @@ interface RefineryData {
   facturas: Factura[]; // Agregado para facturas
   balances: Balance[];
   cuentas: Cuenta[];
+  abonos: Abono[];
 }
 
 export const useByRefineryData = (
@@ -120,6 +123,7 @@ export const useByRefineryData = (
     facturas: [],
     balances: [],
     cuentas: [],
+    abonos: [],
   });
 
   const [brent, setBrent] = useState<any | null>(null);
@@ -150,6 +154,7 @@ export const useByRefineryData = (
         obtenerFacturasPorRefineria(refineriaId),
         obtenerBalancesPorRefineria(refineriaId),
         obtenerCuentaPorRefineria(refineriaId),
+        obtenerAbonosporRefineria(refineriaId),
       ]);
       const [
         tanquesDB,
@@ -169,6 +174,7 @@ export const useByRefineryData = (
         facturaDB,
         balanceDB,
         cuentasDB,
+        abonosDB,
       ] = results.map((r) => (r.status === "fulfilled" ? r.value : null));
 
       setData({
@@ -199,6 +205,7 @@ export const useByRefineryData = (
         facturas: facturaDB?.facturas || [], // Asignar facturas
         balances: balanceDB?.balances || [], // Asignar balance
         cuentas: cuentasDB?.cuentas || [], // Asignar cuentas
+        abonos: abonosDB?.abonos || [], // Asignar abonos
       });
 
       // Datos que no dependen de la refinería
@@ -250,6 +257,7 @@ export const useByRefineryData = (
         facturas: [], // Reiniciar facturas al cambiar de refinería
         balances: [],
         cuentas: [],
+        abonos: [],
       });
       setLoading(false);
     }

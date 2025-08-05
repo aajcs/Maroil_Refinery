@@ -20,3 +20,7 @@ export const deleteAbono = async (id: string) => {
   const response = await apiClient.delete(`/abono/${id}`);
   return response.data;
 };
+export const obtenerAbonosporRefineria = async (refineriaId: string) => {
+  const response = await apiClient.get(`/abono/refineria/${refineriaId}`);
+  return response.data;
+};
