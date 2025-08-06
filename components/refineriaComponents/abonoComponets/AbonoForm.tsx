@@ -154,51 +154,61 @@ const AbonoForm = ({
                 </label>
 
                 <Controller
-                  name="idContrato"
-                  control={control}
-                  render={({ field, fieldState }) => (
-                    <>
-                      <Dropdown
-                        id="idContrato"
-                        {...field}
-                        options={contratos
-                          .filter((contrato) =>
-                            // Solo mostrar contratos de compra para cuentas por pagar,
-                            // y contratos de venta para cuentas por cobrar
-                            tipoAbono === "Cuentas por Pagar"
-                              ? contrato.tipoContrato === "Compra"
-                              : tipoAbono === "Cuentas por Cobrar"
-                              ? contrato.tipoContrato === "Venta"
-                              : true
-                          )
-                          .map((contrato) => ({
-                            label: `${contrato.numeroContrato} - ${truncateText(
-                              contrato.descripcion || "Sin descripción",
-                              30
-                            )}`,
-                            value: {
-                              id: contrato.id,
-                              numeroContrato: contrato.numeroContrato,
-                              idItems: contrato.idItems,
-                              _id: contrato._id,
-                            },
-                          }))}
-                        placeholder="Seleccionar un contrato"
-                        className={classNames("w-full", {
-                          "p-invalid": fieldState.error,
-                        })}
-                        showClear
-                        filter
-                      />
-                      {fieldState.error && (
-                        <small className="p-error block mt-2 flex align-items-center">
-                          <i className="pi pi-exclamation-circle mr-2"></i>
-                          {fieldState.error.message}
-                        </small>
-                      )}
-                    </>
-                  )}
-                />
+  name="idContrato"
+  control={control}
+  render={({ field, fieldState }) => {
+    // Opciones filtradas y mapeadas igual que antes
+    const contratoOptions = contratos
+      .filter((contrato) =>
+        tipoAbono === "Cuentas por Pagar"
+          ? contrato.tipoContrato === "Compra"
+          : tipoAbono === "Cuentas por Cobrar"
+          ? contrato.tipoContrato === "Venta"
+          : true
+      )
+      .map((contrato) => ({
+        label: `${contrato.numeroContrato} - ${truncateText(
+          contrato.descripcion || "Sin descripción",
+          30
+        )}`,
+        value: {
+          id: contrato.id,
+          numeroContrato: contrato.numeroContrato,
+          idItems: contrato.idItems,
+          _id: contrato._id,
+        },
+      }));
+
+    // Para edición: busca la opción que coincide con el id del contrato actual
+    const selectedValue =
+      typeof field.value === "object" && field.value !== null
+        ? contratoOptions.find((opt) => opt.value.id === field.value.id)?.value
+        : field.value;
+
+    return (
+      <>
+        <Dropdown
+          id="idContrato"
+          value={selectedValue || null}
+          onChange={(e) => field.onChange(e.value)}
+          options={contratoOptions}
+          placeholder="Seleccionar un contrato"
+          className={classNames("w-full", {
+            "p-invalid": fieldState.error,
+          })}
+          showClear
+          filter
+        />
+        {fieldState.error && (
+          <small className="p-error block mt-2 flex align-items-center">
+            <i className="pi pi-exclamation-circle mr-2"></i>
+            {fieldState.error.message}
+          </small>
+        )}
+      </>
+    );
+  }}
+/>
                 {/* <Controller
               name="idContrato"
               control={control}
