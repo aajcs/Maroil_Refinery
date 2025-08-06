@@ -26,7 +26,6 @@ const DashboardFinanzas = () => {
     abonos = [],
     loading,
   } = useByRefineryData(activeRefineria?.id || "");
-  console.log("abonos", abonos);
   const [productsThisWeek, setProductsThisWeek] = useState<Demo.Product[]>([]);
   const [productsLastWeek, setProductsLastWeek] = useState<Demo.Product[]>([]);
   const [activeTab, setActiveTab] = useState<number>(0);
