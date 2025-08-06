@@ -12,11 +12,8 @@ import {
   updateChequeoCalidad,
 } from "@/app/api/chequeoCalidadService";
 import { InputNumber } from "primereact/inputnumber";
-
 import { Calendar } from "primereact/calendar";
-
 import { ProgressSpinner } from "primereact/progressspinner";
-
 import CustomCalendar from "@/components/common/CustomCalendar";
 import { handleFormError } from "@/utils/errorHandlers";
 import { Toast } from "primereact/toast";
@@ -37,7 +34,6 @@ interface ChequeoCalidadFormProps {
   ) => void;
   onDuplicate?: boolean;
   toast: React.RefObject<Toast> | null;
-
   setOnDuplicate?: (onDuplicate: boolean) => void;
 }
 
@@ -76,22 +72,19 @@ const ChequeoCalidadForm = ({
       },
       gravedadAPI: 0,
       puntoDeInflamacion: 0,
-      // cetano: 0,
       estado: "aprobado",
       fechaChequeo: new Date(),
     },
   });
   const tipoAplicar = watch("aplicar.tipo");
   const referencia = watch("aplicar.idReferencia");
-  // Auto-seleccionar producto según el tipo de referencia
+
   useEffect(() => {
     if (!tipoAplicar || !referencia?.id) {
       setValue("idProducto", { id: "", nombre: "", _id: undefined });
       return;
     }
-
     let prod: { id: string; nombre: string } | undefined;
-
     if (tipoAplicar === "Recepcion") {
       const rc = recepcions.find((r) => r.id === referencia.id);
       prod = rc?.idContratoItems?.producto;
@@ -100,7 +93,6 @@ const ChequeoCalidadForm = ({
       const tn = tanques.find((t) => t.id === referencia.id);
       prod = tn?.idProducto;
       setReferenciaTipo(null);
-      // Asume que tanque tiene campo `producto`
     } else if (tipoAplicar === "Despacho") {
       const dsp = despachos.find((d) => d.id === referencia.id);
       prod = dsp?.idContratoItems?.producto;
@@ -117,7 +109,6 @@ const ChequeoCalidadForm = ({
     }
   }, [tipoAplicar, referencia, recepcions, tanques, despachos, setValue]);
 
-  // Actualizar las opciones dinámicas según la selección de "Aplicar a"
   useEffect(() => {
     const { tipo } = watch("aplicar");
     if (tipo === "Tanque") {
@@ -134,7 +125,11 @@ const ChequeoCalidadForm = ({
     } else if (tipo === "Recepcion") {
       setDynamicOptions(
         recepcions
-          .filter((r) => r.estadoCarga !== "FINALIZADO" && r.estadoRecepcion === "EN_REFINERIA")
+          .filter(
+            (r) =>
+              r.estadoCarga !== "FINALIZADO" &&
+              r.estadoRecepcion === "EN_REFINERIA"
+          )
           .map((recepcion) => ({
             label: `Recepción - ${recepcion.idGuia}`,
             value: {
@@ -148,7 +143,11 @@ const ChequeoCalidadForm = ({
     } else if (tipo === "Despacho") {
       setDynamicOptions(
         despachos
-          .filter((d) => d.estadoCarga !== "FINALIZADO" && d.estadoDespacho === "EN_REFINERIA")
+          .filter(
+            (d) =>
+              d.estadoCarga !== "FINALIZADO" &&
+              d.estadoDespacho === "EN_REFINERIA"
+          )
           .map((despacho) => ({
             label: `Despacho - ${despacho.idGuia}`,
             value: {
@@ -164,6 +163,7 @@ const ChequeoCalidadForm = ({
       setDynamicOptions([]);
     }
   }, [watch("aplicar.tipo"), tanques, recepcions, despachos]);
+
   useEffect(() => {
     const referenciaSeleccionada = watch("aplicar.idReferencia");
     if (referenciaSeleccionada) {
@@ -179,6 +179,7 @@ const ChequeoCalidadForm = ({
       }
     }
   }, [watch("aplicar.idReferencia"), productos, setValue]);
+
   useEffect(() => {
     if (chequeoCalidad) {
       Object.keys(chequeoCalidad).forEach((key) =>
@@ -186,14 +187,11 @@ const ChequeoCalidadForm = ({
       );
     }
     if (onDuplicate && chequeoCalidad) {
-      // Establecer valores predeterminados para el modo duplicado
-      setValue("azufre", 0); // Cambiar el valor de azufre
-      setValue("contenidoAgua", 0); // Cambiar el valor de contenido de agua
-
-      setValue("gravedadAPI", 0); // Cambiar el valor de gravedad API
-      setValue("puntoDeInflamacion", 0); // Cambiar el valor de punto de inflamación
-      // setValue("cetano", 0); // Cambiar el valor de cetano
-      setValue("fechaChequeo", new Date()); // Cambiar la fecha de chequeo
+      setValue("azufre", 0);
+      setValue("contenidoAgua", 0);
+      setValue("gravedadAPI", 0);
+      setValue("puntoDeInflamacion", 0);
+      setValue("fechaChequeo", new Date());
     }
   }, [chequeoCalidad, onDuplicate, setValue]);
 
@@ -207,6 +205,7 @@ const ChequeoCalidadForm = ({
       </div>
     );
   }
+
   const onSubmit = async (data: FormData) => {
     setSubmitting(true);
     try {
@@ -223,30 +222,25 @@ const ChequeoCalidadForm = ({
       };
 
       if (onDuplicate) {
-        // Si es un duplicado, eliminamos identificadores únicos
-        delete payload.id; // Eliminar el identificador único
-        delete payload.numeroChequeoCalidad; // Si hay un número único, también eliminarlo
+        delete payload.id;
+        delete payload.numeroChequeoCalidad;
         showToast("info", "Duplicado", "Se está creando un duplicado");
       }
 
       if (chequeoCalidad && !onDuplicate) {
-        // Actualización
         const updatedChequeoCalidad = await updateChequeoCalidad(
           chequeoCalidad.id,
           payload
         );
-
         const updatedChequeoCalidads = chequeoCalidads.map((t) =>
           t.id === updatedChequeoCalidad.id ? updatedChequeoCalidad : t
         );
         setChequeoCalidads(updatedChequeoCalidads);
         showToast("success", "Éxito", "Control de calidad actualizado");
       } else {
-        // Creación o Duplicado
         if (!payload.idRefineria) {
           throw new Error("Debe seleccionar una refinería");
         }
-
         const newChequeoCalidad = await createChequeoCalidad(payload);
         setChequeoCalidads([...chequeoCalidads, newChequeoCalidad]);
         showToast(
@@ -260,17 +254,17 @@ const ChequeoCalidadForm = ({
 
       hideChequeoCalidadFormDialog();
     } catch (error) {
-      handleFormError(error, toast); // Pasamos la referencia del toast
+      handleFormError(error, toast);
     } finally {
       setSubmitting(false);
       if (onDuplicate && setOnDuplicate) {
-        setOnDuplicate(false); // Restablecer el estado de duplicado
+        setOnDuplicate(false);
       }
     }
   };
 
   return (
-    <div>
+    <div className="chequeo-form-scroll">
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="card  p-fluid surface-50 p-3  border-round shadow-2">
           {/* Header del Formulario */}
@@ -338,7 +332,7 @@ const ChequeoCalidadForm = ({
                       <Dropdown
                         value={field.value}
                         onChange={(e) => field.onChange(e.value)}
-                        options={dynamicOptions} // Opciones dinámicas según el tipo seleccionado
+                        options={dynamicOptions}
                         placeholder={`Seleccionar ${watch("aplicar.tipo")}`}
                         className={classNames("w-full", {
                           "p-invalid": errors.aplicar?.idReferencia,
@@ -395,44 +389,6 @@ const ChequeoCalidadForm = ({
                 )}
               </div>
             </div>
-
-            {/* Campo: Operador */}
-            {/* <div className="col-12 md:col-6 lg:col-4 xl:col-3">
-              <div className="p-2 bg-white border-round shadow-1 surface-card">
-                <label className="block font-medium text-900 mb-3 flex align-items-center">
-                  <i className="pi pi-user mr-2 text-primary"></i>
-                  Operador
-                </label>
-                <Controller
-                  name="idOperador"
-                  control={control}
-                  render={({ field }) => (
-                    <Dropdown
-                      value={field.value}
-                      onChange={(e) => field.onChange(e.value)}
-                      options={operadors.map((operador: any) => ({
-                        label: operador.nombre,
-                        value: {
-                          id: operador.id,
-                          nombre: operador.nombre,
-                        },
-                      }))}
-                      placeholder="Seleccionar operador"
-                      className="w-full"
-                      showClear
-                      filter
-                    />
-                  )}
-                />
-                {errors.idOperador?.nombre && (
-                  <small className="p-error block mt-2 flex align-items-center">
-                    <i className="pi pi-exclamation-circle mr-2"></i>
-                    {errors.idOperador.nombre.message}
-                  </small>
-                )}
-              </div>
-            </div> */}
-
             {/* Campo: Fecha de Chequeo */}
             <div className="col-12 md:col-6 lg:col-4 xl:col-3">
               <div className="p-2 bg-white border-round shadow-1 surface-card">
@@ -459,7 +415,6 @@ const ChequeoCalidadForm = ({
                         }
                         onChange={field.onChange}
                       />
-
                       {fieldState.error && (
                         <small className="p-error block mt-2 flex align-items-center">
                           <i className="pi pi-exclamation-circle mr-2"></i>
@@ -477,7 +432,6 @@ const ChequeoCalidadForm = ({
                 )}
               </div>
             </div>
-
             {/* Campo: Gravedad API */}
             <div className="col-12 md:col-6 lg:col-4 xl:col-3">
               <div className="p-2 bg-white border-round shadow-1 surface-card">
@@ -512,7 +466,6 @@ const ChequeoCalidadForm = ({
                 )}
               </div>
             </div>
-
             {/* Campo: Azufre */}
             <div className="col-12 md:col-6 lg:col-4 xl:col-3">
               <div className="p-2 bg-white border-round shadow-1 surface-card">
@@ -546,7 +499,6 @@ const ChequeoCalidadForm = ({
                 )}
               </div>
             </div>
-
             {/* Campo: Contenido de Agua */}
             <div className="col-12 md:col-6 lg:col-4 xl:col-3">
               <div className="p-2 bg-white border-round shadow-1 surface-card">
@@ -582,7 +534,6 @@ const ChequeoCalidadForm = ({
                 )}
               </div>
             </div>
-
             {/* Campo: Punto de Inflamación */}
             <div className="col-12 md:col-6 lg:col-4 xl:col-3">
               <div className="p-2 bg-white border-round shadow-1 surface-card">
@@ -617,37 +568,6 @@ const ChequeoCalidadForm = ({
                 )}
               </div>
             </div>
-
-            {/* Campo: Índice Cetano */}
-            {/* <div className="col-12 md:col-6 lg:col-4 xl:col-3">
-              <div className="p-2 bg-white border-round shadow-1 surface-card">
-                <label className="block font-medium text-900 mb-3 flex align-items-center">
-                  <i className="pi pi-star mr-2 text-primary"></i>
-                  Índice Cetano
-                </label>
-                <Controller
-                  name="cetano"
-                  control={control}
-                  render={({ field }) => (
-                    <InputNumber
-                      value={field.value}
-                      onValueChange={(e) => field.onChange(e.value)}
-                      min={0}
-                      max={100}
-                      className="w-full"
-                      locale="es"
-                    />
-                  )}
-                />
-                {errors.cetano && (
-                  <small className="p-error block mt-2 flex align-items-center">
-                    <i className="pi pi-exclamation-circle mr-2"></i>
-                    {errors.cetano.message}
-                  </small>
-                )}
-              </div>
-            </div> */}
-
             {/* Campo: Estado */}
             <div className="col-12 md:col-6 lg:col-4 xl:col-3">
               <div className="p-2 bg-white border-round shadow-1 surface-card">
@@ -680,7 +600,6 @@ const ChequeoCalidadForm = ({
               </div>
             </div>
           </div>
-
           {/* Botón de Envío */}
           <div className="col-12 flex justify-content-between align-items-center mt-3">
             <Button
@@ -696,7 +615,6 @@ const ChequeoCalidadForm = ({
               }
               className="w-auto"
             />
-
             <Button
               type="button"
               label="Salir"

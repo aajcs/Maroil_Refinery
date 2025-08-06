@@ -255,3 +255,10 @@
   border-left: 4px solid var(--red-500);
   padding-left: 0.5rem;
 }
+
+/* Formulario de chequeo de calidad: scroll en responsive */
+.chequeo-form-scroll {
+  max-height: 90vh;      /* Ajusta según tu preferencia */
+  overflow-y: auto;
+  padding-bottom: 1rem;  /* Espacio para el botón en la parte inferior */
+}
