@@ -53,6 +53,12 @@ const UsuarioList = () => {
   const hideDeleteProductDialog = () => {
     setDeleteProductDialog(false);
   };
+
+  const openUsuarioFormDialog = () => {
+  setUsuario(null); // Limpia el usuario seleccionado
+  setUsuarioFormDialog(true);
+};
+
   const hideUsuarioFormDialog = () => {
     setUsuarioFormDialog(false);
   };
@@ -106,36 +112,30 @@ const UsuarioList = () => {
       <Button label="Yes" icon="pi pi-check" text onClick={deleteProduct} />
     </>
   );
-  const renderHeader = () => {
-    return (
-      <div className="flex flex-wrap gap-2 align-items-center justify-content-between">
-        {/* <div>
-          {usuarios.length > 0 ? (
-            <pre>{JSON.stringify(usuarios, null, 2)}</pre>
-          ) : (
-            <p>No hay usuarios disponibles</p>
-          )}
-        </div> */}
-        <span className="p-input-icon-left w-full sm:w-20rem flex-order-1 sm:flex-order-0">
-          <i className="pi pi-search"></i>
-          <InputText
-            value={globalFilterValue}
-            onChange={onGlobalFilterChange}
-            placeholder="Búsqueda Global"
-            className="w-full"
-          />
-        </span>
-        <Button
-          type="button"
-          icon="pi pi-user-plus"
-          label="Agregar Nuevo"
-          outlined
-          className="w-full sm:w-auto flex-order-0 sm:flex-order-1"
-          onClick={() => router.push("/profile/create")}
+const renderHeader = () => {
+  return (
+    <div className="flex flex-wrap gap-2 align-items-center justify-content-between">
+      <span className="p-input-icon-left w-full sm:w-20rem flex-order-1 sm:flex-order-0">
+        <i className="pi pi-search"></i>
+        <InputText
+          value={globalFilterValue}
+          onChange={onGlobalFilterChange}
+          placeholder="Búsqueda Global"
+          className="w-full"
         />
-      </div>
-    );
-  };
+      </span>
+      <Button
+        type="button"
+        icon="pi pi-user-plus"
+        label="Agregar Nuevo"
+        outlined
+        className="w-full sm:w-auto flex-order-0 sm:flex-order-1"
+        onClick={openUsuarioFormDialog}
+      />
+    </div>
+  );
+};
+
 
   const header = renderHeader();
 
