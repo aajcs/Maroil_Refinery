@@ -58,6 +58,10 @@ const RecepcionList = () => {
     }
   };
 
+  const openRecepcionFormDialog = () => {
+  setRecepcion(null); // Limpia la recepción seleccionada
+  setRecepcionFormDialog(true);
+};
   const hideDeleteProductDialog = () => setDeleteProductDialog(false);
   const hideRecepcionFormDialog = () => {
     setRecepcion(null);
@@ -119,7 +123,7 @@ const RecepcionList = () => {
       label="Agregar Nuevo"
       outlined
       className="w-full sm:w-auto"
-      onClick={() => setRecepcionFormDialog(true)}
+      onClick={openRecepcionFormDialog}
     />
   </div>
 );

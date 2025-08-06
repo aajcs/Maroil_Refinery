@@ -56,6 +56,10 @@ const ProductoList = () => {
       setLoading(false);
     }
   };
+  const openProductoFormDialog = () => {
+    setProducto(null); // Limpia el producto seleccionado
+    setProductoFormDialog(true);
+  };
 
   const hideDeleteProductDialog = () => setDeleteProductDialog(false);
   const hideProductoFormDialog = () => {
@@ -91,27 +95,27 @@ const ProductoList = () => {
     setGlobalFilterValue(value);
   };
 
-  const renderHeader = () => (
-    <div className="flex flex-wrap gap-2 align-items-center justify-content-between">
-      <span className="p-input-icon-left w-full sm:w-20rem flex-order-1 sm:flex-order-0">
-        <i className="pi pi-search"></i>
-        <InputText
-          value={globalFilterValue}
-          onChange={onGlobalFilterChange}
-          placeholder="Búsqueda Global"
-          className="w-full"
-        />
-      </span>
-      <Button
-        type="button"
-        icon="pi pi-user-plus"
-        label="Agregar Nuevo"
-        outlined
-        className="w-full sm:w-auto flex-order-0 sm:flex-order-1"
-        onClick={() => setProductoFormDialog(true)}
+const renderHeader = () => (
+  <div className="flex flex-wrap gap-2 align-items-center justify-content-between">
+    <span className="p-input-icon-left w-full sm:w-20rem flex-order-1 sm:flex-order-0">
+      <i className="pi pi-search"></i>
+      <InputText
+        value={globalFilterValue}
+        onChange={onGlobalFilterChange}
+        placeholder="Búsqueda Global"
+        className="w-full"
       />
-    </div>
-  );
+    </span>
+    <Button
+      type="button"
+      icon="pi pi-user-plus"
+      label="Agregar Nuevo"
+      outlined
+      className="w-full sm:w-auto flex-order-0 sm:flex-order-1"
+      onClick={openProductoFormDialog}
+    />
+  </div>
+);
 
   const actionBodyTemplate = (rowData: Producto) => (
     <CustomActionButtons

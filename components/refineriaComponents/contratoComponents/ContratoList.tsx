@@ -75,6 +75,11 @@ const ContratoList = ({ tipoContrato }: ContratoListProps) => {
     setContratoFormDialog(false);
   };
 
+  const openContratoFormDialog = () => {
+  setContrato(null); // Limpia el contrato seleccionado
+  setContratoFormDialog(true);
+};
+
   const handleDeleteContrato = async () => {
     if (contrato?.id) {
       await deleteContrato(contrato.id);
@@ -134,14 +139,14 @@ const ContratoList = ({ tipoContrato }: ContratoListProps) => {
           style={{ minWidth: 160 }}
         />
       </div>
-      <Button
-        type="button"
-        icon="pi pi-user-plus"
-        label="Agregar Nuevo"
-        outlined
-        className="w-full sm:w-auto"
-        onClick={() => setContratoFormDialog(true)}
-      />
+    <Button
+  type="button"
+  icon="pi pi-user-plus"
+  label="Agregar Nuevo"
+  outlined
+  className="w-full sm:w-auto"
+  onClick={openContratoFormDialog}
+/>
     </div>
   );
 
