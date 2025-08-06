@@ -8,8 +8,8 @@ function Sales() {
   return (
     <>
       <DashboardFinanzas />
-      <ModeladoRefineriaDashboardSales />
-      <DashboardFinanzasViejo />
+      {/* <ModeladoRefineriaDashboardSales />
+      <DashboardFinanzasViejo /> */}
       {/* <CargaPlanta /> */}
     </>
   );
