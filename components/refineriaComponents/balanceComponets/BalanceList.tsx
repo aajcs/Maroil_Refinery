@@ -263,7 +263,7 @@ const BalanceList = () => {
         >
           <Column
             body={actionBodyTemplate}
-            headerStyle={{ minWidth: "10rem" }}
+      
           />
           <Column field="numeroBalance" header="N° Balance" sortable />
           <Column

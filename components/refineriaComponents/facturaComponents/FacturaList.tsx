@@ -227,7 +227,7 @@ const FacturaList = () => {
           <Column expander style={{ width: "3em" }} />
           <Column
             body={actionBodyTemplate}
-            headerStyle={{ minWidth: "10rem" }}
+         
           />
           <Column field="numeroFactura" header="N° Factura" sortable />
           <Column field="concepto" header="Concepto" />
