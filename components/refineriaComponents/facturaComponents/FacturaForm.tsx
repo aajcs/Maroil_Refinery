@@ -23,7 +23,6 @@ import { useRefineryPrecios } from "@/hooks/useRefineryPrecios";
 import { useByRefineryData } from "@/hooks/useByRefineryData";
 import { handleFormError } from "@/utils/errorHandlers";
 import { Factura, LineaFactura } from "@/libs/interfaces";
-import { useByRefineryDataFull } from "@/hooks/useRefineryDataFull";
 
 type FormData = z.infer<typeof facturaSchema>;
 
@@ -65,7 +64,7 @@ function FacturaForm({
 }: FacturaFormProps) {
   const { activeRefineria } = useRefineriaStore();
 
-  const { partidas, loading } = useByRefineryDataFull(
+  const { partidas = [], loading } = useByRefineryData(
     activeRefineria?.id as string
   );
   const { brent: brentOnline, oilDerivate } = useRefineryPrecios();
