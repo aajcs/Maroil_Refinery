@@ -12,7 +12,8 @@ export interface Refineria {
   modificadoPor: UserReference;
   historial: HistorialCambio[];
   nit: string;
-img:string;
+  img: string;
+  ubicacion: string;
 }
 
 // Definir tipo de usuario para auditoría
