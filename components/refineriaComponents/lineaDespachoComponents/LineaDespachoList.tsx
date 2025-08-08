@@ -202,7 +202,7 @@ const LineaDespachoList = () => {
         >
           <Column
             body={actionBodyTemplate}
-            headerStyle={{ minWidth: "10rem" }}
+          
           />
           <Column field="nombre" header="Nombre" sortable />
           {/* <Column

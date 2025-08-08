@@ -249,7 +249,7 @@ const openTipoProductoFormDialog = () => {
         >
           <Column
             body={actionBodyTemplate}
-            headerStyle={{ minWidth: "10rem" }}
+    
           />
           <Column field="idProducto.nombre" header="Producto" />
           <Column field="nombre" header="Nombre" />

@@ -200,7 +200,7 @@ const renderHeader = () => (
         >
           <Column
             body={actionBodyTemplate}
-            headerStyle={{ minWidth: "10rem" }}
+       
           />
           <Column field="numeroAbono" header="N° Abono" sortable />
           <Column
