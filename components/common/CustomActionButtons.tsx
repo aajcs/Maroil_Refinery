@@ -1,6 +1,15 @@
 import React from "react";
+import { useUserRoles } from "../../hooks/useUserRoles";
 import { Button } from "primereact/button";
 import PDFGenerator from "../pdf/PDFGenerator";
+import {
+  infoAllowedRoles,
+  editAllowedRoles,
+  deleteAllowedRoles,
+  duplicateAllowedRoles,
+  pdfAllowedRoles,
+  hasRole,
+} from "../../lib/roles";
 
 interface CustomActionButtonsProps<T> {
   rowData: T; // Datos de la fila
@@ -14,22 +23,42 @@ interface CustomActionButtonsProps<T> {
   pdfFileName?: string;
   /** Texto del botón de descarga */
   pdfDownloadText?: string;
+  /** Roles permitidos para mostrar acciones (opcional, por defecto ["admin"]) */
+  allowedRoles?: string[];
 }
 
-const CustomActionButtons = <T,>({
-  rowData,
-  onInfo,
-  onEdit,
-  onDelete,
-  onDuplicate,
-  pdfTemplate: Template,
-  pdfFileName = "documento.pdf",
-  pdfDownloadText = "Descargar PDF",
-}: CustomActionButtonsProps<T>) => {
+function CustomActionButtons<T>(props: CustomActionButtonsProps<T>) {
+  const {
+    rowData,
+    onInfo,
+    onEdit,
+    onDelete,
+    onDuplicate,
+    pdfTemplate: Template,
+    pdfFileName = "documento.pdf",
+    pdfDownloadText = "Descargar PDF",
+  } = props;
+  // Obtener roles del usuario con hook reutilizable
+  const userRoles = useUserRoles();
+
+  // Usar función y arrays reutilizables
+  const can = (allowed: string[]) => hasRole(allowed, userRoles);
+
+  // Si el usuario no tiene acceso a ningún botón, no renderizar nada
+  if (
+    !can(infoAllowedRoles) &&
+    !can(editAllowedRoles) &&
+    !can(deleteAllowedRoles) &&
+    !can(duplicateAllowedRoles) &&
+    !can(pdfAllowedRoles)
+  ) {
+    return null;
+  }
+
   return (
     <div className="flex gap-1  flex-column justify-content-center align-items-center sm:flex-row ">
       {/* Botón de Info */}
-      {onInfo && (
+      {onInfo && can(infoAllowedRoles) && (
         <Button
           icon="pi pi-info-circle"
           rounded
@@ -41,9 +70,8 @@ const CustomActionButtons = <T,>({
           onClick={() => onInfo(rowData)}
         />
       )}
-
       {/* Botón de Editar */}
-      {onEdit && (
+      {onEdit && can(editAllowedRoles) && (
         <Button
           icon="pi pi-pencil"
           rounded
@@ -55,9 +83,8 @@ const CustomActionButtons = <T,>({
           onClick={() => onEdit(rowData)}
         />
       )}
-
       {/* Botón de Eliminar */}
-      {onDelete && (
+      {onDelete && can(deleteAllowedRoles) && (
         <Button
           icon="pi pi-trash"
           rounded
@@ -69,9 +96,8 @@ const CustomActionButtons = <T,>({
           onClick={() => onDelete(rowData)}
         />
       )}
-
       {/* Botón de Copiar */}
-      {onDuplicate && (
+      {onDuplicate && can(duplicateAllowedRoles) && (
         <Button
           icon="pi pi-copy"
           rounded
@@ -86,7 +112,7 @@ const CustomActionButtons = <T,>({
         />
       )}
       {/* Botón PDF dinámico */}
-      {Template && (
+      {Template && can(pdfAllowedRoles) && (
         <PDFGenerator
           template={Template}
           data={rowData}
@@ -96,6 +122,6 @@ const CustomActionButtons = <T,>({
       )}
     </div>
   );
-};
+}
 
 export default CustomActionButtons;
