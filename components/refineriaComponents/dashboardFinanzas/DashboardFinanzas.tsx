@@ -139,7 +139,7 @@ const DashboardFinanzas = () => {
         <BestSellers />
       </div> */}
 
-      <div className="col-12 md:col-6 lg:col-6">
+      <div className="col-12  lg:col-6">
         <GastosResumen
           facturas={facturas}
           loading={loading}
@@ -147,7 +147,7 @@ const DashboardFinanzas = () => {
         />
       </div>
 
-      <div className="col-8 ">
+      <div className="col-12 lg:col-8 ">
         <AnalisisContratos balances={balances} loading={loading} />
       </div>
       {/* 

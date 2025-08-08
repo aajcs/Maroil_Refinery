@@ -7,7 +7,7 @@ import { Chart } from "primereact/chart";
 import { Tag } from "primereact/tag";
 import { Skeleton } from "primereact/skeleton";
 import { Abono } from "@/libs/interfaces";
-import { TabMenu } from "primereact/tabmenu";
+import { TabView, TabPanel } from "primereact/tabview";
 import { Dropdown } from "primereact/dropdown";
 import { Button } from "primereact/button";
 
@@ -94,6 +94,25 @@ const AbonosOverview = ({
   const abonosPorPagar = abonosFiltradosPorMes.filter(
     (abono) => abono.tipoAbono === "Cuentas por Pagar"
   );
+
+  // TabView panels config
+  const abonosTabs = [
+    {
+      label: "Todos",
+      icon: "pi pi-list",
+      lista: abonosFiltradosPorMes,
+    },
+    {
+      label: "Cuentas por Cobrar",
+      icon: "pi pi-arrow-down text-green-500",
+      lista: abonosPorCobrar,
+    },
+    {
+      label: "Cuentas por Pagar",
+      icon: "pi pi-arrow-up text-red-500",
+      lista: abonosPorPagar,
+    },
+  ];
 
   // Calcular totales y gráfica por semana usando los abonos filtrados por mes
   // Agrupar abonos por semana del mes seleccionado
@@ -347,149 +366,179 @@ const AbonosOverview = ({
       </div>
       {/* Selector de mes ahora está en Header */}
       <div className="mb-4">
-        <div className="flex justify-content-between align-items-center mb-4">
-          <TabMenu
-            model={[
-              { label: "Todos", icon: "pi pi-list" },
-              {
-                label: "Cuentas por Cobrar",
-                icon: "pi pi-arrow-down text-green-500",
-              },
-              {
-                label: "Cuentas por Pagar",
-                icon: "pi pi-arrow-up text-red-500",
-              },
-            ]}
-            activeIndex={activeTab}
-            onTabChange={(e) => setActiveTab(e.index)}
-            className="w-full"
-          />
-        </div>
-      </div>
-      <div className="flex flex-column lg:flex-row gap-5">
-        {/* Lista de últimos abonos */}
-        <div className="flex-1">
-          <div className="flex justify-content-between align-items-center mb-3">
-            <span className="text-sm text-color-secondary">
-              {/* Mostrar el número de registros según la pestaña y mes */}
-              {activeTab === 0 && abonosFiltradosPorMes.length}
-              {activeTab === 1 && abonosPorCobrar.length}
-              {activeTab === 2 && abonosPorPagar.length}
-              {activeTab === 3 && abonosFiltradosPorMes.length} registros
-            </span>
-          </div>
-          <div className="border-round overflow-hidden border-1 surface-border">
-            {/* Paginación de abonos */}
-            {(() => {
-              const lista =
-                activeTab === 0
-                  ? abonosFiltradosPorMes
-                  : activeTab === 1
-                  ? abonosPorCobrar
-                  : activeTab === 2
-                  ? abonosPorPagar
-                  : abonosFiltradosPorMes;
-              const start = (currentPage - 1) * abonosPorPagina;
-              const end = start + abonosPorPagina;
-              return lista.slice(start, end).map((abono) => (
-                <div
-                  key={abono.id}
-                  className={classNames(
-                    "p-3 flex cursor-pointer border-bottom-1 surface-border",
-                    {
-                      "bg-primary-50": selectedAbono?.id === abono.id,
-                      "hover:surface-hover": selectedAbono?.id !== abono.id,
-                    }
-                  )}
-                  onClick={() => setSelectedAbono(abono)}
-                >
-                  <Avatar
-                    icon={
-                      abono.tipoAbono === "Cuentas por Cobrar"
-                        ? "pi pi-arrow-down"
-                        : "pi pi-arrow-up"
-                    }
-                    size="large"
-                    shape="circle"
-                    className={classNames(
-                      "mr-3",
-                      getTipoAbonoClass(
-                        abono.tipoAbono === "Cuentas por Cobrar" ||
-                          abono.tipoAbono === "Cuentas por Pagar"
-                          ? abono.tipoAbono
-                          : "Cuentas por Cobrar"
-                      )
-                    )}
-                  />
-                  <div className="flex-1">
-                    <div className="flex justify-content-between align-items-start">
-                      <div>
-                        <span className="font-bold block">
-                          {abono.idContrato.numeroContrato}
-                        </span>
-                        <span className="text-sm text-color-secondary">
-                          #{abono.numeroAbono} • {formatDate(abono.fecha)}
-                        </span>
+        <TabView
+          activeIndex={activeTab}
+          onTabChange={(e) => {
+            setActiveTab(e.index);
+            setCurrentPage(1);
+            setSelectedAbono(null);
+          }}
+          className="w-full"
+        >
+          {abonosTabs.map((tab, idx) => (
+            <TabPanel
+              key={tab.label}
+              header={
+                <span>
+                  <i className={tab.icon}></i>{" "}
+                  <span className="ml-2">{tab.label}</span>
+                </span>
+              }
+            >
+              <div className="grid">
+                <div className="col-12 lg:col-6">
+                  <div className="flex justify-content-between align-items-center mb-3">
+                    <span className="text-sm text-color-secondary">
+                      {tab.lista.length} registros
+                    </span>
+                  </div>
+                  <div className="border-round overflow-hidden border-1 surface-border">
+                    {(() => {
+                      const lista = tab.lista;
+                      const start = (currentPage - 1) * abonosPorPagina;
+                      const end = start + abonosPorPagina;
+                      return lista.slice(start, end).map((abono) => (
+                        <div
+                          key={abono.id}
+                          className={classNames(
+                            "p-3 flex cursor-pointer border-bottom-1 surface-border",
+                            {
+                              "bg-primary-50": selectedAbono?.id === abono.id,
+                              "hover:surface-hover":
+                                selectedAbono?.id !== abono.id,
+                            }
+                          )}
+                          onClick={() => setSelectedAbono(abono)}
+                        >
+                          <Avatar
+                            icon={
+                              abono.tipoAbono === "Cuentas por Cobrar"
+                                ? "pi pi-arrow-down"
+                                : "pi pi-arrow-up"
+                            }
+                            size="large"
+                            shape="circle"
+                            className={classNames(
+                              "mr-3",
+                              getTipoAbonoClass(
+                                abono.tipoAbono === "Cuentas por Cobrar" ||
+                                  abono.tipoAbono === "Cuentas por Pagar"
+                                  ? abono.tipoAbono
+                                  : "Cuentas por Cobrar"
+                              )
+                            )}
+                          />
+                          <div className="flex-1">
+                            <div className="flex justify-content-between align-items-start">
+                              <div>
+                                <span className="font-bold block">
+                                  {abono.idContrato.numeroContrato}
+                                </span>
+                                <span className="text-sm text-color-secondary">
+                                  #{abono.numeroAbono} •{" "}
+                                  {formatDate(abono.fecha)}
+                                </span>
+                              </div>
+                              <span
+                                className={classNames("font-bold", {
+                                  "text-green-500":
+                                    abono.tipoAbono === "Cuentas por Cobrar",
+                                  "text-red-500":
+                                    abono.tipoAbono === "Cuentas por Pagar",
+                                })}
+                              >
+                                {formatCurrency(abono.monto)}
+                              </span>
+                            </div>
+                            <div className="mt-2">
+                              <span className="text-sm">
+                                {abono.referencia}
+                              </span>
+                              {getTipoAbonoTag(
+                                abono.tipoAbono === "Cuentas por Cobrar" ||
+                                  abono.tipoAbono === "Cuentas por Pagar"
+                                  ? abono.tipoAbono
+                                  : "Cuentas por Cobrar"
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      ));
+                    })()}
+                  </div>
+                  {/* Paginador PrimeReact */}
+                  {(() => {
+                    const lista = tab.lista;
+                    if (lista.length <= abonosPorPagina) return null;
+                    return (
+                      <div className="flex justify-content-center mt-3">
+                        <Paginator
+                          first={(currentPage - 1) * abonosPorPagina}
+                          rows={abonosPorPagina}
+                          totalRecords={lista.length}
+                          onPageChange={(e) =>
+                            setCurrentPage(
+                              Math.floor(e.first / abonosPorPagina) + 1
+                            )
+                          }
+                          template="PrevPageLink PageLinks NextPageLink"
+                          className="w-auto"
+                        />
                       </div>
-                      <span
-                        className={classNames("font-bold", {
-                          "text-green-500":
-                            abono.tipoAbono === "Cuentas por Cobrar",
-                          "text-red-500":
-                            abono.tipoAbono === "Cuentas por Pagar",
-                        })}
-                      >
-                        {formatCurrency(abono.monto)}
+                    );
+                  })()}
+                </div>
+                {/* Detalle y gráfico */}
+                <div className="col-12 lg:col-6 flex flex-column gap-3">
+                  <div className="surface-card p-4 border-round flex-grow-1 shadow-1">
+                    <div className="flex justify-content-between align-items-center mb-4">
+                      <h6 className="m-0">Resumen Mensual</h6>
+                      <span className="text-sm text-color-secondary">
+                        {new Date(mesSeleccionado + "-01").toLocaleString(
+                          "es-ES",
+                          {
+                            month: "long",
+                            year: "numeric",
+                          }
+                        )}
                       </span>
                     </div>
-                    <div className="mt-2">
-                      <span className="text-sm">{abono.referencia}</span>
-                      {getTipoAbonoTag(
-                        abono.tipoAbono === "Cuentas por Cobrar" ||
-                          abono.tipoAbono === "Cuentas por Pagar"
-                          ? abono.tipoAbono
-                          : "Cuentas por Cobrar"
-                      )}
+                    <div>
+                      <Chart
+                        type="bar"
+                        data={chartData}
+                        options={chartOptions}
+                        height="100%"
+                      />
                     </div>
                   </div>
                 </div>
-              ));
-            })()}
-          </div>
-          {/* Paginador PrimeReact */}
-          {(() => {
-            const lista =
-              activeTab === 0
-                ? abonosFiltradosPorMes
-                : activeTab === 1
-                ? abonosPorCobrar
-                : activeTab === 2
-                ? abonosPorPagar
-                : abonosFiltradosPorMes;
-            if (lista.length <= abonosPorPagina) return null;
-            return (
-              <div className="flex justify-content-center mt-3">
-                <Paginator
-                  first={(currentPage - 1) * abonosPorPagina}
-                  rows={abonosPorPagina}
-                  totalRecords={lista.length}
-                  onPageChange={(e) =>
-                    setCurrentPage(Math.floor(e.first / abonosPorPagina) + 1)
-                  }
-                  template="PrevPageLink PageLinks NextPageLink"
-                  className="w-auto"
-                />
               </div>
-            );
-          })()}
-        </div>
+            </TabPanel>
+          ))}
+        </TabView>
+      </div>
 
-        {/* Detalle del abono seleccionado y gráfico */}
-
-        <div className="flex-1 flex flex-column gap-3">
-          {/* Modal de detalle de abono */}
-          <Dialog
-            header={
+      {/* Modal de detalle de abono fuera del TabView para evitar problemas de renderizado y cierre inesperado */}
+      <Dialog
+        header={
+          <div className="mb-2 text-center md:text-left">
+            <div className="border-bottom-2 border-primary pb-2">
+              <h2 className="text-2xl font-bold text-900 mb-2 flex align-items-center justify-content-center md:justify-content-start">
+                <i className="pi pi-info-circle mr-3 text-primary text-3xl"></i>
+                Detalle del Abono
+              </h2>
+            </div>
+          </div>
+        }
+        visible={!!selectedAbono}
+        style={{ width: "90vw", maxWidth: "800px" }}
+        onHide={() => setSelectedAbono(null)}
+        modal
+        className="p-fluid"
+        content={
+          selectedAbono && (
+            <div className="card p-fluid surface-50 p-3 border-round shadow-2">
               <div className="mb-2 text-center md:text-left">
                 <div className="border-bottom-2 border-primary pb-2">
                   <h2 className="text-2xl font-bold text-900 mb-2 flex align-items-center justify-content-center md:justify-content-start">
@@ -498,248 +547,185 @@ const AbonosOverview = ({
                   </h2>
                 </div>
               </div>
-            }
-            visible={!!selectedAbono}
-            style={{ width: "90vw", maxWidth: "800px" }}
-            onHide={() => setSelectedAbono(null)}
-            modal
-            className="p-fluid"
-            content={
-              selectedAbono && (
-                <div className="card p-fluid surface-50 p-3 border-round shadow-2">
-                  <div className="mb-2 text-center md:text-left">
-                    <div className="border-bottom-2 border-primary pb-2">
-                      <h2 className="text-2xl font-bold text-900 mb-2 flex align-items-center justify-content-center md:justify-content-start">
-                        <i className="pi pi-info-circle mr-3 text-primary text-3xl"></i>
-                        Detalle del Abono
-                      </h2>
-                    </div>
+              <div className="grid formgrid row-gap-2">
+                {/* Número de Abono */}
+                <div className="col-12 md:col-6 lg:col-4 xl:col-3">
+                  <div className="p-3 bg-white border-round shadow-1">
+                    <label className="block font-medium text-900 mb-2 flex align-items-center">
+                      <i className="pi pi-hashtag text-primary mr-2"></i>
+                      Número de Abono
+                    </label>
+                    <span className="font-medium text-lg">
+                      #{selectedAbono.numeroAbono}
+                    </span>
                   </div>
-                  <div className="grid formgrid row-gap-2">
-                    {/* Número de Abono */}
-                    <div className="col-12 md:col-6 lg:col-4 xl:col-3">
-                      <div className="p-3 bg-white border-round shadow-1">
-                        <label className="block font-medium text-900 mb-2 flex align-items-center">
-                          <i className="pi pi-hashtag text-primary mr-2"></i>
-                          Número de Abono
-                        </label>
-                        <span className="font-medium text-lg">
-                          #{selectedAbono.numeroAbono}
-                        </span>
-                      </div>
-                    </div>
+                </div>
 
-                    {/* Contrato */}
-                    <div className="col-12 md:col-6 lg:col-4 xl:col-3">
-                      <div className="p-3 bg-white border-round shadow-1">
-                        <label className="block font-medium text-900 mb-2 flex align-items-center">
-                          <i className="pi pi-file text-primary mr-2"></i>
-                          Contrato
-                        </label>
-                        <span className="font-medium text-lg">
-                          {selectedAbono.idContrato.numeroContrato}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Fecha */}
-                    <div className="col-12 md:col-6 lg:col-4 xl:col-3">
-                      <div className="p-3 bg-white border-round shadow-1">
-                        <label className="block font-medium text-900 mb-2 flex align-items-center">
-                          <i className="pi pi-calendar text-primary mr-2"></i>
-                          Fecha
-                        </label>
-                        <span className="font-medium text-lg">
-                          {formatDate(selectedAbono.fecha)}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Tipo de Operación */}
-                    <div className="col-12 md:col-6 lg:col-4 xl:col-3">
-                      <div className="p-3 bg-white border-round shadow-1">
-                        <label className="block font-medium text-900 mb-2 flex align-items-center">
-                          <i className="pi pi-flag text-primary mr-2"></i>
-                          Tipo de Operación
-                        </label>
-                        <span className="font-medium text-lg">
-                          {selectedAbono.tipoOperacion}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Monto */}
-                    <div className="col-12 md:col-6 lg:col-4 xl:col-3">
-                      <div className="p-3 bg-white border-round shadow-1">
-                        <label className="block font-medium text-900 mb-2 flex align-items-center">
-                          <i className="pi pi-money-bill text-primary mr-2"></i>
-                          Monto
-                        </label>
-                        <span
-                          className={classNames("font-bold text-lg", {
-                            "text-green-500":
-                              selectedAbono.tipoAbono === "Cuentas por Cobrar",
-                            "text-red-500":
-                              selectedAbono.tipoAbono === "Cuentas por Pagar",
-                          })}
-                        >
-                          {formatCurrency(selectedAbono.monto)}
-                        </span>
-                        <Tag
-                          value={selectedAbono.tipoAbono}
-                          severity={
-                            selectedAbono.tipoAbono === "Cuentas por Cobrar"
-                              ? "success"
-                              : "danger"
-                          }
-                          className="mt-2"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Registrado por */}
-                    <div className="col-12 md:col-6 lg:col-4 xl:col-3">
-                      <div className="p-3 bg-white border-round shadow-1">
-                        <label className="block font-medium text-900 mb-2 flex align-items-center">
-                          <i className="pi pi-user text-primary mr-2"></i>
-                          Registrado por
-                        </label>
-                        <span className="font-medium text-lg">
-                          {selectedAbono.createdBy.nombre}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Referencia/Descripción */}
-                    <div className="col-12">
-                      <div className="p-3 bg-white border-round shadow-1">
-                        <label className="block font-medium text-900 mb-2 flex align-items-center">
-                          <i className="pi pi-align-left text-primary mr-2"></i>
-                          Referencia/Descripción
-                        </label>
-                        <p className="font-medium text-lg mt-1">
-                          {selectedAbono.referencia}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Cliente/Proveedor */}
-                    <div className="col-12">
-                      <div className="p-3 bg-white border-round shadow-1">
-                        <label className="block font-medium text-900 mb-2 flex align-items-center">
-                          <i className="pi pi-building text-primary mr-2"></i>
-                          Cliente/Proveedor
-                        </label>
-                        <div className="flex align-items-center mt-2">
-                          <Avatar
-                            label={
-                              selectedAbono.idContrato.idContacto.nombre[0]
-                            }
-                            size="large"
-                            shape="circle"
-                            className="mr-3"
-                          />
-                          <div>
-                            <p className="font-medium text-lg m-0">
-                              {selectedAbono.idContrato.idContacto.nombre}
-                            </p>
-                            <p className="text-color-secondary m-0">
-                              {
-                                selectedAbono.idContrato.idContacto
-                                  .representanteLegal
-                              }
-                            </p>
-                          </div>
-                        </div>
-                        <div className="mt-3 grid">
-                          <div className="col-12 md:col-4">
-                            <div className="flex align-items-center">
-                              <i className="pi pi-phone mr-2 text-color-secondary"></i>
-                              <span>
-                                {selectedAbono.idContrato.idContacto.telefono}
-                              </span>
-                            </div>
-                          </div>
-                          <div className="col-12 md:col-4">
-                            <div className="flex align-items-center">
-                              <i className="pi pi-envelope mr-2 text-color-secondary"></i>
-                              <span>
-                                {selectedAbono.idContrato.idContacto.correo}
-                              </span>
-                            </div>
-                          </div>
-                          <div className="col-12 md:col-4">
-                            <div className="flex align-items-center">
-                              <i className="pi pi-map-marker mr-2 text-color-secondary"></i>
-                              <span>
-                                {selectedAbono.idContrato.idContacto.direccion}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                {/* Contrato */}
+                <div className="col-12 md:col-6 lg:col-4 xl:col-3">
+                  <div className="p-3 bg-white border-round shadow-1">
+                    <label className="block font-medium text-900 mb-2 flex align-items-center">
+                      <i className="pi pi-file text-primary mr-2"></i>
+                      Contrato
+                    </label>
+                    <span className="font-medium text-lg">
+                      {selectedAbono.idContrato.numeroContrato}
+                    </span>
                   </div>
+                </div>
 
-                  {/* Botón de cierre */}
-                  <div className="col-12 flex justify-content-end mt-4">
-                    <Button
-                      label="Cerrar"
-                      onClick={() => setSelectedAbono(null)}
-                      className="w-auto"
-                      severity="secondary"
-                      icon="pi pi-times"
+                {/* Fecha */}
+                <div className="col-12 md:col-6 lg:col-4 xl:col-3">
+                  <div className="p-3 bg-white border-round shadow-1">
+                    <label className="block font-medium text-900 mb-2 flex align-items-center">
+                      <i className="pi pi-calendar text-primary mr-2"></i>
+                      Fecha
+                    </label>
+                    <span className="font-medium text-lg">
+                      {formatDate(selectedAbono.fecha)}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Tipo de Operación */}
+                <div className="col-12 md:col-6 lg:col-4 xl:col-3">
+                  <div className="p-3 bg-white border-round shadow-1">
+                    <label className="block font-medium text-900 mb-2 flex align-items-center">
+                      <i className="pi pi-flag text-primary mr-2"></i>
+                      Tipo de Operación
+                    </label>
+                    <span className="font-medium text-lg">
+                      {selectedAbono.tipoOperacion}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Monto */}
+                <div className="col-12 md:col-6 lg:col-4 xl:col-3">
+                  <div className="p-3 bg-white border-round shadow-1">
+                    <label className="block font-medium text-900 mb-2 flex align-items-center">
+                      <i className="pi pi-money-bill text-primary mr-2"></i>
+                      Monto
+                    </label>
+                    <span
+                      className={classNames("font-bold text-lg", {
+                        "text-green-500":
+                          selectedAbono.tipoAbono === "Cuentas por Cobrar",
+                        "text-red-500":
+                          selectedAbono.tipoAbono === "Cuentas por Pagar",
+                      })}
+                    >
+                      {formatCurrency(selectedAbono.monto)}
+                    </span>
+                    <Tag
+                      value={selectedAbono.tipoAbono}
+                      severity={
+                        selectedAbono.tipoAbono === "Cuentas por Cobrar"
+                          ? "success"
+                          : "danger"
+                      }
+                      className="mt-2"
                     />
                   </div>
                 </div>
-              )
-            }
-          ></Dialog>
 
-          {/* Gráfico de abonos del mes */}
-
-          {/* Gráfico de abonos del mes */}
-          <div className="surface-card p-4 border-round flex-grow-1 shadow-1">
-            <div className="flex justify-content-between align-items-center mb-4">
-              <h6 className="m-0">Resumen Mensual</h6>
-              <span className="text-sm text-color-secondary">
-                {new Date(mesSeleccionado + "-01").toLocaleString("es-ES", {
-                  month: "long",
-                  year: "numeric",
-                })}
-              </span>
-            </div>
-
-            {/* <div className="grid mb-4">
-              <div className="col-6">
-                <div className="p-3 border-round bg-green-50">
-                  <div className="text-xl text-green-700 font-bold">
-                    {formatCurrency(totalIngresos)}
+                {/* Registrado por */}
+                <div className="col-12 md:col-6 lg:col-4 xl:col-3">
+                  <div className="p-3 bg-white border-round shadow-1">
+                    <label className="block font-medium text-900 mb-2 flex align-items-center">
+                      <i className="pi pi-user text-primary mr-2"></i>
+                      Registrado por
+                    </label>
+                    <span className="font-medium text-lg">
+                      {selectedAbono.createdBy.nombre}
+                    </span>
                   </div>
-                  <div className="text-sm text-green-600">Total Ingresos</div>
+                </div>
+
+                {/* Referencia/Descripción */}
+                <div className="col-12">
+                  <div className="p-3 bg-white border-round shadow-1">
+                    <label className="block font-medium text-900 mb-2 flex align-items-center">
+                      <i className="pi pi-align-left text-primary mr-2"></i>
+                      Referencia/Descripción
+                    </label>
+                    <p className="font-medium text-lg mt-1">
+                      {selectedAbono.referencia}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Cliente/Proveedor */}
+                <div className="col-12">
+                  <div className="p-3 bg-white border-round shadow-1">
+                    <label className="block font-medium text-900 mb-2 flex align-items-center">
+                      <i className="pi pi-building text-primary mr-2"></i>
+                      Cliente/Proveedor
+                    </label>
+                    <div className="flex align-items-center mt-2">
+                      <Avatar
+                        label={selectedAbono.idContrato.idContacto.nombre[0]}
+                        size="large"
+                        shape="circle"
+                        className="mr-3"
+                      />
+                      <div>
+                        <p className="font-medium text-lg m-0">
+                          {selectedAbono.idContrato.idContacto.nombre}
+                        </p>
+                        <p className="text-color-secondary m-0">
+                          {
+                            selectedAbono.idContrato.idContacto
+                              .representanteLegal
+                          }
+                        </p>
+                      </div>
+                    </div>
+                    <div className="mt-3 grid">
+                      <div className="col-12 md:col-4">
+                        <div className="flex align-items-center">
+                          <i className="pi pi-phone mr-2 text-color-secondary"></i>
+                          <span>
+                            {selectedAbono.idContrato.idContacto.telefono}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="col-12 md:col-4">
+                        <div className="flex align-items-center">
+                          <i className="pi pi-envelope mr-2 text-color-secondary"></i>
+                          <span>
+                            {selectedAbono.idContrato.idContacto.correo}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="col-12 md:col-4">
+                        <div className="flex align-items-center">
+                          <i className="pi pi-map-marker mr-2 text-color-secondary"></i>
+                          <span>
+                            {selectedAbono.idContrato.idContacto.direccion}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div className="col-6">
-                <div className="p-3 border-round bg-red-50">
-                  <div className="text-xl text-red-700 font-bold">
-                    {formatCurrency(totalEgresos)}
-                  </div>
-                  <div className="text-sm text-red-600">Total Egresos</div>
-                </div>
-              </div>
-            </div> */}
 
-            <div style={{ height: "250px" }}>
-              <Chart
-                type="bar"
-                data={chartData}
-                options={chartOptions}
-                height="100%"
-              />
+              {/* Botón de cierre */}
+              <div className="col-12 flex justify-content-end mt-4">
+                <Button
+                  label="Cerrar"
+                  onClick={() => setSelectedAbono(null)}
+                  className="w-auto"
+                  severity="secondary"
+                  icon="pi pi-times"
+                />
+              </div>
             </div>
-          </div>
-        </div>
-      </div>
+          )
+        }
+      ></Dialog>
+      {/* ...el resto del código se maneja dentro de TabView... */}
     </div>
   );
 };

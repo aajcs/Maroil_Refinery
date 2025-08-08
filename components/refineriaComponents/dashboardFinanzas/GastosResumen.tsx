@@ -343,7 +343,13 @@ const GastosResumen: React.FC<GastosResumenProps> = ({
         className="custom-tabview"
       >
         {/* Vista Resumen */}
-        <TabPanel header="Resumen">
+        <TabPanel
+          header={
+            <span>
+              <i className="pi pi-chart-pie mr-2"></i>Resumen
+            </span>
+          }
+        >
           <div className="grid">
             <div className="col-12 lg:col-6">
               <div title="Top Partidas">
@@ -448,8 +454,15 @@ const GastosResumen: React.FC<GastosResumenProps> = ({
         </TabPanel>
 
         {/* Vista Detalle */}
-        <TabPanel header="Detalle">
-          <Card title="Todas las Partidas">
+        <TabPanel
+          header={
+            <span>
+              <i className="pi pi-list mr-2"></i>Detalle
+            </span>
+          }
+        >
+          <div title="Todas las Partidas">
+            <h6 className="m-0 mb-3">Todas las Partidas</h6>
             <div className="grid">
               {partidas.map((partida, i) => {
                 const totalAnterior =
@@ -462,8 +475,8 @@ const GastosResumen: React.FC<GastosResumenProps> = ({
                 }
                 return (
                   <div key={i} className="col-12 md:col-6 lg:col-4">
-                    <Card
-                      className={classNames("cursor-pointer h-full", {
+                    <div
+                      className={classNames("cursor-pointer h-full card", {
                         "border-primary border-2":
                           selectedPartida?.id === partida.id,
                       })}
@@ -507,12 +520,12 @@ const GastosResumen: React.FC<GastosResumenProps> = ({
                         className={`h-1rem bg-${partida.color}-100`}
                         showValue={false}
                       />
-                    </Card>
+                    </div>
                   </div>
                 );
               })}
             </div>
-          </Card>
+          </div>
         </TabPanel>
 
         {/* Vista por Partida
