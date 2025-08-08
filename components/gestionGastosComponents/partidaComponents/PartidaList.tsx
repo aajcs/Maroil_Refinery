@@ -52,7 +52,10 @@ const PartidaList = () => {
       setLoading(false);
     }
   };
-
+  const openPartidaFormDialog = () => {
+    setPartida(null); // Limpia la partida seleccionada
+    setPartidaFormDialog(true);
+  };
   const hideDeleteProductDialog = () => setDeleteProductDialog(false);
   const hidePartidaFormDialog = () => {
     setPartida(null);
@@ -104,7 +107,7 @@ const PartidaList = () => {
         label="Agregar Nuevo"
         outlined
         className="w-full sm:w-auto flex-order-0 sm:flex-order-1"
-        onClick={() => setPartidaFormDialog(true)}
+        onClick={openPartidaFormDialog}
       />
     </div>
   );
@@ -164,6 +167,20 @@ const PartidaList = () => {
       >
         <Column body={actionBodyTemplate} />
         <Column field="codigo" header="Codigo" sortable />
+        <Column
+          field="color"
+          header="Color"
+          body={(rowData: Partida) => (
+            <div className="flex items-center">
+              <div
+                className=" h-6 rounded-full mr-2"
+                style={{ backgroundColor: `#${rowData.color}` }}
+              >
+                <span>{rowData.color}</span>
+              </div>
+            </div>
+          )}
+        />
         {/* <Column
           field="ubicacion"
           header="Ubicación"

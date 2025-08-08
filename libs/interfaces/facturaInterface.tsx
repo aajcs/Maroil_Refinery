@@ -51,4 +51,5 @@ export interface Partida {
   modificadoPor?: UserReference;
   historial?: HistorialCambio[];
   id: string;
+  color: string; // Si es necesario, puedes agregar este campo
 }

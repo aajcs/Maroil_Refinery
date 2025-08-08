@@ -10,7 +10,11 @@ import { useByRefineryData } from "../../../hooks/useByRefineryData";
 const ModeladoBunkeringDashboardSales = () => {
   const { activeRefineria } = useRefineriaStore();
   const { recepcionModificado } = useSocket(); // Obtén recepcionModificado desde el socket
-  const { recepcions, contratos, loading } = useByRefineryData(
+  const {
+    recepcions = [],
+    contratos = [],
+    loading,
+  } = useByRefineryData(
     activeRefineria?.id || "",
     recepcionModificado || undefined // Pasa recepcionModificado como dependencia
   );

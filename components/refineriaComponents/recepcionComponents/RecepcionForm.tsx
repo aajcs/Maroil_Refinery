@@ -64,9 +64,12 @@ const RecepcionForm = ({
   showToast,
 }: RecepcionFormProps) => {
   const { activeRefineria } = useRefineriaStore();
-  const { tanques, contratos, lineaRecepcions, loading } = useByRefineryData(
-    activeRefineria?.id || ""
-  );
+  const {
+    tanques = [],
+    contratos = [],
+    lineaRecepcions = [],
+    loading,
+  } = useByRefineryData(activeRefineria?.id || "");
   const calendarRef = useRef<Calendar>(null);
 
   const [submitting, setSubmitting] = useState(false);
@@ -455,47 +458,52 @@ const RecepcionForm = ({
                         <i className="pi pi-link mr-2 text-primary"></i>
                         Línea de Descarga
                       </label>
-                   <Controller
-  name="idLinea"
-  control={control}
-  render={({ field }) => {
-    // Obtén todas las líneas ocupadas por recepciones activas (EN_REFINERIA y EN_PROCESO)
-    const lineasOcupadas = recepcions
-      .filter(
-        (r) =>
-          r.idLinea?.id &&
-          (r.estadoRecepcion === "EN_REFINERIA" || r.estadoRecepcion === "EN_PROCESO")
-      )
-      .map((r) => r.idLinea.id);
+                      <Controller
+                        name="idLinea"
+                        control={control}
+                        render={({ field }) => {
+                          // Obtén todas las líneas ocupadas por recepciones activas (EN_REFINERIA y EN_PROCESO)
+                          const lineasOcupadas = recepcions
+                            .filter(
+                              (r) =>
+                                r.idLinea?.id &&
+                                (r.estadoRecepcion === "EN_REFINERIA" ||
+                                  r.estadoRecepcion === "EN_PROCESO")
+                            )
+                            .map((r) => r.idLinea.id);
 
-    // Filtra las líneas que no están ocupadas ni en mantenimiento
-    const filteredLineas = lineaRecepcions.filter(
-      (linea) =>
-        !lineasOcupadas.includes(linea.id) && String(linea.estado) !== "Mantenimiento"
-    );
+                          // Filtra las líneas que no están ocupadas ni en mantenimiento
+                          const filteredLineas = lineaRecepcions.filter(
+                            (linea) =>
+                              !lineasOcupadas.includes(linea.id) &&
+                              String(linea.estado) !== "Mantenimiento"
+                          );
 
-    const isDisabled = isFieldEnabledCarga("idLinea", estadoCarga);
+                          const isDisabled = isFieldEnabledCarga(
+                            "idLinea",
+                            estadoCarga
+                          );
 
-    return (
-      <Dropdown
-        value={field.value}
-        onChange={(e) => field.onChange(e.value)}
-        options={filteredLineas.map((lineaRecepcion) => ({
-          label: lineaRecepcion.nombre,
-          value: {
-            id: lineaRecepcion.id,
-            nombre: lineaRecepcion.nombre,
-          },
-        }))}
-        placeholder="Seleccionar línea"
-        className="w-full"
-        showClear
-        filter
-        disabled={isDisabled}
-      />
-    );
-  }}
-/>
+                          return (
+                            <Dropdown
+                              value={field.value}
+                              onChange={(e) => field.onChange(e.value)}
+                              options={filteredLineas.map((lineaRecepcion) => ({
+                                label: lineaRecepcion.nombre,
+                                value: {
+                                  id: lineaRecepcion.id,
+                                  nombre: lineaRecepcion.nombre,
+                                },
+                              }))}
+                              placeholder="Seleccionar línea"
+                              className="w-full"
+                              showClear
+                              filter
+                              disabled={isDisabled}
+                            />
+                          );
+                        }}
+                      />
                       {errors.idLinea && (
                         <small className="p-error block mt-2 flex align-items-center">
                           <i className="pi pi-exclamation-circle mr-2"></i>

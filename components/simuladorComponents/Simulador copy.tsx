@@ -185,7 +185,7 @@ function ComprasCard() {
   const [selectedRefineria, setSelectedRefineria] = useState<Refineria | null>(
     null
   );
-  const { tipoProductos, loading: loadingData } = useByRefineryData(
+  const { tipoProductos = [], loading: loadingData } = useByRefineryData(
     selectedRefineria?.id || ""
   );
   const [referencias, setReferencias] = useState<Referencia[]>([]);

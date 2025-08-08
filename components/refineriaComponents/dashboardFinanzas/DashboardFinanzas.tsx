@@ -19,33 +19,68 @@ import { AnalisisContratos } from "./AnalisisContratos";
 const DashboardFinanzas = () => {
   const { activeRefineria } = useRefineriaStore();
 
-  const { facturas, balances, cuentas, abonos, loading } = useByRefineryData(
-    activeRefineria?.id || ""
-  );
-  console.log("abonos", abonos);
-  const [productsThisWeek, setProductsThisWeek] = useState<Demo.Product[]>([]);
-  const [productsLastWeek, setProductsLastWeek] = useState<Demo.Product[]>([]);
-  const [activeTab, setActiveTab] = useState<number>(0);
-  const [selectedDrop, setSelectedDrop] = useState<any>(0);
-  const [dates, setDates] = useState<any[]>([]);
+  const {
+    facturas = [],
+    balances = [],
+    cuentas = [],
+    abonos = [],
+    loading,
+  } = useByRefineryData(activeRefineria?.id || "");
+  console.log("facturas", facturas);
+  // --- Meses disponibles y selección de mes global para abonos y facturas ---
+  // Obtener meses únicos de abonos y facturas en formato YYYY-MM
+  const mesesDisponibles = React.useMemo(() => {
+    const set = new Set<string>();
+    abonos.forEach((abono) => {
+      if (
+        abono.fecha &&
+        typeof abono.fecha === "string" &&
+        abono.fecha.length >= 7
+      ) {
+        // Extrae YYYY-MM directamente del string
+        set.add(abono.fecha.slice(0, 7));
+      }
+    });
+    facturas.forEach((factura) => {
+      if (
+        factura.fechaFactura &&
+        typeof factura.fechaFactura === "string" &&
+        factura.fechaFactura.length >= 7
+      ) {
+        set.add(factura.fechaFactura.slice(0, 7));
+      }
+    });
+    // Ordenar descendente (más reciente primero) usando comparación de fechas
+    return Array.from(set).sort((a, b) => {
+      // a y b son strings tipo 'YYYY-MM'
+      const dateA = new Date(a + "-01");
+      const dateB = new Date(b + "-01");
+      return dateB.getTime() - dateA.getTime();
+    });
+  }, [abonos, facturas]);
 
+  // Estado para el mes seleccionado
+  const [mesSeleccionado, setMesSeleccionado] = useState<string>("");
+  console.log("mesesDisponibles", mesesDisponibles);
+
+  // Cuando cambian los abonos o los meses disponibles, setear el mes más reciente por defecto
   useEffect(() => {
-    ProductService.getProductsSmall().then((data) =>
-      setProductsThisWeek(data.slice(0, 5) as Demo.Product[])
-    );
-    ProductService.getProductsMixed().then((data) =>
-      setProductsLastWeek(data.slice(0, 5) as Demo.Product[])
-    );
-  }, []);
+    if (mesesDisponibles.length > 0) {
+      setMesSeleccionado((prev) =>
+        prev && mesesDisponibles.includes(prev) ? prev : mesesDisponibles[0]
+      );
+    }
+  }, [mesesDisponibles]);
+
+  // Handler para cambio de mes
+  const handleMesChange = (mes: string) => {
+    setMesSeleccionado(mes);
+  };
 
   return (
     <div className="grid">
       <div className="col-12">
         <Header
-          selectedDrop={selectedDrop}
-          setSelectedDrop={setSelectedDrop}
-          dates={dates}
-          setDates={setDates}
           // operationalData={{
           //   productionRate: "22,100",
           //   efficiency: "94.2",
@@ -63,6 +98,9 @@ const DashboardFinanzas = () => {
             lastUpdate: new Date().toLocaleString(),
             alertMessage: "Variación >5% en costos de refinación",
           }}
+          mesSeleccionado={mesSeleccionado}
+          mesesDisponibles={mesesDisponibles}
+          onMesChange={handleMesChange}
         />
       </div>
 
@@ -71,7 +109,11 @@ const DashboardFinanzas = () => {
       </div>
 
       <div className="col-12 lg:col-6">
-        <AbonosOverview abonos={abonos} loading={loading} />
+        <AbonosOverview
+          abonos={abonos}
+          loading={loading}
+          mesSeleccionado={mesSeleccionado}
+        />
       </div>
 
       {/* <div className="col-12 lg:col-6">
@@ -97,11 +139,15 @@ const DashboardFinanzas = () => {
         <BestSellers />
       </div> */}
 
-      <div className="col-12 md:col-6 lg:col-6">
-        <GastosResumen facturas={facturas} loading={loading} />
+      <div className="col-12  lg:col-6">
+        <GastosResumen
+          facturas={facturas}
+          loading={loading}
+          mesSeleccionado={mesSeleccionado}
+        />
       </div>
 
-      <div className="col-12 ">
+      <div className="col-12 lg:col-8 ">
         <AnalisisContratos balances={balances} loading={loading} />
       </div>
       {/* 

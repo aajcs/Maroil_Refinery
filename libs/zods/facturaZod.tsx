@@ -30,10 +30,7 @@ export const facturaSchema = object({
 });
 export const partidaSchema = object({
   id: string().optional(),
-  idRefineria: object({
-    id: string().min(1, "El ID de la refinería es obligatorio"),
-    nombre: string().optional(),
-  }),
+
   descripcion: string().min(1, "La descripción es obligatoria"),
   codigo: number().min(0, "El código debe ser un número no negativo"),
   eliminado: boolean().default(false),
@@ -54,4 +51,5 @@ export const partidaSchema = object({
       descripcion: string().optional(),
     })
   ).optional(),
+  color: string().min(1, "El color es obligatorio"),
 });

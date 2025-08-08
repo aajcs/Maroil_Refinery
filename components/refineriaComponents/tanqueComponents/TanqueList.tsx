@@ -188,7 +188,6 @@ const TanqueList = () => {
           header={renderHeader()}
           paginator
           rows={10}
-          responsiveLayout="scroll"
           currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} entradas"
           rowsPerPageOptions={[10, 25, 50]}
           filters={filters}
@@ -199,7 +198,6 @@ const TanqueList = () => {
         >
           <Column
             body={actionBodyTemplate}
-            headerStyle={{ minWidth: "10rem" }}
           />
           <Column field="nombre" header="Nombre" sortable />
           <Column

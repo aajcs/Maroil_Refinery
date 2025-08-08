@@ -1,65 +1,117 @@
 "use client";
-import React, { use, useEffect, useState } from "react";
-import { getRefinerias } from "@/app/api/refineriaService";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useRefineriaStore } from "@/store/refineriaStore";
-import { getRecepcions } from "@/app/api/recepcionService";
-// import GraficaRecepcionesPorRefineria from "./GraficaRecepcionesPorRefineria";
-// import RecepcionDashboard from "./RecepcionDashboard";
-import { Bunkering, Despacho, Recepcion } from "@/libs/interfaces";
+import { Bunkering } from "@/libs/interfaces";
 import { getBunkerings } from "@/app/api/bunkering/bunkeringService";
 import { useSession } from "next-auth/react";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { Button } from "primereact/button";
-// import NoDataIllustration from "@/assets/images/no-data.svg";
 import { motion } from "framer-motion";
 import GraficaRecepcionesPorRefineria from "./GraficaRecepcionesPorRefineria";
-import { getDespachos } from "@/app/api/despachoService";
+import FiltrosDashboard from "./FiltrosDashboard";
 import GraficaDespachoPorRefineria from "./GraficaDespachoPorRefineria";
-import CardRecepcionesPorRefineria from "./CardRecepcionesPorRefineria";
-import CardDespachoPorRefineria from "./CardDespachoPorRefineria";
+import { useRefineryDataFull } from "@/hooks/useRefineryDataFull";
+import useSWR from "swr";
 
 const DashboardRefinerias = () => {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const user = session?.user;
-  console.log("renderizando DashboardRefinerias", user);
-  const [refinerias, setRefinerias] = useState<any[]>([]);
-  const [recepcions, setRecepcions] = useState<Recepcion[]>([]);
-  const [despachos, setDespachos] = useState<Despacho[]>([]);
+  const {
+    refinerias = [],
+    recepcions = [],
+    despachos = [],
+    loading,
+  } = useRefineryDataFull();
+  // Para refrescar datos globales con SWR
+  const { mutate } = useSWR("refinery-data-global");
   const [bunkerings, setBunkerings] = useState<Bunkering[]>([]);
-  const [loading, setLoading] = useState(true);
-  const { activeRefineria, setActiveRefineria } = useRefineriaStore();
+  const { setActiveRefineria } = useRefineriaStore();
   const router = useRouter();
 
-  // fetch refinerías, can be called on mount and on reload
-  const fetchRefinerias = async () => {
-    setLoading(true);
-    try {
-      const data = await getRefinerias();
-      let { refinerias: dataRefinerias } = data;
-      if (!Array.isArray(dataRefinerias)) dataRefinerias = [];
-      if (user?.usuario?.acceso === "completo") setRefinerias(dataRefinerias);
-      else if (
-        user?.usuario?.acceso === "limitado" &&
-        Array.isArray(user?.usuario?.idRefineria)
-      ) {
-        setRefinerias(
-          dataRefinerias.filter((r: { id: string | undefined }) =>
-            user?.usuario?.idRefineria?.some((idObj) => idObj.id === r.id)
-          )
-        );
-      } else setRefinerias([]);
-    } catch (error) {
-      console.error("Error al obtener las refinerías:", error);
-      setRefinerias([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-  useEffect(() => {
-    if (user?.usuario?.acceso) fetchRefinerias();
-  }, [user]);
+  // Estado global de filtros para dashboard
+  // Obtener años disponibles
+  const availableYears = React.useMemo(() => {
+    if (!recepcions.length) return [];
+    const years = Array.from(
+      new Set(
+        recepcions.map((r) => new Date(r.fechaInicioRecepcion).getFullYear())
+      )
+    );
+    return years.sort((a, b) => b - a);
+  }, [recepcions]);
 
+  // Obtener refinerías disponibles
+  const availableRefinerias = React.useMemo(() => {
+    if (!recepcions.length) return [];
+    return Array.from(new Set(recepcions.map((r) => r.idRefineria.nombre)));
+  }, [recepcions]);
+
+  // Estado de filtros
+  const [selectedYear, setSelectedYear] = useState<number>(
+    availableYears[0] || new Date().getFullYear()
+  );
+  const [selectedRefinerias, setSelectedRefinerias] = useState<string[]>([]);
+  const [selectedMonth, setSelectedMonth] = useState<Date | null>(null);
+
+  // Filtrar recepciones según año y refinería
+  const filteredRecepcions = React.useMemo(() => {
+    return recepcions.filter((r) => {
+      const year = new Date(r.fechaInicioRecepcion).getFullYear();
+      const refName = r.idRefineria.nombre;
+      const yearMatch = year === selectedYear;
+      const refMatch =
+        selectedRefinerias.length === 0 || selectedRefinerias.includes(refName);
+      return yearMatch && refMatch;
+    });
+  }, [recepcions, selectedYear, selectedRefinerias]);
+
+  // Meses disponibles para el filtro actual
+  const availableMonths = React.useMemo(() => {
+    if (!filteredRecepcions.length) return [];
+    const fechas = filteredRecepcions.map(
+      (r) => new Date(r.fechaInicioRecepcion)
+    );
+    const min = fechas.reduce((a, b) => (a < b ? a : b));
+    const max = fechas.reduce((a, b) => (a > b ? a : b));
+    const months: { label: string; value: Date }[] = [];
+    let current = new Date(min.getFullYear(), min.getMonth(), 1);
+    const end = new Date(max.getFullYear(), max.getMonth(), 1);
+    while (current <= end) {
+      months.push({
+        label: current.toLocaleString("es", {
+          month: "long",
+          year: "numeric",
+        }),
+        value: new Date(current),
+      });
+      current.setMonth(current.getMonth() + 1);
+    }
+    return months;
+  }, [filteredRecepcions]);
+
+  // Selección automática del mes más reciente
+  React.useEffect(() => {
+    if (availableMonths.length && !selectedMonth) {
+      setSelectedMonth(availableMonths[availableMonths.length - 1].value);
+    }
+    // Reset month if year or refineria changes
+    if (
+      selectedMonth &&
+      !availableMonths.find(
+        (m) => m.value.getTime() === selectedMonth.getTime()
+      )
+    ) {
+      setSelectedMonth(
+        availableMonths.length
+          ? availableMonths[availableMonths.length - 1].value
+          : null
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [availableMonths, selectedYear, selectedRefinerias]);
+
+  // Cargar bunkerings solo una vez
   useEffect(() => {
     const fetchBunkerings = async () => {
       try {
@@ -71,45 +123,41 @@ const DashboardRefinerias = () => {
           console.error("La respuesta no es un array:", dataBunkerings);
         }
       } catch (error) {
-        console.error("Error al obtener las refinerías:", error);
+        console.error("Error al obtener los bunkerings:", error);
       }
     };
-
     fetchBunkerings();
   }, []);
-  useEffect(() => {
-    const fetchRecepcions = async () => {
-      try {
-        const data = await getRecepcions();
-        const { recepcions: dataRepecions } = data;
-        if (Array.isArray(dataRepecions)) {
-          setRecepcions(dataRepecions);
-        } else {
-          console.error("La respuesta no es un array:", dataRepecions);
-        }
-      } catch (error) {
-        console.error("Error al obtener las recepciones:", error);
-      }
-    };
 
-    fetchRecepcions();
-  }, []);
-  useEffect(() => {
-    const fetchDepachos = async () => {
-      try {
-        const data = await getDespachos();
-        const { despachos: dataDespachos } = data;
-        if (Array.isArray(dataDespachos)) {
-          setDespachos(dataDespachos);
-        } else {
-          console.error("La respuesta no es un array:", dataDespachos);
-        }
-      } catch (error) {
-        console.error("Error al obtener los despachos:", error);
-      }
-    };
-    fetchDepachos();
-  }, []);
+  // Filtrar refinerías según el acceso del usuario
+  const refineriasFilter = React.useMemo(() => {
+    if (!Array.isArray(refinerias)) return [];
+    if (user?.usuario?.acceso === "completo") {
+      return refinerias;
+    } else if (
+      user?.usuario?.acceso === "limitado" &&
+      Array.isArray(user?.usuario?.idRefineria)
+    ) {
+      return refinerias.filter((r: { id: string | undefined }) =>
+        user?.usuario?.idRefineria?.some((idObj) => idObj.id === r.id)
+      );
+    } else {
+      return [];
+    }
+  }, [user, refinerias]);
+
+  // Evitar problemas de hidratación: solo renderizar cuando la sesión esté lista
+  if (status === "loading" || loading) {
+    return (
+      <div
+        className="flex justify-content-center align-items-center"
+        style={{ height: "300px" }}
+      >
+        <ProgressSpinner />
+      </div>
+    );
+  }
+
   const handleDivClick = (refineria: any) => {
     setActiveRefineria(refineria);
     router.push("/refineria");
@@ -150,7 +198,7 @@ const DashboardRefinerias = () => {
         <Button
           label="Recargar"
           icon="pi pi-refresh"
-          onClick={fetchRefinerias}
+          onClick={() => mutate()}
           className="mt-2"
         />
       </div>
@@ -159,9 +207,9 @@ const DashboardRefinerias = () => {
   return (
     <>
       <div className="grid">
-        {Array.isArray(refinerias) &&
-          refinerias.length > 0 &&
-          refinerias.map((refineria, idx) => (
+        {Array.isArray(refineriasFilter) &&
+          refineriasFilter.length > 0 &&
+          refineriasFilter.map((refineria, idx) => (
             <motion.div
               key={refineria.id}
               className="col-12 md:col-6 lg:col-4 xl:col-3 p-2 clickable"
@@ -253,22 +301,52 @@ const DashboardRefinerias = () => {
                 )}{" "}
                 </div> */}
       </div>
+      <hr
+        style={{
+          border: "none",
+          borderTop: "2px solid #e0e4ea",
+          margin: "2rem 0",
+          width: "100%",
+          opacity: 0.7,
+          borderRadius: "2px",
+        }}
+      />
+      {/* Filtros globales dashboard */}
+      <div className="">
+        <FiltrosDashboard
+          selectedYear={selectedYear}
+          setSelectedYear={setSelectedYear}
+          availableYears={availableYears}
+          selectedRefinerias={selectedRefinerias}
+          setSelectedRefinerias={setSelectedRefinerias}
+          availableRefinerias={availableRefinerias}
+          selectedMonth={selectedMonth}
+          setSelectedMonth={setSelectedMonth}
+          availableMonths={availableMonths}
+        />
+      </div>
       <div className="grid mt-1">
         <div className="col-12 md:col-6 ">
-          {/* <RecepcionDashboard recepcions={recepcions} /> */}
           {GraficaRecepcionesPorRefineria ? (
-            <GraficaRecepcionesPorRefineria recepcions={recepcions} />
+            <GraficaRecepcionesPorRefineria
+              recepcions={recepcions}
+              selectedYear={selectedYear}
+              selectedRefinerias={selectedRefinerias}
+              selectedMonth={selectedMonth}
+              availableYears={availableYears}
+              availableRefinerias={availableRefinerias}
+              availableMonths={availableMonths}
+            />
           ) : (
             <p>Error loading chart component</p>
-          )}{" "}
+          )}
         </div>
         <div className="col-12 md:col-6 ">
-          {/* <RecepcionDashboard recepcions={recepcions} /> */}
           {GraficaDespachoPorRefineria ? (
             <GraficaDespachoPorRefineria despachos={despachos} />
           ) : (
             <p>Error loading chart component</p>
-          )}{" "}
+          )}
         </div>
       </div>
     </>

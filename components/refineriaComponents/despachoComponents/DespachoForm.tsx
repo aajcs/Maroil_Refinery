@@ -65,9 +65,12 @@ const DespachoForm = ({
 }: DespachoFormProps) => {
   const { activeRefineria } = useRefineriaStore();
 
-  const { tanques, contratos, lineaDespachos, loading } = useByRefineryData(
-    activeRefineria?.id || ""
-  );
+  const {
+    tanques = [],
+    contratos = [],
+    lineaDespachos = [],
+    loading,
+  } = useByRefineryData(activeRefineria?.id || "");
   const calendarRef = useRef<Calendar>(null);
 
   const [submitting, setSubmitting] = useState(false);
@@ -473,45 +476,48 @@ const DespachoForm = ({
                         Línea de Descarga
                       </label>
                       <Controller
-  name="idLineaDespacho"
-  control={control}
-  render={({ field }) => {
-    // Filtra líneas ocupadas por despachos activos (EN_REFINERIA y EN_PROCESO)
-    const lineasOcupadas = despachos
-      .filter(
-        (d) =>
-          d.idLineaDespacho?.id &&
-          d.estadoDespacho === "EN_REFINERIA" &&
-         (!despacho?.id || d.id !== despacho.id) // Permite editar la misma línea si es edición
-      )
-      .map((d) => d.idLineaDespacho.id);
+                        name="idLineaDespacho"
+                        control={control}
+                        render={({ field }) => {
+                          // Filtra líneas ocupadas por despachos activos (EN_REFINERIA y EN_PROCESO)
+                          const lineasOcupadas = despachos
+                            .filter(
+                              (d) =>
+                                d.idLineaDespacho?.id &&
+                                d.estadoDespacho === "EN_REFINERIA" &&
+                                (!despacho?.id || d.id !== despacho.id) // Permite editar la misma línea si es edición
+                            )
+                            .map((d) => d.idLineaDespacho.id);
 
-    const filteredLineas = lineaDespachos.filter(
-      (linea) => !lineasOcupadas.includes(linea.id)
-    );
+                          const filteredLineas = lineaDespachos.filter(
+                            (linea) => !lineasOcupadas.includes(linea.id)
+                          );
 
-    const isDisabled = isFieldEnabledCarga("idLineaDespacho", estadoCarga);
+                          const isDisabled = isFieldEnabledCarga(
+                            "idLineaDespacho",
+                            estadoCarga
+                          );
 
-    return (
-      <Dropdown
-        value={field.value}
-        onChange={(e) => field.onChange(e.value)}
-        options={filteredLineas.map((lineaDespacho) => ({
-          label: lineaDespacho.nombre,
-          value: {
-            id: lineaDespacho.id,
-            nombre: lineaDespacho.nombre,
-          },
-        }))}
-        placeholder="Seleccionar línea"
-        className="w-full"
-        showClear
-        filter
-        disabled={isDisabled}
-      />
-    );
-  }}
-/>
+                          return (
+                            <Dropdown
+                              value={field.value}
+                              onChange={(e) => field.onChange(e.value)}
+                              options={filteredLineas.map((lineaDespacho) => ({
+                                label: lineaDespacho.nombre,
+                                value: {
+                                  id: lineaDespacho.id,
+                                  nombre: lineaDespacho.nombre,
+                                },
+                              }))}
+                              placeholder="Seleccionar línea"
+                              className="w-full"
+                              showClear
+                              filter
+                              disabled={isDisabled}
+                            />
+                          );
+                        }}
+                      />
                       {errors.idLineaDespacho && (
                         <small className="p-error block mt-2 flex align-items-center">
                           <i className="pi pi-exclamation-circle mr-2"></i>

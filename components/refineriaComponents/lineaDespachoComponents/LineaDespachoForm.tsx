@@ -47,7 +47,9 @@ const LineaDespachoForm = ({
   showToast,
 }: LineaDespachoFormProps) => {
   const { activeRefineria } = useRefineriaStore();
-  const { productos, loading } = useByRefineryData(activeRefineria?.id || "");
+  const { productos = [], loading } = useByRefineryData(
+    activeRefineria?.id || ""
+  );
 
   // Filtrar productos por categoría "Derivados"
   const filteredProductos = productos.filter(

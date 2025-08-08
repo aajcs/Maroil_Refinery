@@ -56,6 +56,10 @@ const ProductoList = () => {
       setLoading(false);
     }
   };
+  const openProductoFormDialog = () => {
+    setProducto(null); // Limpia el producto seleccionado
+    setProductoFormDialog(true);
+  };
 
   const hideDeleteProductDialog = () => setDeleteProductDialog(false);
   const hideProductoFormDialog = () => {
@@ -108,7 +112,7 @@ const ProductoList = () => {
         label="Agregar Nuevo"
         outlined
         className="w-full sm:w-auto flex-order-0 sm:flex-order-1"
-        onClick={() => setProductoFormDialog(true)}
+        onClick={openProductoFormDialog}
       />
     </div>
   );
@@ -179,7 +183,7 @@ const ProductoList = () => {
         >
           <Column
             body={actionBodyTemplate}
-            headerStyle={{ minWidth: "10rem" }}
+           
           />
           <Column field="nombre" header="Nombre" sortable />
           <Column field="posicion" header="Posición" sortable />

@@ -59,6 +59,12 @@ const DespachoList = () => {
     }
   };
 
+  const openDespachoFormDialog = () => {
+  setDespacho(null); // Limpia el despacho seleccionado
+  setDespachoFormDialog(true);
+};
+
+
   const hideDeleteProductDialog = () => setDeleteProductDialog(false);
   const hideDespachoFormDialog = () => {
     setDespacho(null);
@@ -103,36 +109,36 @@ const DespachoList = () => {
       );
 
   const renderHeader = () => (
-    <div className="flex flex-wrap gap-2 align-items-center justify-content-between">
-      <div className="flex align-items-center gap-2 w-full sm:w-auto">
-        <span className="p-input-icon-left w-full sm:w-20rem">
-          <i className="pi pi-search"></i>
-          <InputText
-            value={globalFilterValue}
-            onChange={onGlobalFilterChange}
-            placeholder="Búsqueda Global"
-            className="w-full"
-          />
-        </span>
-        <Button
-          type="button"
-          icon={mostrarTodas ? "pi pi-eye-slash" : "pi pi-eye"}
-          label={mostrarTodas ? "Ver solo activos" : "Ver todos"}
-          className="p-button-secondary"
-          onClick={() => setMostrarTodas((prev) => !prev)}
-          style={{ minWidth: 160 }}
+  <div className="flex flex-wrap gap-2 align-items-center justify-content-between">
+    <div className="flex align-items-center gap-2 w-full sm:w-auto">
+      <span className="p-input-icon-left w-full sm:w-20rem">
+        <i className="pi pi-search"></i>
+        <InputText
+          value={globalFilterValue}
+          onChange={onGlobalFilterChange}
+          placeholder="Búsqueda Global"
+          className="w-full"
         />
-      </div>
+      </span>
       <Button
         type="button"
-        icon="pi pi-user-plus"
-        label="Agregar Nuevo"
-        outlined
-        className="w-full sm:w-auto"
-        onClick={() => setDespachoFormDialog(true)}
+        icon={mostrarTodas ? "pi pi-eye-slash" : "pi pi-eye"}
+        label={mostrarTodas ? "Ver solo activos" : "Ver todos"}
+        className="p-button-secondary"
+        onClick={() => setMostrarTodas((prev) => !prev)}
+        style={{ minWidth: 160 }}
       />
     </div>
-  );
+    <Button
+      type="button"
+      icon="pi pi-user-plus"
+      label="Agregar Nuevo"
+      outlined
+      className="w-full sm:w-auto"
+      onClick={openDespachoFormDialog}
+    />
+  </div>
+);
 
   const actionBodyTemplate = (rowData: Despacho) => (
     <CustomActionButtons

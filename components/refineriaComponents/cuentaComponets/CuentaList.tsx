@@ -261,7 +261,7 @@ const CuentaList = ({ tipoCuenta }: CuentaListProps) => {
         >
           <Column
             body={actionBodyTemplate}
-            headerStyle={{ minWidth: "10rem" }}
+
           />
           <Column field="numeroCuenta" header="N° Cuenta" sortable />
           <Column

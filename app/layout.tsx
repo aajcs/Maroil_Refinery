@@ -10,6 +10,7 @@ import { SessionProvider } from "next-auth/react";
 import { Nullable } from "primereact/ts-helpers";
 import "../styles/globals.css";
 import AppInitializer from "@/components/common/AppInitializer";
+import { SWRCacheProvider } from "@/store/SWRCacheProvider";
 
 addLocale("es", {
   firstDayOfWeek: 1,
@@ -74,8 +75,8 @@ export default function RootLayout({
         <SessionProvider>
           <PrimeReactProvider>
             <LayoutProvider>
-              <AppInitializer /> {/* <-- Aquí va */}
-              {children}
+              <AppInitializer />
+              <SWRCacheProvider>{children}</SWRCacheProvider>
             </LayoutProvider>
           </PrimeReactProvider>
         </SessionProvider>

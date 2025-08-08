@@ -6,10 +6,6 @@ import { Card } from "primereact/card";
 import { Badge } from "primereact/badge";
 
 interface HeaderProps {
-  selectedDrop: any;
-  setSelectedDrop: (value: any) => void;
-  dates: any[];
-  setDates: (dates: any[]) => void;
   operationalData?: {
     productionRate: string;
     efficiency: string;
@@ -27,17 +23,49 @@ interface HeaderProps {
     lastUpdate: string;
     alertMessage?: string;
   };
+  mesSeleccionado: string;
+  mesesDisponibles: string[];
+  onMesChange: (mes: string) => void;
 }
 
 const Header = ({
-  selectedDrop,
-  setSelectedDrop,
-  dates,
-  setDates,
   operationalData,
   financialMetrics,
+  mesSeleccionado,
+  mesesDisponibles,
+  onMesChange,
 }: HeaderProps) => (
   <div className="flex flex-column md:flex-row md:align-items-center md:justify-content-between mb-3 gap-3">
+    {/* Dropdown de mes global */}
+    <div className="flex align-items-center gap-3 mb-3">
+      <span className="font-medium">Mes:</span>
+      <Dropdown
+        value={mesSeleccionado}
+        options={mesesDisponibles.map((mes) => {
+          // mes es 'YYYY-MM'
+          const [anio, mesNum] = mes.split("-");
+          const mesesES = [
+            "enero",
+            "febrero",
+            "marzo",
+            "abril",
+            "mayo",
+            "junio",
+            "julio",
+            "agosto",
+            "septiembre",
+            "octubre",
+            "noviembre",
+            "diciembre",
+          ];
+          const label = `${mesesES[parseInt(mesNum, 10) - 1]} ${anio}`;
+          return { label, value: mes };
+        })}
+        onChange={(e) => onMesChange(e.value)}
+        placeholder="Seleccionar mes"
+        className="w-10rem"
+      />
+    </div>
     {operationalData && (
       <div className="flex flex-column md:flex-row align-items-start md:align-items-center gap-3 w-full">
         <div className="flex flex-wrap gap-3 flex-1">
@@ -100,25 +128,7 @@ const Header = ({
           </div>
         </div>
 
-        {/* Controles */}
-        <div className="flex align-items-center justify-content-end gap-3">
-          <Dropdown
-            options={analytics}
-            value={selectedDrop}
-            onChange={(e) => setSelectedDrop(e.value)}
-            placeholder="Category"
-            className="w-full sm:w-10rem"
-            optionLabel="label"
-          />
-          <Calendar
-            value={dates}
-            onChange={(e) => setDates(e.value as any)}
-            showIcon={true}
-            selectionMode="range"
-            className="w-full sm:w-14rem"
-            placeholder="Select Range"
-          />
-        </div>
+        {/* Controles eliminados para simplificar el header */}
       </div>
     )}
     {financialMetrics && (
@@ -233,25 +243,7 @@ const Header = ({
             </div>
           )}
         </div>
-        {/* Controles */}
-        <div className="flex align-items-center justify-content-end gap-3">
-          <Dropdown
-            options={analytics}
-            value={selectedDrop}
-            onChange={(e) => setSelectedDrop(e.value)}
-            placeholder="Category"
-            className="w-full sm:w-10rem"
-            optionLabel="label"
-          />
-          <Calendar
-            value={dates}
-            onChange={(e) => setDates(e.value as any)}
-            showIcon={true}
-            selectionMode="range"
-            className="w-full sm:w-14rem"
-            placeholder="Select Range"
-          />
-        </div>
+        {/* Controles eliminados para simplificar el header */}
       </div>
     )}
   </div>

@@ -16,6 +16,7 @@ import { Button } from "primereact/button";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { InputNumber } from "primereact/inputnumber";
 import { useByRefineryData } from "@/hooks/useByRefineryData";
+import { useRefineryDataFull } from "@/hooks/useRefineryDataFull";
 
 // Definiciones de tipos y esquemas
 type SimulationMode = "crudeToProducts" | "productsToCrude";
@@ -114,10 +115,10 @@ export default function SimulatorForm({
   // Hooks y estados
   const { loading, brent, oilDerivate } = useRefineryPrecios();
   const [refineria, setRefineria] = useState<any | null>(null);
-  const { tipoProductos, loading: loadingData } = useByRefineryData(
+  const { refinerias = [] } = useRefineryDataFull();
+  const { tipoProductos = [], loading: loadingData } = useByRefineryData(
     refineria?.id || ""
   );
-  const [refinerias, setRefinerias] = useState<any[]>([]);
   const [tipoProducto, setTipoProducto] = useState<TipoProducto>();
 
   // Form configuration
@@ -145,24 +146,6 @@ export default function SimulatorForm({
   // useEffect(() => {
   //   fetchRefinerias();
   // }, []);
-
-  useEffect(() => {
-    const fetchRefinerias = async () => {
-      try {
-        const data = await getRefinerias();
-        const { refinerias: dataRefinerias } = data;
-        if (Array.isArray(dataRefinerias)) {
-          setRefinerias(dataRefinerias);
-        } else {
-          console.error("La respuesta no es un array:", dataRefinerias);
-        }
-      } catch (error) {
-        console.error("Error al obtener las refinerías:", error);
-      }
-    };
-
-    fetchRefinerias();
-  }, []);
 
   // useEffect(() => {
   //   updateCrudeCosts();

@@ -21,7 +21,7 @@ import ModeladoRefineriaContratosVentaList from "./ModeladoRefineriaContratosVen
 import { TabPanel, TabView } from "primereact/tabview";
 import { InputSwitch } from "primereact/inputswitch";
 import { motion } from "framer-motion";
-import { useRefineryData } from "@/hooks/useRefineryData";
+import { useByRefineryData } from "@/hooks/useByRefineryData";
 
 const AnimatedTitle = ({ text }: { text: string }) => {
   const container = {
@@ -61,17 +61,17 @@ const ModeladoRefineriaDashboard = () => {
   const { activeRefineria } = useRefineriaStore();
   const { recepcionModificado } = useSocket(); // Obtén recepcionModificado desde el socket
   const {
-    tanques,
-    torresDestilacion,
-    lineaRecepcions,
-    recepcions,
-    contratos,
+    tanques = [],
+    torresDestilacions = [],
+    lineaRecepcions = [],
+    recepcions = [],
+    contratos = [],
     loading,
-    lineaDespachos,
-    despachos,
-    corteRefinacions,
-    chequeoCantidads,
-  } = useRefineryData(
+    lineaDespachos = [],
+    despachos = [],
+    corteRefinacions = [],
+    chequeoCantidads = [],
+  } = useByRefineryData(
     activeRefineria?.id || "",
     recepcionModificado || undefined // Pasa recepcionModificado como dependencia
   );
@@ -429,7 +429,7 @@ const ModeladoRefineriaDashboard = () => {
           >
             <AnimatedTitle text="Torres de Procesamiento" />
             <div className="grid">
-              {torresDestilacion.map((torre) => (
+              {torresDestilacions.map((torre) => (
                 <div key={torre.id} className="col-12 md:col-12">
                   <ModeladoRefineriaTorre
                     torre={torre}

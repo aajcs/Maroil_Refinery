@@ -78,6 +78,12 @@ const ChequeoCantidadList = () => {
     setChequeoCantidadFormDialog(false);
   };
 
+  const openChequeoCantidadFormDialog = () => {
+  setChequeoCantidad(null); // Limpia el chequeo seleccionado
+  setOnDuplicate(false);    // Limpia el estado de duplicado si aplica
+  setChequeoCantidadFormDialog(true);
+};
+
   const handleDeleteChequeoCantidad = async () => {
     if (chequeoCantidad?.id) {
       await deleteChequeoCantidad(chequeoCantidad.id);
@@ -108,27 +114,27 @@ const ChequeoCantidadList = () => {
     setGlobalFilterValue(value);
   };
 
-  const renderHeader = () => (
-    <div className="flex flex-wrap gap-2 align-items-center justify-content-between">
-      <span className="p-input-icon-left w-full sm:w-20rem flex-order-1 sm:flex-order-0">
-        <i className="pi pi-search"></i>
-        <InputText
-          value={globalFilterValue}
-          onChange={onGlobalFilterChange}
-          placeholder="Búsqueda Global"
-          className="w-full"
-        />
-      </span>
-      <Button
-        type="button"
-        icon="pi pi-user-plus"
-        label="Agregar Nuevo"
-        outlined
-        className="w-full sm:w-auto flex-order-0 sm:flex-order-1"
-        onClick={() => setChequeoCantidadFormDialog(true)}
+const renderHeader = () => (
+  <div className="flex flex-wrap gap-2 align-items-center justify-content-between">
+    <span className="p-input-icon-left w-full sm:w-20rem flex-order-1 sm:flex-order-0">
+      <i className="pi pi-search"></i>
+      <InputText
+        value={globalFilterValue}
+        onChange={onGlobalFilterChange}
+        placeholder="Búsqueda Global"
+        className="w-full"
       />
-    </div>
-  );
+    </span>
+    <Button
+      type="button"
+      icon="pi pi-user-plus"
+      label="Agregar Nuevo"
+      outlined
+      className="w-full sm:w-auto flex-order-0 sm:flex-order-1"
+      onClick={openChequeoCantidadFormDialog}
+    />
+  </div>
+);
 
   const actionBodyTemplate = (rowData: ChequeoCantidad) => (
     <>
