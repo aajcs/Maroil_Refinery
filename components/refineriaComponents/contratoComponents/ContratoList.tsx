@@ -76,9 +76,9 @@ const ContratoList = ({ tipoContrato }: ContratoListProps) => {
   };
 
   const openContratoFormDialog = () => {
-  setContrato(null); // Limpia el contrato seleccionado
-  setContratoFormDialog(true);
-};
+    setContrato(null); // Limpia el contrato seleccionado
+    setContratoFormDialog(true);
+  };
 
   const handleDeleteContrato = async () => {
     if (contrato?.id) {
@@ -139,14 +139,14 @@ const ContratoList = ({ tipoContrato }: ContratoListProps) => {
           style={{ minWidth: 160 }}
         />
       </div>
-    <Button
-  type="button"
-  icon="pi pi-user-plus"
-  label="Agregar Nuevo"
-  outlined
-  className="w-full sm:w-auto"
-  onClick={openContratoFormDialog}
-/>
+      <Button
+        type="button"
+        icon="pi pi-user-plus"
+        label="Agregar Nuevo"
+        outlined
+        className="w-full sm:w-auto"
+        onClick={openContratoFormDialog}
+      />
     </div>
   );
 
@@ -283,7 +283,6 @@ const ContratoList = ({ tipoContrato }: ContratoListProps) => {
           header={renderHeader()}
           paginator
           rows={10}
-          responsiveLayout="scroll"
           currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} entradas"
           rowsPerPageOptions={[10, 25, 50]}
           filters={filters}
@@ -295,7 +294,7 @@ const ContratoList = ({ tipoContrato }: ContratoListProps) => {
           onRowToggle={(e) => setExpandedRows(e.data)}
           rowExpansionTemplate={rowExpansionTemplate}
         >
-          <Column expander style={{ width: "3em" }} />
+          <Column expander />
           <Column body={actionBodyTemplate} />
           <Column field="numeroContrato" header="Número de Contrato" sortable />
           <Column field="estadoContrato" header="Estado del Contrato" />

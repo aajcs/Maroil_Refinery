@@ -37,7 +37,7 @@ const PDFGenerator = <T,>({
   const [showFullPreview, setShowFullPreview] = useState(false);
 
   return (
-    <div className="pdf-generator">
+    <div className="pdf-generator m-0">
       <div className="pdf-actions">
         {/* <PDFDownloadButton
           document={<Template data={data} />}
