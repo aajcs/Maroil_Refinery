@@ -15,6 +15,7 @@ import { ProgressSpinner } from "primereact/progressspinner";
 import { handleFormError } from "@/utils/errorHandlers";
 import { useByRefineryData } from "@/hooks/useByRefineryData";
 import { partidaSchema } from "@/libs/zods";
+import { ColorPicker } from "primereact/colorpicker";
 
 type FormData = z.infer<typeof partidaSchema>;
 
@@ -43,7 +44,9 @@ const PartidaForm = ({
   showToast,
 }: PartidaFormProps) => {
   const { activeRefineria } = useRefineriaStore();
-  const { productos = [], loading } = useByRefineryData(activeRefineria?.id || "");
+  const { productos = [], loading } = useByRefineryData(
+    activeRefineria?.id || ""
+  );
 
   // Filtrar productos por categoría "Derivados"
   const filteredProductos = productos.filter(
@@ -56,11 +59,13 @@ const PartidaForm = ({
     handleSubmit,
     formState: { errors },
     setValue,
+    watch,
   } = useForm<FormData>({
     resolver: zodResolver(partidaSchema),
     defaultValues: {
       codigo: partida?.codigo ?? undefined,
       descripcion: partida?.descripcion ?? "",
+      color: partida?.color ?? "",
     },
   });
 
@@ -106,7 +111,7 @@ const PartidaForm = ({
       </div>
     );
   }
-
+  console.log("errors", errors);
   return (
     <div>
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -165,6 +170,30 @@ const PartidaForm = ({
                   <small className="p-error block mt-2 flex align-items-center">
                     <i className="pi pi-exclamation-circle mr-2"></i>
                     {errors.descripcion.message}
+                  </small>
+                )}
+              </div>
+            </div>
+            {/* Campo: Color */}
+            <div className="col-12 md:col-6 lg:col-4 ">
+              <div className="p-2 bg-white border-round shadow-1 surface-card">
+                <label className="block font-medium text-900 mb-3 flex align-items-center">
+                  <i className="pi pi-palette mr-2 text-primary"></i>
+                  Color
+                </label>
+                <ColorPicker
+                  id="color"
+                  format="hex"
+                  value={watch("color")}
+                  {...register("color")}
+                  className={classNames("w-full", {
+                    "p-invalid": errors.color,
+                  })}
+                />
+                {errors.color && (
+                  <small className="p-error block mt-2 flex align-items-center">
+                    <i className="pi pi-exclamation-circle mr-2"></i>
+                    {errors.color.message}
                   </small>
                 )}
               </div>
