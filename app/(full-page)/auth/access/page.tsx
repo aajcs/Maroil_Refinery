@@ -1,14 +1,12 @@
 "use client";
-// Importaciones necesarias
-import { useEffect } from "react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { Button } from "primereact/button";
+import React from "react";
 import { motion } from "framer-motion";
 import { Card } from "primereact/card";
-import { Button } from "primereact/button";
 import { Ripple } from "primereact/ripple";
 
-// Definición de variantes de animación para Framer Motion
+// Variantes de animación para los elementos
 const containerVariants = {
   hidden: { opacity: 0, scale: 0.95 },
   visible: {
@@ -28,82 +26,115 @@ const itemVariants = {
   visible: { opacity: 1, y: 0 },
 };
 
-const AccessDenied: React.FC = () => {
+const AccessDenied = () => {
   const router = useRouter();
 
-  // Función para manejar la redirección al menú principal
   const navigateToDashboard = () => {
     router.push("/");
   };
-
-  // Función para regresar a la página anterior
-  const goBack = () => {
+  const navigateToHelp = () => {
+    router.push("/pages/help");
+  };
+  const navigateBack = () => {
     router.back();
   };
 
-  // Redirección automática después de un tiempo, opcional
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      // navigateToDashboard();
-    }, 60000); // 60 segundos
-    return () => clearTimeout(timer);
-  }, []);
-
   return (
-    <div className="flex align-items-center justify-content-center surface-ground min-h-screen">
+    <div className="surface-ground h-screen w-screen flex align-items-center justify-content-center">
       <motion.div
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="text-center p-3 sm:p-5 w-full"
-        style={{ maxWidth: "40rem" }}
+        className="w-11 sm:w-30rem text-center p-3 sm:p-5"
       >
-        <div className="p-4 surface-card shadow-3 border-round-2xl">
-          <motion.div
-            variants={itemVariants}
-            className="flex flex-column align-items-center justify-content-center "
-          >
-            <div className="mb-3">
-              <Image
-                src="/layout/images/pages/auth/access-denied2.svg"
-                alt="Acceso Denegado"
-                width={320}
-                height={200}
-                priority
-                style={{ objectFit: "contain" }}
-              />
-            </div>
+        <Card className="p-4 surface-card shadow-3 border-round-2xl">
+          <motion.div variants={itemVariants} className="mb-4">
+            <i
+              className="pi pi-ban text-5xl text-red-500 mb-3"
+              style={{ fontSize: "5rem" }}
+            ></i>
+            <h1 className="text-4xl font-bold text-900 mt-0">
+              Acceso Denegado
+            </h1>
           </motion.div>
-          {/* <motion.p
-            variants={itemVariants}
-            className="text-700 text-lg line-height-3 mb-4"
-          >
-            Parece que no tienes los permisos necesarios para ver esta página.
-            Por favor, regresa al panel principal para continuar. Si crees que
-            esto es un error, contacta al administrador.
-          </motion.p> */}
+          <motion.div variants={itemVariants} className="mb-4">
+            <p className="text-color-secondary text-lg mb-0">
+              No tienes permisos para ver esta página. Si crees que es un error,
+              contacta al administrador o vuelve al{" "}
+              <a
+                onClick={navigateToDashboard}
+                className="font-bold text-primary hover:underline"
+                style={{ cursor: "pointer" }}
+              >
+                dashboard
+              </a>
+              .
+            </p>
+          </motion.div>
+
+          <motion.ul variants={itemVariants} className="list-none p-0 m-0 mb-4">
+            <motion.li variants={itemVariants} className="mb-2">
+              <a
+                onClick={navigateToHelp}
+                className="flex align-items-center py-2 px-3 hover:surface-hover transition-colors transition-duration-150 border-round-md"
+                style={{ cursor: "pointer" }}
+              >
+                <span className="inline-flex align-items-center justify-content-center flex-shrink-0 border-round bg-yellow-500 text-white w-3rem h-3rem">
+                  <i className="pi pi-compass text-2xl"></i>
+                </span>
+                <span className="ml-3 text-left">
+                  <span className="mb-2 font-bold text-color block">
+                    Centro de Ayuda
+                  </span>
+                  <p className="m-0 text-color-secondary text-sm">
+                    Accede a la base de conocimientos
+                  </p>
+                </span>
+                <i className="ml-auto pi pi-chevron-right text-color"></i>
+                <Ripple />
+              </a>
+            </motion.li>
+            <motion.li variants={itemVariants}>
+              <a
+                onClick={navigateToHelp}
+                className="flex align-items-center py-2 px-3 hover:surface-hover transition-colors transition-duration-150 border-round-md"
+                style={{ cursor: "pointer" }}
+              >
+                <span className="inline-flex align-items-center justify-content-center flex-shrink-0 border-round bg-teal-500 text-white w-3rem h-3rem">
+                  <i className="pi pi-user text-2xl"></i>
+                </span>
+                <span className="ml-3 text-left">
+                  <span className="mb-2 font-bold text-color block">
+                    Servicio al Cliente
+                  </span>
+                  <p className="m-0 text-color-secondary text-sm">
+                    Obtén respuestas instantáneas
+                  </p>
+                </span>
+                <i className="ml-auto pi pi-chevron-right text-color"></i>
+                <Ripple />
+              </a>
+            </motion.li>
+          </motion.ul>
+
           <motion.div
             variants={itemVariants}
             className="flex flex-column gap-3"
           >
             <Button
-              label="Regresar a la página anterior"
-              icon="pi pi-arrow-left"
-              className="p-button-secondary w-full p-ripple"
-              onClick={goBack}
-            >
-              <Ripple />
-            </Button>
-            <Button
-              label="Ir al Panel Principal"
-              icon="pi pi-home"
-              className="p-button-primary w-full p-ripple"
               onClick={navigateToDashboard}
-            >
-              <Ripple />
-            </Button>
+              label="Ir al Dashboard"
+              icon="pi pi-home"
+              className="p-button-primary w-full"
+            />
+            <Button
+              onClick={navigateBack}
+              label="Volver Atrás"
+              icon="pi pi-arrow-left"
+              className="p-button-secondary p-button-outlined w-full"
+            />
           </motion.div>
-        </div>
+        </Card>
       </motion.div>
     </div>
   );

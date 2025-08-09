@@ -1,6 +1,7 @@
 "use client";
 import { LayoutProvider } from "../layout/context/layoutcontext";
-import { addLocale, PrimeReactProvider } from "primereact/api";
+import { addLocale } from "primereact/api";
+import PrimeReactRippleProvider from "@/components/common/PrimeReactRippleProvider";
 import "../styles/layout/layout.scss";
 import "primeflex/primeflex.css";
 import "primeicons/primeicons.css";
@@ -73,12 +74,12 @@ export default function RootLayout({
       </head>
       <body>
         <SessionProvider>
-          <PrimeReactProvider>
-            <LayoutProvider>
+          <LayoutProvider>
+            <PrimeReactRippleProvider>
               <AppInitializer />
               <SWRCacheProvider>{children}</SWRCacheProvider>
-            </LayoutProvider>
-          </PrimeReactProvider>
+            </PrimeReactRippleProvider>
+          </LayoutProvider>
         </SessionProvider>
       </body>
     </html>

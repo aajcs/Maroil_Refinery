@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useRef } from "react";
 import { useUserRoles } from "../../hooks/useUserRoles";
 import { Button } from "primereact/button";
+import { Menu } from "primereact/menu";
 import PDFGenerator from "../pdf/PDFGenerator";
 import {
   infoAllowedRoles,
@@ -55,9 +56,89 @@ function CustomActionButtons<T>(props: CustomActionButtonsProps<T>) {
     return null;
   }
 
+  // Hook para detectar sm o md (menos de 1024px)
+  const [isMobile, setIsMobile] = React.useState(false);
+  React.useEffect(() => {
+    const check = () => {
+      if (typeof window !== "undefined") {
+        setIsMobile(window.innerWidth < 1024);
+      }
+    };
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
+  // Crear items del menú
+  const menuItems = [];
+  if (onInfo && can(infoAllowedRoles)) {
+    menuItems.push({
+      label: "Ver Historial",
+      icon: "pi pi-info-circle",
+      command: () => onInfo(rowData),
+    });
+  }
+  if (onEdit && can(editAllowedRoles)) {
+    menuItems.push({
+      label: "Editar",
+      icon: "pi pi-pencil",
+      command: () => onEdit(rowData),
+    });
+  }
+  if (onDelete && can(deleteAllowedRoles)) {
+    menuItems.push({
+      label: "Eliminar",
+      icon: "pi pi-trash",
+      command: () => onDelete(rowData),
+    });
+  }
+  if (onDuplicate && can(duplicateAllowedRoles)) {
+    menuItems.push({
+      label: "Copiar Información",
+      icon: "pi pi-copy",
+      command: () => onDuplicate(rowData),
+    });
+  }
+  if (Template && can(pdfAllowedRoles)) {
+    menuItems.push({
+      label: pdfDownloadText,
+      icon: "pi pi-file-pdf",
+      command: () => {}, // El PDFGenerator se muestra oculto
+    });
+  }
+
+  const menuRef = useRef<any>(null);
+
+  if (isMobile) {
+    return (
+      <div className="flex justify-content-center align-items-center w-full">
+        <Button
+          icon="pi pi-bars"
+          rounded
+          size="small"
+          aria-label="Más acciones"
+          className="p-button-text"
+          onClick={(e) => menuRef.current?.toggle(e)}
+        />
+        <Menu model={menuItems} popup ref={menuRef} />
+        {/* PDFGenerator solo visible en desktop, para móvil solo icono oculto */}
+        {Template && can(pdfAllowedRoles) && (
+          <span style={{ display: "none" }}>
+            <PDFGenerator
+              template={Template}
+              data={rowData}
+              fileName={pdfFileName}
+              downloadText={pdfDownloadText}
+            />
+          </span>
+        )}
+      </div>
+    );
+  }
+
+  // Desktop: mostrar botones individuales
   return (
-    <div className="flex gap-1  flex-column justify-content-center align-items-center sm:flex-row ">
-      {/* Botón de Info */}
+    <div className="flex gap-1 flex-column justify-content-center align-items-center sm:flex-row ">
       {onInfo && can(infoAllowedRoles) && (
         <Button
           icon="pi pi-info-circle"
@@ -70,7 +151,6 @@ function CustomActionButtons<T>(props: CustomActionButtonsProps<T>) {
           onClick={() => onInfo(rowData)}
         />
       )}
-      {/* Botón de Editar */}
       {onEdit && can(editAllowedRoles) && (
         <Button
           icon="pi pi-pencil"
@@ -83,7 +163,6 @@ function CustomActionButtons<T>(props: CustomActionButtonsProps<T>) {
           onClick={() => onEdit(rowData)}
         />
       )}
-      {/* Botón de Eliminar */}
       {onDelete && can(deleteAllowedRoles) && (
         <Button
           icon="pi pi-trash"
@@ -96,7 +175,6 @@ function CustomActionButtons<T>(props: CustomActionButtonsProps<T>) {
           onClick={() => onDelete(rowData)}
         />
       )}
-      {/* Botón de Copiar */}
       {onDuplicate && can(duplicateAllowedRoles) && (
         <Button
           icon="pi pi-copy"
@@ -111,7 +189,6 @@ function CustomActionButtons<T>(props: CustomActionButtonsProps<T>) {
           }}
         />
       )}
-      {/* Botón PDF dinámico */}
       {Template && can(pdfAllowedRoles) && (
         <PDFGenerator
           template={Template}
