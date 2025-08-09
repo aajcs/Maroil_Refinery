@@ -181,10 +181,7 @@ const ProductoList = () => {
           rowClassName={() => "animated-row"}
           size="small"
         >
-          <Column
-            body={actionBodyTemplate}
-           
-          />
+          <Column body={actionBodyTemplate} />
           <Column field="nombre" header="Nombre" sortable />
           <Column field="posicion" header="Posición" sortable />
           <Column

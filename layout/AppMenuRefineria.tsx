@@ -134,17 +134,17 @@ const AppMenuRefineria = () => {
             {
               label: "Recepción",
               icon: "pi pi-fw pi-truck",
-              to: "/refineria/recepcion",
+              to: "/refineria/logistica/recepcion",
             },
             {
               label: "Despacho",
               icon: "pi pi-fw pi-truck",
-              to: "/refineria/despacho",
+              to: "/refineria/logistica/despacho",
             },
             {
               label: "Reportes Logistica",
               icon: "pi pi-fw pi-truck",
-              to: "/refineria/reportes-logistica",
+              to: "/refineria/logistica/reportes-logistica",
             },
           ],
         },
@@ -156,12 +156,12 @@ const AppMenuRefineria = () => {
             {
               label: "Chequeo Cantidad",
               icon: "pi pi-fw pi-check-circle",
-              to: "/refineria/chequeo-cantidad",
+              to: "/refineria/operaciones/chequeo-cantidad",
             },
             {
               label: "Corte de Refinación",
               icon: "pi pi-fw pi-table",
-              to: "/refineria/corte-refinacion",
+              to: "/refineria/operaciones/corte-refinacion",
             },
           ],
         },
@@ -172,7 +172,7 @@ const AppMenuRefineria = () => {
             {
               label: "Chequeo Calidad",
               icon: "pi pi-fw pi-check-circle",
-              to: "/refineria/chequeo-calidad",
+              to: "/refineria/laboratorio/chequeo-calidad",
             },
           ],
         },
