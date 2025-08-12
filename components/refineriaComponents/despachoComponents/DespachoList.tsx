@@ -18,6 +18,7 @@ import AuditHistoryDialog from "@/components/common/AuditHistoryDialog";
 import DespachoTemplate from "@/components/pdf/templates/DespachoTemplate";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { motion } from "framer-motion";
+import { handleFormError } from "@/utils/errorHandlers";
 
 const DespachoList = () => {
   const { activeRefineria } = useRefineriaStore();
@@ -72,25 +73,30 @@ const DespachoList = () => {
   };
 
   const handleDeleteDespacho = async () => {
-    if (despacho?.id) {
-      await deleteDespacho(despacho.id);
-      setDespachos(despachos.filter((val) => val.id !== despacho.id));
-      toast.current?.show({
-        severity: "success",
-        summary: "Éxito",
-        detail: "Despacho Eliminado",
-        life: 3000,
-      });
-    } else {
-      toast.current?.show({
-        severity: "error",
-        summary: "Error",
-        detail: "No se pudo eliminar el despacho",
-        life: 3000,
-      });
+    try {
+      if (despacho?.id) {
+        await deleteDespacho(despacho.id);
+        setDespachos(despachos.filter((val) => val.id !== despacho.id));
+        toast.current?.show({
+          severity: "success",
+          summary: "Éxito",
+          detail: "Despacho Eliminado",
+          life: 3000,
+        });
+      } else {
+        toast.current?.show({
+          severity: "error",
+          summary: "Error",
+          detail: "No se pudo eliminar el despacho",
+          life: 3000,
+        });
+      }
+    } catch (error) {
+      handleFormError(error, toast);
+    } finally {
+      setDespacho(null);
+      setDeleteProductDialog(false);
     }
-    setDespacho(null);
-    setDeleteProductDialog(false);
   };
 
   const onGlobalFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {

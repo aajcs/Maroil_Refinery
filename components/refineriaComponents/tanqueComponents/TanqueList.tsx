@@ -17,6 +17,7 @@ import AuditHistoryDialog from "@/components/common/AuditHistoryDialog";
 import CustomActionButtons from "@/components/common/CustomActionButtons";
 import { motion } from "framer-motion";
 import { ProgressSpinner } from "primereact/progressspinner";
+import { handleFormError } from "@/utils/errorHandlers";
 
 const TanqueList = () => {
   const { activeRefineria } = useRefineriaStore();
@@ -69,27 +70,31 @@ const TanqueList = () => {
     setTanque(null); // Limpia el estado del tanque seleccionado
     setTanqueFormDialog(true);
   };
-
   const handleDeleteTanque = async () => {
-    if (tanque?.id) {
-      await deleteTanque(tanque.id);
-      setTanques(tanques.filter((val) => val.id !== tanque.id));
-      toast.current?.show({
-        severity: "success",
-        summary: "Éxito",
-        detail: "Tanque eliminado",
-        life: 3000,
-      });
-    } else {
-      toast.current?.show({
-        severity: "error",
-        summary: "Error",
-        detail: "No se pudo eliminar el tanque",
-        life: 3000,
-      });
+    try {
+      if (tanque?.id) {
+        await deleteTanque(tanque.id);
+        setTanques(tanques.filter((val) => val.id !== tanque.id));
+        toast.current?.show({
+          severity: "success",
+          summary: "Éxito",
+          detail: "Tanque eliminado",
+          life: 3000,
+        });
+      } else {
+        toast.current?.show({
+          severity: "error",
+          summary: "Error",
+          detail: "No se pudo eliminar el tanque",
+          life: 3000,
+        });
+      }
+    } catch (error) {
+      handleFormError(error, toast);
+    } finally {
+      setTanque(null);
+      setDeleteProductDialog(false);
     }
-    setTanque(null);
-    setDeleteProductDialog(false);
   };
 
   const onGlobalFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {

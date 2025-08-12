@@ -21,6 +21,7 @@ import { LineaRecepcion } from "@/libs/interfaces";
 import { formatDateFH } from "@/utils/dateUtils";
 import { motion } from "framer-motion";
 import { ProgressSpinner } from "primereact/progressspinner";
+import { handleFormError } from "@/utils/errorHandlers";
 
 const LineaRecepcionList = () => {
   const { activeRefineria } = useRefineriaStore();
@@ -78,27 +79,32 @@ const LineaRecepcionList = () => {
   };
 
   const handleDeleteLineaRecepcion = async () => {
-    if (lineaRecepcion?.id) {
-      await deleteLineaRecepcion(lineaRecepcion.id);
-      setLineaRecepcions(
-        lineaRecepcions.filter((val) => val.id !== lineaRecepcion.id)
-      );
-      toast.current?.show({
-        severity: "success",
-        summary: "Éxito",
-        detail: "Linea de Recepción Eliminada",
-        life: 3000,
-      });
-    } else {
-      toast.current?.show({
-        severity: "error",
-        summary: "Error",
-        detail: "No se pudo eliminar la Linea de Recepción",
-        life: 3000,
-      });
+    try {
+      if (lineaRecepcion?.id) {
+        await deleteLineaRecepcion(lineaRecepcion.id);
+        setLineaRecepcions(
+          lineaRecepcions.filter((val) => val.id !== lineaRecepcion.id)
+        );
+        toast.current?.show({
+          severity: "success",
+          summary: "Éxito",
+          detail: "Linea de Recepción Eliminada",
+          life: 3000,
+        });
+      } else {
+        toast.current?.show({
+          severity: "error",
+          summary: "Error",
+          detail: "No se pudo eliminar la Linea de Recepción",
+          life: 3000,
+        });
+      }
+    } catch (error) {
+      handleFormError(error, toast);
+    } finally {
+      setLineaRecepcion(null);
+      setDeleteProductDialog(false);
     }
-    setLineaRecepcion(null);
-    setDeleteProductDialog(false);
   };
 
   const onGlobalFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
