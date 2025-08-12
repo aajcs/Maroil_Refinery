@@ -169,37 +169,158 @@ export const AnalisisContratos: React.FC<AnalisisContratosProps> = ({
           {/* 1. Resumen Financiero */}
           <div className="grid text-center col-12">
             <div className="col-12 md:col-4 lg:col-4 xl:col-4">
-              <Card title="Total Compras">
-                <h2 className="m-0 text-blue-500">
-                  {formatCurrency(selectedBalance.totalCompras)}
-                </h2>
-              </Card>
+              <div className="card h-full shadow-1 bg-blue-50 border-none">
+                <div className="p-1">
+                  <div className="flex align-items-center mb-2">
+                    <span
+                      className="mr-2"
+                      style={{
+                        width: "6px",
+                        height: "18px",
+                        borderRadius: "4px",
+                        backgroundColor: "#60a5fa",
+                      }}
+                    />
+                    <span className="uppercase tracking-wider text-xs text-blue-700 font-semibold">
+                      Compras
+                    </span>
+                  </div>
+                  <div className="flex align-items-center justify-content-between">
+                    <div className="flex flex-column align-items-start">
+                      <span className="text-2xl text-blue-900 font-bold">
+                        {formatCurrency(selectedBalance.totalCompras)}
+                      </span>
+                      <span className="text-xs text-blue-800 mt-1">
+                        Total del período
+                      </span>
+                    </div>
+                    <span
+                      className="inline-flex align-items-center justify-content-center bg-blue-100 text-blue-700 border-circle"
+                      style={{ width: "3rem", height: "3rem" }}
+                      aria-hidden
+                    >
+                      <i className="pi pi-shopping-cart text-xl"></i>
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
+
             <div className="col-12 md:col-4 lg:col-4 xl:col-4">
-              <Card title="Total Ventas">
-                <h2 className="m-0 text-teal-500">
-                  {formatCurrency(selectedBalance.totalVentas)}
-                </h2>
-              </Card>
+              <div className="card h-full shadow-1 bg-teal-50 border-none">
+                <div className="p-1">
+                  <div className="flex align-items-center mb-2">
+                    <span
+                      className="mr-2"
+                      style={{
+                        width: "6px",
+                        height: "18px",
+                        borderRadius: "4px",
+                        backgroundColor: "#2dd4bf",
+                      }}
+                    />
+                    <span className="uppercase tracking-wider text-xs text-teal-700 font-semibold">
+                      Ventas
+                    </span>
+                  </div>
+                  <div className="flex align-items-center justify-content-between">
+                    <div className="flex flex-column align-items-start">
+                      <span className="text-2xl text-teal-900 font-bold">
+                        {formatCurrency(selectedBalance.totalVentas)}
+                      </span>
+                      <span className="text-xs text-teal-800 mt-1">
+                        Total del período
+                      </span>
+                    </div>
+                    <span
+                      className="inline-flex align-items-center justify-content-center bg-teal-100 text-teal-700 border-circle"
+                      style={{ width: "3rem", height: "3rem" }}
+                      aria-hidden
+                    >
+                      <i className="pi pi-shopping-bag text-xl"></i>
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
+
             <div className="col-12 md:col-4 lg:col-4 xl:col-4">
-              <Card title="Resultado del Período">
-                {selectedBalance.ganancia > 0 ? (
-                  <h2 className="m-0 text-green-500">
-                    Ganancia: {formatCurrency(selectedBalance.ganancia)}
-                  </h2>
-                ) : (
-                  <h2 className="m-0 text-red-500">
-                    Pérdida: {formatCurrency(selectedBalance.perdida)}
-                  </h2>
-                )}
-              </Card>
+              <div
+                className={`card h-full shadow-1 border-none ${
+                  selectedBalance.ganancia > 0 ? "bg-green-50" : "bg-red-50"
+                }`}
+              >
+                <div className="p-1">
+                  <div className="flex align-items-center mb-2">
+                    <span
+                      className="mr-2"
+                      style={{
+                        width: "6px",
+                        height: "18px",
+                        borderRadius: "4px",
+                        backgroundColor:
+                          selectedBalance.ganancia > 0 ? "#34d399" : "#f87171",
+                      }}
+                    />
+                    <span
+                      className={`uppercase tracking-wider text-xs font-semibold ${
+                        selectedBalance.ganancia > 0
+                          ? "text-green-700"
+                          : "text-red-700"
+                      }`}
+                    >
+                      Resultado del Período
+                    </span>
+                  </div>
+                  <div className="flex align-items-center justify-content-between">
+                    <div className="flex flex-column align-items-start">
+                      <span
+                        className={`text-2xl font-bold ${
+                          selectedBalance.ganancia > 0
+                            ? "text-green-900"
+                            : "text-red-900"
+                        }`}
+                      >
+                        {selectedBalance.ganancia > 0
+                          ? formatCurrency(selectedBalance.ganancia)
+                          : formatCurrency(selectedBalance.perdida)}
+                      </span>
+                      <span
+                        className={`text-xs mt-1 ${
+                          selectedBalance.ganancia > 0
+                            ? "text-green-800"
+                            : "text-red-800"
+                        }`}
+                      >
+                        {selectedBalance.ganancia > 0 ? "Ganancia" : "Pérdida"}
+                      </span>
+                    </div>
+                    <span
+                      className={`inline-flex align-items-center justify-content-center border-circle ${
+                        selectedBalance.ganancia > 0
+                          ? "bg-green-100 text-green-700"
+                          : "bg-red-100 text-red-700"
+                      }`}
+                      style={{ width: "3rem", height: "3rem" }}
+                      aria-hidden
+                    >
+                      <i
+                        className={`pi text-xl ${
+                          selectedBalance.ganancia > 0
+                            ? "pi-arrow-up-right"
+                            : "pi-arrow-down-right"
+                        }`}
+                      ></i>
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
           {/* 2. Análisis Volumétrico y de Costos 📊 */}
           <div className="col-12 md:col-6 lg:col-6 xl:col-6">
-            <Card
+            <div
               title="Análisis Volumétrico y de Costos por Barril"
               className="mt-4 h-full"
             >
@@ -331,7 +452,7 @@ export const AnalisisContratos: React.FC<AnalisisContratosProps> = ({
                   por barril
                 </span>
               </div>
-            </Card>
+            </div>
           </div>
 
           {/* 3. Resumen de Barriles Vendidos por Producto ⛽ */}
