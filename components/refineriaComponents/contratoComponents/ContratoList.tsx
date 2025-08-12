@@ -21,6 +21,7 @@ import AuditHistoryDialog from "@/components/common/AuditHistoryDialog";
 import ContratoTemplate from "@/components/pdf/templates/ContratoTemplate";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { motion } from "framer-motion";
+import { handleFormError } from "@/utils/errorHandlers";
 
 interface ContratoListProps {
   tipoContrato: string;
@@ -81,25 +82,30 @@ const ContratoList = ({ tipoContrato }: ContratoListProps) => {
 };
 
   const handleDeleteContrato = async () => {
-    if (contrato?.id) {
-      await deleteContrato(contrato.id);
-      setContratos(contratos.filter((val) => val.id !== contrato.id));
-      toast.current?.show({
-        severity: "success",
-        summary: "Éxito",
-        detail: "Contrato Eliminado",
-        life: 3000,
-      });
-    } else {
-      toast.current?.show({
-        severity: "error",
-        summary: "Error",
-        detail: "No se pudo eliminar el contrato",
-        life: 3000,
-      });
+    try {
+      if (contrato?.id) {
+        await deleteContrato(contrato.id);
+        setContratos(contratos.filter((val) => val.id !== contrato.id));
+        toast.current?.show({
+          severity: "success",
+          summary: "Éxito",
+          detail: "Contrato Eliminado",
+          life: 3000,
+        });
+      } else {
+        toast.current?.show({
+          severity: "error",
+          summary: "Error",
+          detail: "No se pudo eliminar el contrato",
+          life: 3000,
+        });
+      }
+    } catch (error) {
+      handleFormError(error, toast);
+    } finally {
+      setContrato(null);
+      setDeleteProductDialog(false);
     }
-    setContrato(null);
-    setDeleteProductDialog(false);
   };
 
   const onGlobalFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {

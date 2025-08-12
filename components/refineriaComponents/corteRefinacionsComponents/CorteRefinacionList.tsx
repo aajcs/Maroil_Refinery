@@ -22,6 +22,7 @@ import CustomActionButtons from "@/components/common/CustomActionButtons";
 import AuditHistoryDialog from "@/components/common/AuditHistoryDialog";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { motion } from "framer-motion";
+import { handleFormError } from "@/utils/errorHandlers";
 
 const CorteRefinacionList = () => {
   const { activeRefineria } = useRefineriaStore();
@@ -80,27 +81,32 @@ const CorteRefinacionList = () => {
   };
 
   const handleDeleteCorteRefinacion = async () => {
-    if (corteRefinacion?.id) {
-      await deleteCorteRefinacion(corteRefinacion.id);
-      setCorteRefinacions(
-        corteRefinacions.filter((val) => val.id !== corteRefinacion.id)
-      );
-      toast.current?.show({
-        severity: "success",
-        summary: "Éxito",
-        detail: "Corte de Refinación Eliminado",
-        life: 3000,
-      });
-    } else {
-      toast.current?.show({
-        severity: "error",
-        summary: "Error",
-        detail: "No se pudo eliminar el corte de refinación",
-        life: 3000,
-      });
+    try {
+      if (corteRefinacion?.id) {
+        await deleteCorteRefinacion(corteRefinacion.id);
+        setCorteRefinacions(
+          corteRefinacions.filter((val) => val.id !== corteRefinacion.id)
+        );
+        toast.current?.show({
+          severity: "success",
+          summary: "Éxito",
+          detail: "Corte de Refinación Eliminado",
+          life: 3000,
+        });
+      } else {
+        toast.current?.show({
+          severity: "error",
+          summary: "Error",
+          detail: "No se pudo eliminar el corte de refinación",
+          life: 3000,
+        });
+      }
+    } catch (error) {
+      handleFormError(error, toast);
+    } finally {
+      setCorteRefinacion(null);
+      setDeleteDialog(false);
     }
-    setCorteRefinacion(null);
-    setDeleteDialog(false);
   };
 
   const onGlobalFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -23,6 +23,7 @@ import CustomActionButtons from "@/components/common/CustomActionButtons";
 import ChequeoCantidadTemplate from "@/components/pdf/templates/ChequeoCantidadTemplate";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { motion } from "framer-motion";
+import { handleFormError } from "@/utils/errorHandlers";
 
 const ChequeoCantidadList = () => {
   const { activeRefineria } = useRefineriaStore();
@@ -85,27 +86,32 @@ const ChequeoCantidadList = () => {
 };
 
   const handleDeleteChequeoCantidad = async () => {
-    if (chequeoCantidad?.id) {
-      await deleteChequeoCantidad(chequeoCantidad.id);
-      setChequeoCantidads(
-        chequeoCantidads.filter((val) => val.id !== chequeoCantidad.id)
-      );
-      toast.current?.show({
-        severity: "success",
-        summary: "Éxito",
-        detail: "Chequeo de Cantidad Eliminada",
-        life: 3000,
-      });
-    } else {
-      toast.current?.show({
-        severity: "error",
-        summary: "Error",
-        detail: "No se pudo eliminar el chequeo de cantidad",
-        life: 3000,
-      });
+    try {
+      if (chequeoCantidad?.id) {
+        await deleteChequeoCantidad(chequeoCantidad.id);
+        setChequeoCantidads(
+          chequeoCantidads.filter((val) => val.id !== chequeoCantidad.id)
+        );
+        toast.current?.show({
+          severity: "success",
+          summary: "Éxito",
+          detail: "Chequeo de Cantidad Eliminada",
+          life: 3000,
+        });
+      } else {
+        toast.current?.show({
+          severity: "error",
+          summary: "Error",
+          detail: "No se pudo eliminar el chequeo de cantidad",
+          life: 3000,
+        });
+      }
+    } catch (error) {
+      handleFormError(error, toast);
+    } finally {
+      setChequeoCantidad(null);
+      setDeleteProductDialog(false);
     }
-    setChequeoCantidad(null);
-    setDeleteProductDialog(false);
   };
 
   const onGlobalFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
