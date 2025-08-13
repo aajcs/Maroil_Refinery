@@ -41,38 +41,58 @@ const apiAuthPrefix = "/api/auth";
 // Bloque generado automáticamente: todas las rutas protegidas encontradas en el proyecto
 const protectedRoutes = [
   {
+    path: "/todas-refinerias",
+    roles: ["superAdmin"],
+    departamento: ["Gerencia"],
+  },
+  {
+    path: "/partidas",
+    roles: ["superAdmin"],
+    departamento: ["Gerencia"],
+  },
+  {
+    path: "/users",
+    roles: ["superAdmin"],
+    departamento: ["Gerencia"],
+  },
+  {
+    path: "/dashboard-sales",
+    roles: ["superAdmin"],
+    departamento: ["Gerencia"],
+  },
+  {
     path: "/refineria/configuracion",
     roles: ["superAdmin", "admin"],
     departamento: ["Operaciones", "Gerencia"],
   },
   {
     path: "/refineria/finanzas",
-    roles: ["superAdmin", "admin", "operador", "user"],
+    roles: ["superAdmin", "admin", "operador", "user", "lectura"],
     departamento: ["Finanzas", "Gerencia"],
   },
   {
     path: "/refineria/logistica",
-    roles: ["superAdmin", "admin", "operador", "user"],
+    roles: ["superAdmin", "admin", "operador", "user", "lectura"],
     departamento: ["Logistica", "Gerencia"],
   },
   {
     path: "/refineria/operaciones",
-    roles: ["superAdmin", "admin", "operador", "user"],
+    roles: ["superAdmin", "admin", "operador", "user", "lectura"],
     departamento: ["Operaciones", "Gerencia"],
   },
   {
     path: "/refineria/laboratorio",
-    roles: ["superAdmin", "admin", "operador", "user"],
+    roles: ["superAdmin", "admin", "operador", "user", "lectura"],
     departamento: ["Laboratorio", "Gerencia"],
   },
   {
     path: "/refineria/reportes-graficas",
-    roles: ["superAdmin", "admin", "operador", "user"],
+    roles: ["superAdmin", "admin", "operador", "user", "lectura"],
     departamento: ["Operaciones", "Gerencia"],
   },
   {
     path: "/refineria/dashboard-sales",
-    roles: ["superAdmin", "admin", "operador", "user"],
+    roles: ["superAdmin", "admin", "operador", "user", "lectura"],
     departamento: ["Administracion", "Finanzas", "Gerencia"],
   },
 ];
@@ -126,7 +146,7 @@ export async function middleware(req: NextRequest) {
 
   // Redirigir a /dashboard si el usuario está logueado y trata de acceder a rutas de autenticación
   if (isLoggedIn && authRoutes.includes(nextUrl.pathname)) {
-    return NextResponse.redirect(new URL("/dashboard", nextUrl));
+    return NextResponse.redirect(new URL("/", nextUrl));
   }
 
   // Redirigir a /login si el usuario no está logueado y trata de acceder a una ruta protegida
