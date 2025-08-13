@@ -19,6 +19,7 @@ import { ProgressSpinner } from "primereact/progressspinner";
 import { motion } from "framer-motion";
 import { Balance } from "@/libs/interfaces";
 import BalanceForm from "./BalanceForm";
+import CreateButton from "@/components/common/CreateButton";
 
 const BalanceList = () => {
   const { activeRefineria } = useRefineriaStore();
@@ -65,10 +66,9 @@ const BalanceList = () => {
   };
 
   const openBalanceFormDialog = () => {
-  setBalance(null); // Limpia el balance seleccionado
-  setBalanceFormDialog(true);
-};
-
+    setBalance(null); // Limpia el balance seleccionado
+    setBalanceFormDialog(true);
+  };
 
   const handleDeleteBalance = async () => {
     if (balance?.id) {
@@ -98,27 +98,20 @@ const BalanceList = () => {
     setGlobalFilterValue(value);
   };
 
-const renderHeader = () => (
-  <div className="flex flex-wrap gap-2 align-items-center justify-content-between">
-    <span className="p-input-icon-left w-full sm:w-20rem flex-order-1 sm:flex-order-0">
-      <i className="pi pi-search"></i>
-      <InputText
-        value={globalFilterValue}
-        onChange={onGlobalFilterChange}
-        placeholder="Búsqueda Global"
-        className="w-full"
-      />
-    </span>
-    <Button
-      type="button"
-      icon="pi pi-user-plus"
-      label="Agregar Balance"
-      outlined
-      className="w-full sm:w-auto flex-order-0 sm:flex-order-1"
-      onClick={openBalanceFormDialog}
-    />
-  </div>
-);
+  const renderHeader = () => (
+    <div className="flex flex-wrap gap-2 align-items-center justify-content-between">
+      <span className="p-input-icon-left w-full sm:w-20rem flex-order-1 sm:flex-order-0">
+        <i className="pi pi-search"></i>
+        <InputText
+          value={globalFilterValue}
+          onChange={onGlobalFilterChange}
+          placeholder="Búsqueda Global"
+          className="w-full"
+        />
+      </span>
+      <CreateButton onClick={openBalanceFormDialog} />
+    </div>
+  );
 
   const actionBodyTemplate = (rowData: Balance) => (
     <CustomActionButtons
@@ -267,10 +260,7 @@ const renderHeader = () => (
           rowClassName={() => "animated-row"}
           size="small"
         >
-          <Column
-            body={actionBodyTemplate}
-      
-          />
+          <Column body={actionBodyTemplate} />
           <Column field="numeroBalance" header="N° Balance" sortable />
           <Column
             field="fechaInicio"

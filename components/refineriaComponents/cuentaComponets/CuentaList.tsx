@@ -19,6 +19,7 @@ import { Accordion, AccordionTab } from "primereact/accordion";
 import AbonoForm from "../abonoComponets/AbonoForm";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { motion } from "framer-motion";
+import CreateButton from "@/components/common/CreateButton";
 interface CuentaListProps {
   tipoCuenta: string;
 }
@@ -109,14 +110,7 @@ const CuentaList = ({ tipoCuenta }: CuentaListProps) => {
           className="w-full"
         />
       </span>
-      <Button
-        type="button"
-        icon="pi pi-user-plus"
-        label="Agregar Abono"
-        outlined
-        className="w-full sm:w-auto flex-order-0 sm:flex-order-1"
-        onClick={() => setAbonoFormDialog(true)}
-      />
+      <CreateButton onClick={() => setAbonoFormDialog(true)} />
     </div>
   );
 
@@ -259,10 +253,7 @@ const CuentaList = ({ tipoCuenta }: CuentaListProps) => {
           rowClassName={() => "animated-row"}
           size="small"
         >
-          <Column
-            body={actionBodyTemplate}
-
-          />
+          <Column body={actionBodyTemplate} />
           <Column field="numeroCuenta" header="N° Cuenta" sortable />
           <Column
             field="idContrato.numeroContrato"

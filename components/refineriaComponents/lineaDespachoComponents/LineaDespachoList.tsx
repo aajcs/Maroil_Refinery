@@ -21,6 +21,7 @@ import {
 import AuditHistoryDialog from "@/components/common/AuditHistoryDialog";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { motion } from "framer-motion";
+import CreateButton from "@/components/common/CreateButton";
 
 const LineaDespachoList = () => {
   const { activeRefineria } = useRefineriaStore();
@@ -65,9 +66,9 @@ const LineaDespachoList = () => {
   };
 
   const openLineaDespachoFormDialog = () => {
-  setLineaDespacho(null); // Limpia la línea seleccionada
-  setLineaDespachoFormDialog(true);
-};
+    setLineaDespacho(null); // Limpia la línea seleccionada
+    setLineaDespachoFormDialog(true);
+  };
 
   const hideDeleteProductDialog = () => setDeleteProductDialog(false);
   const hideLineaDespachoFormDialog = () => {
@@ -105,27 +106,21 @@ const LineaDespachoList = () => {
     setGlobalFilterValue(value);
   };
 
- const renderHeader = () => (
-  <div className="flex flex-wrap gap-2 align-items-center justify-content-between">
-    <span className="p-input-icon-left w-full sm:w-20rem flex-order-1 sm:flex-order-0">
-      <i className="pi pi-search"></i>
-      <InputText
-        value={globalFilterValue}
-        onChange={onGlobalFilterChange}
-        placeholder="Búsqueda Global"
-        className="w-full"
-      />
-    </span>
-    <Button
-      type="button"
-      icon="pi pi-user-plus"
-      label="Agregar Nuevo"
-      outlined
-      className="w-full sm:w-auto flex-order-0 sm:flex-order-1"
-      onClick={openLineaDespachoFormDialog}
-    />
-  </div>
-);;
+  const renderHeader = () => (
+    <div className="flex flex-wrap gap-2 align-items-center justify-content-between">
+      <span className="p-input-icon-left w-full sm:w-20rem flex-order-1 sm:flex-order-0">
+        <i className="pi pi-search"></i>
+        <InputText
+          value={globalFilterValue}
+          onChange={onGlobalFilterChange}
+          placeholder="Búsqueda Global"
+          className="w-full"
+        />
+      </span>
+
+      <CreateButton onClick={openLineaDespachoFormDialog} />
+    </div>
+  );
 
   const actionBodyTemplate = (rowData: LineaDespacho) => (
     <CustomActionButtons
@@ -200,10 +195,7 @@ const LineaDespachoList = () => {
           rowClassName={() => "animated-row"}
           size="small"
         >
-          <Column
-            body={actionBodyTemplate}
-          
-          />
+          <Column body={actionBodyTemplate} />
           <Column field="nombre" header="Nombre" sortable />
           {/* <Column
           field="ubicacion"

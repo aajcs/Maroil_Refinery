@@ -6,6 +6,7 @@ export const editAllowedRoles = ["superAdmin", "admin", "operador"];
 export const deleteAllowedRoles = ["superAdmin"];
 export const duplicateAllowedRoles = ["superAdmin", "admin", "operador"];
 export const pdfAllowedRoles = ["superAdmin", "admin", "operador", "user"];
+export const createAllowedRoles = ["superAdmin", "admin", "operador"]; // nuevos roles permitidos para crear
 
 // Jerarquía de roles de mayor a menor
 export const roleHierarchy = [
