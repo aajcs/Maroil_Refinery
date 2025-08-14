@@ -16,6 +16,8 @@ interface ReportFiltersProps {
     tipoContrato?: any[];
     estadoContrato?: any[];
     estadoEntrega?: any[];
+    tipoContacto?: any[];
+    estadoContacto?: any[];
   };
   onBuscar: () => void;
   onVolver: () => void;
@@ -31,30 +33,44 @@ const ReportFilters: React.FC<ReportFiltersProps> = ({
   onVolver,
 }) => (
   <div className="flex flex-wrap gap-4 justify-center mb-4">
+    {opciones.tipoContacto && (
+      <div className="flex flex-column gap-2" style={{ minWidth: 170, maxWidth: 170 }}>
+        <label className="font-medium text-900">Tipo</label>
+        <Dropdown
+          value={filtros.tipoContacto}
+          options={opciones.tipoContacto}
+          onChange={e => setFiltros((f: any) => ({ ...f, tipoContacto: e.value }))}
+          className="w-full p-inputtext-sm"
+          style={{ fontSize: 13, height: 36 }}
+        />
+      </div>
+    )}
     {opciones.tipoAbono && (
-      <div className="flex flex-column gap-2" style={{ minWidth: 180 }}>
-        <label className="font-medium text-900">Tipo de Abono</label>
+      <div className="flex flex-column gap-2" style={{ minWidth: 170, maxWidth: 170 }}>
+        <label className="font-medium text-900" style={{ fontSize: 13 }}>Tipo de Abono</label>
         <Dropdown
           value={filtros.tipoAbono}
           options={opciones.tipoAbono}
           onChange={e => setFiltros((f: any) => ({ ...f, tipoAbono: e.value }))}
-          className="w-full"
+          className="w-full p-inputtext-sm"
+          style={{ fontSize: 13, height: 36 }}
         />
       </div>
     )}
     {opciones.tipoOperacion && (
-      <div className="flex flex-column gap-2" style={{ minWidth: 180 }}>
-        <label className="font-medium text-900">Tipo de Operación</label>
+      <div className="flex flex-column gap-2" style={{ minWidth: 170, maxWidth: 170 }}>
+        <label className="font-medium text-900" style={{ fontSize: 13 }}>Tipo de Operación</label>
         <Dropdown
           value={filtros.tipoOperacion}
           options={opciones.tipoOperacion}
           onChange={e => setFiltros((f: any) => ({ ...f, tipoOperacion: e.value }))}
-          className="w-full"
+          className="w-full p-inputtext-sm"
+          style={{ fontSize: 13, height: 36 }}
         />
       </div>
     )}
     {opciones.tipoCuenta && (
-      <div className="flex flex-column gap-2" style={{ minWidth: 180 }}>
+  <div className="flex flex-column gap-2" style={{ minWidth: 170, maxWidth: 170 }}>
         <label className="font-medium text-900">Tipo de Cuenta</label>
         <Dropdown
           value={filtros.tipoCuenta}
@@ -65,55 +81,57 @@ const ReportFilters: React.FC<ReportFiltersProps> = ({
       </div>
     )}
   {opciones.estadoContrato && (
-    <div className="flex flex-column gap-2" style={{ minWidth: 180 }}>
-      <label className="font-medium text-900">Estado de Contrato</label>
+    <div className="flex flex-column gap-2" style={{ minWidth: 170, maxWidth: 170 }}>
+      <label className="font-medium text-900" style={{ fontSize: 13 }}>Estado de Contrato</label>
       <Dropdown
         value={filtros.estadoContrato}
         options={opciones.estadoContrato}
         onChange={e => setFiltros((f: any) => ({ ...f, estadoContrato: e.value }))}
-        className="w-full"
+        className="w-full p-inputtext-sm"
+        style={{ fontSize: 13, height: 36 }}
       />
     </div>
   )}
   {opciones.estadoEntrega && (
-    <div className="flex flex-column gap-2" style={{ minWidth: 120, maxWidth: 140 }}>
+    <div className="flex flex-column gap-2" style={{ minWidth: 170, maxWidth: 170 }}>
       <label className="font-medium text-900" style={{ fontSize: 13 }}>Estado de Entrega</label>
       <Dropdown
         value={filtros.estadoEntrega}
         options={opciones.estadoEntrega}
         onChange={e => setFiltros((f: any) => ({ ...f, estadoEntrega: e.value }))}
         className="w-full p-inputtext-sm"
-        style={{ fontSize: 13, height: 34 }}
+        style={{ fontSize: 13, height: 36 }}
       />
     </div>
   )}
   {opciones.tipoContrato && (
-    <div className="flex flex-column gap-2" style={{ minWidth: 120, maxWidth: 140 }}>
+    <div className="flex flex-column gap-2" style={{ minWidth: 170, maxWidth: 170 }}>
       <label className="font-medium text-900" style={{ fontSize: 13 }}>Tipo de Contrato</label>
       <Dropdown
         value={filtros.tipoContrato}
         options={opciones.tipoContrato}
         onChange={e => setFiltros((f: any) => ({ ...f, tipoContrato: e.value }))}
         className="w-full p-inputtext-sm"
-        style={{ fontSize: 13, height: 34 }}
+        style={{ fontSize: 13, height: 36 }}
       />
     </div>
   )}
   {opciones.proveedores && (
-    <div className="flex flex-column gap-2" style={{ minWidth: 180 }}>
-      <label className="font-medium text-900">Proveedor</label>
+    <div className="flex flex-column gap-2" style={{ minWidth: 170, maxWidth: 170 }}>
+  <label className="font-medium text-900" style={{ fontSize: 13 }}>Proveedor / Cliente</label>
       <Dropdown
         value={filtros.proveedor}
         options={opciones.proveedores}
         onChange={e => setFiltros((f: any) => ({ ...f, proveedor: e.value }))}
-        className="w-full"
+        className="w-full p-inputtext-sm"
+        style={{ fontSize: 13, height: 36 }}
         filter
       />
     </div>
   )}
     {opciones.clientes && (
-      <div className="flex flex-column gap-2" style={{ minWidth: 180 }}>
-        <label className="font-medium text-900">Cliente</label>
+  <div className="flex flex-column gap-2" style={{ minWidth: 170, maxWidth: 170 }}>
+  <label className="font-medium text-900">Proveedor / Cliente</label>
         <Dropdown
           value={filtros.cliente}
           options={opciones.clientes}
@@ -123,28 +141,6 @@ const ReportFilters: React.FC<ReportFiltersProps> = ({
         />
       </div>
     )}
-    <div className="flex flex-column gap-2" style={{ minWidth: 120, maxWidth: 140 }}>
-      <label className="font-medium text-900" style={{ fontSize: 13 }}>Fecha Inicio</label>
-      <Calendar
-        value={filtros.fechaInicio}
-        onChange={e => setFiltros((f: any) => ({ ...f, fechaInicio: e.value }))}
-        dateFormat="yy-mm-dd"
-        showIcon
-        className="w-full p-inputtext-sm"
-        style={{ fontSize: 13, height: 34 }}
-      />
-    </div>
-    <div className="flex flex-column gap-2" style={{ minWidth: 120, maxWidth: 140 }}>
-      <label className="font-medium text-900" style={{ fontSize: 13 }}>Fecha Fin</label>
-      <Calendar
-        value={filtros.fechaFin}
-        onChange={e => setFiltros((f: any) => ({ ...f, fechaFin: e.value }))}
-        dateFormat="yy-mm-dd"
-        showIcon
-        className="w-full p-inputtext-sm"
-        style={{ fontSize: 13, height: 34 }}
-      />
-    </div>
     <div className="flex align-items-end gap-2">
         <Button
           icon="pi pi-eye"

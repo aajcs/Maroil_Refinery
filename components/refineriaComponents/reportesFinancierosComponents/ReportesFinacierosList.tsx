@@ -12,6 +12,8 @@ import AbonosPorMesTemplate from "@/components/pdf/templates/AbonosPorMesTemplat
 import CuentasPendientesTemplate from "@/components/pdf/templates/CuentasPendientesTemplate";
 import { PDFViewer } from "@react-pdf/renderer";
 import ContratosReporteTemplate from "@/components/pdf/templates/ContratosReporteTemplate";
+import ContactosReporteTemplate from "@/components/pdf/templates/ContactosReporteTemplate";
+import { getContactos } from "@/app/api/contactoService";
 
 // --- Configuración de reportes ---
 // --- Opciones de contratos ---
@@ -48,8 +50,21 @@ const REPORTES = [
     color: "bg-orange-50",
   },
   {
+    key: "contactos",
+    label: "Contactos",
+    icon: (
+      <svg width="38" height="38" viewBox="0 0 24 24" fill="none">
+        <rect x="4" y="4" width="16" height="16" rx="4" fill="#10b981" />
+        <rect x="8" y="8" width="8" height="2" rx="1" fill="#fff" />
+        <rect x="8" y="12" width="8" height="2" rx="1" fill="#fff" />
+        <rect x="8" y="16" width="5" height="2" rx="1" fill="#fff" />
+      </svg>
+    ),
+    color: "bg-green-50",
+  },
+  {
     key: "abonos",
-    label: "Abonos (Ingresos/Egresos)",
+    label: "Abonos",
     icon: (
       <svg width="38" height="38" viewBox="0 0 24 24" fill="none">
         <rect x="3" y="5" width="18" height="16" rx="3" fill="#2563eb" />
@@ -121,6 +136,8 @@ const ReportesFinancierosList: React.FC = () => {
     estadoEntrega: "",
     fechaInicio: null,
     fechaFin: null,
+    tipoContacto: "",
+    estadoContacto: "",
   });
 
   // Opciones dinámicas
@@ -215,6 +232,25 @@ const ReportesFinancierosList: React.FC = () => {
       );
       setPdfFileName(`ReporteAbonos_${filtros.fechaInicio?.toLocaleDateString() || ""}_${filtros.fechaFin?.toLocaleDateString() || ""}.pdf`);
     }
+      if (reporteSeleccionado === "contactos") {
+      const contactosDB = await getContactos();
+      let contactos = contactosDB.contactos || [];
+      contactos = contactos.filter((contacto: any) =>
+        contacto.idRefineria?.id === activeRefineria?.id &&
+        (!filtros.tipoContacto || contacto.tipo === filtros.tipoContacto)
+      );
+      setData(contactos);
+      setResumen([
+        { label: "Total Contactos", value: contactos.length },
+      ]);
+      setPdfDoc(
+        <ContactosReporteTemplate
+          data={contactos}
+          logoUrl={activeRefineria?.img || "/layout/images/avatarHombre.png"}
+        />
+      );
+      setPdfFileName(`ReporteContactos_${new Date().toLocaleDateString()}.pdf`);
+      }
     if (reporteSeleccionado === "cuentasPendientes") {
       // ...código existente de cuentas pendientes...
       const cuentasDB = await getCuentas();
@@ -283,6 +319,15 @@ const ReportesFinancierosList: React.FC = () => {
         { field: "monto", header: "Monto" },
       ];
     }
+      if (reporteSeleccionado === "contactos") {
+        return [
+          { field: "nombre", header: "Nombre" },
+          { field: "tipo", header: "Tipo" },
+          { field: "correo", header: "Correo" },
+          { field: "telefono", header: "Teléfono" },
+       
+        ];
+      }
     if (reporteSeleccionado === "cuentasPendientes") {
       return [
         { field: "fecha", header: "Fecha" },
@@ -411,6 +456,15 @@ const ReportesFinancierosList: React.FC = () => {
                   estadoContrato: reporteSeleccionado === "contratos" ? ESTADO_CONTRATO_OPTIONS : undefined,
                   tipoContrato: reporteSeleccionado === "contratos" ? TIPO_CONTRATO_OPTIONS : undefined,
                   estadoEntrega: reporteSeleccionado === "contratos" ? ESTADO_ENTREGA_OPTIONS : undefined,
+                  tipoContacto: reporteSeleccionado === "contactos" ? [
+                    { label: "Proveedor", value: "Proveedor" },
+                    { label: "Cliente", value: "Cliente" },
+                  ] : undefined,
+                  estadoContacto: reporteSeleccionado === "contactos" ? [
+                    { label: "Todos", value: "" },
+                    { label: "Activo", value: "Activo" },
+                    { label: "Inactivo", value: "Inactivo" },
+                  ] : undefined,
                 }}
               />
             
