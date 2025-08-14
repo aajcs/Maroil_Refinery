@@ -22,6 +22,8 @@ import CustomActionButtons from "@/components/common/CustomActionButtons";
 import AuditHistoryDialog from "@/components/common/AuditHistoryDialog";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { motion } from "framer-motion";
+import CreateButton from "@/components/common/CreateButton";
+import { handleFormError } from "@/utils/errorHandlers";
 
 const CorteRefinacionList = () => {
   const { activeRefineria } = useRefineriaStore();
@@ -69,9 +71,9 @@ const CorteRefinacionList = () => {
   };
 
   const openFormDialog = () => {
-  setCorteRefinacion(null); // Limpia el corte seleccionado
-  setFormDialog(true);
-};
+    setCorteRefinacion(null); // Limpia el corte seleccionado
+    setFormDialog(true);
+  };
 
   const hideDeleteDialog = () => setDeleteDialog(false);
   const hideFormDialog = () => {
@@ -80,27 +82,32 @@ const CorteRefinacionList = () => {
   };
 
   const handleDeleteCorteRefinacion = async () => {
-    if (corteRefinacion?.id) {
-      await deleteCorteRefinacion(corteRefinacion.id);
-      setCorteRefinacions(
-        corteRefinacions.filter((val) => val.id !== corteRefinacion.id)
-      );
-      toast.current?.show({
-        severity: "success",
-        summary: "Éxito",
-        detail: "Corte de Refinación Eliminado",
-        life: 3000,
-      });
-    } else {
-      toast.current?.show({
-        severity: "error",
-        summary: "Error",
-        detail: "No se pudo eliminar el corte de refinación",
-        life: 3000,
-      });
+    try {
+      if (corteRefinacion?.id) {
+        await deleteCorteRefinacion(corteRefinacion.id);
+        setCorteRefinacions(
+          corteRefinacions.filter((val) => val.id !== corteRefinacion.id)
+        );
+        toast.current?.show({
+          severity: "success",
+          summary: "Éxito",
+          detail: "Corte de Refinación Eliminado",
+          life: 3000,
+        });
+      } else {
+        toast.current?.show({
+          severity: "error",
+          summary: "Error",
+          detail: "No se pudo eliminar el corte de refinación",
+          life: 3000,
+        });
+      }
+    } catch (error) {
+      handleFormError(error, toast);
+    } finally {
+      setCorteRefinacion(null);
+      setDeleteDialog(false);
     }
-    setCorteRefinacion(null);
-    setDeleteDialog(false);
   };
 
   const onGlobalFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -109,27 +116,20 @@ const CorteRefinacionList = () => {
     setGlobalFilterValue(value);
   };
 
-const renderHeader = () => (
-  <div className="flex flex-wrap gap-2 align-items-center justify-content-between">
-    <span className="p-input-icon-left w-full sm:w-20rem flex-order-1 sm:flex-order-0">
-      <i className="pi pi-search"></i>
-      <InputText
-        value={globalFilterValue}
-        onChange={onGlobalFilterChange}
-        placeholder="Búsqueda Global"
-        className="w-full"
-      />
-    </span>
-    <Button
-      type="button"
-      icon="pi pi-user-plus"
-      label="Agregar Nuevo"
-      outlined
-      className="w-full sm:w-auto flex-order-0 sm:flex-order-1"
-      onClick={openFormDialog}
-    />
-  </div>
-);
+  const renderHeader = () => (
+    <div className="flex flex-wrap gap-2 align-items-center justify-content-between">
+      <span className="p-input-icon-left w-full sm:w-20rem flex-order-1 sm:flex-order-0">
+        <i className="pi pi-search"></i>
+        <InputText
+          value={globalFilterValue}
+          onChange={onGlobalFilterChange}
+          placeholder="Búsqueda Global"
+          className="w-full"
+        />
+      </span>
+      <CreateButton onClick={openFormDialog} />
+    </div>
+  );
 
   const actionBodyTemplate = (rowData: CorteRefinacion) => (
     <CustomActionButtons

@@ -19,6 +19,9 @@ import { ProgressSpinner } from "primereact/progressspinner";
 import { motion } from "framer-motion";
 import { Balance } from "@/libs/interfaces";
 import BalanceForm from "./BalanceForm";
+import CreateButton from "@/components/common/CreateButton";
+import { handleFormError } from "@/utils/errorHandlers";
+
 
 const BalanceList = () => {
   const { activeRefineria } = useRefineriaStore();
@@ -65,31 +68,35 @@ const BalanceList = () => {
   };
 
   const openBalanceFormDialog = () => {
-  setBalance(null); // Limpia el balance seleccionado
-  setBalanceFormDialog(true);
-};
-
+    setBalance(null); // Limpia el balance seleccionado
+    setBalanceFormDialog(true);
+  };
 
   const handleDeleteBalance = async () => {
-    if (balance?.id) {
-      await deleteBalance(balance.id);
-      setBalances(balances.filter((val) => val.id !== balance.id));
-      toast.current?.show({
-        severity: "success",
-        summary: "Éxito",
-        detail: "Balance Eliminada",
-        life: 3000,
-      });
-    } else {
-      toast.current?.show({
-        severity: "error",
-        summary: "Error",
-        detail: "No se pudo eliminar el balance",
-        life: 3000,
-      });
+    try {
+      if (balance?.id) {
+        await deleteBalance(balance.id);
+        setBalances(balances.filter((val) => val.id !== balance.id));
+        toast.current?.show({
+          severity: "success",
+          summary: "Éxito",
+          detail: "Balance Eliminada",
+          life: 3000,
+        });
+      } else {
+        toast.current?.show({
+          severity: "error",
+          summary: "Error",
+          detail: "No se pudo eliminar el balance",
+          life: 3000,
+        });
+      }
+    } catch (error) {
+      handleFormError(error, toast);
+    } finally {
+      setBalance(null);
+      setDeleteProductDialog(false);
     }
-    setBalance(null);
-    setDeleteProductDialog(false);
   };
 
   const onGlobalFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -98,27 +105,20 @@ const BalanceList = () => {
     setGlobalFilterValue(value);
   };
 
-const renderHeader = () => (
-  <div className="flex flex-wrap gap-2 align-items-center justify-content-between">
-    <span className="p-input-icon-left w-full sm:w-20rem flex-order-1 sm:flex-order-0">
-      <i className="pi pi-search"></i>
-      <InputText
-        value={globalFilterValue}
-        onChange={onGlobalFilterChange}
-        placeholder="Búsqueda Global"
-        className="w-full"
-      />
-    </span>
-    <Button
-      type="button"
-      icon="pi pi-user-plus"
-      label="Agregar Balance"
-      outlined
-      className="w-full sm:w-auto flex-order-0 sm:flex-order-1"
-      onClick={openBalanceFormDialog}
-    />
-  </div>
-);
+  const renderHeader = () => (
+    <div className="flex flex-wrap gap-2 align-items-center justify-content-between">
+      <span className="p-input-icon-left w-full sm:w-20rem flex-order-1 sm:flex-order-0">
+        <i className="pi pi-search"></i>
+        <InputText
+          value={globalFilterValue}
+          onChange={onGlobalFilterChange}
+          placeholder="Búsqueda Global"
+          className="w-full"
+        />
+      </span>
+      <CreateButton onClick={openBalanceFormDialog} />
+    </div>
+  );
 
   const actionBodyTemplate = (rowData: Balance) => (
     <CustomActionButtons
@@ -267,10 +267,7 @@ const renderHeader = () => (
           rowClassName={() => "animated-row"}
           size="small"
         >
-          <Column
-            body={actionBodyTemplate}
-      
-          />
+          <Column body={actionBodyTemplate} />
           <Column field="numeroBalance" header="N° Balance" sortable />
           <Column
             field="fechaInicio"

@@ -7,7 +7,6 @@ import "primeicons/primeicons.css";
 import "primereact/resources/primereact.css";
 import "../styles/demo/Demos.scss";
 import { SessionProvider } from "next-auth/react";
-import { Nullable } from "primereact/ts-helpers";
 import "../styles/globals.css";
 import AppInitializer from "@/components/common/AppInitializer";
 import { SWRCacheProvider } from "@/store/SWRCacheProvider";
@@ -73,12 +72,12 @@ export default function RootLayout({
       </head>
       <body>
         <SessionProvider>
-          <PrimeReactProvider>
-            <LayoutProvider>
+          <LayoutProvider>
+            <PrimeReactProvider value={{ ripple: true }}>
               <AppInitializer />
               <SWRCacheProvider>{children}</SWRCacheProvider>
-            </LayoutProvider>
-          </PrimeReactProvider>
+            </PrimeReactProvider>
+          </LayoutProvider>
         </SessionProvider>
       </body>
     </html>

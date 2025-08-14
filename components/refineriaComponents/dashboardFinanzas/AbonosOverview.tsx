@@ -68,7 +68,7 @@ const AbonosOverview = ({
   const [selectedAbono, setSelectedAbono] = useState<Abono | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const abonosPorPagina = 4;
-
+  console.log(abonos);
   // Cambiar de página y resetear selección al cambiar de tab
   useEffect(() => {
     setCurrentPage(1);
@@ -103,12 +103,12 @@ const AbonosOverview = ({
       lista: abonosFiltradosPorMes,
     },
     {
-      label: "Cuentas por Cobrar",
+      label: "Abono Cuentas por Cobrar",
       icon: "pi pi-arrow-down text-green-500",
       lista: abonosPorCobrar,
     },
     {
-      label: "Cuentas por Pagar",
+      label: "Abono Cuentas por Pagar",
       icon: "pi pi-arrow-up text-red-500",
       lista: abonosPorPagar,
     },
@@ -183,26 +183,31 @@ const AbonosOverview = ({
     0
   );
 
-  // Determinar icono y color de variación
-  const getVarIcon = (actual: number, anterior: number) => {
+  // Determinar icono y color de variación según tipo (ingreso/egreso)
+  const getVarIcon = (
+    actual: number,
+    anterior: number,
+    tipo: "ingreso" | "egreso"
+  ) => {
     if (anterior === 0) return null;
+    let colorClass = tipo === "ingreso" ? "text-green-500" : "text-red-600";
     if (actual > anterior)
       return (
         <i
-          className="pi pi-arrow-up text-red-500 ml-2"
+          className={`pi pi-arrow-up ${colorClass} ml-2`}
           title="Mayor que el mes anterior"
         ></i>
       );
     if (actual < anterior)
       return (
         <i
-          className="pi pi-arrow-down text-green-600 ml-2"
+          className={`pi pi-arrow-down ${colorClass} ml-2`}
           title="Menor que el mes anterior"
         ></i>
       );
     return (
       <i
-        className="pi pi-minus text-gray-500 ml-2"
+        className={`pi pi-minus ${colorClass} ml-2`}
         title="Igual que el mes anterior"
       ></i>
     );
@@ -340,7 +345,7 @@ const AbonosOverview = ({
               <span className="text-xl text-green-700 font-bold">
                 {formatCurrency(totalIngresos)}
               </span>
-              {getVarIcon(totalIngresos, totalIngresosAnterior)}
+              {getVarIcon(totalIngresos, totalIngresosAnterior, "ingreso")}
             </div>
             {mesAnterior && (
               <span className="text-xs text-color-secondary mt-1">
@@ -354,7 +359,7 @@ const AbonosOverview = ({
               <span className="text-xl text-red-700 font-bold">
                 {formatCurrency(totalEgresos)}
               </span>
-              {getVarIcon(totalEgresos, totalEgresosAnterior)}
+              {getVarIcon(totalEgresos, totalEgresosAnterior, "egreso")}
             </div>
             {mesAnterior && (
               <span className="text-xs text-color-secondary mt-1">
@@ -387,11 +392,11 @@ const AbonosOverview = ({
             >
               <div className="grid">
                 <div className="col-12 lg:col-6">
-                  <div className="flex justify-content-between align-items-center mb-3">
+                  {/* <div className="flex justify-content-between align-items-center mb-3">
                     <span className="text-sm text-color-secondary">
                       {tab.lista.length} registros
                     </span>
-                  </div>
+                  </div> */}
                   <div className="border-round overflow-hidden border-1 surface-border">
                     {(() => {
                       const lista = tab.lista;

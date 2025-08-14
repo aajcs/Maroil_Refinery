@@ -6,7 +6,7 @@ import React from "react";
 function Reporte() {
   return (
     <>
-     <ReportesFinancierosList tipoReporte={"Reportes Financieros"}  />
+      <ReportesFinancierosList />
     </>
   );
 }

@@ -22,6 +22,7 @@ import AuditHistoryDialog from "@/components/common/AuditHistoryDialog";
 import CustomActionButtons from "@/components/common/CustomActionButtons";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { motion } from "framer-motion";
+import CreateButton from "@/components/common/CreateButton";
 
 const TorreDestilacionList = () => {
   const { activeRefineria } = useRefineriaStore();
@@ -66,10 +67,10 @@ const TorreDestilacionList = () => {
     }
   };
 
-const openTorreDestilacionFormDialog = () => {
-  setTorreDestilacion(null); // Limpia la torre seleccionada
-  setTorreDestilacionFormDialog(true);
-};
+  const openTorreDestilacionFormDialog = () => {
+    setTorreDestilacion(null); // Limpia la torre seleccionada
+    setTorreDestilacionFormDialog(true);
+  };
 
   const hideDeleteProductDialog = () => setDeleteProductDialog(false);
   const hideTorreDestilacionFormDialog = () => {
@@ -114,27 +115,20 @@ const openTorreDestilacionFormDialog = () => {
   ) => {
     toast.current?.show({ severity, summary, detail, life: 3000 });
   };
- const renderHeader = () => (
-  <div className="flex flex-wrap gap-2 align-items-center justify-content-between">
-    <span className="p-input-icon-left w-full sm:w-20rem flex-order-1 sm:flex-order-0">
-      <i className="pi pi-search"></i>
-      <InputText
-        value={globalFilterValue}
-        onChange={onGlobalFilterChange}
-        placeholder="Búsqueda Global"
-        className="w-full"
-      />
-    </span>
-    <Button
-      type="button"
-      icon="pi pi-user-plus"
-      label="Agregar Nuevo"
-      outlined
-      className="w-full sm:w-auto flex-order-0 sm:flex-order-1"
-      onClick={openTorreDestilacionFormDialog}
-    />
-  </div>
-);
+  const renderHeader = () => (
+    <div className="flex flex-wrap gap-2 align-items-center justify-content-between">
+      <span className="p-input-icon-left w-full sm:w-20rem flex-order-1 sm:flex-order-0">
+        <i className="pi pi-search"></i>
+        <InputText
+          value={globalFilterValue}
+          onChange={onGlobalFilterChange}
+          placeholder="Búsqueda Global"
+          className="w-full"
+        />
+      </span>
+      <CreateButton onClick={openTorreDestilacionFormDialog} />
+    </div>
+  );
 
   const actionBodyTemplate = (rowData: TorreDestilacion) => (
     <CustomActionButtons

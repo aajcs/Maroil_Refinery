@@ -29,7 +29,6 @@ const Layout = (props: ChildContainerProps) => {
     isDesktop,
     isSidebarActive,
   } = useContext(LayoutContext);
-  const { setRipple } = useContext(PrimeReactContext);
   const topbarRef = useRef<AppTopbarRef>(null);
   const sidebarRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();

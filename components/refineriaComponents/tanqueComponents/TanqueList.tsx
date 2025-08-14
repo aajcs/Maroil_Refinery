@@ -18,6 +18,11 @@ import CustomActionButtons from "@/components/common/CustomActionButtons";
 import { motion } from "framer-motion";
 import { ProgressSpinner } from "primereact/progressspinner";
 
+import CreateButton from "@/components/common/CreateButton";
+
+import { handleFormError } from "@/utils/errorHandlers";
+
+
 const TanqueList = () => {
   const { activeRefineria } = useRefineriaStore();
   const [tanques, setTanques] = useState<Tanque[]>([]);
@@ -69,27 +74,31 @@ const TanqueList = () => {
     setTanque(null); // Limpia el estado del tanque seleccionado
     setTanqueFormDialog(true);
   };
-
   const handleDeleteTanque = async () => {
-    if (tanque?.id) {
-      await deleteTanque(tanque.id);
-      setTanques(tanques.filter((val) => val.id !== tanque.id));
-      toast.current?.show({
-        severity: "success",
-        summary: "Éxito",
-        detail: "Tanque eliminado",
-        life: 3000,
-      });
-    } else {
-      toast.current?.show({
-        severity: "error",
-        summary: "Error",
-        detail: "No se pudo eliminar el tanque",
-        life: 3000,
-      });
+    try {
+      if (tanque?.id) {
+        await deleteTanque(tanque.id);
+        setTanques(tanques.filter((val) => val.id !== tanque.id));
+        toast.current?.show({
+          severity: "success",
+          summary: "Éxito",
+          detail: "Tanque eliminado",
+          life: 3000,
+        });
+      } else {
+        toast.current?.show({
+          severity: "error",
+          summary: "Error",
+          detail: "No se pudo eliminar el tanque",
+          life: 3000,
+        });
+      }
+    } catch (error) {
+      handleFormError(error, toast);
+    } finally {
+      setTanque(null);
+      setDeleteProductDialog(false);
     }
-    setTanque(null);
-    setDeleteProductDialog(false);
   };
 
   const onGlobalFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -109,14 +118,7 @@ const TanqueList = () => {
           className="w-full"
         />
       </span>
-      <Button
-        type="button"
-        icon="pi pi-user-plus"
-        label="Agregar Nuevo"
-        outlined
-        className="w-full sm:w-auto flex-order-0 sm:flex-order-1"
-        onClick={openTanqueFormDialog}
-      />
+      <CreateButton onClick={openTanqueFormDialog} />
     </div>
   );
 
@@ -196,9 +198,7 @@ const TanqueList = () => {
           rowClassName={() => "animated-row"}
           size="small"
         >
-          <Column
-            body={actionBodyTemplate}
-          />
+          <Column body={actionBodyTemplate} />
           <Column field="nombre" header="Nombre" sortable />
           <Column
             field="capacidad"

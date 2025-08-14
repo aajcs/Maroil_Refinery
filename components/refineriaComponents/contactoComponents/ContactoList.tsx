@@ -17,6 +17,8 @@ import CustomActionButtons from "@/components/common/CustomActionButtons";
 import AuditHistoryDialog from "@/components/common/AuditHistoryDialog";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { motion } from "framer-motion";
+import CreateButton from "@/components/common/CreateButton";
+import { handleFormError } from "@/utils/errorHandlers";
 
 const ContactoList = () => {
   const { activeRefineria } = useRefineriaStore();
@@ -58,9 +60,9 @@ const ContactoList = () => {
   };
 
   const openContactoFormDialog = () => {
-  setContacto(null); // Limpia el contacto seleccionado
-  setContactoFormDialog(true);
-};
+    setContacto(null); // Limpia el contacto seleccionado
+    setContactoFormDialog(true);
+  };
 
   const hideDeleteProductDialog = () => setDeleteProductDialog(false);
   const hideContactoFormDialog = () => {
@@ -69,25 +71,30 @@ const ContactoList = () => {
   };
 
   const handleDeleteContacto = async () => {
-    if (contacto?.id) {
-      await deleteContacto(contacto.id);
-      setContactos(contactos.filter((val) => val.id !== contacto.id));
-      toast.current?.show({
-        severity: "success",
-        summary: "Éxito",
-        detail: "Contacto Eliminada",
-        life: 3000,
-      });
-    } else {
-      toast.current?.show({
-        severity: "error",
-        summary: "Error",
-        detail: "No se pudo eliminar la torre de destilación",
-        life: 3000,
-      });
+    try {
+      if (contacto?.id) {
+        await deleteContacto(contacto.id);
+        setContactos(contactos.filter((val) => val.id !== contacto.id));
+        toast.current?.show({
+          severity: "success",
+          summary: "Éxito",
+          detail: "Contacto Eliminado",
+          life: 3000,
+        });
+      } else {
+        toast.current?.show({
+          severity: "error",
+          summary: "Error",
+          detail: "No se pudo eliminar el contacto",
+          life: 3000,
+        });
+      }
+    } catch (error) {
+      handleFormError(error, toast);
+    } finally {
+      setContacto(null);
+      setDeleteProductDialog(false);
     }
-    setContacto(null);
-    setDeleteProductDialog(false);
   };
 
   const onGlobalFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -96,28 +103,20 @@ const ContactoList = () => {
     setGlobalFilterValue(value);
   };
 
-const renderHeader = () => (
-  <div className="flex flex-wrap gap-2 align-items-center justify-content-between">
-    <span className="p-input-icon-left w-full sm:w-20rem flex-order-1 sm:flex-order-0">
-      <i className="pi pi-search"></i>
-      <InputText
-        value={globalFilterValue}
-        onChange={onGlobalFilterChange}
-        placeholder="Búsqueda Global"
-        className="w-full"
-      />
-    </span>
-    <Button
-      type="button"
-      icon="pi pi-user-plus"
-      label="Agregar Nuevo"
-      outlined
-      className="w-full sm:w-auto flex-order-0 sm:flex-order-1"
-      onClick={openContactoFormDialog}
-    />
-  </div>
-);
-
+  const renderHeader = () => (
+    <div className="flex flex-wrap gap-2 align-items-center justify-content-between">
+      <span className="p-input-icon-left w-full sm:w-20rem flex-order-1 sm:flex-order-0">
+        <i className="pi pi-search"></i>
+        <InputText
+          value={globalFilterValue}
+          onChange={onGlobalFilterChange}
+          placeholder="Búsqueda Global"
+          className="w-full"
+        />
+      </span>
+      <CreateButton onClick={openContactoFormDialog} />
+    </div>
+  );
 
   const actionBodyTemplate = (rowData: Contacto) => (
     <CustomActionButtons

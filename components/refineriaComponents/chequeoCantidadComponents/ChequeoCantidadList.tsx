@@ -24,6 +24,10 @@ import ChequeoCantidadTemplate from "@/components/pdf/templates/ChequeoCantidadT
 import { ProgressSpinner } from "primereact/progressspinner";
 import { motion } from "framer-motion";
 
+import CreateButton from "@/components/common/CreateButton";
+
+import { handleFormError } from "@/utils/errorHandlers";
+
 const ChequeoCantidadList = () => {
   const { activeRefineria } = useRefineriaStore();
   const [chequeoCantidads, setChequeoCantidads] = useState<ChequeoCantidad[]>(
@@ -79,33 +83,38 @@ const ChequeoCantidadList = () => {
   };
 
   const openChequeoCantidadFormDialog = () => {
-  setChequeoCantidad(null); // Limpia el chequeo seleccionado
-  setOnDuplicate(false);    // Limpia el estado de duplicado si aplica
-  setChequeoCantidadFormDialog(true);
-};
+    setChequeoCantidad(null); // Limpia el chequeo seleccionado
+    setOnDuplicate(false); // Limpia el estado de duplicado si aplica
+    setChequeoCantidadFormDialog(true);
+  };
 
   const handleDeleteChequeoCantidad = async () => {
-    if (chequeoCantidad?.id) {
-      await deleteChequeoCantidad(chequeoCantidad.id);
-      setChequeoCantidads(
-        chequeoCantidads.filter((val) => val.id !== chequeoCantidad.id)
-      );
-      toast.current?.show({
-        severity: "success",
-        summary: "Éxito",
-        detail: "Chequeo de Cantidad Eliminada",
-        life: 3000,
-      });
-    } else {
-      toast.current?.show({
-        severity: "error",
-        summary: "Error",
-        detail: "No se pudo eliminar el chequeo de cantidad",
-        life: 3000,
-      });
+    try {
+      if (chequeoCantidad?.id) {
+        await deleteChequeoCantidad(chequeoCantidad.id);
+        setChequeoCantidads(
+          chequeoCantidads.filter((val) => val.id !== chequeoCantidad.id)
+        );
+        toast.current?.show({
+          severity: "success",
+          summary: "Éxito",
+          detail: "Chequeo de Cantidad Eliminada",
+          life: 3000,
+        });
+      } else {
+        toast.current?.show({
+          severity: "error",
+          summary: "Error",
+          detail: "No se pudo eliminar el chequeo de cantidad",
+          life: 3000,
+        });
+      }
+    } catch (error) {
+      handleFormError(error, toast);
+    } finally {
+      setChequeoCantidad(null);
+      setDeleteProductDialog(false);
     }
-    setChequeoCantidad(null);
-    setDeleteProductDialog(false);
   };
 
   const onGlobalFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -114,27 +123,20 @@ const ChequeoCantidadList = () => {
     setGlobalFilterValue(value);
   };
 
-const renderHeader = () => (
-  <div className="flex flex-wrap gap-2 align-items-center justify-content-between">
-    <span className="p-input-icon-left w-full sm:w-20rem flex-order-1 sm:flex-order-0">
-      <i className="pi pi-search"></i>
-      <InputText
-        value={globalFilterValue}
-        onChange={onGlobalFilterChange}
-        placeholder="Búsqueda Global"
-        className="w-full"
-      />
-    </span>
-    <Button
-      type="button"
-      icon="pi pi-user-plus"
-      label="Agregar Nuevo"
-      outlined
-      className="w-full sm:w-auto flex-order-0 sm:flex-order-1"
-      onClick={openChequeoCantidadFormDialog}
-    />
-  </div>
-);
+  const renderHeader = () => (
+    <div className="flex flex-wrap gap-2 align-items-center justify-content-between">
+      <span className="p-input-icon-left w-full sm:w-20rem flex-order-1 sm:flex-order-0">
+        <i className="pi pi-search"></i>
+        <InputText
+          value={globalFilterValue}
+          onChange={onGlobalFilterChange}
+          placeholder="Búsqueda Global"
+          className="w-full"
+        />
+      </span>
+      <CreateButton onClick={openChequeoCantidadFormDialog} />
+    </div>
+  );
 
   const actionBodyTemplate = (rowData: ChequeoCantidad) => (
     <>

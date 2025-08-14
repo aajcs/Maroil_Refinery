@@ -22,6 +22,11 @@ import { formatDateFH } from "@/utils/dateUtils";
 import { motion } from "framer-motion";
 import { ProgressSpinner } from "primereact/progressspinner";
 
+import CreateButton from "@/components/common/CreateButton";
+
+import { handleFormError } from "@/utils/errorHandlers";
+
+
 const LineaRecepcionList = () => {
   const { activeRefineria } = useRefineriaStore();
   const [lineaRecepcions, setLineaRecepcions] = useState<LineaRecepcion[]>([]);
@@ -66,10 +71,9 @@ const LineaRecepcionList = () => {
   };
 
   const openLineaRecepcionFormDialog = () => {
-  setLineaRecepcion(null); // Limpia la línea seleccionada
-  setLineaRecepcionFormDialog(true);
-};
-
+    setLineaRecepcion(null); // Limpia la línea seleccionada
+    setLineaRecepcionFormDialog(true);
+  };
 
   const hideDeleteProductDialog = () => setDeleteProductDialog(false);
   const hideLineaRecepcionFormDialog = () => {
@@ -78,27 +82,32 @@ const LineaRecepcionList = () => {
   };
 
   const handleDeleteLineaRecepcion = async () => {
-    if (lineaRecepcion?.id) {
-      await deleteLineaRecepcion(lineaRecepcion.id);
-      setLineaRecepcions(
-        lineaRecepcions.filter((val) => val.id !== lineaRecepcion.id)
-      );
-      toast.current?.show({
-        severity: "success",
-        summary: "Éxito",
-        detail: "Linea de Recepción Eliminada",
-        life: 3000,
-      });
-    } else {
-      toast.current?.show({
-        severity: "error",
-        summary: "Error",
-        detail: "No se pudo eliminar la Linea de Recepción",
-        life: 3000,
-      });
+    try {
+      if (lineaRecepcion?.id) {
+        await deleteLineaRecepcion(lineaRecepcion.id);
+        setLineaRecepcions(
+          lineaRecepcions.filter((val) => val.id !== lineaRecepcion.id)
+        );
+        toast.current?.show({
+          severity: "success",
+          summary: "Éxito",
+          detail: "Linea de Recepción Eliminada",
+          life: 3000,
+        });
+      } else {
+        toast.current?.show({
+          severity: "error",
+          summary: "Error",
+          detail: "No se pudo eliminar la Linea de Recepción",
+          life: 3000,
+        });
+      }
+    } catch (error) {
+      handleFormError(error, toast);
+    } finally {
+      setLineaRecepcion(null);
+      setDeleteProductDialog(false);
     }
-    setLineaRecepcion(null);
-    setDeleteProductDialog(false);
   };
 
   const onGlobalFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -107,27 +116,21 @@ const LineaRecepcionList = () => {
     setGlobalFilterValue(value);
   };
 
- const renderHeader = () => (
-  <div className="flex flex-wrap gap-2 align-items-center justify-content-between">
-    <span className="p-input-icon-left w-full sm:w-20rem flex-order-1 sm:flex-order-0">
-      <i className="pi pi-search"></i>
-      <InputText
-        value={globalFilterValue}
-        onChange={onGlobalFilterChange}
-        placeholder="Búsqueda Global"
-        className="w-full"
-      />
-    </span>
-    <Button
-      type="button"
-      icon="pi pi-user-plus"
-      label="Agregar Nuevo"
-      outlined
-      className="w-full sm:w-auto flex-order-0 sm:flex-order-1"
-      onClick={openLineaRecepcionFormDialog}
-    />
-  </div>
-);
+  const renderHeader = () => (
+    <div className="flex flex-wrap gap-2 align-items-center justify-content-between">
+      <span className="p-input-icon-left w-full sm:w-20rem flex-order-1 sm:flex-order-0">
+        <i className="pi pi-search"></i>
+        <InputText
+          value={globalFilterValue}
+          onChange={onGlobalFilterChange}
+          placeholder="Búsqueda Global"
+          className="w-full"
+        />
+      </span>
+
+      <CreateButton onClick={openLineaRecepcionFormDialog} />
+    </div>
+  );
   const actionBodyTemplate = (rowData: LineaRecepcion) => (
     <CustomActionButtons
       rowData={rowData}
@@ -190,10 +193,7 @@ const LineaRecepcionList = () => {
           rowClassName={() => "animated-row"}
           size="small"
         >
-          <Column
-            body={actionBodyTemplate}
-          
-          />
+          <Column body={actionBodyTemplate} />
           <Column field="nombre" header="Nombre" sortable />
           {/* <Column
           field="ubicacion"
