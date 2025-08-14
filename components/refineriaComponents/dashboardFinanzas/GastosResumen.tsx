@@ -223,14 +223,7 @@ const GastosResumen: React.FC<GastosResumenProps> = ({
   const chartOptions = {
     plugins: {
       legend: {
-        position: "bottom",
-        labels: {
-          usePointStyle: true,
-          padding: 20,
-          font: {
-            size: 12,
-          },
-        },
+        display: false,
       },
       tooltip: {
         callbacks: {
@@ -322,7 +315,7 @@ const GastosResumen: React.FC<GastosResumenProps> = ({
             </span>
           </div> */}
           <div className="p-3 border-round bg-blue-100">
-            <span className="text-xl text-green-700 ">Total: </span>
+            <span className="text-xl text-green-700 ">Total Gasto: </span>
             <span className={variacionColor}>
               {formatCurrency(totalGastos)}
             </span>
@@ -353,7 +346,6 @@ const GastosResumen: React.FC<GastosResumenProps> = ({
           <div className="grid">
             <div className="col-12 lg:col-6">
               <div title="Top Partidas">
-                <h6 className="m-0">Top Pertidas</h6>
                 <ul className="list-none m-0 p-0">
                   {partidas.slice(0, 5).map((partida, i) => {
                     // Comparación con el mes anterior
@@ -436,14 +428,14 @@ const GastosResumen: React.FC<GastosResumenProps> = ({
                 <div className="flex justify-content-between align-items-center mb-4">
                   <h6 className="m-0">Distibucion de partidas Mensual</h6>
                   <span className="text-sm text-color-secondary">
-                    {new Date(mesSeleccionado + "-01").toLocaleString("es-ES", {
+                    {new Date(mesSeleccionado + "-11").toLocaleString("es-ES", {
                       month: "long",
                       year: "numeric",
                     })}
                   </span>
                 </div>
                 <Chart
-                  type="pie"
+                  type="doughnut"
                   data={getChartData()}
                   options={chartOptions}
                   className="w-full"
@@ -759,17 +751,6 @@ const GastosResumen: React.FC<GastosResumenProps> = ({
                   field="estado"
                   header="Estado"
                   body={(rowData) => getEstadoTag(rowData.estado)}
-                />
-                <Column
-                  header="Acciones"
-                  body={() => (
-                    <Button
-                      icon="pi pi-eye"
-                      className="p-button-rounded p-button-outlined"
-                      tooltip="Ver detalles"
-                      tooltipOptions={{ position: "top" }}
-                    />
-                  )}
                 />
               </DataTable>
               {/* Botón de cierre */}
