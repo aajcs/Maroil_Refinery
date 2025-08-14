@@ -1,14 +1,12 @@
 "use client";
 import { LayoutProvider } from "../layout/context/layoutcontext";
-import { addLocale } from "primereact/api";
-import PrimeReactRippleProvider from "@/components/common/PrimeReactRippleProvider";
+import { addLocale, PrimeReactProvider } from "primereact/api";
 import "../styles/layout/layout.scss";
 import "primeflex/primeflex.css";
 import "primeicons/primeicons.css";
 import "primereact/resources/primereact.css";
 import "../styles/demo/Demos.scss";
 import { SessionProvider } from "next-auth/react";
-import { Nullable } from "primereact/ts-helpers";
 import "../styles/globals.css";
 import AppInitializer from "@/components/common/AppInitializer";
 import { SWRCacheProvider } from "@/store/SWRCacheProvider";
@@ -75,10 +73,10 @@ export default function RootLayout({
       <body>
         <SessionProvider>
           <LayoutProvider>
-            <PrimeReactRippleProvider>
+            <PrimeReactProvider value={{ ripple: true }}>
               <AppInitializer />
               <SWRCacheProvider>{children}</SWRCacheProvider>
-            </PrimeReactRippleProvider>
+            </PrimeReactProvider>
           </LayoutProvider>
         </SessionProvider>
       </body>
