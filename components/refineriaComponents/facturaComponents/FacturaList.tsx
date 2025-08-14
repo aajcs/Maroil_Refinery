@@ -24,6 +24,7 @@ import { ProgressSpinner } from "primereact/progressspinner";
 import { motion } from "framer-motion";
 import { Tag } from "primereact/tag";
 import FacturaTemplate from "@/components/pdf/templates/FacturaTemplate";
+import CreateButton from "@/components/common/CreateButton";
 import { handleFormError } from "@/utils/errorHandlers";
 
 const FacturaList = () => {
@@ -70,8 +71,7 @@ const FacturaList = () => {
     setFactura(null);
     setFacturaFormDialog(false);
   };
-  
-  
+
   const handleDeleteFactura = async () => {
     try {
       if (factura?.id) {
@@ -110,28 +110,20 @@ const FacturaList = () => {
     setGlobalFilterValue(value);
   };
 
-const renderHeader = () => (
-  <div className="flex flex-wrap gap-2 align-items-center justify-content-between">
-    <span className="p-input-icon-left w-full sm:w-20rem flex-order-1 sm:flex-order-0">
-      <i className="pi pi-search"></i>
-      <InputText
-        value={globalFilterValue}
-        onChange={onGlobalFilterChange}
-        placeholder="Búsqueda Global"
-        className="w-full"
-      />
-    </span>
-    <Button
-      type="button"
-      icon="pi pi-user-plus"
-      label="Agregar Nuevo"
-      outlined
-      className="w-full sm:w-auto flex-order-0 sm:flex-order-1"
-      onClick={openFacturaFormDialog}
-    />
-  </div>
-);
-
+  const renderHeader = () => (
+    <div className="flex flex-wrap gap-2 align-items-center justify-content-between">
+      <span className="p-input-icon-left w-full sm:w-20rem flex-order-1 sm:flex-order-0">
+        <i className="pi pi-search"></i>
+        <InputText
+          value={globalFilterValue}
+          onChange={onGlobalFilterChange}
+          placeholder="Búsqueda Global"
+          className="w-full"
+        />
+      </span>
+      <CreateButton onClick={openFacturaFormDialog} />
+    </div>
+  );
 
   const actionBodyTemplate = (rowData: Factura) => (
     <CustomActionButtons
@@ -148,7 +140,7 @@ const renderHeader = () => (
         setFactura(data);
         setDeleteProductDialog(true);
       }}
-       pdfTemplate={(props) => (
+      pdfTemplate={(props) => (
         <FacturaTemplate
           data={props.data}
           logoUrl="/layout/images/avatarHombre.png"
@@ -157,7 +149,6 @@ const renderHeader = () => (
       pdfFileName={`Recepcion${rowData.numeroFactura}.pdf`}
       pdfDownloadText="Descargar Recepcion"
     />
-    
   );
   const rowExpansionTemplate = (data: Factura) => {
     return (
@@ -238,10 +229,7 @@ const renderHeader = () => (
           rowExpansionTemplate={rowExpansionTemplate}
         >
           <Column expander style={{ width: "3em" }} />
-          <Column
-            body={actionBodyTemplate}
-         
-          />
+          <Column body={actionBodyTemplate} />
           <Column field="numeroFactura" header="N° Factura" sortable />
           <Column field="concepto" header="Concepto" />
           <Column

@@ -17,7 +17,11 @@ import AuditHistoryDialog from "@/components/common/AuditHistoryDialog";
 import CustomActionButtons from "@/components/common/CustomActionButtons";
 import { motion } from "framer-motion";
 import { ProgressSpinner } from "primereact/progressspinner";
+
+import CreateButton from "@/components/common/CreateButton";
+
 import { handleFormError } from "@/utils/errorHandlers";
+
 
 const TanqueList = () => {
   const { activeRefineria } = useRefineriaStore();
@@ -114,14 +118,7 @@ const TanqueList = () => {
           className="w-full"
         />
       </span>
-      <Button
-        type="button"
-        icon="pi pi-user-plus"
-        label="Agregar Nuevo"
-        outlined
-        className="w-full sm:w-auto flex-order-0 sm:flex-order-1"
-        onClick={openTanqueFormDialog}
-      />
+      <CreateButton onClick={openTanqueFormDialog} />
     </div>
   );
 
@@ -201,9 +198,7 @@ const TanqueList = () => {
           rowClassName={() => "animated-row"}
           size="small"
         >
-          <Column
-            body={actionBodyTemplate}
-          />
+          <Column body={actionBodyTemplate} />
           <Column field="nombre" header="Nombre" sortable />
           <Column
             field="capacidad"

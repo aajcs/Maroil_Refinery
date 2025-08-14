@@ -15,6 +15,7 @@ import { formatDateFH } from "@/utils/dateUtils";
 import { deleteProducto, getProductos } from "@/app/api/productoService";
 import CustomActionButtons from "@/components/common/CustomActionButtons";
 import AuditHistoryDialog from "@/components/common/AuditHistoryDialog";
+import CreateButton from "@/components/common/CreateButton";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { motion } from "framer-motion";
 import { handleFormError } from "@/utils/errorHandlers";
@@ -112,14 +113,7 @@ const ProductoList = () => {
           className="w-full"
         />
       </span>
-      <Button
-        type="button"
-        icon="pi pi-user-plus"
-        label="Agregar Nuevo"
-        outlined
-        className="w-full sm:w-auto flex-order-0 sm:flex-order-1"
-        onClick={openProductoFormDialog}
-      />
+      <CreateButton onClick={openProductoFormDialog} />
     </div>
   );
 
@@ -187,10 +181,7 @@ const ProductoList = () => {
           rowClassName={() => "animated-row"}
           size="small"
         >
-          <Column
-            body={actionBodyTemplate}
-           
-          />
+          <Column body={actionBodyTemplate} />
           <Column field="nombre" header="Nombre" sortable />
           <Column field="posicion" header="Posición" sortable />
           <Column

@@ -18,6 +18,7 @@ import AuditHistoryDialog from "@/components/common/AuditHistoryDialog";
 import DespachoTemplate from "@/components/pdf/templates/DespachoTemplate";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { motion } from "framer-motion";
+import CreateButton from "@/components/common/CreateButton";
 import { handleFormError } from "@/utils/errorHandlers";
 
 const DespachoList = () => {
@@ -61,10 +62,9 @@ const DespachoList = () => {
   };
 
   const openDespachoFormDialog = () => {
-  setDespacho(null); // Limpia el despacho seleccionado
-  setDespachoFormDialog(true);
-};
-
+    setDespacho(null); // Limpia el despacho seleccionado
+    setDespachoFormDialog(true);
+  };
 
   const hideDeleteProductDialog = () => setDeleteProductDialog(false);
   const hideDespachoFormDialog = () => {
@@ -110,41 +110,33 @@ const DespachoList = () => {
     ? despachos
     : despachos.filter(
         (d) =>
-          d.estadoDespacho !== "COMPLETADO" &&
-          d.estadoDespacho !== "CANCELADO"
+          d.estadoDespacho !== "COMPLETADO" && d.estadoDespacho !== "CANCELADO"
       );
 
   const renderHeader = () => (
-  <div className="flex flex-wrap gap-2 align-items-center justify-content-between">
-    <div className="flex align-items-center gap-2 w-full sm:w-auto">
-      <span className="p-input-icon-left w-full sm:w-20rem">
-        <i className="pi pi-search"></i>
-        <InputText
-          value={globalFilterValue}
-          onChange={onGlobalFilterChange}
-          placeholder="Búsqueda Global"
-          className="w-full"
+    <div className="flex flex-wrap gap-2 align-items-center justify-content-between">
+      <div className="flex align-items-center gap-2 w-full sm:w-auto">
+        <span className="p-input-icon-left w-full sm:w-20rem">
+          <i className="pi pi-search"></i>
+          <InputText
+            value={globalFilterValue}
+            onChange={onGlobalFilterChange}
+            placeholder="Búsqueda Global"
+            className="w-full"
+          />
+        </span>
+        <Button
+          type="button"
+          icon={mostrarTodas ? "pi pi-eye-slash" : "pi pi-eye"}
+          label={mostrarTodas ? "Ver solo activos" : "Ver todos"}
+          className="p-button-secondary"
+          onClick={() => setMostrarTodas((prev) => !prev)}
+          style={{ minWidth: 160 }}
         />
-      </span>
-      <Button
-        type="button"
-        icon={mostrarTodas ? "pi pi-eye-slash" : "pi pi-eye"}
-        label={mostrarTodas ? "Ver solo activos" : "Ver todos"}
-        className="p-button-secondary"
-        onClick={() => setMostrarTodas((prev) => !prev)}
-        style={{ minWidth: 160 }}
-      />
+      </div>
+      <CreateButton onClick={openDespachoFormDialog} />
     </div>
-    <Button
-      type="button"
-      icon="pi pi-user-plus"
-      label="Agregar Nuevo"
-      outlined
-      className="w-full sm:w-auto"
-      onClick={openDespachoFormDialog}
-    />
-  </div>
-);
+  );
 
   const actionBodyTemplate = (rowData: Despacho) => (
     <CustomActionButtons

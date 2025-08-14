@@ -40,16 +40,25 @@ export const LayoutProvider = (props: ChildContainerProps) => {
   //     topBarTheme: "primaryColor",
   //   });
 
-  const [layoutConfig, setLayoutConfig] = useState<LayoutConfig>(() => {
+  // SSR safe: inicia siempre con defaultConfig, sincroniza en cliente
+  const [layoutConfig, setLayoutConfig] = useState<LayoutConfig>(defaultConfig);
+
+  // Al montar en cliente, sincroniza con localStorage si existe
+  useEffect(() => {
     if (typeof window !== "undefined") {
       const savedConfig = localStorage.getItem("layoutConfig");
-      return savedConfig ? JSON.parse(savedConfig) : defaultConfig;
+      if (savedConfig) {
+        setLayoutConfig(JSON.parse(savedConfig));
+      }
     }
-    return defaultConfig;
-  });
+    // eslint-disable-next-line
+  }, []);
 
+  // Guarda cambios en localStorage solo en cliente
   useEffect(() => {
-    localStorage.setItem("layoutConfig", JSON.stringify(layoutConfig));
+    if (typeof window !== "undefined") {
+      localStorage.setItem("layoutConfig", JSON.stringify(layoutConfig));
+    }
   }, [layoutConfig]);
 
   const [layoutState, setLayoutState] = useState<LayoutState>({
@@ -118,6 +127,7 @@ export const LayoutProvider = (props: ChildContainerProps) => {
   };
 
   const isDesktop = () => {
+    if (typeof window === "undefined") return false;
     return window.innerWidth > 991;
   };
   const onTopbarMenuToggle = () => {

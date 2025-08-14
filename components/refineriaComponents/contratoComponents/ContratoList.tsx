@@ -21,6 +21,7 @@ import AuditHistoryDialog from "@/components/common/AuditHistoryDialog";
 import ContratoTemplate from "@/components/pdf/templates/ContratoTemplate";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { motion } from "framer-motion";
+import CreateButton from "@/components/common/CreateButton";
 import { handleFormError } from "@/utils/errorHandlers";
 
 interface ContratoListProps {
@@ -145,14 +146,7 @@ const ContratoList = ({ tipoContrato }: ContratoListProps) => {
           style={{ minWidth: 160 }}
         />
       </div>
-      <Button
-        type="button"
-        icon="pi pi-user-plus"
-        label="Agregar Nuevo"
-        outlined
-        className="w-full sm:w-auto"
-        onClick={openContratoFormDialog}
-      />
+      <CreateButton onClick={openContratoFormDialog} />
     </div>
   );
 
