@@ -20,6 +20,8 @@ import { motion } from "framer-motion";
 import { Balance } from "@/libs/interfaces";
 import BalanceForm from "./BalanceForm";
 import CreateButton from "@/components/common/CreateButton";
+import { handleFormError } from "@/utils/errorHandlers";
+
 
 const BalanceList = () => {
   const { activeRefineria } = useRefineriaStore();
@@ -71,25 +73,30 @@ const BalanceList = () => {
   };
 
   const handleDeleteBalance = async () => {
-    if (balance?.id) {
-      await deleteBalance(balance.id);
-      setBalances(balances.filter((val) => val.id !== balance.id));
-      toast.current?.show({
-        severity: "success",
-        summary: "Éxito",
-        detail: "Balance Eliminada",
-        life: 3000,
-      });
-    } else {
-      toast.current?.show({
-        severity: "error",
-        summary: "Error",
-        detail: "No se pudo eliminar el balance",
-        life: 3000,
-      });
+    try {
+      if (balance?.id) {
+        await deleteBalance(balance.id);
+        setBalances(balances.filter((val) => val.id !== balance.id));
+        toast.current?.show({
+          severity: "success",
+          summary: "Éxito",
+          detail: "Balance Eliminada",
+          life: 3000,
+        });
+      } else {
+        toast.current?.show({
+          severity: "error",
+          summary: "Error",
+          detail: "No se pudo eliminar el balance",
+          life: 3000,
+        });
+      }
+    } catch (error) {
+      handleFormError(error, toast);
+    } finally {
+      setBalance(null);
+      setDeleteProductDialog(false);
     }
-    setBalance(null);
-    setDeleteProductDialog(false);
   };
 
   const onGlobalFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {

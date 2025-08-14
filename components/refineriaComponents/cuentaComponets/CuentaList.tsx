@@ -20,6 +20,8 @@ import AbonoForm from "../abonoComponets/AbonoForm";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { motion } from "framer-motion";
 import CreateButton from "@/components/common/CreateButton";
+import { handleFormError } from "@/utils/errorHandlers";
+
 interface CuentaListProps {
   tipoCuenta: string;
 }
@@ -72,25 +74,30 @@ const CuentaList = ({ tipoCuenta }: CuentaListProps) => {
   };
 
   const handleDeleteCuenta = async () => {
-    if (cuenta?.id) {
-      await deleteCuenta(cuenta.id);
-      setCuentas(cuentas.filter((val) => val.id !== cuenta.id));
-      toast.current?.show({
-        severity: "success",
-        summary: "Éxito",
-        detail: "Cuenta Eliminada",
-        life: 3000,
-      });
-    } else {
-      toast.current?.show({
-        severity: "error",
-        summary: "Error",
-        detail: "No se pudo eliminar la torre de destilación",
-        life: 3000,
-      });
+    try {
+      if (cuenta?.id) {
+        await deleteCuenta(cuenta.id);
+        setCuentas(cuentas.filter((val) => val.id !== cuenta.id));
+        toast.current?.show({
+          severity: "success",
+          summary: "Éxito",
+          detail: "Cuenta Eliminada",
+          life: 3000,
+        });
+      } else {
+        toast.current?.show({
+          severity: "error",
+          summary: "Error",
+          detail: "No se pudo eliminar la torre de destilación",
+          life: 3000,
+        });
+      }
+    } catch (error) {
+      handleFormError(error, toast);
+    } finally {
+      setCuenta(null);
+      setDeleteProductDialog(false);
     }
-    setCuenta(null);
-    setDeleteProductDialog(false);
   };
 
   const onGlobalFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {

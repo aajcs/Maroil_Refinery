@@ -17,7 +17,11 @@ import AuditHistoryDialog from "@/components/common/AuditHistoryDialog";
 import RecepcionTemplate from "@/components/pdf/templates/recepcionTemplate";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { motion } from "framer-motion";
+
 import CreateButton from "@/components/common/CreateButton";
+
+import { handleFormError } from "@/utils/errorHandlers";
+
 
 const RecepcionList = () => {
   const { activeRefineria } = useRefineriaStore();
@@ -70,25 +74,30 @@ const RecepcionList = () => {
   };
 
   const handleDeleteRecepcion = async () => {
-    if (recepcion?.id) {
-      await deleteRecepcion(recepcion.id);
-      setRecepcions(recepcions.filter((val) => val.id !== recepcion.id));
-      toast.current?.show({
-        severity: "success",
-        summary: "Éxito",
-        detail: "Recepcion Eliminada",
-        life: 3000,
-      });
-    } else {
-      toast.current?.show({
-        severity: "error",
-        summary: "Error",
-        detail: "No se pudo eliminar la torre de destilación",
-        life: 3000,
-      });
+    try {
+      if (recepcion?.id) {
+        await deleteRecepcion(recepcion.id);
+        setRecepcions(recepcions.filter((val) => val.id !== recepcion.id));
+        toast.current?.show({
+          severity: "success",
+          summary: "Éxito",
+          detail: "Recepcion Eliminada",
+          life: 3000,
+        });
+      } else {
+        toast.current?.show({
+          severity: "error",
+          summary: "Error",
+          detail: "No se pudo eliminar la torre de destilación",
+          life: 3000,
+        });
+      }
+    } catch (error) {
+      handleFormError(error, toast);
+    } finally {
+      setRecepcion(null);
+      setDeleteProductDialog(false);
     }
-    setRecepcion(null);
-    setDeleteProductDialog(false);
   };
 
   const onGlobalFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {

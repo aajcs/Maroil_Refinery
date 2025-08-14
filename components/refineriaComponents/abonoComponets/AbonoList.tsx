@@ -19,6 +19,7 @@ import AbonoTemplate from "@/components/pdf/templates/AbonoTemplate";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { motion } from "framer-motion";
 import CreateButton from "@/components/common/CreateButton";
+import { handleFormError } from "@/utils/errorHandlers";
 
 interface AbonoListProps {
   tipoAbono: string;
@@ -76,25 +77,30 @@ const AbonoList = ({ tipoAbono }: AbonoListProps) => {
   };
 
   const handleDeleteAbono = async () => {
-    if (abono?.id) {
-      await deleteAbono(abono.id);
-      setAbonos(abonos.filter((val) => val.id !== abono.id));
-      toast.current?.show({
-        severity: "success",
-        summary: "Éxito",
-        detail: "Abono Eliminada",
-        life: 3000,
-      });
-    } else {
-      toast.current?.show({
-        severity: "error",
-        summary: "Error",
-        detail: "No se pudo eliminar la torre de destilación",
-        life: 3000,
-      });
+    try {
+      if (abono?.id) {
+        await deleteAbono(abono.id);
+        setAbonos(abonos.filter((val) => val.id !== abono.id));
+        toast.current?.show({
+          severity: "success",
+          summary: "Éxito",
+          detail: "Abono Eliminada",
+          life: 3000,
+        });
+      } else {
+        toast.current?.show({
+          severity: "error",
+          summary: "Error",
+          detail: "No se pudo eliminar la torre de destilación",
+          life: 3000,
+        });
+      }
+    } catch (error) {
+      handleFormError(error, toast);
+    } finally {
+      setAbono(null);
+      setDeleteProductDialog(false);
     }
-    setAbono(null);
-    setDeleteProductDialog(false);
   };
 
   const onGlobalFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {

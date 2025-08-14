@@ -25,6 +25,7 @@ import { motion } from "framer-motion";
 import { Tag } from "primereact/tag";
 import FacturaTemplate from "@/components/pdf/templates/FacturaTemplate";
 import CreateButton from "@/components/common/CreateButton";
+import { handleFormError } from "@/utils/errorHandlers";
 
 const FacturaList = () => {
   const { activeRefineria } = useRefineriaStore();
@@ -72,25 +73,30 @@ const FacturaList = () => {
   };
 
   const handleDeleteFactura = async () => {
-    if (factura?.id) {
-      await deleteFactura(factura.id);
-      setFacturas(facturas.filter((val) => val.id !== factura.id));
-      toast.current?.show({
-        severity: "success",
-        summary: "Éxito",
-        detail: "Factura Eliminada",
-        life: 3000,
-      });
-    } else {
-      toast.current?.show({
-        severity: "error",
-        summary: "Error",
-        detail: "No se pudo eliminar la torre de destilación",
-        life: 3000,
-      });
+    try {
+      if (factura?.id) {
+        await deleteFactura(factura.id);
+        setFacturas(facturas.filter((val) => val.id !== factura.id));
+        toast.current?.show({
+          severity: "success",
+          summary: "Éxito",
+          detail: "Factura Eliminada",
+          life: 3000,
+        });
+      } else {
+        toast.current?.show({
+          severity: "error",
+          summary: "Error",
+          detail: "No se pudo eliminar la torre de destilación",
+          life: 3000,
+        });
+      }
+    } catch (error) {
+      handleFormError(error, toast);
+    } finally {
+      setFactura(null);
+      setDeleteProductDialog(false);
     }
-    setFactura(null);
-    setDeleteProductDialog(false);
   };
 
   const openFacturaFormDialog = () => {

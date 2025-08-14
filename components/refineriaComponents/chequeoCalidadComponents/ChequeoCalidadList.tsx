@@ -23,6 +23,7 @@ import ChequeoCalidadTemplate from "@/components/pdf/templates/ChequeoCalidadTem
 import { ProgressSpinner } from "primereact/progressspinner";
 import { motion } from "framer-motion";
 import CreateButton from "@/components/common/CreateButton";
+import { handleFormError } from "@/utils/errorHandlers";
 
 const ChequeoCalidadList = () => {
   const { activeRefineria } = useRefineriaStore();
@@ -84,28 +85,33 @@ const ChequeoCalidadList = () => {
   };
 
   const handleDeleteChequeoCalidad = async () => {
-    console.log("Chequeo de Calidad a eliminar:", chequeoCalidad);
-    if (chequeoCalidad?.id) {
-      await deleteChequeoCalidad(chequeoCalidad.id);
-      setChequeoCalidads(
-        chequeoCalidads.filter((val) => val.id !== chequeoCalidad.id)
-      );
-      toast.current?.show({
-        severity: "success",
-        summary: "Éxito",
-        detail: "Chequeo de Calidad Eliminada",
-        life: 3000,
-      });
-    } else {
-      toast.current?.show({
-        severity: "error",
-        summary: "Error",
-        detail: "No se pudo eliminar el chequeo de calidad",
-        life: 3000,
-      });
+    try {
+      console.log("Chequeo de Calidad a eliminar:", chequeoCalidad);
+      if (chequeoCalidad?.id) {
+        await deleteChequeoCalidad(chequeoCalidad.id);
+        setChequeoCalidads(
+          chequeoCalidads.filter((val) => val.id !== chequeoCalidad.id)
+        );
+        toast.current?.show({
+          severity: "success",
+          summary: "Éxito",
+          detail: "Chequeo de Calidad Eliminada",
+          life: 3000,
+        });
+      } else {
+        toast.current?.show({
+          severity: "error",
+          summary: "Error",
+          detail: "No se pudo eliminar el chequeo de calidad",
+          life: 3000,
+        });
+      }
+    } catch (error) {
+      handleFormError(error, toast);
+    } finally {
+      setChequeoCalidad(null);
+      setDeleteProductDialog(false);
     }
-    setChequeoCalidad(null);
-    setDeleteProductDialog(false);
   };
 
   const onGlobalFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {

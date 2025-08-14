@@ -22,6 +22,7 @@ import { Accordion, AccordionTab } from "primereact/accordion";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { motion } from "framer-motion";
 import CreateButton from "@/components/common/CreateButton";
+import { handleFormError } from "@/utils/errorHandlers";
 
 const TipoProductoList = () => {
   const { activeRefineria } = useRefineriaStore();
@@ -66,13 +67,15 @@ const TipoProductoList = () => {
     setTipoProductoFormDialog(true);
   };
 
-  const hideDeleteProductDialog = () => setDeleteProductDialog(false);
-  const hideTipoProductoFormDialog = () => {
-    setTipoProducto(null);
-    setTipoProductoFormDialog(false);
-  };
+const hideDeleteProductDialog = () => setDeleteProductDialog(false);
 
-  const handleDeleteTipoProducto = async () => {
+const hideTipoProductoFormDialog = () => {
+  setTipoProducto(null);
+  setTipoProductoFormDialog(false);
+};
+
+const handleDeleteTipoProducto = async () => {
+  try {
     if (tipoProducto?.id) {
       await deleteTipoProducto(tipoProducto.id);
       setTipoProductos(
@@ -92,9 +95,13 @@ const TipoProductoList = () => {
         life: 3000,
       });
     }
+  } catch (error) {
+    handleFormError(error, toast);
+  } finally {
     setTipoProducto(null);
     setDeleteProductDialog(false);
-  };
+  }
+};
 
   const onGlobalFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
