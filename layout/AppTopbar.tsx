@@ -18,8 +18,6 @@ import { User } from "next-auth";
 import { useSocket } from "@/hooks/useSocket";
 import { useRefineriaStore } from "@/store/refineriaStore";
 import AppNotificationDropdown from "./AppNotificationDropdown";
-import { Dialog } from "primereact/dialog";
-
 interface ExtendedUser extends User {
   usuario: {
     nombre: string;
@@ -52,11 +50,10 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
     desconectarSocket();
   };
 
-  const { onMenuToggle, layoutConfig, tabs, closeTab, setLayoutState } =
+  const { onMenuToggle, layoutConfig, tabs, closeTab } =
     useContext(LayoutContext);
 
   const [searchActive, setSearchActive] = useState<boolean | null>(null);
-  const [logoutVisible, setLogoutVisible] = useState(false);
 
   const pathname = usePathname();
   const router = useRouter();
@@ -108,11 +105,6 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
     }
     closeTab(index);
   };
-
-  const openConfigSidebar = () => {
-    setLayoutState((prev: any) => ({ ...prev, configSidebarVisible: true }));
-  };
-  const openLogoutConfirm = () => setLogoutVisible(true);
 
   return (
     <div className="layout-topbar">
@@ -211,23 +203,14 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
               <Ripple />
             </Link>
 
-            {/* Botón Configuración abre AppConfig Sidebar - ahora como enlace estilizado */}
-            <a
-              href="#"
-              role="button"
-              onClick={(e) => {
-                e.preventDefault();
-                openConfigSidebar();
-              }}
-              className="p-ripple flex p-2 border-round align-items-center hover:surface-hover transition-colors transition-duration-150 cursor-pointer no-underline"
-            >
+            <a className="p-ripple flex p-2 border-round align-items-center hover:surface-hover transition-colors transition-duration-150 cursor-pointer">
               <i className="pi pi-cog mr-3"></i>
               <span className="hidden sm:inline">Configuración</span>
               <Ripple />
             </a>
             <a
               className="p-ripple flex p-2 border-round align-items-center hover:surface-hover transition-colors transition-duration-150 cursor-pointer"
-              onClick={openLogoutConfirm}
+              onClick={handleSignOut}
             >
               <i className="pi pi-power-off mr-3"></i>
               <span className="hidden sm:inline">Cerrar sesión</span>
@@ -236,41 +219,6 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
           </li>
         </ul>
       </div>
-
-      <Dialog
-        header="Confirmar Cierre de Sesión"
-        visible={logoutVisible}
-        style={{ width: "22rem" }}
-        modal
-        onHide={() => setLogoutVisible(false)}
-        draggable={false}
-        resizable={false}
-        contentClassName="p-3"
-      >
-        <div className="flex flex-column gap-3">
-          <p className="m-0 text-700">
-            ¿Seguro que deseas cerrar sesión? Se cerrarán tus conexiones
-            activas.
-          </p>
-          <div className="flex justify-content-end gap-2 mt-2">
-            <button
-              type="button"
-              className="p-button p-component p-button-text"
-              onClick={() => setLogoutVisible(false)}
-            >
-              <span className="p-button-label">Cancelar</span>
-            </button>
-            <button
-              type="button"
-              className="p-button p-component p-button-danger"
-              onClick={handleSignOut}
-            >
-              <span className="p-button-icon p-button-icon-left pi pi-power-off" />
-              <span className="p-button-label">Cerrar sesión</span>
-            </button>
-          </div>
-        </div>
-      </Dialog>
     </div>
   );
 });

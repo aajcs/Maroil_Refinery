@@ -21,103 +21,75 @@ import { Chart } from "primereact/chart";
 import { Calendar } from "primereact/calendar";
 import { Dropdown } from "primereact/dropdown";
 import { Nullable } from "primereact/ts-helpers";
-import { useByRefineryData } from "@/hooks/useByRefineryData";
-import { Skeleton } from "primereact/skeleton"; // añadido
 
 // Componente memoizado para el gráfico de almacenamiento
-const StorageBarChart = React.memo(
-  ({ chequeoCantidads }: { chequeoCantidads: any[] }) => {
-    // normalizar colores (hex 3 o 6 dígitos) y añadir '#'
-    const normalizeHexColor = (raw?: string, fallback = "#66BB6A") => {
-      if (!raw) return fallback;
-      let v = raw.trim();
-      if (!v.startsWith("#")) v = `#${v}`;
-      if (!/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(v)) return fallback;
-      return v.toUpperCase();
+const StorageBarChart = React.memo(({ recepcions }: { recepcions: any[] }) => {
+  const barChartData = useMemo(() => {
+    const totals: Record<string, { storage: number; color: string }> = {};
+    recepcions.forEach((r) => {
+      const name = r.idTanque?.nombre || "Desconocido";
+      const color = `#${r.idContratoItems?.producto?.color}` || "#66BB6A";
+      if (totals[name]) {
+        totals[name].storage += r.cantidadRecibida;
+      } else {
+        totals[name] = {
+          storage: r.cantidadRecibida,
+          color: color,
+        };
+      }
+    });
+
+    const storageData = Object.entries(totals).map(([tanque, data]) => ({
+      tanque,
+      storage: data.storage,
+      color: data.color,
+    }));
+
+    return {
+      labels: storageData.map((d) => d.tanque),
+      datasets: [
+        {
+          label: "Almacenamiento (Bbl)",
+          data: storageData.map((d) => d.storage),
+          backgroundColor: storageData.map((d) => d.color),
+        },
+      ],
     };
+  }, [recepcions]);
 
-    const barChartData = useMemo(() => {
-      // Mapear último chequeo por tanque (por fecha)
-      const lastByTank: Record<
-        string,
-        { nombre: string; cantidad: number; color: string; fecha: string }
-      > = {};
+  const barChartOptions = useMemo(
+    () => ({
+      indexAxis: "x",
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: { beginAtZero: true, title: { display: true, text: "Barriles" } },
+      },
+      plugins: {
+        legend: { display: false },
+        title: { display: false, text: "Almacenamiento por Tanque" },
+      },
+    }),
+    []
+  );
 
-      chequeoCantidads.forEach((c) => {
-        if (c.aplicar?.tipo !== "Tanque" || !c.aplicar.idReferencia) return;
-        const id = c.aplicar.idReferencia.id;
-        const nombre: string = c.aplicar.idReferencia.nombre || "";
-        if (!nombre || nombre === "Desconocido") return; // excluir desconocidos
-        const fecha: string = c.fechaChequeo;
-        const cantidad: number = c.cantidad ?? 0;
-        const color = normalizeHexColor(c.idProducto?.color);
-        if (
-          !lastByTank[id] ||
-          new Date(fecha) > new Date(lastByTank[id].fecha)
-        ) {
-          lastByTank[id] = { nombre, cantidad, color, fecha };
-        }
-      });
-
-      const dataArray = Object.values(lastByTank).sort(
-        (a, b) => b.cantidad - a.cantidad
-      ); // opcional: ordenar descendente
-
-      return {
-        labels: dataArray.map((d) => d.nombre),
-        datasets: [
-          {
-            label: "Última Lectura (Bbl)",
-            data: dataArray.map((d) => d.cantidad),
-            backgroundColor: dataArray.map((d) => d.color),
-          },
-        ],
-      };
-    }, [chequeoCantidads]);
-
-    const barChartOptions = useMemo(
-      () => ({
-        indexAxis: "x",
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          x: { title: { display: true, text: "Tanques" } },
-          y: { beginAtZero: true, title: { display: true, text: "Bbl" } },
-        },
-        plugins: {
-          legend: { display: false },
-          tooltip: {
-            callbacks: {
-              label: (ctx: any) => `${ctx.parsed.y?.toLocaleString()} Bbl`,
-            },
-          },
-        },
-      }),
-      []
-    );
-
-    if (!barChartData.labels.length) {
-      return (
-        <Card title="Última Lectura por Tanque" className="p-0 ">
-          <div className="p-4 text-sm text-color-secondary">Sin lecturas.</div>
-        </Card>
-      );
-    }
-
-    return (
-      <Card title="Última Lectura por Tanque" className="p-0 ">
-        <div style={{ height: "300px" }}>
-          <Chart
-            type="bar"
-            data={barChartData}
-            options={barChartOptions}
-            style={{ width: "100%", height: "100%" }}
-          />
-        </div>
-      </Card>
-    );
-  }
-);
+  return (
+    <Card
+      title="Almacenamiento por Tanque"
+      className="p-0 "
+      //   style={{ height: "350px" }}
+    >
+      <div style={{ height: "300px" }}>
+        <Chart
+          type="bar"
+          data={barChartData}
+          options={barChartOptions}
+          style={{ width: "100%", height: "100%" }}
+        />
+      </div>
+    </Card>
+  );
+});
 
 // Componente memoizado para los controles de filtrado
 const FilterControls = React.memo(
@@ -200,54 +172,9 @@ const FilterControls = React.memo(
 // Componente principal refactorizado
 const TanqueGraficaList: React.FC = () => {
   const { activeRefineria } = useRefineriaStore();
-  const { chequeoCantidads = [], loading } = useByRefineryData(
+  const { recepcions, chequeoCantidads } = useRefineryData(
     activeRefineria?.id || ""
-  ); // añadido loading
-
-  // Skeleton components & staged reveal ---------------------------------
-  const FiltersSkeleton = () => (
-    <Card title="Nivel de Tanque" className="p-0 mb-3">
-      <div className="p-3">
-        <div className="grid formgrid">
-          <div className="col-12 md:col-6 flex flex-column gap-2">
-            <Skeleton height="2.5rem" borderRadius="8px" />
-            <Skeleton height="2.5rem" borderRadius="8px" />
-          </div>
-          <div className="col-12 md:col-6 flex flex-column gap-2">
-            <Skeleton height="2.5rem" borderRadius="8px" />
-            <div className="flex gap-2">
-              <Skeleton height="2.5rem" width="50%" borderRadius="8px" />
-              <Skeleton height="2.5rem" width="50%" borderRadius="8px" />
-            </div>
-          </div>
-        </div>
-        <Skeleton height="260px" borderRadius="12px" className="mt-3" />
-      </div>
-    </Card>
   );
-
-  const StorageSkeleton = () => (
-    <Card title="Última Lectura por Tanque" className="p-0 ">
-      <div className="p-3">
-        <Skeleton height="300px" borderRadius="12px" />
-      </div>
-    </Card>
-  );
-
-  const [stage, setStage] = useState(0); // 0 filtros, 1 charts, 2 storage, 3 listo
-  useEffect(() => {
-    if (loading) {
-      setStage(0);
-      const t1 = setTimeout(() => setStage((s) => (s < 1 ? 1 : s)), 150);
-      const t2 = setTimeout(() => setStage((s) => (s < 2 ? 2 : s)), 350);
-      return () => {
-        clearTimeout(t1);
-        clearTimeout(t2);
-      };
-    } else {
-      setStage(3);
-    }
-  }, [loading]);
 
   // Filtrar chequeos aplicados a tanques y extraer tanques únicos
   const tanks = useMemo(() => {
@@ -277,13 +204,6 @@ const TanqueGraficaList: React.FC = () => {
   const [selectedDay, setSelectedDay] = useState<Nullable<Date>>(null);
   const [selectedMonth, setSelectedMonth] = useState<Nullable<Date>>(null);
   const [dateRange, setDateRange] = useState<[Date, Date] | null>(null);
-
-  // Nueva lógica: seleccionar todos los tanques por defecto
-  useEffect(() => {
-    if (tanks.length && selectedTanks.length === 0) {
-      setSelectedTanks(tanks.map((t) => t.id));
-    }
-  }, [tanks, selectedTanks.length]);
 
   // Efecto para establecer día por defecto
   useEffect(() => {
@@ -413,6 +333,21 @@ const TanqueGraficaList: React.FC = () => {
   const lineChartData = useMemo(() => {
     if (selectedTanks.length === 0) return { labels: [], datasets: [] };
 
+    const colors = [
+      "#42A5F5",
+      "#FFA726",
+      "#66BB6A",
+      "#26C6DA",
+      "#7E57C2",
+      "#EC407A",
+      "#D4E157",
+      "#FF7043",
+      "#5C6BC0",
+      "#AB47BC",
+      "#78909C",
+      "#26A69A",
+    ];
+
     const datasets = selectedTanks.map((tankId, index) => {
       const tank = tanks.find((t) => t.id === tankId);
       const tankName = tank?.nombre || "Tanque";
@@ -479,52 +414,56 @@ const TanqueGraficaList: React.FC = () => {
   return (
     <div className="grid">
       <div className="col-12 md:col-6">
-        {loading && stage >= 0 && stage < 3 ? (
-          <FiltersSkeleton />
-        ) : (
-          <Card title="Nivel de Tanque" className="p-0 mb-3">
-            <div>
-              <div className="grid formgrid ">
-                <div className="col-12 md:col-6 ">
-                  <MultiSelect
-                    value={selectedTanks}
-                    options={tankOptions}
-                    onChange={(e) => setSelectedTanks(e.value)}
-                    placeholder="Selecciona tanques"
-                    className="w-full "
-                    display="chip"
-                    selectionLimit={5}
-                  />
-                </div>
-                <div className="col-12 md:col-6 ">
-                  <FilterControls
-                    filterType={filterType}
-                    setFilterType={setFilterType}
-                    customRange={customRange}
-                    setCustomRange={setCustomRange}
-                    selectedDay={selectedDay}
-                    setSelectedDay={setSelectedDay}
-                    selectedMonth={selectedMonth}
-                    setSelectedMonth={setSelectedMonth}
-                  />
-                </div>
+        <Card
+          title="Nivel de Tanque"
+          className="p-0 mb-3"
+          //   style={{ height: "350px" }}
+        >
+          <div
+            style={
+              {
+                // height: "300px"
+              }
+            }
+          >
+            <div className="grid formgrid ">
+              {/* Campo: Nombre */}
+              <div className="col-12 md:col-6 ">
+                <MultiSelect
+                  value={selectedTanks}
+                  options={tankOptions}
+                  onChange={(e) => setSelectedTanks(e.value)}
+                  placeholder="Selecciona tanques"
+                  className="w-full "
+                  display="chip"
+                  selectionLimit={5}
+                />
               </div>
-              <Chart
-                type="line"
-                data={lineChartData}
-                options={lineChartOptions}
-                style={{ width: "100%", height: "260px" }}
-              />
+              <div className="col-12 md:col-6 ">
+                <FilterControls
+                  filterType={filterType}
+                  setFilterType={setFilterType}
+                  customRange={customRange}
+                  setCustomRange={setCustomRange}
+                  selectedDay={selectedDay}
+                  setSelectedDay={setSelectedDay}
+                  selectedMonth={selectedMonth}
+                  setSelectedMonth={setSelectedMonth}
+                />
+              </div>
             </div>
-          </Card>
-        )}
+            <Chart
+              type="line"
+              data={lineChartData}
+              options={lineChartOptions}
+              style={{ width: "100%", height: "300px" }}
+            />
+          </div>
+        </Card>
       </div>
+
       <div className="col-12 md:col-6">
-        {loading && stage >= 1 && stage < 3 ? (
-          <StorageSkeleton />
-        ) : (
-          <StorageBarChart chequeoCantidads={chequeoCantidads} />
-        )}
+        <StorageBarChart recepcions={recepcions} />
       </div>
     </div>
   );

@@ -134,7 +134,7 @@ const UsuarioList = () => {
 
   const actionBodyTemplate = (rowData: any) => {
     return (
-      <div className="flex flex-column justify-content-center align-items-center sm:flex-row">
+      <>
         <CustomActionButtons
           rowData={rowData}
           onInfo={(data) => {
@@ -161,7 +161,7 @@ const UsuarioList = () => {
           tooltip="Actualizar Contraseña"
           tooltipOptions={{ position: "top" }}
         />
-      </div>
+      </>
     );
   };
   return (
