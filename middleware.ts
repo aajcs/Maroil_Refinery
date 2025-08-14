@@ -37,13 +37,64 @@ const publicRoutes = ["/landing", "/prices"];
 const authRoutes = ["/auth/login", "/auth/register"];
 const apiAuthPrefix = "/api/auth";
 
+// Centraliza todas las rutas protegidas de la app
+// Bloque generado automáticamente: todas las rutas protegidas encontradas en el proyecto
 const protectedRoutes = [
-  { path: "/admin", roles: ["admin"] },
-  { path: "/dashboard", roles: ["superAdmin"] },
-  { path: "/users", roles: ["superAdmin"] },
-  { path: "/todas-refinerias", roles: ["superAdmin"] },
-  { path: "/refineria/configuracion", roles: ["superAdmin", "admin"] },
-  { path: "/refineria/finanzas", roles: ["superAdmin", "admin"] },
+  {
+    path: "/todas-refinerias",
+    roles: ["superAdmin"],
+    departamento: ["Gerencia"],
+  },
+  {
+    path: "/partidas",
+    roles: ["superAdmin"],
+    departamento: ["Gerencia"],
+  },
+  {
+    path: "/users",
+    roles: ["superAdmin"],
+    departamento: ["Gerencia"],
+  },
+  {
+    path: "/dashboard-sales",
+    roles: ["superAdmin"],
+    departamento: ["Gerencia"],
+  },
+  {
+    path: "/refineria/configuracion",
+    roles: ["superAdmin", "admin"],
+    departamento: ["Operaciones", "Gerencia"],
+  },
+  {
+    path: "/refineria/finanzas",
+    roles: ["superAdmin", "admin", "operador", "user", "lectura"],
+    departamento: ["Finanzas", "Gerencia"],
+  },
+  {
+    path: "/refineria/logistica",
+    roles: ["superAdmin", "admin", "operador", "user", "lectura"],
+    departamento: ["Logistica", "Gerencia"],
+  },
+  {
+    path: "/refineria/operaciones",
+    roles: ["superAdmin", "admin", "operador", "user", "lectura"],
+    departamento: ["Operaciones", "Gerencia"],
+  },
+  {
+    path: "/refineria/laboratorio",
+    roles: ["superAdmin", "admin", "operador", "user", "lectura"],
+    departamento: ["Laboratorio", "Gerencia"],
+  },
+  {
+    path: "/refineria/reportes-graficas",
+    roles: ["superAdmin", "admin", "operador", "user", "lectura"],
+    departamento: ["Operaciones", "Gerencia"],
+  },
+  {
+    path: "/refineria/dashboard-sales",
+    roles: ["superAdmin", "admin", "operador", "user", "lectura"],
+    departamento: ["Administracion", "Finanzas", "Gerencia"],
+  },
 ];
 
 export async function middleware(req: NextRequest) {
@@ -63,6 +114,8 @@ export async function middleware(req: NextRequest) {
     user?: {
       usuario?: {
         rol?: string;
+        departamento?: string;
+        acceso?: string[];
       };
     };
     [key: string]: any;
@@ -93,7 +146,7 @@ export async function middleware(req: NextRequest) {
 
   // Redirigir a /dashboard si el usuario está logueado y trata de acceder a rutas de autenticación
   if (isLoggedIn && authRoutes.includes(nextUrl.pathname)) {
-    return NextResponse.redirect(new URL("/dashboard", nextUrl));
+    return NextResponse.redirect(new URL("/", nextUrl));
   }
 
   // Redirigir a /login si el usuario no está logueado y trata de acceder a una ruta protegida
@@ -105,12 +158,43 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL("/auth/login", nextUrl));
   }
 
-  // Verificar roles para rutas protegidas
+  // Verificar roles, departamento y acceso para rutas protegidas
   const route = protectedRoutes.find((route) =>
     nextUrl.pathname.startsWith(route.path)
   );
-  if (route && !route.roles.includes(token?.user?.usuario?.rol as string)) {
-    return NextResponse.redirect(new URL("/auth/accessasd", nextUrl));
+  const user = token?.user?.usuario;
+  if (route) {
+    // Validación de rol
+    const userRole = user?.rol as string;
+    const isSuperAdmin = userRole === "superAdmin";
+    const hasRole = route.roles.includes(userRole);
+
+    // Si es superAdmin, acceso total
+    if (isSuperAdmin) {
+      return NextResponse.next();
+    }
+
+    // Validación de acceso (si existe en el token y la ruta)
+    let hasAccess = true;
+    if (user?.acceso && Array.isArray(user.acceso)) {
+      hasAccess = user.acceso.length > 0;
+    }
+
+    // Validación de departamento para todas las rutas protegidas (excepto superAdmin)
+    let hasDepartment = true;
+    if (user?.departamento && route.departamento) {
+      const userDept = Array.isArray(user.departamento)
+        ? user.departamento
+        : [user.departamento];
+      const routeDept = Array.isArray(route.departamento)
+        ? route.departamento
+        : [route.departamento];
+      hasDepartment = userDept.some((ud) => routeDept.includes(ud));
+    }
+
+    if (!hasRole || !hasAccess || !hasDepartment) {
+      return NextResponse.redirect(new URL("/auth/access", nextUrl));
+    }
   }
 
   return NextResponse.next();

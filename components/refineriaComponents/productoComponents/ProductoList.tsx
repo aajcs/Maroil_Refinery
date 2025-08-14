@@ -15,8 +15,10 @@ import { formatDateFH } from "@/utils/dateUtils";
 import { deleteProducto, getProductos } from "@/app/api/productoService";
 import CustomActionButtons from "@/components/common/CustomActionButtons";
 import AuditHistoryDialog from "@/components/common/AuditHistoryDialog";
+import CreateButton from "@/components/common/CreateButton";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { motion } from "framer-motion";
+import { handleFormError } from "@/utils/errorHandlers";
 
 const ProductoList = () => {
   const { activeRefineria } = useRefineriaStore();
@@ -68,25 +70,30 @@ const ProductoList = () => {
   };
 
   const handleDeleteProducto = async () => {
-    if (producto?.id) {
-      await deleteProducto(producto.id);
-      setProductos(productos.filter((val) => val.id !== producto.id));
-      toast.current?.show({
-        severity: "success",
-        summary: "Éxito",
-        detail: "Producto Eliminada",
-        life: 3000,
-      });
-    } else {
-      toast.current?.show({
-        severity: "error",
-        summary: "Error",
-        detail: "No se pudo eliminar la torre de destilación",
-        life: 3000,
-      });
+    try {
+      if (producto?.id) {
+        await deleteProducto(producto.id);
+        setProductos(productos.filter((val) => val.id !== producto.id));
+        toast.current?.show({
+          severity: "success",
+          summary: "Éxito",
+          detail: "Producto Eliminado",
+          life: 3000,
+        });
+      } else {
+        toast.current?.show({
+          severity: "error",
+          summary: "Error",
+          detail: "No se pudo eliminar el producto",
+          life: 3000,
+        });
+      }
+    } catch (error) {
+      handleFormError(error, toast);
+    } finally {
+      setProducto(null);
+      setDeleteProductDialog(false);
     }
-    setProducto(null);
-    setDeleteProductDialog(false);
   };
 
   const onGlobalFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -106,14 +113,7 @@ const ProductoList = () => {
           className="w-full"
         />
       </span>
-      <Button
-        type="button"
-        icon="pi pi-user-plus"
-        label="Agregar Nuevo"
-        outlined
-        className="w-full sm:w-auto flex-order-0 sm:flex-order-1"
-        onClick={openProductoFormDialog}
-      />
+      <CreateButton onClick={openProductoFormDialog} />
     </div>
   );
 
@@ -181,10 +181,7 @@ const ProductoList = () => {
           rowClassName={() => "animated-row"}
           size="small"
         >
-          <Column
-            body={actionBodyTemplate}
-           
-          />
+          <Column body={actionBodyTemplate} />
           <Column field="nombre" header="Nombre" sortable />
           <Column field="posicion" header="Posición" sortable />
           <Column

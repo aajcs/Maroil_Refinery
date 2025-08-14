@@ -21,6 +21,8 @@ import {
 import { Accordion, AccordionTab } from "primereact/accordion";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { motion } from "framer-motion";
+import CreateButton from "@/components/common/CreateButton";
+import { handleFormError } from "@/utils/errorHandlers";
 
 const TipoProductoList = () => {
   const { activeRefineria } = useRefineriaStore();
@@ -60,19 +62,20 @@ const TipoProductoList = () => {
     }
   };
 
-  
-const openTipoProductoFormDialog = () => {
-  setTipoProducto(null); // Limpia el tipoProducto seleccionado
-  setTipoProductoFormDialog(true);
-};
-
-  const hideDeleteProductDialog = () => setDeleteProductDialog(false);
-  const hideTipoProductoFormDialog = () => {
-    setTipoProducto(null);
-    setTipoProductoFormDialog(false);
+  const openTipoProductoFormDialog = () => {
+    setTipoProducto(null); // Limpia el tipoProducto seleccionado
+    setTipoProductoFormDialog(true);
   };
 
-  const handleDeleteTipoProducto = async () => {
+const hideDeleteProductDialog = () => setDeleteProductDialog(false);
+
+const hideTipoProductoFormDialog = () => {
+  setTipoProducto(null);
+  setTipoProductoFormDialog(false);
+};
+
+const handleDeleteTipoProducto = async () => {
+  try {
     if (tipoProducto?.id) {
       await deleteTipoProducto(tipoProducto.id);
       setTipoProductos(
@@ -92,9 +95,13 @@ const openTipoProductoFormDialog = () => {
         life: 3000,
       });
     }
+  } catch (error) {
+    handleFormError(error, toast);
+  } finally {
     setTipoProducto(null);
     setDeleteProductDialog(false);
-  };
+  }
+};
 
   const onGlobalFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
@@ -102,27 +109,20 @@ const openTipoProductoFormDialog = () => {
     setGlobalFilterValue(value);
   };
 
- const renderHeader = () => (
-  <div className="flex flex-wrap gap-2 align-items-center justify-content-between">
-    <span className="p-input-icon-left w-full sm:w-20rem flex-order-1 sm:flex-order-0">
-      <i className="pi pi-search"></i>
-      <InputText
-        value={globalFilterValue}
-        onChange={onGlobalFilterChange}
-        placeholder="Búsqueda Global"
-        className="w-full"
-      />
-    </span>
-    <Button
-      type="button"
-      icon="pi pi-user-plus"
-      label="Agregar Nuevo"
-      outlined
-      className="w-full sm:w-auto flex-order-0 sm:flex-order-1"
-      onClick={openTipoProductoFormDialog}
-    />
-  </div>
-);
+  const renderHeader = () => (
+    <div className="flex flex-wrap gap-2 align-items-center justify-content-between">
+      <span className="p-input-icon-left w-full sm:w-20rem flex-order-1 sm:flex-order-0">
+        <i className="pi pi-search"></i>
+        <InputText
+          value={globalFilterValue}
+          onChange={onGlobalFilterChange}
+          placeholder="Búsqueda Global"
+          className="w-full"
+        />
+      </span>
+      <CreateButton onClick={openTipoProductoFormDialog} />
+    </div>
+  );
 
   const actionBodyTemplate = (rowData: TipoProducto) => (
     <CustomActionButtons
@@ -247,10 +247,7 @@ const openTipoProductoFormDialog = () => {
           rowClassName={() => "animated-row"}
           size="small"
         >
-          <Column
-            body={actionBodyTemplate}
-    
-          />
+          <Column body={actionBodyTemplate} />
           <Column field="idProducto.nombre" header="Producto" />
           <Column field="nombre" header="Nombre" />
           <Column field="clasificacion" header="Clasificación" />

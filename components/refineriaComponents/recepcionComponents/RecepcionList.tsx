@@ -18,6 +18,11 @@ import RecepcionTemplate from "@/components/pdf/templates/recepcionTemplate";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { motion } from "framer-motion";
 
+import CreateButton from "@/components/common/CreateButton";
+
+import { handleFormError } from "@/utils/errorHandlers";
+
+
 const RecepcionList = () => {
   const { activeRefineria } = useRefineriaStore();
   const [recepcions, setRecepcions] = useState<Recepcion[]>([]);
@@ -59,9 +64,9 @@ const RecepcionList = () => {
   };
 
   const openRecepcionFormDialog = () => {
-  setRecepcion(null); // Limpia la recepción seleccionada
-  setRecepcionFormDialog(true);
-};
+    setRecepcion(null); // Limpia la recepción seleccionada
+    setRecepcionFormDialog(true);
+  };
   const hideDeleteProductDialog = () => setDeleteProductDialog(false);
   const hideRecepcionFormDialog = () => {
     setRecepcion(null);
@@ -69,25 +74,30 @@ const RecepcionList = () => {
   };
 
   const handleDeleteRecepcion = async () => {
-    if (recepcion?.id) {
-      await deleteRecepcion(recepcion.id);
-      setRecepcions(recepcions.filter((val) => val.id !== recepcion.id));
-      toast.current?.show({
-        severity: "success",
-        summary: "Éxito",
-        detail: "Recepcion Eliminada",
-        life: 3000,
-      });
-    } else {
-      toast.current?.show({
-        severity: "error",
-        summary: "Error",
-        detail: "No se pudo eliminar la torre de destilación",
-        life: 3000,
-      });
+    try {
+      if (recepcion?.id) {
+        await deleteRecepcion(recepcion.id);
+        setRecepcions(recepcions.filter((val) => val.id !== recepcion.id));
+        toast.current?.show({
+          severity: "success",
+          summary: "Éxito",
+          detail: "Recepcion Eliminada",
+          life: 3000,
+        });
+      } else {
+        toast.current?.show({
+          severity: "error",
+          summary: "Error",
+          detail: "No se pudo eliminar la torre de destilación",
+          life: 3000,
+        });
+      }
+    } catch (error) {
+      handleFormError(error, toast);
+    } finally {
+      setRecepcion(null);
+      setDeleteProductDialog(false);
     }
-    setRecepcion(null);
-    setDeleteProductDialog(false);
   };
 
   const onGlobalFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -96,37 +106,30 @@ const RecepcionList = () => {
     setGlobalFilterValue(value);
   };
 
- const renderHeader = () => (
-  <div className="flex flex-wrap gap-2 align-items-center justify-content-between">
-    <div className="flex align-items-center gap-2 w-full sm:w-auto">
-      <span className="p-input-icon-left w-full sm:w-20rem">
-        <i className="pi pi-search"></i>
-        <InputText
-          value={globalFilterValue}
-          onChange={onGlobalFilterChange}
-          placeholder="Búsqueda Global"
-          className="w-full"
+  const renderHeader = () => (
+    <div className="flex flex-wrap gap-2 align-items-center justify-content-between">
+      <div className="flex align-items-center gap-2 w-full sm:w-auto">
+        <span className="p-input-icon-left w-full sm:w-20rem">
+          <i className="pi pi-search"></i>
+          <InputText
+            value={globalFilterValue}
+            onChange={onGlobalFilterChange}
+            placeholder="Búsqueda Global"
+            className="w-full"
+          />
+        </span>
+        <Button
+          type="button"
+          icon={mostrarTodas ? "pi pi-eye-slash" : "pi pi-eye"}
+          label={mostrarTodas ? "Ver solo activas" : "Ver todas"}
+          className="p-button-secondary"
+          onClick={() => setMostrarTodas((prev) => !prev)}
+          style={{ minWidth: 160 }}
         />
-      </span>
-      <Button
-        type="button"
-        icon={mostrarTodas ? "pi pi-eye-slash" : "pi pi-eye"}
-        label={mostrarTodas ? "Ver solo activas" : "Ver todas"}
-        className="p-button-secondary"
-        onClick={() => setMostrarTodas((prev) => !prev)}
-        style={{ minWidth: 160 }}
-      />
+      </div>
+      <CreateButton onClick={openRecepcionFormDialog} />
     </div>
-    <Button
-      type="button"
-      icon="pi pi-user-plus"
-      label="Agregar Nuevo"
-      outlined
-      className="w-full sm:w-auto"
-      onClick={openRecepcionFormDialog}
-    />
-  </div>
-);
+  );
 
   const actionBodyTemplate = (rowData: Recepcion) => (
     <CustomActionButtons
