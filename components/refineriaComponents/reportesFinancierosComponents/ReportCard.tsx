@@ -25,9 +25,7 @@ const ReportCard: React.FC<ReportCardProps> = ({ icon, label, color = "", onClic
   >
     <div className="flex flex-column align-items-center justify-content-center gap-3">
       <div className="mb-2">{icon}</div>
-      <span className="font-bold text-lg text-900 text-center" style={{ minHeight: 48 }}>
-        {label}
-      </span>
+  {/* Solo el label de arriba, se elimina el de abajo */}
     </div>
   </Card>
 );
