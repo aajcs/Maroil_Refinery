@@ -237,7 +237,7 @@ const ModeladoRefineriaDashboard = () => {
   return (
     <div className="">
       <div className="flex flex-wrap ">
-        <TabView className="w-full">
+        <TabView className="card w-full p-1">
           <TabPanel header="Compras de Crudos" leftIcon="pi pi-wallet mr-2">
             <motion.div
               initial={{ opacity: 0, scale: 0.85, y: 40, filter: "blur(12px)" }}
@@ -362,132 +362,132 @@ const ModeladoRefineriaDashboard = () => {
         ))} */}
 
         {/* Línea de recepción */}
+        <div className="grid">
+          <div className="col-12 md:col-6 lg:col-2 ">
+            <motion.div
+              initial={{
+                opacity: 0,
+                y: 80,
+                scale: 0.85,
+                rotate: -8,
+                filter: "blur(16px) grayscale(60%)",
+              }}
+              animate={{
+                opacity: 1,
+                y: 0,
+                scale: 1,
+                rotate: 0,
+                filter: "blur(0px) grayscale(0%)",
+              }}
+              transition={{ duration: 0.9, type: "spring", bounce: 0.45 }}
+              className="card p-3 lg-h-fullScreen overflow-auto"
+            >
+              <AnimatedTitle text="Recepciones" />
 
-        <div className="col-12 md:col-6 lg:col-2">
-          <motion.div
-            initial={{
-              opacity: 0,
-              y: 80,
-              scale: 0.85,
-              rotate: -8,
-              filter: "blur(16px) grayscale(60%)",
-            }}
-            animate={{
-              opacity: 1,
-              y: 0,
-              scale: 1,
-              rotate: 0,
-              filter: "blur(0px) grayscale(0%)",
-            }}
-            transition={{ duration: 0.9, type: "spring", bounce: 0.45 }}
-            className="card p-3 lg-h-fullScreen overflow-auto"
-          >
-            <AnimatedTitle text="Recepciones" />
-
-            {lineaRecepcions.map((lineaRecepcion) => (
-              <div key={lineaRecepcion.id} className="mb-2">
-                <ModeladoRefineriaLineaCarga
-                  lineaRecepcion={lineaRecepcion}
-                  recepcions={recepcions}
-                />
-              </div>
-            ))}
-          </motion.div>
-        </div>
-        {/* Almacenamiento Crudo */}
-        <div className="col-12 md:col-6 lg:col-2">
-          <motion.div
-            initial={{ opacity: 0, y: 40, scale: 0.95, filter: "blur(8px)" }}
-            animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
-            transition={{ duration: 0.7, type: "spring", bounce: 0.35 }}
-            className="card p-3 lg-h-fullScreen overflow-auto"
-          >
-            <AnimatedTitle text="Materia Prima" />
-            {tanques
-              .filter((tanque) => tanque.almacenamientoMateriaPrimaria)
-              .map((tanque) => (
-                <div key={tanque.id} className="mb-2">
-                  <ModeladoRefineriaTanque
-                    tanque={tanque}
+              {lineaRecepcions.map((lineaRecepcion) => (
+                <div key={lineaRecepcion.id} className="mb-2">
+                  <ModeladoRefineriaLineaCarga
+                    lineaRecepcion={lineaRecepcion}
                     recepcions={recepcions}
-                    corteRefinacions={corteRefinacions}
-                    chequeoCantidads={chequeoCantidads}
-                    salida={false}
                   />
                 </div>
               ))}
-          </motion.div>
-        </div>
+            </motion.div>
+          </div>
+          {/* Almacenamiento Crudo */}
+          <div className="col-12 md:col-6 lg:col-2">
+            <motion.div
+              initial={{ opacity: 0, y: 40, scale: 0.95, filter: "blur(8px)" }}
+              animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+              transition={{ duration: 0.7, type: "spring", bounce: 0.35 }}
+              className="card p-3 lg-h-fullScreen overflow-auto"
+            >
+              <AnimatedTitle text="Materia Prima" />
+              {tanques
+                .filter((tanque) => tanque.almacenamientoMateriaPrimaria)
+                .map((tanque) => (
+                  <div key={tanque.id} className="mb-2">
+                    <ModeladoRefineriaTanque
+                      tanque={tanque}
+                      recepcions={recepcions}
+                      corteRefinacions={corteRefinacions}
+                      chequeoCantidads={chequeoCantidads}
+                      salida={false}
+                    />
+                  </div>
+                ))}
+            </motion.div>
+          </div>
 
-        {/* Torres de Procesamiento */}
-        <div className="col-12 md:col-6 lg:col-3">
-          <motion.div
-            initial={{ opacity: 0, y: 40, scale: 0.95, filter: "blur(8px)" }}
-            animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
-            transition={{ duration: 0.7, type: "spring", bounce: 0.35 }}
-            className="card p-3 lg-h-fullScreen overflow-auto"
-          >
-            <AnimatedTitle text="Torres de Procesamiento" />
-            <div className="grid">
-              {torresDestilacions.map((torre) => (
-                <div key={torre.id} className="col-12 md:col-12">
-                  <ModeladoRefineriaTorre
-                    torre={torre}
-                    corteRefinacions={corteRefinacions}
-                  />
-                </div>
-              ))}
-            </div>
-          </motion.div>
-        </div>
-
-        {/* Almacenamiento de Productos */}
-        <div className="col-12 md:col-6 lg:col-3">
-          <motion.div
-            initial={{ opacity: 0, y: 40, scale: 0.95, filter: "blur(8px)" }}
-            animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
-            transition={{ duration: 0.7, type: "spring", bounce: 0.35 }}
-            className="card p-3 lg-h-fullScreen overflow-auto"
-          >
-            <AnimatedTitle text="Derivados" />
-            <div className="grid">
-              {tanquesFiltradosOrdenados.map((tanque) => (
-                <div key={tanque.id} className="mb-2">
-                  <ModeladoRefineriaTanque
-                    tanque={tanque}
-                    despachos={despachos}
-                    chequeoCantidads={chequeoCantidads}
-                    corteRefinacions={corteRefinacions}
-                    salida={true}
-                  />
-                </div>
-              ))}
-            </div>
-          </motion.div>
-        </div>
-
-        {/* Línea de Despacho */}
-        <div className="col-12 md:col-6 lg:col-2">
-          <motion.div
-            initial={{ opacity: 0, y: 40, scale: 0.95, filter: "blur(8px)" }}
-            animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
-            transition={{ duration: 0.7, type: "spring", bounce: 0.35 }}
-            className="card p-3 lg-h-fullScreen overflow-auto"
-          >
-            <AnimatedTitle text="Despachos" />
-
-            {lineaDespachos.map((lineaDespacho) => (
-              <div key={lineaDespacho.id} className="mb-2">
-                <ModeladoRefineriaLineaDespacho
-                  lineaDespacho={lineaDespacho}
-                  despachos={despachos}
-                />
+          {/* Torres de Procesamiento */}
+          <div className="col-12 md:col-6 lg:col-3">
+            <motion.div
+              initial={{ opacity: 0, y: 40, scale: 0.95, filter: "blur(8px)" }}
+              animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+              transition={{ duration: 0.7, type: "spring", bounce: 0.35 }}
+              className="card p-3 lg-h-fullScreen overflow-auto"
+            >
+              <AnimatedTitle text="Torres de Procesamiento" />
+              <div className="grid">
+                {torresDestilacions.map((torre) => (
+                  <div key={torre.id} className="col-12 md:col-12">
+                    <ModeladoRefineriaTorre
+                      torre={torre}
+                      corteRefinacions={corteRefinacions}
+                    />
+                  </div>
+                ))}
               </div>
-            ))}
-          </motion.div>
-        </div>
+            </motion.div>
+          </div>
 
-        {/* {refinacions.map((refinacion) => (
+          {/* Almacenamiento de Productos */}
+          <div className="col-12 md:col-6 lg:col-3">
+            <motion.div
+              initial={{ opacity: 0, y: 40, scale: 0.95, filter: "blur(8px)" }}
+              animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+              transition={{ duration: 0.7, type: "spring", bounce: 0.35 }}
+              className="card p-3 lg-h-fullScreen overflow-auto"
+            >
+              <AnimatedTitle text="Derivados" />
+              <div className="grid">
+                {tanquesFiltradosOrdenados.map((tanque) => (
+                  <div key={tanque.id} className="mb-2">
+                    <ModeladoRefineriaTanque
+                      tanque={tanque}
+                      despachos={despachos}
+                      chequeoCantidads={chequeoCantidads}
+                      corteRefinacions={corteRefinacions}
+                      salida={true}
+                    />
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Línea de Despacho */}
+          <div className="col-12 md:col-6 lg:col-2">
+            <motion.div
+              initial={{ opacity: 0, y: 40, scale: 0.95, filter: "blur(8px)" }}
+              animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+              transition={{ duration: 0.7, type: "spring", bounce: 0.35 }}
+              className="card p-3 lg-h-fullScreen overflow-auto"
+            >
+              <AnimatedTitle text="Despachos" />
+
+              {lineaDespachos.map((lineaDespacho) => (
+                <div key={lineaDespacho.id} className="mb-2">
+                  <ModeladoRefineriaLineaDespacho
+                    lineaDespacho={lineaDespacho}
+                    despachos={despachos}
+                  />
+                </div>
+              ))}
+            </motion.div>
+          </div>
+
+          {/* {refinacions.map((refinacion) => (
           <div key={refinacion.id} className="mb-2">
             <pre>{JSON.stringify(refinacion, null, 2)}</pre>
             <div className="card p-3">
@@ -555,6 +555,7 @@ const ModeladoRefineriaDashboard = () => {
             </div>
           </div>
         ))} */}
+        </div>
       </div>
 
       <Dialog
