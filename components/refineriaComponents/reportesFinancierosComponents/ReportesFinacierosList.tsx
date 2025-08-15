@@ -8,12 +8,15 @@ import ReportCard from "./ReportCard";
 import ReportFilters from "./ReportFilters";
 import ReportTable from "./ReportTable";
 import ReportPDFButton from "./ReportPDFButton";
+import { Calendar } from "primereact/calendar";
 import AbonosPorMesTemplate from "@/components/pdf/templates/AbonosPorMesTemplate";
 import CuentasPendientesTemplate from "@/components/pdf/templates/CuentasPendientesTemplate";
 import { PDFViewer } from "@react-pdf/renderer";
 import ContratosReporteTemplate from "@/components/pdf/templates/ContratosReporteTemplate";
 import ContactosReporteTemplate from "@/components/pdf/templates/ContactosReporteTemplate";
 import { getContactos } from "@/app/api/contactoService";
+import BalancesReporte from "./BalancesReporte";
+import BalancesReportePDF from "@/components/pdf/templates/BalancesReportePDF";
 
 // --- Configuración de reportes ---
 // --- Opciones de contratos ---
@@ -35,7 +38,20 @@ const ESTADO_ENTREGA_OPTIONS = [
 ];
 
 const REPORTES = [
-  // ...otros reportes...
+  {
+    key: "balances",
+    label: "Balances",
+    icon: (
+      <svg width="38" height="38" viewBox="0 0 24 24" fill="none">
+        <rect x="3" y="5" width="18" height="16" rx="3" fill="#a21caf" />
+        <rect x="7" y="2" width="2" height="6" rx="1" fill="#e879f9" />
+        <rect x="15" y="2" width="2" height="6" rx="1" fill="#e879f9" />
+        <rect x="7" y="11" width="10" height="2" rx="1" fill="#fff" />
+        <rect x="7" y="15" width="6" height="2" rx="1" fill="#fff" />
+      </svg>
+    ),
+    color: "bg-purple-50",
+  },
   {
     key: "contratos",
     label: "Contratos",
@@ -145,7 +161,7 @@ const ReportesFinancierosList: React.FC = () => {
   const [clientes, setClientes] = useState<{ label: string; value: string }[]>([]);
 
   // Data de reporte
-  const [data, setData] = useState<any[]>([]);
+  const [data, setData] = useState<never[]>([]);
   const [resumen, setResumen] = useState<any[]>([]);
   const [pdfDoc, setPdfDoc] = useState<React.ReactElement | null>(null);
   const [pdfFileName, setPdfFileName] = useState<string>("");
@@ -198,7 +214,7 @@ const ReportesFinancierosList: React.FC = () => {
   // --- Lógica de búsqueda de reportes ---
   const handleBuscar = async () => {
     setLoading(true);
-    if (reporteSeleccionado === "abonos") {
+  if (reporteSeleccionado === "abonos") {
       // ...código existente de abonos...
       const abonosDB = await getAbonos();
       let abonos = abonosDB.abonos || [];
@@ -279,8 +295,8 @@ const ReportesFinancierosList: React.FC = () => {
       );
       setPdfFileName(`ReporteCuentasPendientes_${filtros.tipoCuenta}_${new Date().toLocaleDateString()}.pdf`);
     }
-    if (reporteSeleccionado === "contratos") {
-      const contratosDB = await getContratos();
+  if (reporteSeleccionado === "contratos") {
+    const contratosDB = await getContratos();
       let contratos = contratosDB.contratos || [];
       contratos = contratos.filter(
         (contrato: any) =>
@@ -432,7 +448,7 @@ const ReportesFinancierosList: React.FC = () => {
 
       {/* Filtros SIEMPRE visibles y resultados debajo */}
       <AnimatePresence mode="wait">
-        {reporteSeleccionado && (
+        {reporteSeleccionado && reporteSeleccionado !== "balances" && (
           <motion.div
             className="mb-4 p-3 bg-white border-round shadow-1"
             key="filters"
@@ -484,7 +500,7 @@ const ReportesFinancierosList: React.FC = () => {
                 {/* Tabla */}
                 <ReportTable
                   columns={getColumns()}
-                  data={data.map(row => {
+                  data={data.map((row: any) => {
                     const formatted: any = {};
                     getColumns().forEach(col => {
                       let value = getCellValue(row, col.field);
@@ -492,18 +508,21 @@ const ReportesFinancierosList: React.FC = () => {
                       if (reporteSeleccionado === "contratos") {
                         if (col.field === "saldoPendiente") {
                           value = row.montoPendiente;
-                          value = value !== undefined && value !== null ? Number(value).toLocaleString("en-US", { minimumFractionDigits: 2 }) : "-";
+                          value = value !== undefined && value !== null && !isNaN(Number(value)) ? Number(value).toLocaleString("en-US", { minimumFractionDigits: 2 }) : "-";
                         } else if (col.field === "montoTotal") {
-                          value = row.montoTotal !== undefined && row.montoTotal !== null ? Number(row.montoTotal).toLocaleString("en-US", { minimumFractionDigits: 2 }) : "-";
+                          value = row.montoTotal !== undefined && row.montoTotal !== null && !isNaN(Number(row.montoTotal)) ? Number(row.montoTotal).toLocaleString("en-US", { minimumFractionDigits: 2 }) : "-";
                         } else if (col.field === "fechaInicio" && value) {
-                          value = new Date(value).toLocaleDateString();
+                          value = value ? new Date(value).toLocaleDateString() : "-";
                         } else if (col.field === "fechaFin" && value) {
-                          value = new Date(value).toLocaleDateString();
+                          value = value ? new Date(value).toLocaleDateString() : "-";
                         }
                       } else {
-                        if (col.field === "fecha" && value) value = new Date(value).toLocaleDateString();
-                        if ((col.field === "monto" || col.field === "balancePendiente") && value)
-                          value = Number(value).toLocaleString("en-US", { minimumFractionDigits: 2 });
+                        if (col.field === "fecha") {
+                          value = value ? new Date(value).toLocaleDateString() : "-";
+                        }
+                        if ((col.field === "monto" || col.field === "balancePendiente") && value !== undefined && value !== null && value !== "") {
+                          value = !isNaN(Number(value)) ? Number(value).toLocaleString("en-US", { minimumFractionDigits: 2 }) : value;
+                        }
                       }
                       formatted[col.field] = value;
                     });
@@ -517,6 +536,82 @@ const ReportesFinancierosList: React.FC = () => {
                   )}
                 </div>
               </div>
+            )}
+          </motion.div>
+        )}
+        {reporteSeleccionado === "balances" && (
+          <motion.div
+            className="mb-4 p-3 bg-white border-round shadow-1"
+            key="balances-report"
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            variants={fadeInUp}
+          >
+            <div className="flex flex-wrap gap-4 justify-center mb-4">
+              <div className="flex flex-column gap-2" style={{ minWidth: 170, maxWidth: 170 }}>
+                <label className="font-medium text-900" style={{ fontSize: 13 }}>Fecha Inicio</label>
+                <Calendar
+                  value={filtros.fechaInicio}
+                  onChange={(e) => setFiltros((f: any) => ({ ...f, fechaInicio: e.value as Date | null }))}
+                  dateFormat="dd/mm/yy"
+                  className="w-full p-inputtext-sm"
+                  style={{ fontSize: 13, height: 36 }}
+                  showIcon
+                />
+              </div>
+              <div className="flex flex-column gap-2" style={{ minWidth: 170, maxWidth: 170 }}>
+                <label className="font-medium text-900" style={{ fontSize: 13 }}>Fecha Fin</label>
+                <Calendar
+                  value={filtros.fechaFin}
+                  onChange={(e) => setFiltros((f: any) => ({ ...f, fechaFin: e.value as Date | null }))}
+                  dateFormat="dd/mm/yy"
+                  className="w-full p-inputtext-sm"
+                  style={{ fontSize: 13, height: 36 }}
+                  showIcon
+                />
+              </div>
+              <div className="flex align-items-end gap-2">
+                <button
+                  className="p-button p-button-primary p-button-sm flex align-items-center gap-2"
+                  style={{ minWidth: 110, fontWeight: 500, fontSize: 13, height: 32, padding: '6px 12px' }}
+                  onClick={() => setShowPreview(true)}
+                  disabled={loading}
+                >
+                  <i className="pi pi-eye"></i>
+                  Buscar
+                </button>
+                <button
+                  className="p-button p-button-sm flex align-items-center gap-2"
+                  style={{ minWidth: 110, fontWeight: 500, fontSize: 13, height: 32, background: '#ef4444', color: '#fff', border: 'none', padding: '6px 12px' }}
+                  onClick={handleVolver}
+                  type="button"
+                >
+                  <i className="pi pi-arrow-left"></i>
+                  Volver
+                </button>
+              </div>
+            </div>
+            {showPreview && (
+              <BalancesReporte
+                fechaInicio={filtros.fechaInicio}
+                fechaFin={filtros.fechaFin}
+                renderPDFButton={(data: any[]) =>
+                  data && data.length > 0 ? (
+                    <div className="flex justify-center mt-4 gap-3">
+                      <ReportPDFButton
+                        document={
+                          <BalancesReportePDF
+                            data={data}
+                            refineryName={activeRefineria?.nombre || "Refinería"}
+                          />
+                        }
+                        fileName={`ReporteBalances_${new Date().toLocaleDateString()}.pdf`}
+                      />
+                    </div>
+                  ) : null
+                }
+              />
             )}
           </motion.div>
         )}

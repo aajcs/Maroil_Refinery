@@ -213,7 +213,8 @@ const GastosResumen: React.FC<GastosResumenProps> = ({
       datasets: [
         {
           data: partidas.map((p) => p.total),
-          backgroundColor: partidas.map((p) => `#${p.color}`),
+          // Usa color pastel/opaco agregando 'b3' (70% opacity) al final del color hex
+          backgroundColor: partidas.map((p) => `#${p.color}90`),
           borderWidth: 0,
         },
       ],
