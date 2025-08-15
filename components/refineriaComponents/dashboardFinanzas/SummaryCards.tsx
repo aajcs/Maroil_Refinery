@@ -24,19 +24,46 @@ interface FinancialCard {
 }
 interface SummaryCardsProps {
   cuentas: Cuenta[]; // Adjust type as needed
+  mesSeleccionado?: string; // formato YYYY-MM
 }
 
-const SummaryCards: React.FC<SummaryCardsProps> = ({ cuentas }) => {
-  // Función para obtener el rango de fechas hasta el mes anterior
+const SummaryCards: React.FC<SummaryCardsProps> = ({
+  cuentas,
+  mesSeleccionado,
+}) => {
+  // Función para obtener el rango de fechas basado en mesSeleccionado (fin de mes seleccionado y fin de mes anterior)
   const getDateRanges = () => {
+    if (mesSeleccionado && mesSeleccionado.length === 7) {
+      const [yearStr, monthStr] = mesSeleccionado.split("-");
+      const year = parseInt(yearStr, 10);
+      const monthIndex = parseInt(monthStr, 10) - 1; // 0-based
+
+      // Fin del mes seleccionado (último día del mes a las 23:59:59.999)
+      const currentMonthEnd = new Date(
+        year,
+        monthIndex + 1,
+        0,
+        23,
+        59,
+        59,
+        999
+      );
+      // Fin del mes anterior
+      const previousMonthEnd = new Date(year, monthIndex, 0, 23, 59, 59, 999);
+      return { currentMonthEnd, previousMonthEnd };
+    }
+    // Fallback al comportamiento original (mes actual vs mes anterior relativo a hoy)
     const now = new Date();
-
-    // Mes actual (hasta hoy)
     const currentMonthEnd = now;
-
-    // Mes anterior (hasta el último día del mes pasado)
-    const previousMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0);
-
+    const previousMonthEnd = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      0,
+      23,
+      59,
+      59,
+      999
+    );
     return { currentMonthEnd, previousMonthEnd };
   };
 
@@ -102,7 +129,7 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ cuentas }) => {
       totalVentasCurrent: voc,
       totalVentasPrevious: vop,
     };
-  }, [cuentas]);
+  }, [cuentas, mesSeleccionado]);
 
   // Función para calcular el crecimiento
   const calcularCrecimiento = (
@@ -114,7 +141,6 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ cuentas }) => {
     trend: "up" | "down" | "neutral";
     period: string;
   } => {
-    console.log("anterior", anterior, "actual", actual);
     if (anterior === 0)
       return {
         value: 0,
@@ -304,6 +330,7 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ cuentas }) => {
               <span className="block font-bold text-4xl mb-3">
                 <NumberFlow
                   value={card.currentValue}
+                  locales="es-ES"
                   format={
                     card.format === "currency"
                       ? { currency: "USD", style: "currency" }
@@ -316,7 +343,11 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ cuentas }) => {
               </span>
               <Badge
                 value={
-                  <NumberFlow value={card.comparison.percentage} suffix="%" />
+                  <NumberFlow
+                    value={card.comparison.percentage}
+                    suffix="%"
+                    locales="es-ES"
+                  />
                 }
                 severity={
                   card.comparison.trend === "up"
@@ -333,42 +364,6 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ cuentas }) => {
                 className="mr-2"
               />
             </div>
-
-            {/* Mini gráfico de tendencia mejorado
-            <div className="h-4rem mb-2">
-              <Chart
-                type="line"
-                data={{
-                  labels: card.trendData?.map((_, i) => `T${i + 1}`) ?? [],
-                  datasets: [
-                    {
-                      data: card.trendData ?? [],
-                      borderColor: card.color,
-                      backgroundColor: "rgba(0,0,0,0)",
-                      borderWidth: 3,
-                      pointRadius: 0,
-                      tension: 0.5,
-                    },
-                  ],
-                }}
-                options={{
-                  plugins: {
-                    legend: { display: false },
-                    tooltip: { enabled: false },
-                  },
-                  scales: {
-                    x: { display: false },
-                    y: { display: false },
-                  },
-                  elements: {
-                    line: { borderJoinStyle: "round" },
-                  },
-                  responsive: true,
-                  maintainAspectRatio: false,
-                }}
-                height="60px"
-              />
-            </div> */}
 
             {/* Comparación */}
             <div className="flex justify-content-between text-sm text-color-secondary">
@@ -392,6 +387,7 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ cuentas }) => {
                 <NumberFlow
                   // className="number"
                   value={card.comparison.value}
+                  locales="es-ES"
                   format={{ currency: "USD", style: "currency" }}
                 />
                 {/* {formatValue(card.comparison.value, card.format)} */}
